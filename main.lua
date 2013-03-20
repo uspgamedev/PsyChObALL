@@ -462,7 +462,7 @@ end
 
 function love.keypressed(key,code)
 	
-	if key=='escape' then esc = not esc end
+	if key=='escape' and not gamelost then esc = not esc end
 
     if key=='w' or key == 'up' then 
         circle.Vy = -v
@@ -488,8 +488,6 @@ function love.keypressed(key,code)
 		circle.x = x or circle.x
 		circle.y = y or circle.y
 	end
-    
-    if key=='p' then print(table.getn(shots)) end
 end
 
 function love.keyreleased(key,code)
