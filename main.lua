@@ -88,7 +88,7 @@ function love.load()
 	esc = false
 
 	srt = " " --random string to be painted
-	
+	dtn = nil
 end
 
 
@@ -99,17 +99,11 @@ end
 function lostgame()
     if totaltime > besttime then wbesttime() end
 	if deathText()=="The LSD wears off" then
-		color = function (a,b,alpha)
-			b = b or crt
-			a = a % b
-			local c = 100
-			if a<b/2 then
-				c = (2*a/b)*150 + 50
-			else
-				c = 200 - (2*(a-b/2)/b)*150
-			end
-			return {c,c,c,alpha or 255}
-		end
+		color = colorbland
+		deathtexts[11] = "MOAR LSD"
+	elseif deathText()=="MOAR LSD" then
+	    color = colorbak
+	    deathtexts[11] = "The LSD wears off"
 	end
     --outras coisas
     gamelost = true
@@ -147,19 +141,36 @@ function color(x,xt,alpha)
 	
 	return {r*2.55,g*2.55,b*2.55,alpha or 255}
 end
+colorbak = color
 
-function newCircle(ci)
+function colorbland(a,b,alpha)
+	b = b or crt
+	a = a % b
+	local c = 100
+	if a<b/2 then
+		c = (2*a/b)*150 + 50
+	else
+		c = 200 - (2*(a-b/2)/b)*150
+	end
+	return {c,c,c,alpha or 255}
+end
+
+function newCircle(ci,lw,alpha,growth) --circle to base on, line width
 	ci = ci or circle
     local c = {}
+    c.alpha = alpha or 10
     c.x = ci.x
     c.y = ci.y -- randomize more stuff
     c.size = ci.size
-    c.sizeGrowth = math.random(120,160)
+    c.sizeGrowth = growth or math.random(120,160)
     c.typ = "circle"
     c.var = math.random(30,300)/100
+    c.lw = lw
     function c:draw()
-        love.graphics.setColor(color(ct*self.var,nil,20))
+        if self.lw then love.graphics.setLine(self.lw) end
+        love.graphics.setColor(color(ct*self.var,nil,self.alpha))
         love.graphics.circle("line",self.x,self.y,self.size)
+        if self.lw then love.graphics.setLine(4) end
     end
     function c:update(dt)
         self.size = self.size + self.sizeGrowth*dt
@@ -251,6 +262,7 @@ function newEnemy(s)
         if self.diereason=="shot" then
 			score = score + self.size/3
 			newEffects(self.x,self.y,10)
+			if self.size>=15 then newCircle(self,10,100,600) end
         elseif self.size>=15 then score = score - 3 end
 		if self.size>=10 then 
 			local momentum = true
@@ -316,6 +328,7 @@ function newShot(x,y,Vx,Vy)
 end
 
 function love.draw()
+    love.graphics.setLine(4)
 	local bc = color(ct+17*crt/13)
 	bc[1] = bc[1]/7
 	bc[2] = bc[2]/7
@@ -380,8 +393,8 @@ deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the de
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
 "MIND BLOWN","Just one more"}
 function deathText()
-	dtn = dtn or math.random(table.getn(deathtexts))
-	return deathtexts[dtn]
+	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
+	return dtn
 end
 	
 
