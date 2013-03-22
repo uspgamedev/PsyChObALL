@@ -12,8 +12,6 @@ rpc=-1 --reset pitch counter
 rpl=.2 --reset pitch limit
 love.graphics.setMode(1080,720)
 
-
-
 function rbesttime()
     local file = love.filesystem.newFile("high")
     if not love.filesystem.exists("high") then
@@ -90,7 +88,6 @@ function love.load()
 	esc = false
 
 	srt = " " --random string to be painted
-	dtn = nil
 	
 end
 
@@ -101,6 +98,19 @@ end
 
 function lostgame()
     if totaltime > besttime then wbesttime() end
+	if deathText()=="The LSD wears off" then
+		color = function (a,b,alpha)
+			b = b or crt
+			a = a % b
+			local c = 100
+			if a<b/2 then
+				c = (2*a/b)*150 + 50
+			else
+				c = 200 - (2*(a-b/2)/b)*150
+			end
+			return {c,c,c,alpha or 255}
+		end
+	end
     --outras coisas
     gamelost = true
 end
@@ -344,6 +354,10 @@ function love.draw()
 	if gamelost then
 		love.graphics.setColor(color(ct-crt/2))
 		local deffont = love.graphics.getFont()
+		if besttime == totaltime then
+			love.graphics.setFont(love.graphics.newFont(60))
+			love.graphics.print("You beat the best time!",relative(100,100))
+		end
 		love.graphics.setFont(love.graphics.newFont(40))
 		love.graphics.print(deathText(),relative(200,250))
 		love.graphics.setFont(love.graphics.newFont(30))
@@ -362,7 +376,9 @@ function love.draw()
 end
 
 deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
-"You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?","All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare"}
+"You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
+"All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
+"MIND BLOWN","Just one more"}
 function deathText()
 	dtn = dtn or math.random(table.getn(deathtexts))
 	return deathtexts[dtn]
