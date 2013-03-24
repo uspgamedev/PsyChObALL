@@ -1,3 +1,6 @@
+require "circleEffect"
+require "effect"
+
 sqr2 = math.sqrt(2)
 
 crt = 10 --color reset time
@@ -5,6 +8,7 @@ ct = 0
 firsttime = true
 besttime = 0.0
 
+love.filesystem.setIdentity("PsyChObALL")
 song = love.audio.newSource("Hydrogen.mp3")
 song:play()
 song:setLooping(true)
@@ -155,64 +159,10 @@ function colorbland(a,b,alpha)
 	return {c,c,c,alpha or 255}
 end
 
-function newCircle(ci,lw,alpha,growth) --circle to base on, line width
-	ci = ci or circle
-    local c = {}
-    c.alpha = alpha or 10
-    c.x = ci.x
-    c.y = ci.y -- randomize more stuff
-    c.size = ci.size
-    c.sizeGrowth = growth or math.random(120,160)
-    c.typ = "circle"
-    c.var = math.random(30,300)/100
-    c.lw = lw
-    function c:draw()
-        if self.lw then love.graphics.setLine(self.lw) end
-        love.graphics.setColor(color(ct*self.var,nil,self.alpha))
-        love.graphics.circle("line",self.x,self.y,self.size)
-        if self.lw then love.graphics.setLine(4) end
-    end
-    function c:update(dt)
-        self.size = self.size + self.sizeGrowth*dt
-        return self.size<love.graphics.getHeight()/2+200
-    end
-    function c:handleDelete()
-    
-    end
-    table.insert(circles,c)
-end
-
 function sign(x)
     if x>0 then return 1
     elseif x<0 then return -1
     else return 0 end
-end
-
-function newEffects(x,y,times)
-	for i=1,times or 4 do
-		local effect = {}
-		effect.x = x
-		effect.y = y
-		effect.Vx = math.random(2.5*v)-1.25*v
-		effect.Vy = math.random(2.5*v)-1.25*v
-		effect.typ = "effect"
-		effect.size = 3
-		effect.timetogo = math.random(50,130)/100
-		effect.etc = 0
-		function effect:draw()
-			love.graphics.rectangle("fill",self.x,self.y,self.size,self.size)
-		end
-		function effect:update(dt)
-			self.x = self.x + self.Vx*dt
-			self.y = self.y + self.Vy*dt
-			self.etc = self.etc + dt
-			return self.etc<self.timetogo
-		end
-		function effect:handleDelete()
-		
-		end
-		table.insert(effects,effect)
-	end
 end
 
 function newEnemy(s)
@@ -261,8 +211,8 @@ function newEnemy(s)
     function enemy:handleDelete()
         if self.diereason=="shot" then
 			score = score + self.size/3
-			newEffects(self.x,self.y,10)
-			if self.size>=15 then newCircle(self,10,100,600) end
+			effect.new(self.x,self.y,10,effects)
+			if self.size>=15 then table.insert(circles,circleEffect.new(self,10,100,600,love.graphics.getWidth())) end
         elseif self.size>=15 then score = score - 3 end
 		if self.size>=10 then 
 			local momentum = true
@@ -277,7 +227,7 @@ function newEnemy(s)
 				table.insert(enemies,e)
 			end
 		end
-		newEffects(self.x,self.y)
+		effect.new(self.x,self.y,4,effects)
     end
     s = nil
     function enemy:draw()
@@ -313,7 +263,7 @@ function newShot(x,y,Vx,Vy)
 	shot.variance = math.random(0,100*crt)/100
     function shot:handleDelete()
 		score = score-2
-		newEffects(self.x,self.y,3)
+		effect.new(self.x,self.y,7,effects)
     end
     function shot:draw()   
 		love.graphics.setColor(color(self.variance+ct))
@@ -343,6 +293,7 @@ function love.draw()
     love.graphics.circle("fill", circle.x,circle.y,circle.size)
     love.graphics.print(string.format("Score: %.0f",score),relative(20,20))
     love.graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
+	love.graphics.print(srt,relative(20,80))
 	love.graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
 	love.graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),relative(20,40))
 	if firsttime then
@@ -415,9 +366,9 @@ function love.update(dt)
 	ctc = ctc+dt
 	if ctc>ctl then 
 	ctc = 0 
-	newCircle()
+	table.insert(circles,circleEffect.new(circle))
 	for i,v in pairs(enemies) do
-		if v.size>=10 then newCircle(v) end
+		if v.size>=10 then table.insert(circles,circleEffect.new(v)) end
 	end
 	end
 	
