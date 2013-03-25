@@ -17,7 +17,7 @@ module("effect",package.seeall) do
 		
 	end
 	
-	function new(x,y,times,t)
+	function new(x,y,times)
 		for i=1,times do
 			local effect = {}
 			setmetatable(effect,Effect)
@@ -30,7 +30,7 @@ module("effect",package.seeall) do
 			effect.timetogo = math.random(50,130)/100
 			effect.etc = 0
 			
-			table.insert(t,effect)
+			table.insert(bodies,effect)
 		end
 	end
 end
