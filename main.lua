@@ -1,5 +1,8 @@
+require "global"
 require "circleEffect"
 require "effect"
+require "enemy"
+require "shot"
 
 sqr2 = math.sqrt(2)
 
@@ -8,13 +11,7 @@ ct = 0
 firsttime = true
 besttime = 0.0
 
-love.filesystem.setIdentity("PsyChObALL")
-song = love.audio.newSource("Hydrogen.mp3")
-song:play()
-song:setLooping(true)
-rpc=-1 --reset pitch counter
-rpl=.2 --reset pitch limit
-love.graphics.setMode(1080,720)
+
 
 function rbesttime()
     local file = love.filesystem.newFile("high")
@@ -39,17 +36,37 @@ function wbesttime()
 end
 
 function love.load()
+	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	v = 220
 	
+	currentPE = noLSD
+	noLSD = love.graphics.newPixelEffect [[
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
+        {
+            return vec4((color[0]+color[1]+color[2])/3, (color[0]+color[1]+color[2])/3, (color[0]+color[1]+color[2])/3, color[3]);
+        }
+    ]]
+	
+	
+	love.filesystem.setIdentity("PsyChObALL")
+	song = love.audio.newSource("Hydrogen.mp3")
+	--song:play()
+	song:setLooping(true)
+	rpc=-1 --reset pitch counter
+	rpl=.2 --reset pitch limit
+	love.graphics.setMode(1080,720)
+end
+
+function reload()
 	circle = {}
-	circle.x,circle.y = relative(400,300)
+	circle.x,circle.y = relative(520,360)
 	circle.Vx = 0
 	circle.Vy = 0
 	circle.size = 23
 	function circle:update(dt)
 		self.x = self.x + 1.65*self.Vx*dt
 		self.y = self.y + 1.65*self.Vy*dt
-		for i,v in pairs(enemies) do
+		for i,v in pairs(enemy.bodies) do
 			if (v.size+self.size)*(v.size+self.size)>=(v.x-self.x)*(v.x-self.x)+(v.y-self.y)*(v.y-self.y) then
 				lostgame()
 				self.diereason = "shot"
@@ -61,14 +78,14 @@ function love.load()
 	end
 	
 	paintables = {}
-	shots = {}
-	effects = {}
-	circles = {}
-	enemies = {}
-	paintables[1] = circles
-	paintables[2] = shots
-	paintables[3] = enemies
-	paintables[4] = effects
+	shot.bodies = {}
+	effect.bodies = {}
+	circleEffect.bodies = {}
+	enemy.bodies = {}
+	paintables[1] = circleEffect.bodies
+	paintables[2] = shot.bodies
+	paintables[3] = enemy.bodies
+	paintables[4] = effect.bodies
 
 	etc = 0 --enemy time counter
 	etl = 2 --enemy time limit
@@ -84,8 +101,7 @@ function love.load()
 	
 	timefactor = 1.0
 	
-
-	score = 200
+	global.score = 200
 
 	pause = false
 	gamelost = false
@@ -95,7 +111,6 @@ function love.load()
 	dtn = nil
 end
 
-
 function relative(x,y)
 	return x*love.graphics.getWidth()/800,y*love.graphics.getHeight()/600
 end
@@ -103,11 +118,11 @@ end
 function lostgame()
     if totaltime > besttime then wbesttime() end
 	if deathText()=="The LSD wears off" then
-		color = colorbland
 		deathtexts[11] = "MOAR LSD"
+		currentPE = noLSD
 	elseif deathText()=="MOAR LSD" then
-	    color = colorbak
 	    deathtexts[11] = "The LSD wears off"
+		if currentPE == noLSD then currentPE = nil end
 	end
     --outras coisas
     gamelost = true
@@ -145,19 +160,6 @@ function color(x,xt,alpha)
 	
 	return {r*2.55,g*2.55,b*2.55,alpha or 255}
 end
-colorbak = color
-
-function colorbland(a,b,alpha)
-	b = b or crt
-	a = a % b
-	local c = 100
-	if a<b/2 then
-		c = (2*a/b)*150 + 50
-	else
-		c = 200 - (2*(a-b/2)/b)*150
-	end
-	return {c,c,c,alpha or 255}
-end
 
 function sign(x)
     if x>0 then return 1
@@ -165,125 +167,16 @@ function sign(x)
     else return 0 end
 end
 
-function newEnemy(s)
-    s = s or 15
-    local enemy = {}
-	local side = math.random(4)
-	if		side==1 then --top
-		enemy.x = math.random(15,love.graphics.getWidth()-s-1)
-		enemy.y = 1
-		enemy.Vy = math.random(v,v+50)
-		local n = -1
-		if enemy.x<love.graphics.getWidth()/2 then n = 1 end
-		enemy.Vx = n*math.random(0,v)
-		n = nil
-	elseif	side==2 then --bottom
-		enemy.x = math.random(15,love.graphics.getWidth()-s-1)
-		enemy.y = love.graphics.getHeight()-1
-		enemy.Vy = -math.random(v,(v+50))
-		local n = -1
-		if enemy.x<love.graphics.getWidth()/2 then n = 1 end
-		enemy.Vx = n*math.random(0,v)
-		n = nil
-	elseif	side==3 then --left
-		enemy.x = 1
-		enemy.y = math.random(15,love.graphics.getHeight()-s-1)
-		enemy.Vx = math.random(v,v+50)
-		local n = -1
-		if enemy.y<love.graphics.getHeight()/2 then n = 1 end
-		enemy.Vy = n*math.random(0,v)
-		n = nil
-	elseif side==4 then --right
-		enemy.x = love.graphics.getWidth()-1
-		enemy.y = math.random(15,love.graphics.getHeight()-s-1)
-		enemy.Vx = -math.random(v,v+50)
-		local n = -1
-		if enemy.y<love.graphics.getHeight()/2 then n = 1 end
-		enemy.Vy = n*math.random(0,v)
-		n = nil
-	end
-    enemy.variance = math.random(crt*1000)/1000
-    enemy.color = color(math.random(0,100*crt)/100)
-    enemy.size = s
-    enemy.typ = "enemy"
-    enemy.collides = false
-    enemy.diereason = "leftscreen"
-    function enemy:handleDelete()
-        if self.diereason=="shot" then
-			score = score + self.size/3
-			effect.new(self.x,self.y,10,effects)
-			if self.size>=15 then table.insert(circles,circleEffect.new(self,10,100,600,love.graphics.getWidth())) end
-        elseif self.size>=15 then score = score - 3 end
-		if self.size>=10 then 
-			local momentum = true
-			for i=1,3 do
-				local e = newEnemy(self.size-5)
-				e.x = self.x
-				e.y = self.y
-				e.Vx = math.random(v)-v/2 + 1.3*self.Vx
-				e.Vy = math.random(v)-v/2 + 1.3*self.Vy
-				if e.Vy+e.Vx<10 then e.Vy = signum(self.Vy)*math.random(3*v/4,v) end
-				e.variance = self.variance
-				table.insert(enemies,e)
-			end
-		end
-		effect.new(self.x,self.y,4,effects)
-    end
-    s = nil
-    function enemy:draw()
-		self.color = color(ct+self.variance)
-		love.graphics.setColor(self.color)
-        love.graphics.circle("fill",self.x,self.y,self.size)
-    end
-    function enemy:update(dt)
-        for i,v in pairs(shots) do
-            if (v.size+self.size)*(v.size+self.size)>=(v.x-self.x)*(v.x-self.x)+(v.y-self.y)*(v.y-self.y) then
-                self.collides = true
-                v.collides = true
-                self.diereason = "shot"
-                break
-            end
-        end
-        self.x = self.x + self.Vx*dt
-        self.y = self.y + self.Vy*dt
-        return not(self.collides or self.x<-self.size or self.y<-self.size or self.x-self.size>love.graphics.getWidth() or self.y-self.size> love.graphics.getHeight())
-    end
-    return enemy
-end
-
-function newShot(x,y,Vx,Vy)
-    local shot = {}
-    shot.x = x
-    shot.y = y
-    shot.Vx = Vx
-    shot.Vy = Vy
-    shot.size = 4
-    shot.typ = "shot"
-    shot.collides = false
-	shot.variance = math.random(0,100*crt)/100
-    function shot:handleDelete()
-		score = score-2
-		effect.new(self.x,self.y,7,effects)
-    end
-    function shot:draw()   
-		love.graphics.setColor(color(self.variance+ct))
-        love.graphics.circle("fill",self.x,self.y,self.size)
-    end
-    function shot:update(dt)
-        self.x = self.x + self.Vx*dt
-        self.y = self.y + self.Vy*dt
-        return not(self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>love.graphics.getWidth() or self.y+self.size> love.graphics.getHeight())
-    end
-    return shot
-end
-
 function love.draw()
+	if not (love.graphics.getPixelEffect()==currentPE) then love.graphics.setPixelEffect(currentPE) end
     love.graphics.setLine(4)
 	local bc = color(ct+17*crt/13)
 	bc[1] = bc[1]/7
 	bc[2] = bc[2]/7
 	bc[3] = bc[3]/7
-    love.graphics.setBackgroundColor(bc)
+    --love.graphics.setBackgroundColor(bc)
+	love.graphics.setColor(bc)
+	love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),love.graphics.getHeight()) --background color
     for i,v in pairs(paintables) do
         for j,m in pairs(v) do
 			m:draw()
@@ -291,7 +184,7 @@ function love.draw()
     end
     love.graphics.setColor(color(ct))
     love.graphics.circle("fill", circle.x,circle.y,circle.size)
-    love.graphics.print(string.format("Score: %.0f",score),relative(20,20))
+    love.graphics.print(string.format("Score: %.0f",global.score),relative(20,20))
     love.graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
 	love.graphics.print(srt,relative(20,80))
 	love.graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
@@ -306,11 +199,13 @@ function love.draw()
 		love.graphics.print("You miss a shot",relative(525,60))
 		love.graphics.print("You let an enemy escape",relative(525,80))
 		love.graphics.setFont(love.graphics.newFont(30))
-		love.graphics.print("Game Ends when your score hits zero",relative(100,470))
+		love.graphics.print("Game Ends when your global.score hits zero",relative(100,470))
 		love.graphics.setFont(love.graphics.newFont(20))
 		love.graphics.print("Use WASD or arrows to move",relative(150,250))
 		love.graphics.print("Click to shoot",relative(415,325))
 		love.graphics.print("click to continue",relative(650,560))
+		love.graphics.setFont(love.graphics.newFont(60))
+		love.graphics.print("RESET THE SONG",relative(100,100))
 		love.graphics.setFont(deffont)
 		love.graphics.print("Or when you die.",relative(570,500))
 		
@@ -350,7 +245,7 @@ end
 	
 
 function love.update(dt)
-	if score<=0 then score=0 lostgame() end
+	if global.score<=0 then global.score=0 lostgame() end
 	if not (gamelost or esc or pause or firsttime) then totaltime = totaltime+dt end
 	
 	dt = dt*timefactor
@@ -366,9 +261,9 @@ function love.update(dt)
 	ctc = ctc+dt
 	if ctc>ctl then 
 	ctc = 0 
-	table.insert(circles,circleEffect.new(circle))
-	for i,v in pairs(enemies) do
-		if v.size>=10 then table.insert(circles,circleEffect.new(v)) end
+	circleEffect.new(circle)
+	for i,v in pairs(enemy.bodies) do
+		if v.size>=10 then circleEffect.new(v) end
 	end
 	end
 	
@@ -387,7 +282,7 @@ function love.update(dt)
     if etc>etl then
         etc = 0
         etl = emin + (etl-emin)/1.09
-        table.insert(enemies,newEnemy())
+        table.insert(enemy.bodies,enemy.new())
     end
     circle:update(dt)
     local todelete = {}
@@ -431,7 +326,7 @@ function shoot(x,y)
     local diffy = y - circle.y
     local Vx = signum(diffx)*math.sqrt((9*v*v*diffx*diffx)/(diffx*diffx + diffy*diffy))
     local Vy = signum(diffy)*math.sqrt((9*v*v*diffy*diffy)/(diffx*diffx + diffy*diffy))
-    table.insert(shots, newShot(circle.x,circle.y,Vx,Vy))
+    table.insert(shot.bodies, shot.new(circle.x,circle.y,Vx,Vy))
 end
 
 function signum(a)
@@ -464,7 +359,7 @@ function love.keypressed(key,code)
 			x = circle.x
 			y = circle.y
 		end
-		love.load()
+		reload()
 		circle.x = x or circle.x
 		circle.y = y or circle.y
 	end

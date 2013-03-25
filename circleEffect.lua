@@ -18,7 +18,7 @@ module ("circleEffect",package.seeall) do
     
     end
 	
-	function new(ci,lw,alpha,growth)
+	function new(ci,lw,alpha,growth,maxsize)
 		local c = {}
 		setmetatable(c,CircleEffect)
 		c.alpha = alpha or 10
@@ -30,6 +30,6 @@ module ("circleEffect",package.seeall) do
 		c.typ = "circle"
 		c.var = math.random(30,300)/100
 		c.lw = lw
-		return c
+		table.insert(bodies,c)
 	end
 end
