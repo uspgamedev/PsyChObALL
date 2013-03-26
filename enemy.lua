@@ -8,9 +8,9 @@ module ("enemy",package.seeall) do
 	
 	function Enemy:handleDelete()
 		if self.diereason=="shot" then
-			global.score = global.score + self.size/3
+			global.score = global.score + (self.size/3)*global.multiplier
 			effect.new(self.x,self.y,10)
-			global.multiplier = global.multiplier + 1
+			global.multiplier = global.multiplier + (self.size/30)
 			if not global.multtimer.running then global.multtimer:start()
 			else global.multtimer.time = 0 end
 			if global.multiplier>=10 and not (global.currentPE == global.noLSD_PE) then
@@ -20,7 +20,7 @@ module ("enemy",package.seeall) do
 				else global.inverttimer.time = 0 end
 			end
 			if self.size>=15 then circleEffect.new(self,10,100,600,love.graphics.getWidth()) end
-		elseif self.size>=15 then global.score = global.score - 3 end
+		elseif self.size>=15 then global.score = global.score - 3*global.multiplier end
 		if self.size>=10 then 
 			for i=1,3 do
 				local e = new(self.size-5)
