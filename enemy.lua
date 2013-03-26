@@ -15,6 +15,7 @@ module ("enemy",package.seeall) do
 			else global.multtimer.time = 0 end
 			if global.multiplier>=10 and not (global.currentPE == global.noLSD_PE) then
 				global.currentPE = global.invertPE
+				global.currentPET = global.invertPET
 				if not global.inverttimer.running then global.inverttimer:start()
 				else global.inverttimer.time = 0 end
 			end

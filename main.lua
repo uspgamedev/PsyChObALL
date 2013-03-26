@@ -44,21 +44,38 @@ function love.load()
 	v = 220
 	
 	global.currentPE = nil
-	global.noLSD_PE = love.graphics.newPixelEffect [[
+	global.currentPET = nil
+	global.noLSD_PET = love.graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
-            return vec4((color[0]+color[1]+color[2])/3, (color[0]+color[1]+color[2])/3, (color[0]+color[1]+color[2])/3, color[3]);
+            vec4 cor_final = Texel(texture, texture_coords) * color;
+            return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
         }
     ]]
-	global.invertPE = love.graphics.newPixelEffect [[
+    global.noLSD_PE = love.graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
-            return vec4(1-color[0],1-color[1],1-color[2], color[3]);
+            vec4 cor_final = color;
+            return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
+        }
+    ]]
+	global.invertPET = love.graphics.newPixelEffect [[
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
+        {
+            vec4 cor_final = Texel(texture, texture_coords) * color;
+            return vec4(1-cor_final[0],1-cor_final[1],1-cor_final[2], cor_final[3]);
+        }
+    ]]
+    global.invertPE = love.graphics.newPixelEffect [[
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
+        {
+            vec4 cor_final = color;
+            return vec4(1-cor_final[0],1-cor_final[1],1-cor_final[2], cor_final[3]);
         }
     ]]
 	
 	global.multtimer = timer.new(1.5,function() global.multiplier = 1 end,false,false,true,true,true,function(self) self:stop() self.func(self) end)
-	global.inverttimer = timer.new(1.5,function() global.currentPE = nil end,false,false,true,true,true)
+	global.inverttimer = timer.new(1.5,function() global.currentPE = nil global.currentPET = nil end,false,false,true,true,true)
 	
 	love.filesystem.setIdentity("PsyChObALL")
 	song = love.audio.newSource("Hydrogen.mp3")
@@ -145,9 +162,11 @@ function lostgame()
 	if deathText()=="The LSD wears off" then
 		deathtexts[11] = "MOAR LSD"
 		global.currentPE = global.noLSD_PE
+		global.currentPET = global.noLSD_PET
 	elseif deathText()=="MOAR LSD" then
 	    deathtexts[11] = "The LSD wears off"
-		if global.currentPE == global.noLSD_PE then global.currentPE = nil end
+		global.currentPE = nil 
+		global.currentPET = nil
 	end
     --outras coisas
     gamelost = true
@@ -193,7 +212,7 @@ function sign(x)
 end
 
 function love.draw()
-	if not (love.graphics.getPixelEffect()==global.currentPE) then love.graphics.setPixelEffect(global.currentPE) end
+	love.graphics.setPixelEffect(global.currentPE)
     love.graphics.setLine(4)
 	local bc = color(global.colortimer.time+17*global.colortimer.timelimit/13)
 	bc[1] = bc[1]/7
@@ -209,6 +228,7 @@ function love.draw()
     end
     love.graphics.setColor(color(global.colortimer.time))
     love.graphics.circle("fill", circle.x,circle.y,circle.size)
+    love.graphics.setPixelEffect(global.currentPET)
     love.graphics.print(string.format("Score: %.0f",global.score),relative(20,20))
     love.graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
 	love.graphics.print(srt,relative(20,80))
