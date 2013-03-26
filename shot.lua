@@ -4,7 +4,7 @@ module ("shot",package.seeall) do
 	Shot.__index = Shot
 	
 	function Shot:handleDelete()
-		global.score = global.score-2
+		global.score = global.score- 2*((global.multiplier-1)/2 + 1)
 		effect.new(self.x,self.y,7)
     end
     function Shot:draw()   

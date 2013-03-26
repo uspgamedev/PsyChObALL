@@ -9,12 +9,17 @@ function rbesttime()
     local file = love.filesystem.newFile("high")
     if not love.filesystem.exists("high") then
         file:open('w')
+        file:write("0\n0")
         file:close()
     end
     file:open('r')
-    local r = file:read()
-    if r=='' then return end
-    besttime = besttime + r
+    local it = file:lines()
+    local r = it()
+    if not r then r=0 end
+    besttime = 0 + r
+    r= it()
+    if not r then r=0 end
+    bestmult = 0 + r
 end
 
 
@@ -22,12 +27,13 @@ end
 function wbesttime()
     local file = love.filesystem.newFile("high")
     file:open('w')
-    file:write(totaltime)
-    besttime = totaltime
+    if totaltime>besttime then besttime = totaltime end
+    file:write(besttime .. "\n" .. bestmult)
     file:close()
 end
 
 function love.load()
+    version = "0.9.3"
 	love.graphics.setMode(1080,720)
 	timer.ts = {}
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
@@ -37,7 +43,6 @@ function love.load()
 	
 	global.colortimer = timer.new(10,nil,true,false,false,true,true)
 	firsttime = true
-	besttime = 0.0
 	rbesttime()
 	
 	
@@ -75,7 +80,12 @@ function love.load()
     ]]
 	
 	global.multtimer = timer.new(1.5,function() global.multiplier = 1 end,false,false,true,true,true,function(self) self:stop() self.func(self) end)
-	global.inverttimer = timer.new(1.5,function() global.currentPE = nil global.currentPET = nil end,false,false,true,true,true)
+	global.inverttimer = timer.new(1.5,function()
+	     if global.currentPE ~= global.LSD_PE then 
+	        global.currentPE = nil 
+	        global.currentPET = nil 
+	    end
+	end,false,false,true,true,true)
 	
 	love.filesystem.setIdentity("PsyChObALL")
 	song = love.audio.newSource("Hydrogen.mp3")
@@ -158,7 +168,7 @@ function relative(x,y)
 end
 
 function lostgame()
-    if totaltime > besttime then wbesttime() end
+    wbesttime()
 	if deathText()=="The LSD wears off" then
 		deathtexts[11] = "MOAR LSD"
 		global.currentPE = global.noLSD_PE
@@ -234,9 +244,12 @@ function love.draw()
 	love.graphics.print(srt,relative(20,80))
 	love.graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
 	love.graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),relative(20,40))
+	if global.multiplier>bestmult then bestmult = global.multiplier end
+	love.graphics.print(string.format("Best Mult: x%.1f",bestmult),relative(715,86))
 	love.graphics.setFont(getFont(40))
-	love.graphics.print("x" .. global.multiplier,relative(730,50))
+	love.graphics.print(string.format("x%.1f",global.multiplier),relative(700,50))
 	love.graphics.setFont(getFont(12))
+	
 	
 	if firsttime then
 		love.graphics.setColor(color(global.colortimer.time-global.colortimer.timelimit/2))
@@ -254,7 +267,7 @@ function love.draw()
 		love.graphics.print("click to continue",relative(650,560))
 		love.graphics.setFont(getFont(12))
 		love.graphics.print("Or when you die.",relative(570,500))
-		
+		love.graphics.print("v" .. version,relative(750,580))
 	end
 	if gamelost then
 		love.graphics.setColor(color(global.colortimer.time-global.colortimer.timelimit/2))
