@@ -1,10 +1,11 @@
+require "global"
 module ("circleEffect",package.seeall) do
 	local CircleEffect = {}
 	CircleEffect.__index = CircleEffect
 	
 	function CircleEffect:draw()
         if self.lw then love.graphics.setLine(self.lw) end
-        love.graphics.setColor(color(ct*self.var,nil,self.alpha))
+        love.graphics.setColor(color(global.colortimer.time*self.var,nil,self.alpha))
         love.graphics.circle("line",self.x,self.y,self.size)
         if self.lw then love.graphics.setLine(4) end
     end

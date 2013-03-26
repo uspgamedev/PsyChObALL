@@ -1,6 +1,6 @@
+require "global"
 module ("shot",package.seeall) do
 	local Shot = {}
-	Shot = {}
 	Shot.__index = Shot
 	
 	function Shot:handleDelete()
@@ -8,7 +8,7 @@ module ("shot",package.seeall) do
 		effect.new(self.x,self.y,7)
     end
     function Shot:draw()   
-		love.graphics.setColor(color(self.variance+ct))
+		love.graphics.setColor(color(self.variance+global.colortimer.time))
         love.graphics.circle("fill",self.x,self.y,self.size)
     end
     function Shot:update(dt)
@@ -27,7 +27,7 @@ module ("shot",package.seeall) do
 		shot.size = 4
 		shot.typ = "shot"
 		shot.collides = false
-		shot.variance = math.random(0,100*crt)/100
+		shot.variance = math.random(0,100*global.colortimer.timelimit)/100
 		
 		return shot
 	end

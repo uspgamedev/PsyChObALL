@@ -10,6 +10,14 @@ module ("enemy",package.seeall) do
 		if self.diereason=="shot" then
 			global.score = global.score + self.size/3
 			effect.new(self.x,self.y,10)
+			global.multiplier = global.multiplier + 1
+			if not global.multtimer.running then global.multtimer:start()
+			else global.multtimer.time = 0 end
+			if global.multiplier>=10 and not (global.currentPE == global.noLSD_PE) then
+				global.currentPE = global.invertPE
+				if not global.inverttimer.running then global.inverttimer:start()
+				else global.inverttimer.time = 0 end
+			end
 			if self.size>=15 then circleEffect.new(self,10,100,600,love.graphics.getWidth()) end
 		elseif self.size>=15 then global.score = global.score - 3 end
 		if self.size>=10 then 
@@ -26,9 +34,10 @@ module ("enemy",package.seeall) do
 		end
 		effect.new(self.x,self.y,4)
 	end
+
 	
 	function Enemy:draw()
-		self.color = color(ct+self.variance)
+		self.color = color(global.colortimer.time+self.variance)
 		love.graphics.setColor(self.color)
 		love.graphics.circle("fill",self.x,self.y,self.size)
 	end
@@ -85,8 +94,8 @@ module ("enemy",package.seeall) do
 			enemy.Vy = n*math.random(0,v)
 			n = nil
 		end
-		enemy.variance = math.random(crt*1000)/1000
-		enemy.color = color(math.random(0,100*crt)/100)
+		enemy.variance = math.random(global.colortimer.timelimit*1000)/1000
+		enemy.color = color(math.random(0,100*global.colortimer.timelimit)/100)
 		enemy.size = s
 		enemy.typ = "enemy"
 		enemy.collides = false
