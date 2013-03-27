@@ -36,6 +36,11 @@ function love.load()
     version = "0.9.3"
 	love.graphics.setMode(1080,720)
 	timer.ts = {}
+	love.filesystem.setIdentity("PsyChObALL")
+	song = love.audio.newSource("Phantom - Psychodelic.ogg")
+	song:play()
+	song:setLooping(true)
+	songsetpoints = {20,123,180,308,340}
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
 	sqr2 = math.sqrt(2)
@@ -57,7 +62,7 @@ function love.load()
             return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
         }
     ]]
-    global.noLSD_PE = love.graphics.newPixelEffect [[
+    global.noLSD_PE = love.graphics.newPixelEffect[[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = color;
@@ -79,23 +84,21 @@ function love.load()
         }
     ]]
 	
-	global.multtimer = timer.new(2.2,function() global.multiplier = 1 end,false,false,true,true,true,function(self) self:stop() self.func(self) end)
+	global.multtimer = timer.new(2.2,function() global.multiplier = 1 end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
 	global.inverttimer = timer.new(2.2,function()
-	     if global.currentPE ~= global.LSD_PE then 
+	     if global.currentPE ~= global.noLSD_PE then 
 	        global.currentPE = nil 
 	        global.currentPET = nil 
 	    end
-	end,false,false,true,true,true)
+	end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
 	
-	love.filesystem.setIdentity("PsyChObALL")
-	song = love.audio.newSource("Hydrogen.mp3")
-	song:play()
-	song:setLooping(true)
 	
 end
 
 function reload()
 	timer.closenonessential()
+	
+	song:seek(songsetpoints[math.random(#songsetpoints)])
 	
 	circle = {}
 	circle.x,circle.y = relative(380,300)
@@ -366,16 +369,16 @@ function love.keypressed(key,code)
 
     if key=='w' or key == 'up' then 
         circle.Vy = -v
-        if circle.Vx>0 then circle.Vy = circle.Vy/sqr2 circle.Vx = circle.Vx/sqr2 end
+        if circle.Vx~=0 then circle.Vy = circle.Vy/sqr2 circle.Vx = circle.Vx/sqr2 end
     elseif key=='s' or key == 'down' then 
         circle.Vy = v
-        if circle.Vx>0 then circle.Vy = circle.Vy/sqr2 circle.Vx = circle.Vx/sqr2 end
+        if circle.Vx~=0 then circle.Vy = circle.Vy/sqr2 circle.Vx = circle.Vx/sqr2 end
     elseif key=='a' or key=='left' then 
         circle.Vx = -v
-        if circle.Vy>0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
+        if circle.Vy~=0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
     elseif key=='d' or key=='right' then 
         circle.Vx = v 
-        if circle.Vy>0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
+        if circle.Vy~=0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
     end
 	
 	if gamelost and key=='r' then
