@@ -4,6 +4,7 @@ require "effect"
 require "enemy"
 require "shot"
 require "timer"
+require "list"
 
 function rbesttime()
     local file = love.filesystem.newFile("high")
@@ -33,6 +34,8 @@ function wbesttime()
 end
 
 function love.load()
+	--love.mouse.setVisible(false)
+	v = 220
     version = "0.9.3"
 	love.graphics.setMode(1080,720)
 	timer.ts = {}
@@ -41,17 +44,18 @@ function love.load()
 	song:play()
 	song:setLooping(true)
 	songsetpoints = {20,123,180,308,340}
+	global.colortimer = timer.new(10,nil,true,false,false,true,true)
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
 	sqr2 = math.sqrt(2)
 	fonts = {}
 	
-	global.colortimer = timer.new(10,nil,true,false,false,true,true)
+	
 	firsttime = true
 	rbesttime()
 	
 	
-	v = 220
+	
 	
 	global.currentPE = nil
 	global.currentPET = nil
@@ -129,9 +133,16 @@ function reload()
 	paintables[3] = enemy.bodies
 	paintables[4] = effect.bodies
 	
+	enemylist = list.new()
+	enemylist:push(enemy.new())
 	enemytimer = timer.new(2,function(self)
 			self.timelimit = .14 + (self.timelimit-.14)/1.09
-			table.insert(enemy.bodies,enemy.new())
+			enemylist:push(enemy.new())
+		end)
+	enemytimer2 = timer.new(1.3,function(self)
+			if not self.first then self.first = 1 self.timelimit = 2 return end
+			self.timelimit = .14 + (self.timelimit-.14)/1.09
+			table.insert(enemy.bodies,enemylist:pop())
 		end)
 	
 	shottimer = timer.new(.18,function() shoot(love.mouse.getPosition()) end,false)
@@ -224,8 +235,24 @@ function sign(x)
     else return 0 end
 end
 
+function line()
+	love.graphics.setColor(color(global.colortimer.time+12))
+	love.graphics.circle("line",love.mouse.getX(),love.mouse.getY(),5)
+	love.graphics.setColor(color(global.colortimer.time+12,nil,60))
+	local m = (love.mouse.getY()-circle.y)/(love.mouse.getX()-circle.x)
+	local x,y
+	if (love.mouse.getX()-circle.x)>0 then 
+		x = love.graphics.getWidth()
+		y = circle.y + (x-circle.x)*m
+	else
+		x = 0
+		y = circle.y + (x-circle.x)*m
+	end
+	love.graphics.line(circle.x,circle.y,x,y)
+end
+
 function love.draw()
-	love.graphics.setPixelEffect(global.currentPE)
+	love.graphics.setPixelEffect(global.currentPE) --things without texture
     love.graphics.setLine(4)
 	local bc = color(global.colortimer.time+17*global.colortimer.timelimit/13)
 	bc[1] = bc[1]/7
@@ -239,9 +266,19 @@ function love.draw()
 			m:draw()
 		end
     end
-    love.graphics.setColor(color(global.colortimer.time))
+	love.graphics.setColor(color(global.colortimer.time*1.4))
+	love.graphics.setLine(1)
+	for i=enemylist.first,enemylist.last-1 do
+		local a = math.atan((enemylist[i].Vy/enemylist[i].Vx))
+		if enemylist[i].Vx<0 then a = a + math.pi end
+		love.graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a-.15, a+.15)
+	end
+	line()
+	love.graphics.setColor(color(global.colortimer.time))
     love.graphics.circle("fill", circle.x,circle.y,circle.size)
-    love.graphics.setPixelEffect(global.currentPET)
+	
+	
+    love.graphics.setPixelEffect(global.currentPET) --things with textures
     love.graphics.print(string.format("Score: %.0f",global.score),relative(20,20))
     love.graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
 	love.graphics.print(srt,relative(20,80))
@@ -304,7 +341,7 @@ function deathText()
 end
 
 function love.update(dt)
-	local isPaused = (gamelost or esc or pause or firsttime) 
+	isPaused = (gamelost or esc or pause or firsttime) 
 	if global.score<=0 then global.score=0 lostgame() end
 	if not isPaused then totaltime = totaltime+dt end
 	
@@ -343,7 +380,7 @@ function love.mousepressed(x,y,button)
     end
 end
 function love.mousereleased(x,y,button)
-	if pause then return end
+	if isPaused then return end
 	if button == 'l' then
 		shottimer:stop()
 	end
@@ -365,7 +402,7 @@ end
 
 function love.keypressed(key,code)
 	
-	if key=='escape' and not gamelost then esc = not esc end
+	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
 
     if key=='w' or key == 'up' then 
         circle.Vy = -v
@@ -380,6 +417,12 @@ function love.keypressed(key,code)
         circle.Vx = v 
         if circle.Vy~=0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
     end
+	
+	if key==' ' and not isPaused then
+		for i=1,20 do
+			shoot(circle.x+(math.cos(math.pi*i/10)*100),circle.y+(math.sin(math.pi*i/10)*100))
+		end
+	end
 	
 	if gamelost and key=='r' then
 		local x,y
