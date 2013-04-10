@@ -1,7 +1,7 @@
-require "global"
 module ("circleEffect",package.seeall) do
 	local CircleEffect = {}
 	CircleEffect.__index = CircleEffect
+	local global = _G --para acessar variaveis em main.lua
 	
 	function CircleEffect:draw()
         if self.lw then love.graphics.setLine(self.lw) end

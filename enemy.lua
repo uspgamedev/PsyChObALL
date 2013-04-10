@@ -1,10 +1,10 @@
-require "global"
 require "effect"
 require "circleEffect"
 require "shot"
 module ("enemy",package.seeall) do
 	local Enemy = {}
 	Enemy.__index = Enemy
+	local global = _G --para acessar variaveis em main.lua
 	
 	function Enemy:handleDelete()
 		if self.diereason=="shot" then

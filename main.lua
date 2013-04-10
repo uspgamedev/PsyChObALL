@@ -1,4 +1,3 @@
-require "global"
 require "circleEffect"
 require "effect"
 require "enemy"
@@ -34,7 +33,6 @@ function wbesttime()
 end
 
 function love.load()
-	--love.mouse.setVisible(false)
 	v = 220
     version = "0.9.3"
 	love.graphics.setMode(1080,720)
@@ -44,7 +42,19 @@ function love.load()
 	song:play()
 	song:setLooping(true)
 	songsetpoints = {20,123,180,308,340}
-	global.colortimer = timer.new(10,nil,true,false,false,true,true)
+	songfadeout = timer.new(.02,function(self) 
+	        if song:getVolume()<=.01 then 
+	            song:setVolume(0) 
+	            self:stop()
+	        else song:setVolume(song:getVolume()-.01) end
+	 end,false,false,false,false,true)
+	 songfadein = timer.new(.03,function(self) 
+	        if song:getVolume()>=.98 then 
+	            song:setVolume(1) 
+	            self:stop()
+	        else song:setVolume(song:getVolume()+.02) end
+	 end,false,false,false,false,true)
+	colortimer = timer.new(10,nil,true,false,false,true,true)
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
 	sqr2 = math.sqrt(2)
@@ -57,30 +67,30 @@ function love.load()
 	
 	
 	
-	global.currentPE = nil
-	global.currentPET = nil
-	global.noLSD_PET = love.graphics.newPixelEffect [[
+	currentPE = nil
+	currentPET = nil
+	noLSD_PET = love.graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = Texel(texture, texture_coords) * color;
             return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
         }
     ]]
-    global.noLSD_PE = love.graphics.newPixelEffect[[
+    noLSD_PE = love.graphics.newPixelEffect[[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = color;
             return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
         }
     ]]
-	global.invertPET = love.graphics.newPixelEffect [[
+	invertPET = love.graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = Texel(texture, texture_coords) * color;
             return vec4(1-cor_final[0],1-cor_final[1],1-cor_final[2], cor_final[3]);
         }
     ]]
-    global.invertPE = love.graphics.newPixelEffect [[
+    invertPE = love.graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = color;
@@ -88,14 +98,13 @@ function love.load()
         }
     ]]
 	
-	global.multtimer = timer.new(2.2,function() global.multiplier = 1 end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
-	global.inverttimer = timer.new(2.2,function()
-	     if global.currentPE ~= global.noLSD_PE then 
-	        global.currentPE = nil 
-	        global.currentPET = nil 
+	multtimer = timer.new(2.2,function() multiplier = 1 end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
+	inverttimer = timer.new(2.2,function()
+	     if currentPE ~= noLSD_PE then 
+	        currentPE = nil 
+	        currentPET = nil 
 	    end
 	end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
-	
 	
 end
 
@@ -103,6 +112,8 @@ function reload()
 	timer.closenonessential()
 	
 	song:seek(songsetpoints[math.random(#songsetpoints)])
+	song:setVolume(0)
+	songfadein:start()
 	
 	circle = {}
 	circle.x,circle.y = relative(380,300)
@@ -147,7 +158,7 @@ function reload()
 	
 	shottimer = timer.new(.18,function() shoot(love.mouse.getPosition()) end,false)
 	
-	global.multiplier = 1
+	multiplier = 1
 	
 	
 	circletimer = timer.new(.2,function()
@@ -161,7 +172,7 @@ function reload()
 	
 	timefactor = 1.0
 	
-	global.score = 200
+	score = 200
 
 	pause = false
 	gamelost = false
@@ -183,21 +194,25 @@ end
 
 function lostgame()
     wbesttime()
+    songfadeout:start()
 	if deathText()=="The LSD wears off" then
+	    song:setPitch(.8)
 		deathtexts[11] = "MOAR LSD"
-		global.currentPE = global.noLSD_PE
-		global.currentPET = global.noLSD_PET
+		currentPE = noLSD_PE
+		currentPET = noLSD_PET
 	elseif deathText()=="MOAR LSD" then
+	    song:setPitch(1)
 	    deathtexts[11] = "The LSD wears off"
-		global.currentPE = nil 
-		global.currentPET = nil
+		currentPE = nil 
+		currentPET = nil
 	end
+    
     --outras coisas
     gamelost = true
 end
 
 function color(x,xt,alpha)
-	xt = xt or global.colortimer.timelimit
+	xt = xt or colortimer.timelimit
 	x = x % xt
 	local r,g,b
 	if x<=xt/3 then
@@ -236,9 +251,9 @@ function sign(x)
 end
 
 function line()
-	love.graphics.setColor(color(global.colortimer.time+12))
+	love.graphics.setColor(color(colortimer.time+12))
 	love.graphics.circle("line",love.mouse.getX(),love.mouse.getY(),5)
-	love.graphics.setColor(color(global.colortimer.time+12,nil,60))
+	love.graphics.setColor(color(colortimer.time+12,nil,60))
 	local m = (love.mouse.getY()-circle.y)/(love.mouse.getX()-circle.x)
 	local x,y
 	if (love.mouse.getX()-circle.x)>0 then 
@@ -252,9 +267,9 @@ function line()
 end
 
 function love.draw()
-	love.graphics.setPixelEffect(global.currentPE) --things without texture
+	love.graphics.setPixelEffect(currentPE) --things without texture
     love.graphics.setLine(4)
-	local bc = color(global.colortimer.time+17*global.colortimer.timelimit/13)
+	local bc = color(colortimer.time+17*colortimer.timelimit/13)
 	bc[1] = bc[1]/7
 	bc[2] = bc[2]/7
 	bc[3] = bc[3]/7
@@ -266,7 +281,7 @@ function love.draw()
 			m:draw()
 		end
     end
-	love.graphics.setColor(color(global.colortimer.time*1.4))
+	love.graphics.setColor(color(colortimer.time*1.4))
 	love.graphics.setLine(1)
 	for i=enemylist.first,enemylist.last-1 do
 		local a = math.atan((enemylist[i].Vy/enemylist[i].Vx))
@@ -274,25 +289,25 @@ function love.draw()
 		love.graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a-.15, a+.15)
 	end
 	line()
-	love.graphics.setColor(color(global.colortimer.time))
+	love.graphics.setColor(color(colortimer.time))
     love.graphics.circle("fill", circle.x,circle.y,circle.size)
 	
 	
-    love.graphics.setPixelEffect(global.currentPET) --things with textures
-    love.graphics.print(string.format("Score: %.0f",global.score),relative(20,20))
+    love.graphics.setPixelEffect(currentPET) --things with textures
+    love.graphics.print(string.format("Score: %.0f",score),relative(20,20))
     love.graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
 	love.graphics.print(srt,relative(20,80))
 	love.graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
 	love.graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),relative(20,40))
-	if global.multiplier>bestmult then bestmult = global.multiplier end
+	if multiplier>bestmult then bestmult = multiplier end
 	love.graphics.print(string.format("Best Mult: x%.1f",bestmult),relative(715,86))
 	love.graphics.setFont(getFont(40))
-	love.graphics.print(string.format("x%.1f",global.multiplier),relative(700,50))
+	love.graphics.print(string.format("x%.1f",multiplier),relative(700,50))
 	love.graphics.setFont(getFont(12))
 	
 	
 	if firsttime then
-		love.graphics.setColor(color(global.colortimer.time-global.colortimer.timelimit/2))
+		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		love.graphics.setFont(getFont(20))
 		love.graphics.print("You get points when:",relative(200,30))
 		love.graphics.print("You kill an enemy",relative(225,60))
@@ -310,7 +325,7 @@ function love.draw()
 		love.graphics.print("v" .. version,relative(750,580))
 	end
 	if gamelost then
-		love.graphics.setColor(color(global.colortimer.time-global.colortimer.timelimit/2))
+		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		if besttime == totaltime then
 			love.graphics.setFont(getFont(60))
 			love.graphics.print("You beat the best time!",relative(100,100))
@@ -324,7 +339,7 @@ function love.draw()
 		love.graphics.setFont(getFont(12))
 	end
 	if esc then
-		love.graphics.setColor(color(global.colortimer.time-global.colortimer.timelimit/2))
+		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		love.graphics.setFont(getFont(40))
 		love.graphics.print("Paused",relative(200,250))
 		love.graphics.setFont(getFont(12))
@@ -342,14 +357,15 @@ end
 
 function love.update(dt)
 	isPaused = (gamelost or esc or pause or firsttime) 
-	if global.score<=0 then global.score=0 lostgame() end
-	if not isPaused then totaltime = totaltime+dt end
+	if score<=0 then score=0 lostgame() end
+	
 	
 	timer.update(dt,timefactor,isPaused)
 	
 	dt = dt*timefactor
 	
 	if isPaused then return end
+	totaltime = totaltime+dt
 
     circle:update(dt)
     local todelete = {}
