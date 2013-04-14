@@ -319,6 +319,7 @@ function love.draw()
 		love.graphics.print(deathText(),relative(200,250))
 		love.graphics.setFont(getFont(30))
 		love.graphics.print(string.format("You lasted %.1fsecs",totaltime),relative(360,440))
+		if global.score==0 then love.graphics.print("Your score hit 0.",relative(320,500)) end
 		love.graphics.setFont(getFont(22))
 		love.graphics.print("'r' to retry",relative(400,400))
 		love.graphics.setFont(getFont(12))
