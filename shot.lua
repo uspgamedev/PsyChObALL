@@ -1,7 +1,7 @@
-require "global"
 module ("shot",package.seeall) do
 	local Shot = {}
 	Shot.__index = Shot
+	local global = _G --para acessar variaveis em main.lua
 	
 	function Shot:handleDelete()
 		global.score = global.score- 2*((global.multiplier-1)/2 + 1)

@@ -39,13 +39,25 @@ module ("timer",package.seeall) do
 		if persistent==nil then timer.persistent = false
 		else timer.persistent = persistent end
 		timer.handlereset = handlereset
+		timer.delete = false
 		table.insert(ts,timer)
 		return timer
 	end
 	
 	function update(dt,timefactor,paused)
 		for i,v in pairs(ts) do
-			v:update(dt,timefactor,paused)
+			if v.delete then
+			    if not td then td = {v}
+			    else table.insert(td,i) end
+			else
+			    v:update(dt,timefactor,paused)
+			end
+		end
+		if td then
+		    for i,v in ipairs(td) do
+		        table.remove(td,v)
+		    end
+		    td = nil
 		end
 	end
 	
