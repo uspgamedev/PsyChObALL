@@ -34,7 +34,7 @@ end
 
 function love.load()
 	v = 220
-    version = "0.9.3"
+    version = "0.7.8"
 	love.graphics.setMode(1080,720)
 	timer.ts = {}
 	love.filesystem.setIdentity("PsyChObALL")
@@ -42,11 +42,11 @@ function love.load()
 	song:play()
 	song:setLooping(true)
 	songsetpoints = {20,123,180,308,340}
-	songfadeout = timer.new(.02,function(self) 
-	        if song:getVolume()<=.01 then 
+	songfadeout = timer.new(.01,function(self) 
+	        if song:getVolume()<=.02 then 
 	            song:setVolume(0) 
 	            self:stop()
-	        else song:setVolume(song:getVolume()-.01) end
+	        else song:setVolume(song:getVolume()-.02) end
 	 end,false,false,false,false,true)
 	 songfadein = timer.new(.03,function(self) 
 	        if song:getVolume()>=.98 then 
@@ -146,13 +146,14 @@ function reload()
 	
 	enemylist = list.new()
 	enemylist:push(enemy.new())
-	enemytimer = timer.new(2,function(self)
-			self.timelimit = .14 + (self.timelimit-.14)/1.09
+	enemytimer = timer.new(1,function(self)
+	        if not self.first then self.first = true self.timelimit = 2 end
+			self.timelimit = .3 + (self.timelimit-.3)/1.09
 			enemylist:push(enemy.new())
 		end)
-	enemytimer2 = timer.new(1.3,function(self)
-			if not self.first then self.first = 1 self.timelimit = 2 return end
-			self.timelimit = .14 + (self.timelimit-.14)/1.09
+	enemytimer2 = timer.new(0,function(self)
+			if not self.first then self.first = true self.timelimit = 2 return end
+			self.timelimit = .3 + (self.timelimit-.3)/1.09
 			table.insert(enemy.bodies,enemylist:pop())
 		end)
 	
@@ -206,8 +207,7 @@ function lostgame()
 		currentPE = nil 
 		currentPET = nil
 	end
-    
-    --outras coisas
+
     gamelost = true
 end
 
@@ -319,10 +319,17 @@ function love.draw()
 		love.graphics.setFont(getFont(20))
 		love.graphics.print("Use WASD or arrows to move",relative(150,250))
 		love.graphics.print("Click to shoot",relative(415,325))
+		love.graphics.print("Space for", relative(470,360))
+		
 		love.graphics.print("click to continue",relative(650,560))
 		love.graphics.setFont(getFont(12))
 		love.graphics.print("Or when you die.",relative(570,500))
 		love.graphics.print("v" .. version,relative(750,580))
+		
+		love.graphics.setFont(getFont(35))
+		love.graphics.setColor(color(colortimer.time*0.856))
+		love.graphics.print("ulTrAbLaST",relative(545,349))
+		love.graphics.setFont(getFont(12))
 	end
 	if gamelost then
 		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
@@ -334,7 +341,7 @@ function love.draw()
 		love.graphics.print(deathText(),relative(200,250))
 		love.graphics.setFont(getFont(30))
 		love.graphics.print(string.format("You lasted %.1fsecs",totaltime),relative(360,440))
-		if global.score==0 then love.graphics.print("Your score hit 0.",relative(320,500)) end
+		if score==0 then love.graphics.print("Your score hit 0.",relative(320,500)) end
 		love.graphics.setFont(getFont(22))
 		love.graphics.print("'r' to retry",relative(400,400))
 		love.graphics.setFont(getFont(12))
@@ -350,7 +357,7 @@ end
 deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
 "You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
-"MIND BLOWN","Just one more"}
+"MIND BLOWN","Just one more","USPGameDev Rulez"}
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
 	return dtn
@@ -417,6 +424,8 @@ function signum(a)
     else return 0 end
 end
 
+local ultrablast = 25
+
 function love.keypressed(key,code)
 	
 	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
@@ -436,8 +445,8 @@ function love.keypressed(key,code)
     end
 	
 	if key==' ' and not isPaused then
-		for i=1,20 do
-			shoot(circle.x+(math.cos(math.pi*i/10)*100),circle.y+(math.sin(math.pi*i/10)*100))
+		for i=1,ultrablast do
+			shoot(circle.x+(math.cos(math.pi*2*i/ultrablast)*100),circle.y+(math.sin(math.pi*2*i/ultrablast)*100))
 		end
 	end
 	
