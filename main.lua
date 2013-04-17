@@ -33,6 +33,9 @@ function wbesttime()
 end
 
 function love.load()
+    screenshotnumber = 1
+	while(love.filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
+
 	v = 220
     version = "0.7.8"
 	love.graphics.setMode(1080,720)
@@ -483,6 +486,11 @@ function love.keyreleased(key,code)
                 love.keyboard.isDown('left') or love.keyboard.isDown('right')) then 
 	circle.Vx=0 
 	circle.Vy = signum(circle.Vy) * v
+	end
+	
+	if key=='scrollock' then 
+	    love.graphics.newScreenshot():encode('screenshot_' .. screenshotnumber .. '.png')
+	    screenshotnumber = screenshotnumber + 1
 	end
 end
 
