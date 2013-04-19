@@ -104,7 +104,8 @@ function love.load()
 	multtimer = timer.new(2.2,function() multiplier = 1 end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
 	inverttimer = timer.new(2.2,function()
 	     if currentPE ~= noLSD_PE then 
-	        currentPE = nil 
+	        song:setPitch(1)
+			currentPE = nil 
 	        currentPET = nil 
 	    end
 	end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
@@ -360,7 +361,7 @@ end
 deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
 "You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
-"MIND BLOWN","Just one more","USPGameDev Rulez"}
+"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died"}
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
 	return dtn
