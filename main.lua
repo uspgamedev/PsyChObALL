@@ -63,7 +63,6 @@ function love.load()
 	sqr2 = math.sqrt(2)
 	fonts = {}
 	
-	
 	firsttime = true
 	rbesttime()
 	
@@ -105,6 +104,7 @@ function love.load()
 	inverttimer = timer.new(2.2,function()
 	     if currentPE ~= noLSD_PE then 
 	        song:setPitch(1)
+		timefactor = 1.0
 			currentPE = nil 
 	        currentPET = nil 
 	    end
@@ -202,6 +202,7 @@ function lostgame()
     songfadeout:start()
 	if deathText()=="The LSD wears off" then
 	    song:setPitch(.8)
+		 timefactor = 0.9
 		deathtexts[11] = "MOAR LSD"
 		currentPE = noLSD_PE
 		currentPET = noLSD_PET
