@@ -37,7 +37,7 @@ function love.load()
 	while(love.filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	v = 220
-    version = "0.7.8"
+    version = "0.7.9"
 	love.graphics.setMode(1080,720)
 	timer.ts = {}
 	love.filesystem.setIdentity("PsyChObALL")
@@ -202,7 +202,6 @@ function lostgame()
     songfadeout:start()
 	if deathText()=="The LSD wears off" then
 	    song:setPitch(.8)
-		 timefactor = 0.9
 		deathtexts[11] = "MOAR LSD"
 		currentPE = noLSD_PE
 		currentPET = noLSD_PET

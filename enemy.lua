@@ -14,8 +14,9 @@ module ("enemy",package.seeall) do
 			if not global.multtimer.running then global.multtimer:start()
 			else global.multtimer.time = 0 end
 			if global.multiplier>=10 and not (global.currentPE == global.noLSD_PE) then
-				song:setPitch(2.0)
-				global.timefactor= 2.0
+				song:setPitch(1.05)
+				global.timefactor= 1.1
+
 				global.currentPE = global.invertPE
 				global.currentPET = global.invertPET
 				if not global.inverttimer.running then global.inverttimer:start()
