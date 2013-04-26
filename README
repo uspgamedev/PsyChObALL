@@ -1,16 +1,29 @@
 ﻿========================
 PsyChObALL version 0.7.9
 ========================
- A GAME BY MARVELLOUS SOFT/USPGAMEDEV   
-  
-~~~~~~~~~
-Last changes:
+ A GAME BY MARVELLOUS SOFT/USPGAMEDEV
 
-*(25/04/2013)*
--Fixed generic sound bugs
--Added instructions to "ultrablast"
+ _____            _____ _      ____  _             _      _      
+|  __ \          / ____| |    / __ \| |      /\   | |    | |     
+| |__) |__ _   _| |    | |__ | |  | | |__   /  \  | |    | |     
+|  ___/ __| | | | |    | '_ \| |  | | '_ \ / /\ \ | |    | |     
+| |   \__ \ |_| | |____| | | | |__| | |_) / ____ \| |____| |____ 
+|_|   |___/\__, |\_____|_| |_|\____/|_.__/_/    \_\______|______|
+            __/ |                                                
+           |___/
 
-~~~~~~~~~ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For a list of lastest patches, changes and fixes, read "CHANGELOG"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For Copyright and licensing information, read "LICENSE" or "Phantom - Psychodelic LICENSE"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Found any bugs? Contact us at pudimdefrutas@gmail.com or yancouto@gmail.com
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Want to know about incoming projects, new releases and other cool stuff? Of course you do!
+
+                           Checkout: http://uspgamedev.org/
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 + Made using the free framework LÖVE. More info here: https://love2d.org/ +
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
