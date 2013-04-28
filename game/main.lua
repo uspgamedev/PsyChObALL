@@ -6,8 +6,8 @@ require "timer"
 require "list"
 
 function rbesttime()
-    local file = love.filesystem.newFile("high")
-    if not love.filesystem.exists("high") then
+    local file = filesystem.newFile("high")
+    if not filesystem.exists("high") then
         file:open('w')
         file:write("0\n0")
         file:close()
@@ -25,7 +25,7 @@ end
 
 
 function wbesttime()
-    local file = love.filesystem.newFile("high")
+    local file = filesystem.newFile("high")
     file:open('w')
     if totaltime>besttime then besttime = totaltime end
     file:write(besttime .. "\n" .. bestmult)
@@ -33,15 +33,22 @@ function wbesttime()
 end
 
 function love.load()
+	for k,v in pairs(love) do
+		if type(v)== 'table' and not _G[k] then
+			_G[k] = v
+		end
+	end
+
+	width, height = graphics.getWidth(),graphics.getHeight()
+
     screenshotnumber = 1
-	while(love.filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
+	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	v = 220
-    version = "0.7.9"
-	love.graphics.setMode(1080,720)
+    version = "0.8.0 dev"
 	timer.ts = {}
-	love.filesystem.setIdentity("PsyChObALL")
-	song = love.audio.newSource("Phantom - Psychodelic.ogg")
+	filesystem.setIdentity("PsyChObALL")
+	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
 	song:play()
 	song:setLooping(true)
 	songsetpoints = {20,123,180,308,340}
@@ -58,6 +65,7 @@ function love.load()
 	        else song:setVolume(song:getVolume()+.02) end
 	 end,false,false,false,false,true)
 	colortimer = timer.new(10,nil,true,false,false,true,true)
+
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
 	sqr2 = math.sqrt(2)
@@ -71,28 +79,28 @@ function love.load()
 	
 	currentPE = nil
 	currentPET = nil
-	noLSD_PET = love.graphics.newPixelEffect [[
+	noLSD_PET = graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = Texel(texture, texture_coords) * color;
             return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
         }
     ]]
-    noLSD_PE = love.graphics.newPixelEffect[[
+    noLSD_PE = graphics.newPixelEffect[[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = color;
             return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
         }
     ]]
-	invertPET = love.graphics.newPixelEffect [[
+	invertPET = graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = Texel(texture, texture_coords) * color;
             return vec4(1-cor_final[0],1-cor_final[1],1-cor_final[2], cor_final[3]);
         }
     ]]
-    invertPE = love.graphics.newPixelEffect [[
+    invertPE = graphics.newPixelEffect [[
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
         {
             vec4 cor_final = color;
@@ -131,7 +139,7 @@ function reload()
 			if (v.size+self.size)*(v.size+self.size)>=(v.x-self.x)*(v.x-self.x)+(v.y-self.y)*(v.y-self.y) then
 				lostgame()
 				self.diereason = "shot"
-			elseif (self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>love.graphics.getWidth() or self.y+self.size> love.graphics.getHeight()) then
+			elseif (self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>graphics.getWidth() or self.y+self.size> graphics.getHeight()) then
 				self.diereason = "leftbounds"
 				lostgame()
 			end
@@ -161,7 +169,7 @@ function reload()
 			table.insert(enemy.bodies,enemylist:pop())
 		end)
 	
-	shottimer = timer.new(.18,function() shoot(love.mouse.getPosition()) end,false)
+	shottimer = timer.new(.18,function() shoot(mouse.getPosition()) end,false)
 	
 	multiplier = 1
 	
@@ -189,12 +197,12 @@ end
 
 function getFont(size)
 	if fonts[size] then return fonts[size] end
-	fonts[size] = love.graphics.newFont(size)
+	fonts[size] = graphics.newFont(size)
 	return fonts[size]
 end
 
 function relative(x,y)
-	return x*love.graphics.getWidth()/800,y*love.graphics.getHeight()/600
+	return x*width/800,y*height/600
 end
 
 function lostgame()
@@ -255,106 +263,106 @@ function sign(x)
 end
 
 function line()
-	love.graphics.setColor(color(colortimer.time+12))
-	love.graphics.circle("line",love.mouse.getX(),love.mouse.getY(),5)
-	love.graphics.setColor(color(colortimer.time+12,nil,60))
-	local m = (love.mouse.getY()-circle.y)/(love.mouse.getX()-circle.x)
+	graphics.setColor(color(colortimer.time+12))
+	graphics.circle("line",mouse.getX(),mouse.getY(),5)
+	graphics.setColor(color(colortimer.time+12,nil,60))
+	local m = (mouse.getY()-circle.y)/(mouse.getX()-circle.x)
 	local x,y
-	if (love.mouse.getX()-circle.x)>0 then 
-		x = love.graphics.getWidth()
+	if (mouse.getX()-circle.x)>0 then 
+		x = graphics.getWidth()
 		y = circle.y + (x-circle.x)*m
 	else
 		x = 0
 		y = circle.y + (x-circle.x)*m
 	end
-	love.graphics.line(circle.x,circle.y,x,y)
+	graphics.line(circle.x,circle.y,x,y)
 end
 
 function love.draw()
-	love.graphics.setPixelEffect(currentPE) --things without texture
-    love.graphics.setLine(4)
+	graphics.setPixelEffect(currentPE) --things without texture
+    graphics.setLine(4)
 	local bc = color(colortimer.time+17*colortimer.timelimit/13)
 	bc[1] = bc[1]/7
 	bc[2] = bc[2]/7
 	bc[3] = bc[3]/7
-    --love.graphics.setBackgroundColor(bc)
-	love.graphics.setColor(bc)
-	love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),love.graphics.getHeight()) --background color
+    --graphics.setBackgroundColor(bc)
+	graphics.setColor(bc)
+	graphics.rectangle("fill",0,0,graphics.getWidth(),graphics.getHeight()) --background color
     for i,v in pairs(paintables) do
         for j,m in pairs(v) do
 			m:draw()
 		end
     end
-	love.graphics.setColor(color(colortimer.time*1.4))
-	love.graphics.setLine(1)
+	graphics.setColor(color(colortimer.time*1.4))
+	graphics.setLine(1)
 	for i=enemylist.first,enemylist.last-1 do
 		local a = math.atan((enemylist[i].Vy/enemylist[i].Vx))
 		if enemylist[i].Vx<0 then a = a + math.pi end
-		love.graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a-.15, a+.15)
+		graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a-.15, a+.15)
 	end
 	line()
-	love.graphics.setColor(color(colortimer.time))
-    love.graphics.circle("fill", circle.x,circle.y,circle.size)
+	graphics.setColor(color(colortimer.time))
+    graphics.circle("fill", circle.x,circle.y,circle.size)
 	
 	
-    love.graphics.setPixelEffect(currentPET) --things with textures
-    love.graphics.print(string.format("Score: %.0f",score),relative(20,20))
-    love.graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
-	love.graphics.print(srt,relative(20,80))
-	love.graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
-	love.graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),relative(20,40))
+    graphics.setPixelEffect(currentPET) --things with textures
+    graphics.print(string.format("Score: %.0f",score),relative(20,20))
+    graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
+	graphics.print(srt,relative(20,80))
+	graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
+	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),relative(20,40))
 	if multiplier>bestmult then bestmult = multiplier end
-	love.graphics.print(string.format("Best Mult: x%.1f",bestmult),relative(715,86))
-	love.graphics.setFont(getFont(40))
-	love.graphics.print(string.format("x%.1f",multiplier),relative(700,50))
-	love.graphics.setFont(getFont(12))
+	graphics.print(string.format("Best Mult: x%.1f",bestmult),relative(715,86))
+	graphics.setFont(getFont(40))
+	graphics.print(string.format("x%.1f",multiplier),relative(700,50))
+	graphics.setFont(getFont(12))
 	
 	
 	if firsttime then
-		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
-		love.graphics.setFont(getFont(20))
-		love.graphics.print("You get points when:",relative(200,30))
-		love.graphics.print("You kill an enemy",relative(225,60))
-		love.graphics.print("You lose points when:",relative(500,30))
-		love.graphics.print("You miss a shot",relative(525,60))
-		love.graphics.print("You let an enemy escape",relative(525,80))
-		love.graphics.setFont(getFont(30))
-		love.graphics.print("Game Ends when your score hits zero",relative(100,470))
-		love.graphics.setFont(getFont(20))
-		love.graphics.print("Use WASD or arrows to move",relative(150,250))
-		love.graphics.print("Click to shoot",relative(415,325))
-		love.graphics.print("Space for", relative(470,360))
+		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
+		graphics.setFont(getFont(20))
+		graphics.print("You get points when:",relative(200,30))
+		graphics.print("You kill an enemy",relative(225,60))
+		graphics.print("You lose points when:",relative(500,30))
+		graphics.print("You miss a shot",relative(525,60))
+		graphics.print("You let an enemy escape",relative(525,80))
+		graphics.setFont(getFont(30))
+		graphics.print("Game Ends when your score hits zero",relative(100,470))
+		graphics.setFont(getFont(20))
+		graphics.print("Use WASD or arrows to move",relative(150,250))
+		graphics.print("Click to shoot",relative(415,325))
+		graphics.print("Space for", relative(470,360))
 		
-		love.graphics.print("click to continue",relative(650,560))
-		love.graphics.setFont(getFont(12))
-		love.graphics.print("Or when you die.",relative(570,500))
-		love.graphics.print("v" .. version,relative(750,580))
+		graphics.print("click to continue",relative(650,560))
+		graphics.setFont(getFont(12))
+		graphics.print("Or when you die.",relative(570,500))
+		graphics.print("v" .. version,relative(750,580))
 		
-		love.graphics.setFont(getFont(35))
-		love.graphics.setColor(color(colortimer.time*0.856))
-		love.graphics.print("ulTrAbLaST",relative(545,349))
-		love.graphics.setFont(getFont(12))
+		graphics.setFont(getFont(35))
+		graphics.setColor(color(colortimer.time*0.856))
+		graphics.print("ulTrAbLaST",relative(545,349))
+		graphics.setFont(getFont(12))
 	end
 	if gamelost then
-		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
+		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		if besttime == totaltime then
-			love.graphics.setFont(getFont(60))
-			love.graphics.print("You beat the best time!",relative(100,100))
+			graphics.setFont(getFont(60))
+			graphics.print("You beat the best time!",relative(100,100))
 		end
-		love.graphics.setFont(getFont(40))
-		love.graphics.print(deathText(),relative(200,250))
-		love.graphics.setFont(getFont(30))
-		love.graphics.print(string.format("You lasted %.1fsecs",totaltime),relative(360,440))
-		if score==0 then love.graphics.print("Your score hit 0.",relative(320,500)) end
-		love.graphics.setFont(getFont(22))
-		love.graphics.print("'r' to retry",relative(400,400))
-		love.graphics.setFont(getFont(12))
+		graphics.setFont(getFont(40))
+		graphics.print(deathText(),relative(200,250))
+		graphics.setFont(getFont(30))
+		graphics.print(string.format("You lasted %.1fsecs",totaltime),relative(360,440))
+		if score==0 then graphics.print("Your score hit 0.",relative(320,500)) end
+		graphics.setFont(getFont(22))
+		graphics.print("'r' to retry",relative(400,400))
+		graphics.setFont(getFont(12))
 	end
 	if esc then
-		love.graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
-		love.graphics.setFont(getFont(40))
-		love.graphics.print("Paused",relative(200,250))
-		love.graphics.setFont(getFont(12))
+		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
+		graphics.setFont(getFont(40))
+		graphics.print("Paused",relative(200,250))
+		graphics.setFont(getFont(12))
 	end
 end
 
@@ -400,7 +408,7 @@ function love.update(dt)
 end
 
 function love.mousepressed(x,y,button)
-    if pause then return end
+    if esc or pause then return end
     if firsttime then firsttime = false return end
     if button == 'l' then
         shoot(x,y)
@@ -408,7 +416,6 @@ function love.mousepressed(x,y,button)
     end
 end
 function love.mousereleased(x,y,button)
-	if isPaused then return end
 	if button == 'l' then
 		shottimer:stop()
 	end
@@ -467,30 +474,30 @@ function love.keypressed(key,code)
 end
 
 function love.keyreleased(key,code)
-    if ((key=='w'or key=='up') and (love.keyboard.isDown('s') or love.keyboard.isDown('down')))then
+    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down')))then
         circle.Vy = math.abs(circle.Vy)
-    elseif ((key=='s'or key=='down') and (love.keyboard.isDown('w') or love.keyboard.isDown('up'))) then
+    elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
         circle.Vy = -math.abs(circle.Vy)
-    elseif ((key=='a'or key=='left') and (love.keyboard.isDown('d') or love.keyboard.isDown('right'))) then
+    elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
         circle.Vx = math.abs(circle.Vx)
-    elseif  ((key=='d'or key=='right') and (love.keyboard.isDown('a') or love.keyboard.isDown('left'))) then
+    elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
         circle.Vx = -math.abs(circle.Vx)
     end
     
     if (key=='w' or key=='s' or key=='up' or key=='down') and 
-            not (love.keyboard.isDown('w') or love.keyboard.isDown('s') or 
-                love.keyboard.isDown('up') or love.keyboard.isDown('down')) then 
+            not (keyboard.isDown('w') or keyboard.isDown('s') or 
+                keyboard.isDown('up') or keyboard.isDown('down')) then 
 		circle.Vy=0
 	    circle.Vx = signum(circle.Vx) * v
     elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
-            not (love.keyboard.isDown('a') or love.keyboard.isDown('d') or 
-                love.keyboard.isDown('left') or love.keyboard.isDown('right')) then 
+            not (keyboard.isDown('a') or keyboard.isDown('d') or 
+                keyboard.isDown('left') or keyboard.isDown('right')) then 
 	circle.Vx=0 
 	circle.Vy = signum(circle.Vy) * v
 	end
 	
 	if key=='scrollock' then 
-	    love.graphics.newScreenshot():encode('screenshot_' .. screenshotnumber .. '.png')
+	    graphics.newScreenshot():encode('screenshot_' .. screenshotnumber .. '.png')
 	    screenshotnumber = screenshotnumber + 1
 	end
 end
