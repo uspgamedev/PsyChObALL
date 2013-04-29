@@ -1,36 +1,33 @@
-module("effect",package.seeall) 
+require 'body'
 
-local Effect = {}
-Effect.__index = Effect
+effect = body:new {
+	mode 	= 'fill',
+	size	= 3,
+	__type  = 'effect'
+}
 
-function Effect:draw()
-	love.graphics.rectangle("fill",self.x,self.y,self.size,self.size)
+function effect:draw()
+	love.graphics.rectangle(self.mode,self.x,self.y,self.size,self.size)
 end
 
-function Effect:update(dt)
-	self.x = self.x + self.Vx*dt
-	self.y = self.y + self.Vy*dt
+function effect:update(dt)
+	effect:__super().update(self,dt)
 	self.etc = self.etc + dt
 	return self.etc<self.timetogo
 end
 
-function Effect:handleDelete()
-	
-end
-
-function new(x,y,times)
+function neweffects( position, times )
 	for i=1,times do
-		local effect = {}
-		setmetatable(effect,Effect)
-		effect.x = x
-		effect.y = y
-		effect.Vx = math.random(2.5*v)-1.25*v
-		effect.Vy = math.random(2.5*v)-1.25*v
-		effect.typ = "effect"
-		effect.size = 3
-		effect.timetogo = math.random(50,130)/100
-		effect.etc = 0
+		local e = effect:new{
+			position = position
+		}
+		e.speed = vector:new {
+			math.random(2.5*v)-1.25*v,
+			math.random(2.5*v)-1.25*v
+		}
+		e.timetogo = math.random(50,130)/100
+		e.etc = 0
 		
-		table.insert(bodies,effect)
+		table.insert(effect.bodies,e)
 	end
 end

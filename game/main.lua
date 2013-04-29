@@ -1,9 +1,12 @@
+width, height = love.graphics.getWidth(),love.graphics.getHeight()
+
 require "circleEffect"
 require "effect"
 require "enemy"
 require "shot"
 require "timer"
 require "list"
+require "psycho"
 
 function rbesttime()
     local file = filesystem.newFile("high")
@@ -39,8 +42,6 @@ function love.load()
 		end
 	end
 
-	width, height = graphics.getWidth(),graphics.getHeight()
-
     screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
@@ -52,19 +53,41 @@ function love.load()
 	song:play()
 	song:setLooping(true)
 	songsetpoints = {20,123,180,308,340}
-	songfadeout = timer.new(.01,function(self) 
-	        if song:getVolume()<=.02 then 
-	            song:setVolume(0) 
-	            self:stop()
-	        else song:setVolume(song:getVolume()-.02) end
-	 end,false,false,false,false,true)
-	 songfadein = timer.new(.03,function(self) 
-	        if song:getVolume()>=.98 then 
-	            song:setVolume(1) 
-	            self:stop()
-	        else song:setVolume(song:getVolume()+.02) end
-	 end,false,false,false,false,true)
-	colortimer = timer.new(10,nil,true,false,false,true,true)
+	songfadeout = timer:new{
+		timelimit 	 = .01,
+	 	running 	 = false,
+	 	pausable 	 = false,
+	 	timeaffected = false,
+	 	persistent 	 = true
+	}
+
+	function songfadeout:funcToCall()
+		if song:getVolume()<=.02 then 
+        	song:setVolume(0) 
+            self:stop()
+        else song:setVolume(song:getVolume()-.02) end
+	end
+
+	 songfadein = timer:new{
+	 	timelimit 	 = .03,
+	 	running 	 = false,
+	 	pausable 	 = false,
+	 	timeaffected = false,
+	 	persistent 	 = true
+	 }
+
+	 function songfadein:funcToCall()
+        if song:getVolume()>=.98 then 
+            song:setVolume(1) 
+            self:stop()
+        else song:setVolume(song:getVolume()+.02) end
+	 end
+
+	colortimer = timer:new{
+		timelimit  = 10,
+		pausable   = false,
+		persistent = true
+	}
 
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
@@ -108,16 +131,42 @@ function love.load()
         }
     ]]
 	
-	multtimer = timer.new(2.2,function() multiplier = 1 end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
-	inverttimer = timer.new(2.2,function()
-	     if currentPE ~= noLSD_PE then 
-	        song:setPitch(1)
-		timefactor = 1.0
-			currentPE = nil 
-	        currentPET = nil 
-	    end
-	end,false,true,true,true,true,function(self) self:stop() self.func(self) end)
-	
+	multtimer = timer:new {
+		timelimit  = 2.2,
+		running    = false,
+		onceonly   = true,
+		persistent = true
+	}
+
+	function multtimer:funcToCall() 
+		multiplier = 1
+	end
+
+	function multtimer:handlereset()
+		self:stop() 
+		self:funcToCall()
+	end
+
+	inverttimer = timer:new {
+		timelimit  = 2.2,
+		running    = false,
+		onceonly   = true,
+		persistent = true
+	}
+
+	function inverttimer:funcToCall()
+     	if currentPE ~= noLSD_PE then 
+     		song:setPitch(1)
+			timefactor = 1.0
+			currentPE = nil
+			currentPET = nil 
+    	end
+    end
+
+    function inverttimer:handlereset()
+    	self:stop()
+    	self:funcToCall()
+    end
 end
 
 function reload()
@@ -127,24 +176,9 @@ function reload()
 	song:setVolume(0)
 	songfadein:start()
 	
-	circle = {}
-	circle.x,circle.y = relative(380,300)
-	circle.Vx = 0
-	circle.Vy = 0
-	circle.size = 23
-	function circle:update(dt)
-		self.x = self.x + 1.65*self.Vx*dt
-		self.y = self.y + 1.65*self.Vy*dt
-		for i,v in pairs(enemy.bodies) do
-			if (v.size+self.size)*(v.size+self.size)>=(v.x-self.x)*(v.x-self.x)+(v.y-self.y)*(v.y-self.y) then
-				lostgame()
-				self.diereason = "shot"
-			elseif (self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>graphics.getWidth() or self.y+self.size> graphics.getHeight()) then
-				self.diereason = "leftbounds"
-				lostgame()
-			end
-		end
-	end
+	circle = psycho:new{
+		position = vector:new{relative(380,300)}
+	}
 	
 	paintables = {}
 	shot.bodies = {}
@@ -156,30 +190,59 @@ function reload()
 	paintables[3] = enemy.bodies
 	paintables[4] = effect.bodies
 	
-	enemylist = list.new()
-	enemylist:push(enemy.new())
-	enemytimer = timer.new(1,function(self)
-	        if not self.first then self.first = true self.timelimit = 2 end
-			self.timelimit = .3 + (self.timelimit-.3)/1.09
-			enemylist:push(enemy.new())
-		end)
-	enemytimer2 = timer.new(0,function(self)
-			if not self.first then self.first = true self.timelimit = 2 return end
-			self.timelimit = .3 + (self.timelimit-.3)/1.09
-			table.insert(enemy.bodies,enemylist:pop())
-		end)
+	enemylist = list:new{}
+
+	enemylist:push(enemy:new{})
+
+	enemyaddtimer = timer:new {
+		timelimit = 1
+	}
+
+	function enemyaddtimer:funcToCall() --adds the enemies to a list
+        if not self.first then self.first = true self.timelimit = 2 end
+		self.timelimit = .3 + (self.timelimit-.3)/1.09
+		enemylist:push(enemy:new{})
+	end
+
+
+	enemyreleasetimer = timer:new {
+		timelimit = 0
+	}
+
+	function enemyreleasetimer:funcToCall(...) --actually releases the enemies on screen
+		if not self.first then self.first = true self.timelimit = 2 return end
+		self.timelimit = .3 + (self.timelimit-.3)/1.09
+		table.insert(enemy.bodies,enemylist:pop())
+	end
 	
-	shottimer = timer.new(.18,function() shoot(mouse.getPosition()) end,false)
+	shottimer = timer:new{
+		timelimit = .18,
+		running   = false
+	}
+
+	function shottimer:funcToCall()
+		shoot(mouse.getPosition()) 
+	end
 	
 	multiplier = 1
 	
 	
-	circletimer = timer.new(.2,function()
-			circleEffect.new(circle)
-			for i,v in pairs(enemy.bodies) do
-				if v.size>=10 then circleEffect.new(v) end
+	circletimer = timer:new{
+		timelimit = .2
+	}
+
+	function circletimer:funcToCall()
+		circleEffect:new {
+			based_on = circle
+		}
+		for i,v in pairs(enemy.bodies) do
+			if v.size==15 and math.random(2)==1 --[[reducing chance]] then 
+				circleEffect:new{
+					based_on = v
+				} 
 			end
-		end)
+		end
+	end
 	
 	totaltime = 0
 	
@@ -285,24 +348,28 @@ function love.draw()
 	bc[1] = bc[1]/7
 	bc[2] = bc[2]/7
 	bc[3] = bc[3]/7
-    --graphics.setBackgroundColor(bc)
 	graphics.setColor(bc)
 	graphics.rectangle("fill",0,0,graphics.getWidth(),graphics.getHeight()) --background color
+
     for i,v in pairs(paintables) do
         for j,m in pairs(v) do
 			m:draw()
 		end
     end
+
 	graphics.setColor(color(colortimer.time*1.4))
 	graphics.setLine(1)
+
 	for i=enemylist.first,enemylist.last-1 do
-		local a = math.atan((enemylist[i].Vy/enemylist[i].Vx))
-		if enemylist[i].Vx<0 then a = a + math.pi end
+		local a = math.atan((enemylist[i].speed.y/enemylist[i].speed.x))
+		if enemylist[i].speed.x<0 then a = a + math.pi end
 		graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a-.15, a+.15)
 	end
 	line()
+
+	--painting PsyChObALL
 	graphics.setColor(color(colortimer.time))
-    graphics.circle("fill", circle.x,circle.y,circle.size)
+    graphics.circle('fill', circle.x,circle.y,circle.size)
 	
 	
     graphics.setPixelEffect(currentPET) --things with textures
@@ -380,7 +447,7 @@ function love.update(dt)
 	if score<=0 then score=0 lostgame() end
 	
 	
-	timer.update(dt,timefactor,isPaused)
+	timer.updatetimers(dt,timefactor,isPaused)
 	
 	dt = dt*timefactor
 	
@@ -426,7 +493,10 @@ function shoot(x,y)
     local diffy = y - circle.y
     local Vx = signum(diffx)*math.sqrt((9*v*v*diffx*diffx)/(diffx*diffx + diffy*diffy))
     local Vy = signum(diffy)*math.sqrt((9*v*v*diffy*diffy)/(diffx*diffx + diffy*diffy))
-    table.insert(shot.bodies, shot.new(circle.x,circle.y,Vx,Vy))
+    table.insert(shot.bodies, shot:new{
+    	position = circle.position:clone(),
+    	speed	 = vector:new {Vx,Vy}
+    	})
 end
 
 function signum(a)
@@ -441,20 +511,16 @@ function love.keypressed(key,code)
 	
 	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
 
-    if key=='w' or key == 'up' then 
-        circle.Vy = -v
-        if circle.Vx~=0 then circle.Vy = circle.Vy/sqr2 circle.Vx = circle.Vx/sqr2 end
+    if key=='w' or key == 'up' then
+        circle.speed.y = -v
     elseif key=='s' or key == 'down' then 
-        circle.Vy = v
-        if circle.Vx~=0 then circle.Vy = circle.Vy/sqr2 circle.Vx = circle.Vx/sqr2 end
+        circle.speed.y = v
     elseif key=='a' or key=='left' then 
-        circle.Vx = -v
-        if circle.Vy~=0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
+        circle.speed.x = -v
     elseif key=='d' or key=='right' then 
-        circle.Vx = v 
-        if circle.Vy~=0 then circle.Vx = circle.Vx/sqr2 circle.Vy = circle.Vy/sqr2 end
+        circle.speed.x = v
     end
-	
+
 	if key==' ' and not isPaused then
 		for i=1,ultrablast do
 			shoot(circle.x+(math.cos(math.pi*2*i/ultrablast)*100),circle.y+(math.sin(math.pi*2*i/ultrablast)*100))
@@ -474,26 +540,24 @@ function love.keypressed(key,code)
 end
 
 function love.keyreleased(key,code)
-    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down')))then
-        circle.Vy = math.abs(circle.Vy)
+    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down'))) then
+        circle.speed.y = math.abs(circle.speed.y)
     elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
-        circle.Vy = -math.abs(circle.Vy)
+        circle.speed.y = -math.abs(circle.speed.y)
     elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
-        circle.Vx = math.abs(circle.Vx)
+        circle.speed.x = math.abs(circle.speed.x)
     elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
-        circle.Vx = -math.abs(circle.Vx)
+        circle.speed.x = -math.abs(circle.speed.x)
     end
     
     if (key=='w' or key=='s' or key=='up' or key=='down') and 
             not (keyboard.isDown('w') or keyboard.isDown('s') or 
                 keyboard.isDown('up') or keyboard.isDown('down')) then 
-		circle.Vy=0
-	    circle.Vx = signum(circle.Vx) * v
+	    circle.speed:set(signum(circle.speed.x) * v, 0)
     elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
             not (keyboard.isDown('a') or keyboard.isDown('d') or 
                 keyboard.isDown('left') or keyboard.isDown('right')) then 
-	circle.Vx=0 
-	circle.Vy = signum(circle.Vy) * v
+		circle.speed:set( 0, signum(circle.Vy) * v)
 	end
 	
 	if key=='scrollock' then 

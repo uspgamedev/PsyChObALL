@@ -1,37 +1,32 @@
-module ("circleEffect",package.seeall)
+require 'body'
 
-local CircleEffect = {}
-CircleEffect.__index = CircleEffect
-local global = _G
+circleEffect = body:new {
+	alpha = 10,
+	maxsize = width/1.9,
+	__type = 'circle'
+}
 
-function CircleEffect:draw()
-    if self.lw then love.graphics.setLine(self.lw) end
-    love.graphics.setColor(color(global.colortimer.time*self.var,nil,self.alpha))
-    love.graphics.circle("line",self.x,self.y,self.size)
-    if self.lw then love.graphics.setLine(4) end
+function circleEffect:__init()
+	if self.based_on then --circle to be based on
+		self.position = self.based_on.position:clone{}
+		self.size = self.based_on.size
+		self.based_on = nil
+	end
+	
+	self.sizeGrowth = self.sizeGrowth or math.random(120,160)		
+	self.variance = math.random(30,300)/100
+	if table.getn(circleEffect.bodies) > 250 then table.remove(circleEffect.bodies,1) end
+	table.insert(circleEffect.bodies,self)
 end
 
-function CircleEffect:update(dt)
+function circleEffect:draw()
+    if self.linewidth then love.graphics.setLine(self.linewidth) end
+    love.graphics.setColor(color(colortimer.time*self.variance,nil,self.alpha))
+    love.graphics.circle('line',self.x,self.y,self.size)
+    if self.linewidth then love.graphics.setLine(4) end
+end
+
+function circleEffect:update(dt)
     self.size = self.size + self.sizeGrowth*dt
     return self.size<self.maxsize
-end
-
-function CircleEffect:handleDelete()
-
-end
-
-function new(ci,lw,alpha,growth,maxsize)
-	local c = {}
-	setmetatable(c,CircleEffect)
-	c.alpha = alpha or 10
-	c.x = ci.x
-	c.y = ci.y
-	c.size = ci.size
-	c.maxsize = maxsize or global.width/1.9
-	c.sizeGrowth = growth or math.random(120,160)		
-	c.typ = "circle"
-	c.var = math.random(30,300)/100
-	c.lw = lw
-	if table.getn(bodies) > 250 then table.remove(bodies,1) end
-	table.insert(bodies,c)
 end

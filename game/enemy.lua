@@ -1,54 +1,102 @@
-module ("enemy",package.seeall)
+require 'body'
 
-require "effect"
-require "circleEffect"
-require "shot"
+enemy = body:new {
+	collides = false,
+	diereason = 'leftscreen',
+	mode = 'fill',
+	size = 15,
+	__type = 'enemy'
+}
 
-local Enemy = {}
-Enemy.__index = Enemy
-local global = _G
+function enemy:__init()
+	local side = math.random(4)
+	if		side==1 then --top
+		self.x = math.random(15,love.graphics.getWidth()-self.size-1)
+		self.y = 1
+		self.Vy = math.random(v,v+50)
+		local n = -1
+		if self.x<love.graphics.getWidth()/2 then n = 1 end
+		self.Vx = n*math.random(0,v)
+	elseif	side==2 then --bottom
+		self.x = math.random(15,love.graphics.getWidth()-self.size-1)
+		self.y = love.graphics.getHeight()-1
+		self.Vy = -math.random(v,(v+50))
+		local n = -1
+		if self.x<love.graphics.getWidth()/2 then n = 1 end
+		self.Vx = n*math.random(0,v)
+	elseif	side==3 then --left
+		self.x = 1
+		self.y = math.random(15,love.graphics.getHeight()-self.size-1)
+		self.Vx = math.random(v,v+50)
+		local n = -1
+		if self.y<love.graphics.getHeight()/2 then n = 1 end
+		self.Vy = n*math.random(0,v)
+	elseif side==4 then --right
+		self.x = love.graphics.getWidth()-1
+		self.y = math.random(15,love.graphics.getHeight()-self.size-1)
+		self.Vx = -math.random(v,v+50)
+		local n = -1
+		if self.y<love.graphics.getHeight()/2 then n = 1 end
+		self.Vy = n*math.random(0,v)
+	end
 
-function Enemy:handleDelete()
+	self.variance = math.random(colortimer.timelimit*1000)/1000
+	self.color = color(math.random(0,100*colortimer.timelimit)/100)
+end
+
+function enemy:handleDelete()
 	if self.diereason=="shot" then
-		global.score = global.score + (self.size/3)*global.multiplier
-		effect.new(self.x,self.y,10)
-		global.multiplier = global.multiplier + (self.size/30)
-		if not global.multtimer.running then global.multtimer:start()
-		else global.multtimer.time = 0 end
-		if global.multiplier>=10 and not (global.currentPE == global.noLSD_PE) then
+		score =  score + (self.size/3)*multiplier
+		neweffects(self.position:clone(),10)
+		multiplier = multiplier + (self.size/30)
+		if not  multtimer.running then  multtimer:start()
+		else  multtimer.time = 0 end
+		if  multiplier>=10 and currentPE ~= noLSD_PE then
 			song:setPitch(1.05)
-			global.timefactor= 1.1
+			timefactor= 1.1
 
-			global.currentPE = global.invertPE
-			global.currentPET = global.invertPET
-			if not global.inverttimer.running then global.inverttimer:start()
-			else global.inverttimer.time = 0 end
+			currentPE = invertPE
+			currentPET = invertPET
+			if not inverttimer.running then inverttimer:start()
+			else inverttimer.time = 0 end
 		end
-		if self.size>=15 then circleEffect.new(self,10,100,600,global.width) end
-	elseif self.size>=15 then global.score = global.score - 3*global.multiplier end
+		if self.size>=15 then 
+			circleEffect:new{
+				based_on = self,
+				linewidth = 10,
+				alpha = 100,
+				sizeGrowth = 600, 
+				maxsize = width
+			} 
+		end --ci,lw,alpha,growth,maxsize
+	elseif self.size>=15 then score = score - 3*multiplier end
 	if self.size>=10 then 
 		for i=1,3 do
-			local e = new(self.size-5)
+			local e = enemy:new{
+				size = self.size-5
+			}
 			e.x = self.x
 			e.y = self.y
 			e.Vx = math.random(v)-v/2 + 1.3*self.Vx
 			e.Vy = math.random(v)-v/2 + 1.3*self.Vy
 			if e.Vy+e.Vx<10 then e.Vy = signum(self.Vy)*math.random(3*v/4,v) end
 			e.variance = self.variance
-			table.insert(bodies,e)
+			table.insert(enemy.bodies,e)
 		end
 	end
-	effect.new(self.x,self.y,4)
+	neweffects(self.position:clone(),4)
 end
 
 
-function Enemy:draw()
-	self.color = color(global.colortimer.time+self.variance)
+function enemy:draw()
+	self.color = color(colortimer.time+self.variance)
 	love.graphics.setColor(self.color)
-	love.graphics.circle("fill",self.x,self.y,self.size)
+	love.graphics.circle(self.mode,self.position[1] , self.position[2] ,self.size)
 end
 
-function Enemy:update(dt)
+function enemy:update(dt)
+	self.position = self.position + self.speed*dt
+
 	for i,v in pairs(shot.bodies) do
 		if (v.size+self.size)*(v.size+self.size)>=(v.x-self.x)*(v.x-self.x)+(v.y-self.y)*(v.y-self.y) then
 			self.collides = true
@@ -57,56 +105,6 @@ function Enemy:update(dt)
 			break
 		end
 	end
-	self.x = self.x + self.Vx*dt
-	self.y = self.y + self.Vy*dt
-	return not(self.collides or self.x<-self.size or self.y<-self.size or self.x-self.size>global.width or self.y-self.size> global.height)
-end
 
-function new(s)
-	s = s or 15
-	local enemy = {}
-	setmetatable(enemy,Enemy)
-	local side = math.random(4)
-	if		side==1 then --top
-		enemy.x = math.random(15,love.graphics.getWidth()-s-1)
-		enemy.y = 1
-		enemy.Vy = math.random(v,v+50)
-		local n = -1
-		if enemy.x<love.graphics.getWidth()/2 then n = 1 end
-		enemy.Vx = n*math.random(0,v)
-		n = nil
-	elseif	side==2 then --bottom
-		enemy.x = math.random(15,love.graphics.getWidth()-s-1)
-		enemy.y = love.graphics.getHeight()-1
-		enemy.Vy = -math.random(v,(v+50))
-		local n = -1
-		if enemy.x<love.graphics.getWidth()/2 then n = 1 end
-		enemy.Vx = n*math.random(0,v)
-		n = nil
-	elseif	side==3 then --left
-		enemy.x = 1
-		enemy.y = math.random(15,love.graphics.getHeight()-s-1)
-		enemy.Vx = math.random(v,v+50)
-		local n = -1
-		if enemy.y<love.graphics.getHeight()/2 then n = 1 end
-		enemy.Vy = n*math.random(0,v)
-		n = nil
-	elseif side==4 then --right
-		enemy.x = love.graphics.getWidth()-1
-		enemy.y = math.random(15,love.graphics.getHeight()-s-1)
-		enemy.Vx = -math.random(v,v+50)
-		local n = -1
-		if enemy.y<love.graphics.getHeight()/2 then n = 1 end
-		enemy.Vy = n*math.random(0,v)
-		n = nil
-	end
-	enemy.variance = math.random(global.colortimer.timelimit*1000)/1000
-	enemy.color = color(math.random(0,100*global.colortimer.timelimit)/100)
-	enemy.size = s
-	enemy.typ = "enemy"
-	enemy.collides = false
-	enemy.diereason = "leftscreen"
-	s = nil
-	
-	return enemy
+	return not(self.collides or self.x<-self.size or self.y<-self.size or self.x-self.size> width or self.y-self.size> height)
 end

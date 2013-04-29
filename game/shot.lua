@@ -1,34 +1,27 @@
-module ("shot",package.seeall)
-	
-local Shot = {}
-Shot.__index = Shot
-local global = _G
+require 'body'
 
-function Shot:handleDelete()
-	global.score = global.score- 2*((global.multiplier-1)/2 + 0.85)
-	effect.new(self.x,self.y,7)
-end
-function Shot:draw()   
-	love.graphics.setColor(color(self.variance+global.colortimer.time))
-    love.graphics.circle("fill",self.x,self.y,self.size)
-end
-function Shot:update(dt)
-    self.x = self.x + self.Vx*dt
-    self.y = self.y + self.Vy*dt
-    return not(self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>love.graphics.getWidth() or self.y+self.size> love.graphics.getHeight())
+shot = body:new {
+	collides = false,
+	mode 	 = 'fill',
+	size 	 = 4,
+	__type = 'shot'
+}
+
+function shot:__init()
+	self.variance = math.random(0,100*colortimer.timelimit)/100
 end
 
-function new(x,y,Vx,Vy)
-	local shot = {}
-	setmetatable(shot,Shot)
-	shot.x = x
-	shot.y = y
-	shot.Vx = Vx
-	shot.Vy = Vy
-	shot.size = 4
-	shot.typ = "shot"
-	shot.collides = false
-	shot.variance = math.random(0,100*global.colortimer.timelimit)/100
-	
-	return shot
+function shot:handleDelete()
+	score = score- 2*((multiplier-1)/2 + 0.85)
+	neweffects(self.position,7)
+end
+
+function shot:draw()
+	graphics.setColor(color(self.variance+colortimer.time))
+    graphics.circle(self.mode,self.x,self.y,self.size)
+end
+
+function shot:update(dt)
+    self.position = self.position + self.speed*dt
+    return not(self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>graphics.getWidth() or self.y+self.size> graphics.getHeight())
 end
