@@ -404,10 +404,15 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		graphics.print("Or when you die.",relative(570,500))
 		graphics.print("v" .. version,relative(750,580))
+		graphics.print("A game by Marvellous Soft/USPGameDev", relative(10,580))
 		
 		graphics.setFont(getFont(35))
 		graphics.setColor(color(colortimer.time*0.856))
 		graphics.print("ulTrAbLaST",relative(545,349))
+
+		graphics.setFont(getFont(90))
+		graphics.setColor(color(colortimer.time*4.5 + .54))
+		graphics.print("P s y C h O b A L L",relative(105,130))
 		graphics.setFont(getFont(12))
 	end
 	if gamelost then
