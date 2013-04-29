@@ -8,7 +8,7 @@ require "timer"
 require "list"
 require "psycho"
 
-function rbesttime()
+function readstats()
     local file = filesystem.newFile("high")
     if not filesystem.exists("high") then
         file:open('w')
@@ -25,9 +25,7 @@ function rbesttime()
     bestmult = 0 + r
 end
 
-
-
-function wbesttime()
+function writestats()
     local file = filesystem.newFile("high")
     file:open('w')
     if totaltime>besttime then besttime = totaltime end
@@ -95,7 +93,7 @@ function love.load()
 	fonts = {}
 	
 	firsttime = true
-	rbesttime()
+	readstats()
 	
 	
 	
@@ -269,7 +267,7 @@ function relative(x,y)
 end
 
 function lostgame()
-    wbesttime()
+    writestats()
     songfadeout:start()
 	if deathText()=="The LSD wears off" then
 	    song:setPitch(.8)
@@ -517,13 +515,17 @@ function love.keypressed(key,code)
 	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
 
     if key=='w' or key == 'up' then
-        circle.speed.y = -v
+        circle.Vy = -v
+  		if circle.Vx~=0 then circle.speed:div(sqr2) end
     elseif key=='s' or key == 'down' then 
-        circle.speed.y = v
+        circle.Vy = v
+        if circle.Vx~=0 then circle.speed:div(sqr2) end
     elseif key=='a' or key=='left' then 
-        circle.speed.x = -v
+        circle.Vx = -v
+        if circle.Vy~=0 then circle.speed:div(sqr2) end
     elseif key=='d' or key=='right' then 
-        circle.speed.x = v
+        circle.Vx = v
+        if circle.Vy~=0 then circle.speed:div(sqr2) end
     end
 
 	if key==' ' and not isPaused then
@@ -546,19 +548,19 @@ end
 
 function love.keyreleased(key,code)
     if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down'))) then
-        circle.speed.y = math.abs(circle.speed.y)
+        circle.Vy = math.abs(circle.Vy)
     elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
-        circle.speed.y = -math.abs(circle.speed.y)
+        circle.Vy = -math.abs(circle.Vy)
     elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
-        circle.speed.x = math.abs(circle.speed.x)
+        circle.Vx = math.abs(circle.Vx)
     elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
-        circle.speed.x = -math.abs(circle.speed.x)
+        circle.Vx = -math.abs(circle.Vx)
     end
     
     if (key=='w' or key=='s' or key=='up' or key=='down') and 
             not (keyboard.isDown('w') or keyboard.isDown('s') or 
                 keyboard.isDown('up') or keyboard.isDown('down')) then 
-	    circle.speed:set(signum(circle.speed.x) * v, 0)
+	    circle.speed:set(signum(circle.Vx) * v, 0)
     elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
             not (keyboard.isDown('a') or keyboard.isDown('d') or 
                 keyboard.isDown('left') or keyboard.isDown('right')) then 
