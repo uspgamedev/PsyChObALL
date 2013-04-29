@@ -28,7 +28,7 @@ function body.__init:__newindex( key, v )
 end
 
 function body:update( dt )
-	self.position = self.position + self.speed * dt
+	self.position:add(self.speed * dt)
 end
 
 function body:draw()

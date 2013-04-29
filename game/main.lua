@@ -145,6 +145,20 @@ function love.load()
 		self:funcToCall()
 	end
 
+	ultratimer = timer:new {
+		timelimit  = .1,
+		running    = false,
+		persistent = true
+	}
+
+	function ultratimer:funcToCall() 
+		ultrablast = ultrablast + 1
+	end
+
+	function ultratimer:handlereset()
+		self:stop()
+	end
+
 	inverttimer = timer:new {
 		timelimit  = 2.2,
 		running    = false,
@@ -485,6 +499,7 @@ function love.mousepressed(x,y,button)
 		shottimer:start()
     end
 end
+
 function love.mousereleased(x,y,button)
 	if button == 'l' then
 		shottimer:stop()
@@ -508,8 +523,6 @@ function signum(a)
     else return 0 end
 end
 
-local ultrablast = 25
-
 function love.keypressed(key,code)
 	
 	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
@@ -528,10 +541,9 @@ function love.keypressed(key,code)
         if circle.Vy~=0 then circle.speed:div(sqr2) end
     end
 
-	if key==' ' and not isPaused then
-		for i=1,ultrablast do
-			shoot(circle.x+(math.cos(math.pi*2*i/ultrablast)*100),circle.y+(math.sin(math.pi*2*i/ultrablast)*100))
-		end
+	if key == ' ' and not isPaused then
+		ultrablast = 10
+		ultratimer:start()
 	end
 	
 	if gamelost and key=='r' then
@@ -543,6 +555,12 @@ function love.keypressed(key,code)
 		reload()
 		circle.x = x or circle.x
 		circle.y = y or circle.y
+	end
+end
+
+function do_ultrablast()
+	for i=1,ultrablast do
+		shoot(circle.x+(math.cos(math.pi*2*i/ultrablast)*100),circle.y+(math.sin(math.pi*2*i/ultrablast)*100))
 	end
 end
 
@@ -565,6 +583,11 @@ function love.keyreleased(key,code)
             not (keyboard.isDown('a') or keyboard.isDown('d') or 
                 keyboard.isDown('left') or keyboard.isDown('right')) then 
 		circle.speed:set( 0, signum(circle.Vy) * v)
+	end
+
+	if key == ' ' then
+		ultratimer:stop()
+		if not isPaused then do_ultrablast() end
 	end
 	
 	if key=='scrollock' then 

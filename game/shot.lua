@@ -22,6 +22,6 @@ function shot:draw()
 end
 
 function shot:update(dt)
-    self.position = self.position + self.speed*dt
+    self.position:add(self.speed*dt)
     return not(self.collides or self.x<-self.size or self.y<-self.size or self.x+self.size>graphics.getWidth() or self.y+self.size> graphics.getHeight())
 end

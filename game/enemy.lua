@@ -95,7 +95,7 @@ function enemy:draw()
 end
 
 function enemy:update(dt)
-	self.position = self.position + self.speed*dt
+	self.position:add(self.speed*dt)
 
 	for i,v in pairs(shot.bodies) do
 		if (v.size+self.size)*(v.size+self.size)>=(v.x-self.x)*(v.x-self.x)+(v.y-self.y)*(v.y-self.y) then

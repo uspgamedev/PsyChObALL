@@ -11,7 +11,7 @@ function effect:draw()
 end
 
 function effect:update(dt)
-	effect:__super().update(self,dt)
+	self.position:add(self.speed*dt)
 	self.etc = self.etc + dt
 	return self.etc<self.timetogo
 end
