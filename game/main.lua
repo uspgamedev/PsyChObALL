@@ -402,7 +402,7 @@ function love.draw()
 	if multiplier>bestmult then bestmult = multiplier end
 	graphics.print(string.format("Best Mult: x%.1f",bestmult),965,103)
 	graphics.setFont(getFont(40))
-	graphics.print(string.format("x%.1f",multiplier),915,60)
+	graphics.print(string.format("x%.1f",multiplier),950,60)
 	graphics.setFont(getFont(12))
 	
 	
@@ -444,7 +444,7 @@ function love.draw()
 		graphics.print(deathText(),270,300)
 		graphics.setFont(getFont(30))
 		graphics.print(string.format("You lasted %.1fsecs",totaltime),486,600)
-		if score==0 then graphics.print("Your score hit 0.",432,600) end
+		if score==0 then graphics.print("Your score hit 0.",432,640) end
 		graphics.setFont(getFont(22))
 		graphics.print("'r' to retry",540,480)
 		graphics.setFont(getFont(12))
