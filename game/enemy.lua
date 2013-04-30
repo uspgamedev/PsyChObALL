@@ -47,7 +47,7 @@ end
 function enemy:handleDelete()
 	if self.diereason=="shot" then
 		addscore((self.size/3)*multiplier)
-		neweffects(self.position,23,self.variance)
+		neweffects(self,23)
 		multiplier = multiplier + (self.size/30)
 
 		if not  multtimer.running then  multtimer:start()
@@ -74,7 +74,7 @@ function enemy:handleDelete()
 		end
 	else
 		if self.size>=15 then addscore(-3*multiplier) end
-		neweffects(self.position,4,self.variance)
+		neweffects(self,4)
 	end
 
 	if self.size>=10 then 

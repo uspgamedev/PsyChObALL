@@ -6,7 +6,7 @@ require "enemy"
 require "shot"
 require "timer"
 require "list"
-require "psycho"
+require "psychoball"
 
 function readstats()
     local file = filesystem.newFile("high")
@@ -42,6 +42,8 @@ function love.load()
 
     screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
+
+	logo = graphics.newImage('resources/LogoBeta.png')
 
 	v = 220
     version = "0.8.0 dev"
@@ -155,7 +157,7 @@ function love.load()
 			ultrablast = ultrablast + 1
 		end
 		if ultrablast == ultrablastmax - 1 then
-			circle.ultrameter.sizeGrowth = 0
+			psycho.ultrameter.sizeGrowth = 0
 		end
 	end
 
@@ -193,7 +195,7 @@ function reload()
 	song:setVolume(0)
 	songfadein:start()
 	
-	circle = psycho:new{
+	psycho = psychoball:new{
 		position = vector:new{relative(380,300)}
 	}
 	
@@ -251,7 +253,7 @@ function reload()
 	function circletimer:funcToCall() -- releases cirleEffects
 		if not gamelost then
 			circleEffect:new {
-				based_on = circle
+				based_on = psycho
 			}
 		end
 		for i,v in pairs(enemy.bodies) do
@@ -304,9 +306,9 @@ function lostgame()
 
     gamelost = true
     timefactor = .05
-    circle.speed:set(0,0)
-    if circle.ultrameter then circle.ultrameter.sizeGrowth = -300 end
-    neweffects(circle.position,80,0)
+    psycho.speed:set(0,0)
+    if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
+    neweffects(psycho,80)
 end
 
 function color(x,xt,alpha)
@@ -353,16 +355,16 @@ function line()
 	graphics.setColor(color(colortimer.time+12))
 	graphics.circle("line",mouse.getX(),mouse.getY(),5)
 	graphics.setColor(color(colortimer.time+12,nil,60))
-	local m = (mouse.getY()-circle.y)/(mouse.getX()-circle.x)
+	local m = (mouse.getY()-psycho.y)/(mouse.getX()-psycho.x)
 	local x,y
-	if (mouse.getX()-circle.x)>0 then 
+	if (mouse.getX()-psycho.x)>0 then 
 		x = graphics.getWidth()
-		y = circle.y + (x-circle.x)*m
+		y = psycho.y + (x-psycho.x)*m
 	else
 		x = 0
-		y = circle.y + (x-circle.x)*m
+		y = psycho.y + (x-psycho.x)*m
 	end
-	graphics.line(circle.x,circle.y,x,y)
+	graphics.line(psycho.x,psycho.y,x,y)
 end
 
 function love.draw()
@@ -392,10 +394,7 @@ function love.draw()
 	line()
 
 	--painting PsyChObALL
-	if not gamelost then
-		graphics.setColor(color(colortimer.time))
-    	graphics.circle('fill', circle.x,circle.y,circle.size)
-    end
+	psycho:draw()
 	
 	
     graphics.setPixelEffect(currentPET) --things with textures
@@ -435,9 +434,8 @@ function love.draw()
 		graphics.setColor(color(colortimer.time*0.856))
 		graphics.print("ulTrAbLaST",relative(565,349))
 
-		graphics.setFont(getFont(90))
 		graphics.setColor(color(colortimer.time*4.5 + .54))
-		graphics.print("P s y C h O b A L L",relative(105,130))
+		graphics.draw(logo,190,135,nil,1.3,1)
 		graphics.setFont(getFont(12))
 	end
 	if gamelost then
@@ -484,7 +482,7 @@ function love.update(dt)
 	if isPaused then return end
 	if not gamelost then totaltime = totaltime+dt end
 
-    circle:update(dt)
+    psycho:update(dt)
     local todelete = {}
     for i,v in pairs(paintables) do
         for j,m in pairs(v) do
@@ -525,12 +523,12 @@ function love.mousereleased(x,y,button)
 end
 
 function shoot(x,y)
-	local diffx = x - circle.x
-    local diffy = y - circle.y
+	local diffx = x - psycho.x
+    local diffy = y - psycho.y
     local Vx = signum(diffx)*math.sqrt((9*v*v*diffx*diffx)/(diffx*diffx + diffy*diffy))
     local Vy = signum(diffy)*math.sqrt((9*v*v*diffy*diffy)/(diffx*diffx + diffy*diffy))
     table.insert(shot.bodies, shot:new {
-    	position = circle.position:clone(),
+    	position = psycho.position:clone(),
     	speed	 = vector:new {Vx,Vy}
     	})
 end
@@ -553,78 +551,78 @@ function love.keypressed(key,code)
 
 	if not gamelost then 
 	    if key=='w' or key == 'up' then
-	        circle.Vy = -v
-	  		if circle.Vx~=0 then circle.speed:div(sqr2) end
+	        psycho.Vy = -v
+	  		if psycho.Vx~=0 then psycho.speed:div(sqr2) end
 	    elseif key=='s' or key == 'down' then 
-	        circle.Vy = v
-	        if circle.Vx~=0 then circle.speed:div(sqr2) end
+	        psycho.Vy = v
+	        if psycho.Vx~=0 then psycho.speed:div(sqr2) end
 	    elseif key=='a' or key=='left' then 
-	        circle.Vx = -v
-	        if circle.Vy~=0 then circle.speed:div(sqr2) end
+	        psycho.Vx = -v
+	        if psycho.Vy~=0 then psycho.speed:div(sqr2) end
 	    elseif key=='d' or key=='right' then 
-	        circle.Vx = v
-	        if circle.Vy~=0 then circle.speed:div(sqr2) end
+	        psycho.Vx = v
+	        if psycho.Vy~=0 then psycho.speed:div(sqr2) end
 	    end
 
 		if key == ' ' and not isPaused then
 			ultrablast = 10
-			circle.ultrameter = circleEffect:new {
-				based_on = circle,
+			psycho.ultrameter = circleEffect:new {
+				based_on = psycho,
 				sizeGrowth = 20,
 				alpha = 100,
 				linewidth = 6,
 				index = 'ultrameter'
 			}
-			circle.ultrameter.position = circle.position
+			psycho.ultrameter.position = psycho.position
 			ultratimer:start()
 		end
 	end
 	
 	if gamelost and key=='r' then
 		local x,y
-		if circle.diereason == "shot" then
-			x = circle.x
-			y = circle.y
+		if psycho.diereason == "shot" then
+			x = psycho.x
+			y = psycho.y
 		end
 		reload()
-		circle.x = x or circle.x
-		circle.y = y or circle.y
+		psycho.x = x or psycho.x
+		psycho.y = y or psycho.y
 	end
 end
 
 function do_ultrablast()
 	for i=1,ultrablast do
-		shoot(circle.x+(math.cos(math.pi*2*i/ultrablast)*100),circle.y+(math.sin(math.pi*2*i/ultrablast)*100))
+		shoot(psycho.x+(math.cos(math.pi*2*i/ultrablast)*100),psycho.y+(math.sin(math.pi*2*i/ultrablast)*100))
 	end
 end
 
 function love.keyreleased(key,code)
 	if not gamelost then
 	    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down'))) then
-	        circle.Vy = math.abs(circle.Vy)
+	        psycho.Vy = math.abs(psycho.Vy)
 	    elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
-	        circle.Vy = -math.abs(circle.Vy)
+	        psycho.Vy = -math.abs(psycho.Vy)
 	    elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
-	        circle.Vx = math.abs(circle.Vx)
+	        psycho.Vx = math.abs(psycho.Vx)
 	    elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
-	        circle.Vx = -math.abs(circle.Vx)
+	        psycho.Vx = -math.abs(psycho.Vx)
 	    end
 	    
 	    if (key=='w' or key=='s' or key=='up' or key=='down') and 
 	            not (keyboard.isDown('w') or keyboard.isDown('s') or 
 	                keyboard.isDown('up') or keyboard.isDown('down')) then 
-		    circle.speed:set(signum(circle.Vx) * v, 0)
+		    psycho.speed:set(signum(psycho.Vx) * v, 0)
 	    elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
 	            not (keyboard.isDown('a') or keyboard.isDown('d') or 
 	                keyboard.isDown('left') or keyboard.isDown('right')) then 
-			circle.speed:set( 0, signum(circle.Vy) * v)
+			psycho.speed:set( 0, signum(psycho.Vy) * v)
 		end
 
 		if key == ' ' then
 			if ultratimer.running then
 				ultratimer:stop()
-				if circle.ultrameter then
-					circle.ultrameter.sizeGrowth = -300
+				if psycho.ultrameter then
+					psycho.ultrameter.sizeGrowth = -300
 				end
 				if not isPaused then do_ultrablast() end
 			end

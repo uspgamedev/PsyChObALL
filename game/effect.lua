@@ -17,17 +17,16 @@ function effect:update(dt)
 	return self.etc<self.timetogo
 end
 
-function neweffects( position, times, var )
-	local variance = var or colortimer.timelimit*math.random()*2
+function neweffects( based_on, times)
+	local speedinfluence = based_on.speed*.6
 	for i=1,times do
 		local e = effect:new{
-			position = position:clone(),
-			variance = variance
+			position = based_on.position + {based_on.size*(2*math.random()-1),based_on.size*(2*math.random()-1)},
+			variance = based_on.variance
 		}
-		e.speed = vector:new {
-			math.random()*2 - 1,
-			math.random()*2 - 1
-		}:mult(v,v)
+
+		e.speed = (e.position - based_on.position):normalize():mult(math.random()*v,math.random()*v)
+
 		e.timetogo = math.random(50,130)/100
 		e.etc = 0
 		
