@@ -130,7 +130,8 @@ function love.load()
 		timelimit  = 2.2,
 		running    = false,
 		onceonly   = true,
-		persistent = true
+		persistent = true,
+		works_on_gamelost = false
 	}
 
 	function multtimer:funcToCall() -- resets multiplier
@@ -166,7 +167,8 @@ function love.load()
 		timelimit  = 2.2,
 		running    = false,
 		onceonly   = true,
-		persistent = true
+		persistent = true,
+		works_on_gamelost = false
 	}
 
 	function inverttimer:funcToCall() -- disinverts the screen color
@@ -474,7 +476,7 @@ function love.update(dt)
 	if not gamelost and score<=0 then score=0 lostgame() end
 	
 	
-	timer.updatetimers(dt,timefactor,isPaused)
+	timer.updatetimers(dt,timefactor,isPaused,gamelost)
 	
 	dt = dt*timefactor
 	

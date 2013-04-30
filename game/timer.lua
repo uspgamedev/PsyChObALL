@@ -7,15 +7,16 @@ timer = lux.object.new {
 	running 	 = true,
 	timeaffected = true,
 	persistent 	 = false, -- continues on death
-	delete 		 = false
+	delete 		 = false,
+	works_on_gamelost = true
 }
 
 function timer:__init()
 	table.insert(timer.ts,self)
 end
 
-function timer:update(dt,timefactor,paused)
-	if not self.running or (paused and self.pausable) then return end
+function timer:update(dt,timefactor,paused,gamelost)
+	if not self.running or (paused and self.pausable) or (gamelost and not self.works_on_gamelost) then return end
 	if self.timeaffected then dt = dt*timefactor end
 	self.time = self.time + dt
 	if self.time>=self.timelimit then
@@ -35,14 +36,14 @@ function timer:stop()
 end
 
 
-function timer.updatetimers(dt,timefactor,paused)
+function timer.updatetimers(dt,timefactor,paused,gamelost)
 	local todelete
 	for i,v in pairs(timer.ts) do
 		if v.delete then
 		    if not todelete then todelete = {v}
 		    else table.insert(todelete,i) end
 		else
-		    v:update(dt,timefactor,paused)
+		    v:update(dt,timefactor,paused,gamelost)
 		end
 	end
 	if todelete then
