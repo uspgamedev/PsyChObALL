@@ -196,7 +196,7 @@ function reload()
 	songfadein:start()
 	
 	psycho = psychoball:new{
-		position = vector:new{relative(380,300)}
+		position = vector:new{513,360}
 	}
 	
 	paintables = {}
@@ -283,10 +283,6 @@ function getFont(size)
 	if fonts[size] then return fonts[size] end
 	fonts[size] = graphics.newFont(size)
 	return fonts[size]
-end
-
-function relative(x,y)
-	return x*width/800,y*height/600
 end
 
 function lostgame()
@@ -398,41 +394,41 @@ function love.draw()
 	
 	
     graphics.setPixelEffect(currentPET) --things with textures
-    graphics.print(string.format("Score: %.0f",score),relative(20,20))
-    graphics.print(string.format("Time: %.1fs",totaltime),relative(20,60))
-	graphics.print(srt,relative(20,80))
-	graphics.print("FPS: " .. love.timer.getFPS(),relative(740,20))
-	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),relative(20,40))
+    graphics.print(string.format("Score: %.0f",score),27,24)
+    graphics.print(string.format("Time: %.1fs",totaltime),27,72)
+	graphics.print(srt,27,96)
+	graphics.print("FPS: " .. love.timer.getFPS(),1000,24)
+	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),27,48)
 	if multiplier>bestmult then bestmult = multiplier end
-	graphics.print(string.format("Best Mult: x%.1f",bestmult),relative(715,86))
+	graphics.print(string.format("Best Mult: x%.1f",bestmult),965,103)
 	graphics.setFont(getFont(40))
-	graphics.print(string.format("x%.1f",multiplier),relative(700,50))
+	graphics.print(string.format("x%.1f",multiplier),915,60)
 	graphics.setFont(getFont(12))
 	
 	
 	if firsttime then
 		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		graphics.setFont(getFont(20))
-		graphics.print("You get points when:",relative(200,30))
-		graphics.print("You kill an enemy",relative(225,60))
-		graphics.print("You lose points when:",relative(450,30))
-		graphics.print("You miss a shot",relative(475,60))
-		graphics.print("You let an enemy escape",relative(475,80))
+		graphics.print("You get points when:",270,36)
+		graphics.print("You kill an enemy",303,72)
+		graphics.print("You lose points when:",607,36)
+		graphics.print("You miss a shot",641,72)
+		graphics.print("You let an enemy escape",641,95)
 		graphics.setFont(getFont(30))
-		graphics.print("Game Ends when your score hits zero",relative(100,470))
+		graphics.print("Game Ends when your score hits zero",135,564)
 		graphics.setFont(getFont(20))
-		graphics.print("Use WASD or arrows to move",relative(150,250))
-		graphics.print("Click to shoot",relative(415,325))
-		graphics.print("Hold space to charge:", relative(400,360))
-		graphics.print("click to continue",relative(650,560))
+		graphics.print("Use WASD or arrows to move",202,300)
+		graphics.print("Click to shoot",560,390)
+		graphics.print("Hold space to charge:", 540,432)
+		graphics.print("click to continue",877,672)
 		graphics.setFont(getFont(12))
-		graphics.print("Or when you die.",relative(570,500))
-		graphics.print("v" .. version,relative(750,580))
-		graphics.print("A game by Marvellous Soft/USPGameDev", relative(10,580))
+		graphics.print("Or when you die.",770,600)
+		graphics.print("v" .. version,1012,696)
+		graphics.print("A game by Marvellous Soft/USPGameDev", 14,696)
 		
 		graphics.setFont(getFont(35))
 		graphics.setColor(color(colortimer.time*0.856))
-		graphics.print("ulTrAbLaST",relative(565,349))
+		graphics.print("ulTrAbLaST",762,420)
 
 		graphics.setColor(color(colortimer.time*4.5 + .54))
 		graphics.draw(logo,190,135,nil,1.3,1)
@@ -442,21 +438,21 @@ function love.draw()
 		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		if besttime == totaltime then
 			graphics.setFont(getFont(60))
-			graphics.print("You beat the best time!",relative(100,100))
+			graphics.print("You beat the best time!",182,144)
 		end
 		graphics.setFont(getFont(40))
-		graphics.print(deathText(),relative(200,250))
+		graphics.print(deathText(),270,300)
 		graphics.setFont(getFont(30))
-		graphics.print(string.format("You lasted %.1fsecs",totaltime),relative(360,440))
-		if score==0 then graphics.print("Your score hit 0.",relative(320,500)) end
+		graphics.print(string.format("You lasted %.1fsecs",totaltime),486,600)
+		if score==0 then graphics.print("Your score hit 0.",432,600) end
 		graphics.setFont(getFont(22))
-		graphics.print("'r' to retry",relative(400,400))
+		graphics.print("'r' to retry",540,480)
 		graphics.setFont(getFont(12))
 	end
 	if esc then
 		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
 		graphics.setFont(getFont(40))
-		graphics.print("Paused",relative(200,250))
+		graphics.print("Paused",270,300)
 		graphics.setFont(getFont(12))
 	end
 end
