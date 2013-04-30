@@ -4,5 +4,18 @@
 		{
 			"path": "game"
 		}
+	],
+	"build_systems":
+	[
+		{
+			"name": "LOVE2D with console",
+			"working_dir": "${project_path}",
+			"cmd": ["love", "--console", "game"]
+		},
+		{
+			"name": "LOVE2D",
+			"working_dir": "${project_path}",
+			"cmd": ["love", "game"]
+		}
 	]
 }

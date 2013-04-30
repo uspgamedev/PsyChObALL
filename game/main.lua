@@ -59,7 +59,7 @@ function love.load()
 	 	persistent 	 = true
 	}
 
-	function songfadeout:funcToCall()
+	function songfadeout:funcToCall() -- song fades out
 		if song:getVolume()<=.02 then 
         	song:setVolume(0) 
             self:stop()
@@ -74,7 +74,7 @@ function love.load()
 	 	persistent 	 = true
 	 }
 
-	 function songfadein:funcToCall()
+	 function songfadein:funcToCall() -- song fades in
         if song:getVolume()>=.98 then 
             song:setVolume(1) 
             self:stop()
@@ -136,7 +136,7 @@ function love.load()
 		persistent = true
 	}
 
-	function multtimer:funcToCall() 
+	function multtimer:funcToCall() -- resets multiplier
 		multiplier = 1
 	end
 
@@ -145,14 +145,20 @@ function love.load()
 		self:funcToCall()
 	end
 
+	ultrablastmax = 40 -- maximum number of shots on ultrablast
 	ultratimer = timer:new {
 		timelimit  = .1,
 		running    = false,
 		persistent = true
 	}
 
-	function ultratimer:funcToCall() 
-		ultrablast = ultrablast + 1
+	function ultratimer:funcToCall() -- adds more shots to ultrablast
+		if ultrablast < ultrablastmax then
+			ultrablast = ultrablast + 1
+		end
+		if ultrablast == ultrablastmax - 1 then
+			circle.ultrameter.sizeGrowth = 0
+		end
 	end
 
 	function ultratimer:handlereset()
@@ -166,7 +172,7 @@ function love.load()
 		persistent = true
 	}
 
-	function inverttimer:funcToCall()
+	function inverttimer:funcToCall() -- disinverts the screen color
      	if currentPE ~= noLSD_PE then 
      		song:setPitch(1)
 			timefactor = 1.0
@@ -232,7 +238,7 @@ function reload()
 		running   = false
 	}
 
-	function shottimer:funcToCall()
+	function shottimer:funcToCall() -- continues shooting when you hold the mouse
 		shoot(mouse.getPosition()) 
 	end
 	
@@ -243,7 +249,7 @@ function reload()
 		timelimit = .2
 	}
 
-	function circletimer:funcToCall()
+	function circletimer:funcToCall() -- releases cirleEffects
 		circleEffect:new {
 			based_on = circle
 		}
@@ -303,29 +309,29 @@ function color(x,xt,alpha)
 	x = x % xt
 	local r,g,b
 	if x<=xt/3 then
-		r = 100 -- 100%
+		r = 100 		 -- 100%
 		g = 100*x/(xt/3) -- 0->100%
-		b = 0 -- 0%
+		b = 0 			 -- 0%
 	elseif x<=xt/2 then
 		r = 100*(1 - ((x-xt/3)/(xt/2-xt/3))) -- 100->0%
-		g = 100 - 20*((x-xt/3)/(xt/2-xt/3)) --100->80%
-		b = 0 -- 0%
+		g = 100 - 20*((x-xt/3)/(xt/2-xt/3))  -- 100->80%
+		b = 0 								 -- 0%
 	elseif x<=7*xt/12 then
-		r = 0 -- 0%
+		r = 0 								  -- 0%
 		g = 80 - 20*((x-xt/2)/(7*xt/12-xt/2)) -- 80->60%
-		b = 60*((x-xt/2)/(7*xt/12-xt/2)) -- 0->60%
+		b = 60*((x-xt/2)/(7*xt/12-xt/2)) 	  -- 0->60%
 	elseif x<=255*xt/360 then
-		r = 11*((x-7*xt/12)/(255*xt/360-7*xt/12)) -- 0->11%
-		g = 60 -49*((x-7*xt/12)/(255*xt/360-7*xt/12)) -- 60->11%
-		b = 60 + 10*((x-7*xt/12)/(255*xt/360-7*xt/12)) --60->70%
+		r = 11*((x-7*xt/12)/(255*xt/360-7*xt/12)) 	   -- 0->11%
+		g = 60 -49*((x-7*xt/12)/(255*xt/360-7*xt/12))  -- 60->11%
+		b = 60 + 10*((x-7*xt/12)/(255*xt/360-7*xt/12)) -- 60->70%
 	elseif x<=318*xt/360 then
-		r = 11 + 59*((x-255*xt/360)/(318*xt/360-255*xt/360)) -- 11->70%
+		r = 11 + 59*((x-255*xt/360)/(318*xt/360-255*xt/360))  -- 11->70%
 		g = 11*(1 - ((x-255*xt/360)/(318*xt/360-255*xt/360))) -- 11->0%
-		b = 70 - 10*((x-255*xt/360)/(318*xt/360-255*xt/360)) -- 70->60%
+		b = 70 - 10*((x-255*xt/360)/(318*xt/360-255*xt/360))  -- 70->60%
 	else
-		r = 70 + 30*((x-318*xt/360)/(xt-318*xt/360)) -- 70->100%
-		g = 0 -- 0%
-		b = 60*(1 - ((x-318*xt/360)/(xt-318*xt/360))) --60->0%
+		r = 70 + 30*((x-318*xt/360)/(xt-318*xt/360))  -- 70->100%
+		g = 0 										  -- 0%
+		b = 60*(1 - ((x-318*xt/360)/(xt-318*xt/360))) -- 60->0%
 	end
 	
 	return {r*2.55,g*2.55,b*2.55,alpha or 255}
@@ -476,14 +482,19 @@ function love.update(dt)
     for i,v in pairs(paintables) do
         for j,m in pairs(v) do
 			if not m:update(dt) then
-			table.insert(todelete,j)
+				table.insert(todelete,j) --deletes items that return false
 			end
 		end
 		local a=0
 		for k,n in ipairs(todelete) do
-			v[n-a]:handleDelete()
-			table.remove(v,n-a)
-			a = a+1
+			if type(n) == 'number' then
+				v[n-a]:handleDelete()
+				table.remove(v,n-a)
+				a = a+1
+			else
+				v[n]:handleDelete()
+				v[n] = nil
+			end
 		end
 		todelete = nil
 		todelete = {}
@@ -511,7 +522,7 @@ function shoot(x,y)
     local diffy = y - circle.y
     local Vx = signum(diffx)*math.sqrt((9*v*v*diffx*diffx)/(diffx*diffx + diffy*diffy))
     local Vy = signum(diffy)*math.sqrt((9*v*v*diffy*diffy)/(diffx*diffx + diffy*diffy))
-    table.insert(shot.bodies, shot:new{
+    table.insert(shot.bodies, shot:new {
     	position = circle.position:clone(),
     	speed	 = vector:new {Vx,Vy}
     	})
@@ -543,6 +554,14 @@ function love.keypressed(key,code)
 
 	if key == ' ' and not isPaused then
 		ultrablast = 10
+		circle.ultrameter = circleEffect:new {
+			based_on = circle,
+			sizeGrowth = 20,
+			alpha = 100,
+			linewidth = 6,
+			index = 'ultrameter'
+		}
+		circle.ultrameter.position = circle.position
 		ultratimer:start()
 	end
 	
@@ -587,6 +606,7 @@ function love.keyreleased(key,code)
 
 	if key == ' ' then
 		ultratimer:stop()
+		circleEffect.bodies.ultrameter.sizeGrowth = -300
 		if not isPaused then do_ultrablast() end
 	end
 	

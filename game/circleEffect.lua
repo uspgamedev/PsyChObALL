@@ -16,7 +16,12 @@ function circleEffect:__init()
 	self.sizeGrowth = self.sizeGrowth or math.random(120,160)		
 	self.variance = math.random(30,300)/100
 	if table.getn(circleEffect.bodies) > 250 then table.remove(circleEffect.bodies,1) end
-	table.insert(circleEffect.bodies,self)
+	if self.index then
+		circleEffect.bodies[self.index] = self
+		self.index = nil
+	else
+		table.insert(circleEffect.bodies,self)
+	end
 end
 
 function circleEffect:draw()
@@ -28,5 +33,5 @@ end
 
 function circleEffect:update(dt)
     self.size = self.size + self.sizeGrowth*dt
-    return self.size<self.maxsize
+    return self.size>0 and self.size<self.maxsize
 end
