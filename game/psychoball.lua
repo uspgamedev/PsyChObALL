@@ -1,8 +1,10 @@
-psycho = body:new {
-	size	 = 23
+psychoball = body:new {
+	size	 = 23,
+	mode	 = 'fill',
+	variance = 0
 }
 
-function psycho:update(dt)
+function psychoball:update(dt)
 	if gamelost then return true end
 	self.position:add(self.speed*dt)
 
@@ -17,4 +19,10 @@ function psycho:update(dt)
 			self.diereason = "shot"
 		end
 	end
+end
+
+function psychoball:draw()
+	if gamelost then return end
+	graphics.setColor(color(colortimer.time + self.variance))
+	graphics.circle(self.mode,self.x,self.y,self.size)
 end

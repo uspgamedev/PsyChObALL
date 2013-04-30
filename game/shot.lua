@@ -13,7 +13,7 @@ end
 
 function shot:handleDelete()
 	addscore(-2*((multiplier-1)/2 + 0.85))
-	if not self.collides then neweffects(self.position,7, self.variance) end
+	if not self.collides then neweffects(self,7) end
 end
 
 function shot:draw()

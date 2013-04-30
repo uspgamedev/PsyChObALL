@@ -47,19 +47,19 @@ end
 function enemy:handleDelete()
 	if self.diereason=="shot" then
 		addscore((self.size/3)*multiplier)
-		neweffects(self.position,23,self.variance)
+		neweffects(self,23)
 		multiplier = multiplier + (self.size/30)
 
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
 
-		if  not inverttimer.running and not gamelost and multiplier>=10 and currentPE ~= noLSD_PE then
-			song:setPitch(1.05)
-			timefactor= 1.1
-
-			currentPE = invertPE
-			currentPET = invertPET
-			if not inverttimer.running then inverttimer:start()
+		if  not gamelost and multiplier>=10 and currentPE ~= noLSD_PE then
+			if not inverttimer.running then
+				inverttimer:start()
+				song:setPitch(1.05)
+				timefactor= 1.1
+				currentPE = invertPE
+				currentPET = invertPET
 			else inverttimer.time = 0 end
 		end
 
@@ -74,7 +74,7 @@ function enemy:handleDelete()
 		end
 	else
 		if self.size>=15 then addscore(-3*multiplier) end
-		neweffects(self.position,4,self.variance)
+		neweffects(self,4)
 	end
 
 	if self.size>=10 then 
