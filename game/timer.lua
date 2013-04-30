@@ -3,10 +3,10 @@ require 'lux.object'
 timer = lux.object.new {
 	time 		 = 0,
 	onceonly 	 = false,
-	pausable 	 = true,
+	pausable 	 = true, -- If pause
 	running 	 = true,
 	timeaffected = true,
-	persistent 	 = false,
+	persistent 	 = false, -- continues on death
 	delete 		 = false
 }
 

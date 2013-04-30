@@ -2,17 +2,24 @@
 THE HISTORY OF PSYCHOBALL
 =========================
 
-
+************************
+(xx/xx/2013) Patch 0.8.0
+************************
+-Major change on the script
+	-"Cleaner" code
+	-More annotations
+-Added "Ultrablast Charge"
+-You can't leave the screen anymore
+-Minor changes on text placement
 ************************
 (25/04/2013) Patch 0.7.9
 ************************
 -Fixed generic sound bugs
--Added instructions to "ultrablast"
+-Added instructions to "Ultrablast"
 -Some new death messages
 -Tweaks on multiplier effects on score
-    - Multiplier on losing points slightly reduced
-    - Multiplier on wining points slightly increased
--
+    -Multiplier on losing points slightly reduced
+    -Multiplier on wining points slightly increased
 ************************
 (17/04/2013) Patch 0.7.8
 ************************
