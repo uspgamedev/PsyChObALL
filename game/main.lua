@@ -8,6 +8,8 @@ require "timer"
 require "list"
 require "psycho"
 
+local http = require("socket.http")
+
 function readstats()
     local file = filesystem.newFile("high")
     if not filesystem.exists("high") then
@@ -44,7 +46,10 @@ function love.load()
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	v = 220
-    version = "0.8.0 dev"
+    version = '0.8.1\n'
+	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
+	print(version == latest)
+
 	timer.ts = {}
 	filesystem.setIdentity("PsyChObALL")
 	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
@@ -425,12 +430,18 @@ function love.draw()
 		graphics.print("Use WASD or arrows to move",relative(150,250))
 		graphics.print("Click to shoot",relative(415,325))
 		graphics.print("Hold space to charge:", relative(400,360))
-		graphics.print("click to continue",relative(650,560))
+		graphics.print("click to continue",relative(650,540))
+		graphics.setFont(getFont(16))
+		graphics.print("Or when you die.",relative(555,500))
 		graphics.setFont(getFont(12))
-		graphics.print("Or when you die.",relative(570,500))
-		graphics.print("v" .. version,relative(750,580))
-		graphics.print("A game by Marvellous Soft/USPGameDev", relative(10,580))
-		
+		graphics.print("v" .. version,relative(765,570))
+		if latest==version then
+			graphics.print("Version up to date!",620,585)
+		else
+			graphics.print("Version " .. latest,620,585)
+			graphics.print("is available to download!",685,585)
+		graphics.print("A game by Marvellous Soft/USPGameDev",5,585)
+		end
 		graphics.setFont(getFont(35))
 		graphics.setColor(color(colortimer.time*0.856))
 		graphics.print("ulTrAbLaST",relative(565,349))
