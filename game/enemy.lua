@@ -53,13 +53,13 @@ function enemy:handleDelete()
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
 
-		if  not inverttimer.running and not gamelost and multiplier>=10 and currentPE ~= noLSD_PE then
-			song:setPitch(1.05)
-			timefactor= 1.1
-
-			currentPE = invertPE
-			currentPET = invertPET
-			if not inverttimer.running then inverttimer:start()
+		if  not gamelost and multiplier>=10 and currentPE ~= noLSD_PE then
+			if not inverttimer.running then
+				inverttimer:start()
+				song:setPitch(1.05)
+				timefactor= 1.1
+				currentPE = invertPE
+				currentPET = invertPET
 			else inverttimer.time = 0 end
 		end
 
