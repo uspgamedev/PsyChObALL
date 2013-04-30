@@ -46,7 +46,7 @@ end
 
 function enemy:handleDelete()
 	if self.diereason=="shot" then
-		score =  score + (self.size/3)*multiplier
+		addscore((self.size/3)*multiplier)
 		neweffects(self.position:clone(),10)
 		multiplier = multiplier + (self.size/30)
 		if not  multtimer.running then  multtimer:start()
@@ -69,7 +69,7 @@ function enemy:handleDelete()
 				maxsize = width
 			} 
 		end --ci,lw,alpha,growth,maxsize
-	elseif self.size>=15 then score = score - 3*multiplier end
+	elseif self.size>=15 then addscore(- 3*multiplier) end
 	if self.size>=10 then 
 		for i=1,3 do
 			local e = enemy:new{

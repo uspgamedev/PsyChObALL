@@ -12,7 +12,7 @@ function shot:__init()
 end
 
 function shot:handleDelete()
-	score = score- 2*((multiplier-1)/2 + 0.85)
+	addscore(- 2*((multiplier-1)/2 + 0.85))
 	neweffects(self.position,7)
 end
 

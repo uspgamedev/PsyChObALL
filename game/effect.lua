@@ -1,12 +1,14 @@
 require 'body'
 
 effect = body:new {
-	mode 	= 'fill',
-	size	= 3,
-	__type  = 'effect'
+	mode 	 = 'fill',
+	size	 = 3,
+	variance = 40,
+	__type   = 'effect'
 }
 
 function effect:draw()
+	love.graphics.setColor(color(self.variance + colortimer.time))
 	love.graphics.rectangle(self.mode,self.x,self.y,self.size,self.size)
 end
 
@@ -19,7 +21,7 @@ end
 function neweffects( position, times )
 	for i=1,times do
 		local e = effect:new{
-			position = position
+			position = position:clone()
 		}
 		e.speed = vector:new {
 			math.random(2.5*v)-1.25*v,

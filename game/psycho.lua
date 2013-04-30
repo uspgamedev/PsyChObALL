@@ -2,7 +2,8 @@ psycho = body:new {
 	size	 = 23
 }
 
-function psycho:update(dt) -- Bola
+function psycho:update(dt)
+	if gamelost then return true end
 	self.position:add(self.speed*dt)
 
 	self.position:set(

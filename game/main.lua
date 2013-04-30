@@ -93,10 +93,7 @@ function love.load()
 	fonts = {}
 	
 	firsttime = true
-	readstats()
-	
-	
-	
+	readstats()	
 	
 	currentPE = nil
 	currentPET = nil
@@ -250,9 +247,11 @@ function reload()
 	}
 
 	function circletimer:funcToCall() -- releases cirleEffects
-		circleEffect:new {
-			based_on = circle
-		}
+		if not gamelost then
+			circleEffect:new {
+				based_on = circle
+			}
+		end
 		for i,v in pairs(enemy.bodies) do
 			if v.size==15 and math.random(2)==1 --[[reducing chance]] then 
 				circleEffect:new{
@@ -302,6 +301,9 @@ function lostgame()
 	end
 
     gamelost = true
+    timefactor = .05
+    circle.speed:set(0,0)
+    neweffects(circle.position,80)
 end
 
 function color(x,xt,alpha)
@@ -344,6 +346,7 @@ function sign(x)
 end
 
 function line()
+	if gamelost then return end
 	graphics.setColor(color(colortimer.time+12))
 	graphics.circle("line",mouse.getX(),mouse.getY(),5)
 	graphics.setColor(color(colortimer.time+12,nil,60))
@@ -386,8 +389,10 @@ function love.draw()
 	line()
 
 	--painting PsyChObALL
-	graphics.setColor(color(colortimer.time))
-    graphics.circle('fill', circle.x,circle.y,circle.size)
+	if not gamelost then
+		graphics.setColor(color(colortimer.time))
+    	graphics.circle('fill', circle.x,circle.y,circle.size)
+    end
 	
 	
     graphics.setPixelEffect(currentPET) --things with textures
@@ -465,8 +470,8 @@ function deathText()
 end
 
 function love.update(dt)
-	isPaused = (gamelost or esc or pause or firsttime) 
-	if score<=0 then score=0 lostgame() end
+	isPaused = (esc or pause or firsttime) 
+	if not gamelost and score<=0 then score=0 lostgame() end
 	
 	
 	timer.updatetimers(dt,timefactor,isPaused)
@@ -474,7 +479,7 @@ function love.update(dt)
 	dt = dt*timefactor
 	
 	if isPaused then return end
-	totaltime = totaltime+dt
+	if not gamelost then totaltime = totaltime+dt end
 
     circle:update(dt)
     local todelete = {}
@@ -504,7 +509,7 @@ end
 function love.mousepressed(x,y,button)
     if esc or pause then return end
     if firsttime then firsttime = false return end
-    if button == 'l' then
+    if button == 'l' and not gamelost then
         shoot(x,y)
 		shottimer:start()
     end
@@ -533,35 +538,43 @@ function signum(a)
     else return 0 end
 end
 
+function addscore(x)
+	if not gamelost then
+		score = score + x
+	end
+end
+
 function love.keypressed(key,code)
 	
 	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
 
-    if key=='w' or key == 'up' then
-        circle.Vy = -v
-  		if circle.Vx~=0 then circle.speed:div(sqr2) end
-    elseif key=='s' or key == 'down' then 
-        circle.Vy = v
-        if circle.Vx~=0 then circle.speed:div(sqr2) end
-    elseif key=='a' or key=='left' then 
-        circle.Vx = -v
-        if circle.Vy~=0 then circle.speed:div(sqr2) end
-    elseif key=='d' or key=='right' then 
-        circle.Vx = v
-        if circle.Vy~=0 then circle.speed:div(sqr2) end
-    end
+	if not gamelost then 
+	    if key=='w' or key == 'up' then
+	        circle.Vy = -v
+	  		if circle.Vx~=0 then circle.speed:div(sqr2) end
+	    elseif key=='s' or key == 'down' then 
+	        circle.Vy = v
+	        if circle.Vx~=0 then circle.speed:div(sqr2) end
+	    elseif key=='a' or key=='left' then 
+	        circle.Vx = -v
+	        if circle.Vy~=0 then circle.speed:div(sqr2) end
+	    elseif key=='d' or key=='right' then 
+	        circle.Vx = v
+	        if circle.Vy~=0 then circle.speed:div(sqr2) end
+	    end
 
-	if key == ' ' and not isPaused then
-		ultrablast = 10
-		circle.ultrameter = circleEffect:new {
-			based_on = circle,
-			sizeGrowth = 20,
-			alpha = 100,
-			linewidth = 6,
-			index = 'ultrameter'
-		}
-		circle.ultrameter.position = circle.position
-		ultratimer:start()
+		if key == ' ' and not isPaused then
+			ultrablast = 10
+			circle.ultrameter = circleEffect:new {
+				based_on = circle,
+				sizeGrowth = 20,
+				alpha = 100,
+				linewidth = 6,
+				index = 'ultrameter'
+			}
+			circle.ultrameter.position = circle.position
+			ultratimer:start()
+		end
 	end
 	
 	if gamelost and key=='r' then
@@ -583,33 +596,35 @@ function do_ultrablast()
 end
 
 function love.keyreleased(key,code)
-    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down'))) then
-        circle.Vy = math.abs(circle.Vy)
-    elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
-        circle.Vy = -math.abs(circle.Vy)
-    elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
-        circle.Vx = math.abs(circle.Vx)
-    elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
-        circle.Vx = -math.abs(circle.Vx)
-    end
-    
-    if (key=='w' or key=='s' or key=='up' or key=='down') and 
-            not (keyboard.isDown('w') or keyboard.isDown('s') or 
-                keyboard.isDown('up') or keyboard.isDown('down')) then 
-	    circle.speed:set(signum(circle.Vx) * v, 0)
-    elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
-            not (keyboard.isDown('a') or keyboard.isDown('d') or 
-                keyboard.isDown('left') or keyboard.isDown('right')) then 
-		circle.speed:set( 0, signum(circle.Vy) * v)
-	end
+	if not gamelost then
+	    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down'))) then
+	        circle.Vy = math.abs(circle.Vy)
+	    elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
+	        circle.Vy = -math.abs(circle.Vy)
+	    elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
+	        circle.Vx = math.abs(circle.Vx)
+	    elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
+	        circle.Vx = -math.abs(circle.Vx)
+	    end
+	    
+	    if (key=='w' or key=='s' or key=='up' or key=='down') and 
+	            not (keyboard.isDown('w') or keyboard.isDown('s') or 
+	                keyboard.isDown('up') or keyboard.isDown('down')) then 
+		    circle.speed:set(signum(circle.Vx) * v, 0)
+	    elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
+	            not (keyboard.isDown('a') or keyboard.isDown('d') or 
+	                keyboard.isDown('left') or keyboard.isDown('right')) then 
+			circle.speed:set( 0, signum(circle.Vy) * v)
+		end
 
-	if key == ' ' then
-		if ultratimer.running then
-			ultratimer:stop()
-			if circle.ultrameter then
-				circle.ultrameter.sizeGrowth = -300
+		if key == ' ' then
+			if ultratimer.running then
+				ultratimer:stop()
+				if circle.ultrameter then
+					circle.ultrameter.sizeGrowth = -300
+				end
+				if not isPaused then do_ultrablast() end
 			end
-			if not isPaused then do_ultrablast() end
 		end
 	end
 	
