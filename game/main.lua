@@ -605,9 +605,13 @@ function love.keyreleased(key,code)
 	end
 
 	if key == ' ' then
-		ultratimer:stop()
-		circleEffect.bodies.ultrameter.sizeGrowth = -300
-		if not isPaused then do_ultrablast() end
+		if ultratimer.running then
+			ultratimer:stop()
+			if circle.ultrameter then
+				circle.ultrameter.sizeGrowth = -300
+			end
+			if not isPaused then do_ultrablast() end
+		end
 	end
 	
 	if key=='scrollock' then 
