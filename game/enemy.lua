@@ -49,9 +49,11 @@ function enemy:handleDelete()
 		addscore((self.size/3)*multiplier)
 		neweffects(self.position,23,self.variance)
 		multiplier = multiplier + (self.size/30)
+
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
-		if  multiplier>=10 and currentPE ~= noLSD_PE then
+
+		if  not inverttimer.running and not gamelost and multiplier>=10 and currentPE ~= noLSD_PE then
 			song:setPitch(1.05)
 			timefactor= 1.1
 
@@ -60,6 +62,7 @@ function enemy:handleDelete()
 			if not inverttimer.running then inverttimer:start()
 			else inverttimer.time = 0 end
 		end
+
 		if self.size>=15 then 
 			circleEffect:new{
 				based_on = self,
@@ -68,7 +71,7 @@ function enemy:handleDelete()
 				sizeGrowth = 600, 
 				maxsize = width
 			} 
-		end --ci,lw,alpha,growth,maxsize
+		end
 	else
 		if self.size>=15 then addscore(-3*multiplier) end
 		neweffects(self.position,4,self.variance)
