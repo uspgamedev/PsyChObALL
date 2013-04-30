@@ -3,7 +3,6 @@ require 'body'
 effect = body:new {
 	mode 	 = 'fill',
 	size	 = 3,
-	variance = 40,
 	__type   = 'effect'
 }
 
@@ -18,15 +17,17 @@ function effect:update(dt)
 	return self.etc<self.timetogo
 end
 
-function neweffects( position, times )
+function neweffects( position, times, var )
+	local variance = var or colortimer.timelimit*math.random()*2
 	for i=1,times do
 		local e = effect:new{
-			position = position:clone()
+			position = position:clone(),
+			variance = variance
 		}
 		e.speed = vector:new {
-			math.random(2.5*v)-1.25*v,
-			math.random(2.5*v)-1.25*v
-		}
+			math.random()*2 - 1,
+			math.random()*2 - 1
+		}:mult(v,v)
 		e.timetogo = math.random(50,130)/100
 		e.etc = 0
 		

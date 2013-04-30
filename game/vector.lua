@@ -106,6 +106,8 @@ function vector:set(x, y)
 		self[1] = x[1]
 		self[2] = x[2]
 	end
+
+	return self
 end
 
 function vector:add(x, y)
@@ -116,6 +118,8 @@ function vector:add(x, y)
 		self[1] = self[1] + x[1]
 		self[2] = self[2] + x[2]
 	end
+	
+	return self
 end
 
 function vector:sub(x, y)
@@ -126,6 +130,8 @@ function vector:sub(x, y)
 		self[1] = self[1] - x[1]
 		self[2] = self[2] - x[2]
 	end
+	
+	return self
 end
 
 function vector:mult( x, y )
@@ -136,6 +142,8 @@ function vector:mult( x, y )
 		self[1] = self[1] * x[1]
 		self[2] = self[2] * x[2]
 	end
+	
+	return self
 end
 
 function vector:div( x, y )
@@ -146,6 +154,8 @@ function vector:div( x, y )
 		self[1] = self[1] / x[1]
 		self[2] = self[2] / x[2]
 	end
+	
+	return self
 end
 
 
@@ -179,4 +189,9 @@ end
 
 function vector:normalized()
 	return self/self:length()
+end
+
+function vector:normalize()
+	local length = self:length()
+	return self:div(length,length)
 end

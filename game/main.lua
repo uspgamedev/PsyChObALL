@@ -305,7 +305,8 @@ function lostgame()
     gamelost = true
     timefactor = .05
     circle.speed:set(0,0)
-    neweffects(circle.position,80)
+    if circle.ultrameter then circle.ultrameter.sizeGrowth = -300 end
+    neweffects(circle.position,80,0)
 end
 
 function color(x,xt,alpha)
