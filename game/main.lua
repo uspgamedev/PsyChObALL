@@ -150,7 +150,7 @@ function love.load()
 		self:funcToCall()
 	end
 
-	ultrablastmax = 40 -- maximum number of shots on ultrablast
+	ultrablastmax = 42 -- maximum number of shots on ultrablast
 	ultratimer = timer:new {
 		timelimit  = .1,
 		running    = false,
@@ -296,11 +296,17 @@ function lostgame()
 	if deathText()=="The LSD wears off" then
 	    song:setPitch(.8)
 		deathtexts[11] = "MOAR LSD"
+		deathtexts[17] = "MOAR LSD"
+		deathtexts[16] = "MOAR LSD"
+		deathtexts[14] = "MOAR LSD"
 		currentPE = noLSD_PE
 		currentPET = noLSD_PET
 	elseif deathText()=="MOAR LSD" then
 	    song:setPitch(1)
 	    deathtexts[11] = "The LSD wears off"
+	    deathtexts[17] = "There is no cake\n   also you died"
+	    deathtexts[16] = "Have a nice death"
+	    deathtexts[14] = "USPGameDev Rulez"
 		currentPE = nil 
 		currentPET = nil
 	end
@@ -471,7 +477,7 @@ end
 deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
 "You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
-"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died"}
+"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery"}
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
 	return dtn
@@ -575,7 +581,7 @@ function love.keypressed(key,code)
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
 				based_on = psycho,
-				sizeGrowth = 20,
+				sizeGrowth = 30,
 				alpha = 100,
 				linewidth = 6,
 				index = 'ultrameter'

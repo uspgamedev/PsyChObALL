@@ -5,24 +5,37 @@ THE HISTORY OF PSYCHOBALL
 ************************
 (xx/xx/2013) Patch 0.8.0
 ************************
+
 -Major change on the script
 	-"Cleaner" code
 	-More annotations
 -Added "Ultrablast Charge"
+-Added the logo
+-Added slow-motion effect on death
+-Added version checker
+	-Lets you know if there is a newer version available at the site
 -You can't leave the screen anymore
+-Explosion particles have the colour of their "origin"
 -Minor changes on text placement
+-More death messages
+	-Getting "LSD worn out" effect is more difficult
+	-Leaving "LSD worn out" effect is more common
+
 ************************
 (25/04/2013) Patch 0.7.9
 ************************
+
 -Fixed generic sound bugs
 -Added instructions to "Ultrablast"
 -Some new death messages
 -Tweaks on multiplier effects on score
     -Multiplier on losing points slightly reduced
     -Multiplier on wining points slightly increased
+
 ************************
 (17/04/2013) Patch 0.7.8
 ************************
+
 -First release of PsyChObALL!
 
 ++++++++++++++++++++++++++++++++++++
