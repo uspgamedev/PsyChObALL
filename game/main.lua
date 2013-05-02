@@ -399,15 +399,15 @@ function love.draw()
 	
 	
     graphics.setPixelEffect(currentPET) --things with textures
-    graphics.print(string.format("Score: %.0f",score),27,24)
-    graphics.print(string.format("Time: %.1fs",totaltime),27,72)
+    graphics.print(string.format("Score: %.0f",score),25,22)
+    graphics.print(string.format("Time: %.1fs",totaltime),25,68)
 	graphics.print(srt,27,96)
-	graphics.print("FPS: " .. love.timer.getFPS(),1000,24)
-	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),27,48)
+	graphics.print("FPS: " .. love.timer.getFPS(),1000,23)
+	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),25,46)
 	if multiplier>bestmult then bestmult = multiplier end
 	graphics.print(string.format("Best Mult: x%.1f",bestmult),965,103)
 	graphics.setFont(getFont(40))
-	graphics.print(string.format("x%.1f",multiplier),950,60)
+	graphics.print(string.format("x%.1f",multiplier),950,55)
 	graphics.setFont(getFont(12))
 	
 	
@@ -431,7 +431,7 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		graphics.print("v" .. version,1030,679)
 		if latest==version then
-			graphics.print("Version up to date!",944,696)
+			graphics.print("Version up to date!",945,696)
 		else
 			graphics.print("Version " .. latest,827,696)
 			graphics.print("is available to download!",915,696)
@@ -442,7 +442,7 @@ function love.draw()
 		graphics.print("ulTrAbLaST",762,420)
 
 		graphics.setColor(color(colortimer.time*4.5 + .54))
-		graphics.draw(logo,190,135,nil,1.3,1)
+		graphics.draw(logo,120,105,nil,0.25,0.20)
 		graphics.setFont(getFont(12))
 	end
 	if gamelost then
