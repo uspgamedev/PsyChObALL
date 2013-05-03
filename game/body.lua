@@ -24,7 +24,7 @@ function body.__init:__newindex( key, v )
 	elseif key == 'y' then  self.position[2] = v
 	elseif key == 'Vx' then self.speed[1] 	 = v
 	elseif key == 'Vy' then self.speed[2] 	 = v
-	else rawset(self,key,v) end
+	else rawset(self, key, v) end
 end
 
 function body:update( dt )

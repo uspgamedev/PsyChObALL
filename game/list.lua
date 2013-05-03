@@ -11,7 +11,7 @@ function list:push(x)
 end
 
 function list:pop()
-	if self.first==self.last then print("list empty") return nil end
+	if self.first == self.last then print("list empty") return nil end
 	local x = self[self.first]
 	self[self.first] = nil
 	self.first = self.first + 1

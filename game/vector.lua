@@ -11,14 +11,14 @@ function vector:__tostring()
 end
 
 function vector:__index(n)
-	if n=='x' then return self[1]
-	elseif n=='y' then return self[2]
+	if n == 'x' then return self[1]
+	elseif n == 'y' then return self[2]
 	else return getmetatable(self)[n] end
 end
 
 function vector:__newindex(i, v)
-	if i=='x' then self[1] = v
-	elseif i=='y' then self[2] = v
+	if i == 'x' then self[1] = v
+	elseif i == 'y' then self[2] = v
 	else rawset(self,i,v) end
 end
 
@@ -111,7 +111,7 @@ function vector:set(x, y)
 end
 
 function vector:add(x, y)
-	if x==nil or type(x)=='number' then
+	if x == nil or type(x) == 'number' then
 		self[1] = self[1] + (x or 0)
 		self[2] = self[2] + (y or 0)
 	else
@@ -123,7 +123,7 @@ function vector:add(x, y)
 end
 
 function vector:sub(x, y)
-	if x==nil or type(x)=='number' then
+	if x == nil or type(x) =='number' then
 		self[1] = self[1] - (x or 0)
 		self[2] = self[2] - (y or 0)
 	else
@@ -135,7 +135,7 @@ function vector:sub(x, y)
 end
 
 function vector:mult( x, y )
-	if x==nil or type(x)=='number' then
+	if x == nil or type(x) == 'number' then
 		self[1] = self[1] * (x or 1)
 		self[2] = self[2] * (y or 1)
 	else
@@ -147,7 +147,7 @@ function vector:mult( x, y )
 end
 
 function vector:div( x, y )
-	if x==nil or type(x)=='number' then
+	if x == nil or type(x) == 'number' then
 		self[1] = self[1] / (x or 1)
 		self[2] = self[2] / (y or 1)
 	else
@@ -169,14 +169,14 @@ end
 
 function vector:distsqr(x, y)
 	if y then
-		return (self[1]-x)^2 + (self[2]-y)^2
+		return (self[1] - x)^2 + (self[2] - y)^2
 	else
-		return (self[1]-x[1])^2 + (self[2]-x[2])^2
+		return (self[1] - x[1])^2 + (self[2] - x[2])^2
 	end
 end
 
 function vector:dist(x, y)
-	return math.sqrt(self:distsqr(x,y))
+	return math.sqrt(self:distsqr(x, y))
 end
 
 function vector:unpack()
@@ -193,5 +193,5 @@ end
 
 function vector:normalize()
 	local length = self:length()
-	return self:div(length,length)
+	return self:div(length, length)
 end
