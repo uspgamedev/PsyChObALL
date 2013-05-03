@@ -10,10 +10,14 @@ THE HISTORY OF PSYCHOBALL
 	-"Cleaner" code
 	-More annotations
 -Added "Ultrablast Charge"
+-Added sound controller
+	-You can press 'm' to mute the game
+	-You can press ',' or '.' to decrease or increase the volume
 -Added the logo
 -Added slow-motion effect on death
 -Added version checker
 	-Lets you know if there is a newer version available at the site
+	-Timeouts if it doesn't get any info from the site after a set time
 -You can't leave the screen anymore
 -Explosion particles have the colour of their "origin"
 -Minor changes on text placement

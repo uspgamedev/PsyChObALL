@@ -15,6 +15,7 @@ response = http.request{url=URL, create=function()
   req_sock:settimeout(5)
   return req_sock
 end}
+
 function readstats()
     local file = filesystem.newFile("high")
     if not filesystem.exists("high") then
@@ -26,9 +27,7 @@ function readstats()
     local it = file:lines()
     local r = it()
     if not r then r=0 end
-    besttime = 0 + r
-    r= it()
-    if not r then r=0 end
+    besttime = 0 + rdd
     bestmult = 0 + r
 end
 
@@ -41,6 +40,10 @@ function writestats()
 end
 
 function love.load()
+	
+	muted=false
+	volume=100
+
 	for k,v in pairs(love) do
 		if type(v)== 'table' and not _G[k] then
 			_G[k] = v
@@ -54,8 +57,8 @@ function love.load()
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
 	v = 220
-    version = '0.8.1\n'
-	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
+    version = '0.8.0\n'
+	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
 	timer.ts = {}
 	filesystem.setIdentity("PsyChObALL")
@@ -72,7 +75,7 @@ function love.load()
 	}
 
 	function songfadeout:funcToCall() -- song fades out
-		if song:getVolume()<=.02 then 
+		if song:getVolume()<=(.02*volume/100) then 
         	song:setVolume(0) 
             self:stop()
         else song:setVolume(song:getVolume()-.02) end
@@ -87,10 +90,10 @@ function love.load()
 	 }
 
 	 function songfadein:funcToCall() -- song fades in
-        if song:getVolume()>=.98 then 
-            song:setVolume(1) 
+        if song:getVolume()>=(.98*volume/100) then 
+            song:setVolume(1*volume/100) 
             self:stop()
-        else song:setVolume(song:getVolume()+.02) end
+        else song:setVolume((song:getVolume()+.02)) end
 	 end
 
 	colortimer = timer:new{
@@ -203,7 +206,9 @@ function reload()
 	
 	song:seek(songsetpoints[math.random(#songsetpoints)])
 	song:setVolume(0)
+	if(muted==false)then
 	songfadein:start()
+	end
 	
 	psycho = psychoball:new{
 		position = vector:new{513,360}
@@ -413,7 +418,12 @@ function love.draw()
     graphics.print(string.format("Score: %.0f",score),25,22)
     graphics.print(string.format("Time: %.1fs",totaltime),25,68)
 	graphics.print(srt,27,96)
-	graphics.print("FPS: " .. love.timer.getFPS(),1000,23)
+	graphics.print("FPS: " .. love.timer.getFPS(),990,21)
+	if(muted) then
+		graphics.print("Volume: mute",990,35)
+	else
+		graphics.print("Volume: " .. volume,990,35)
+	end
 	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),25,46)
 	if multiplier>bestmult then bestmult = multiplier end
 	graphics.print(string.format("Best Mult: x%.1f",bestmult),965,103)
@@ -441,9 +451,7 @@ function love.draw()
 		graphics.print("Or when you die.",730,600)
 		graphics.setFont(getFont(12))
 		graphics.print("v" .. version,1030,679)
-		if latest==version then
-			graphics.print("Version up to date!",945,696)
-		else
+		if latest~=version then
 			graphics.print("Version " .. latest,827,696)
 			graphics.print("is available to download!",915,696)
 		end
@@ -489,6 +497,7 @@ function deathText()
 end
 
 function love.update(dt)
+	
 	isPaused = (esc or pause or firsttime) 
 	if not gamelost and score<=0 then score=0 lostgame() end
 	
@@ -564,7 +573,6 @@ function addscore(x)
 end
 
 function love.keypressed(key,code)
-	
 	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
 
 	if not gamelost then 
@@ -605,6 +613,28 @@ function love.keypressed(key,code)
 		reload()
 		psycho.x = x or psycho.x
 		psycho.y = y or psycho.y
+	end
+	
+	if key=='m' and muted then
+		if not gamelost then
+			song:setVolume(volume/100)
+		end
+		muted = false
+	elseif key=='m' and not muted then
+		song:setVolume(0)
+		muted = true
+	end
+	
+	if key=='.' and muted==false and volume<100 then
+		volume=volume+10
+		if not gamelost then
+			song:setVolume(volume/100)
+		end
+	elseif key==',' and muted==false and volume>0 then
+		volume=volume-10
+		if not gamelost and not songfadein.running then
+			song:setVolume(volume/100)
+		end
 	end
 end
 
