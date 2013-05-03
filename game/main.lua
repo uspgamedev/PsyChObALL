@@ -8,8 +8,13 @@ require "timer"
 require "list"
 require "psychoball"
 
-local http = require("socket.http")
-
+local socket = require "socket"
+local http = require "socket.http"
+response = http.request{url=URL, create=function()
+  local req_sock = socket.tcp()
+  req_sock:settimeout(5)
+  return req_sock
+end}
 function readstats()
     local file = filesystem.newFile("high")
     if not filesystem.exists("high") then
@@ -50,7 +55,6 @@ function love.load()
 	v = 220
     version = '0.8.1\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
-	print(version == latest)
 
 	timer.ts = {}
 	filesystem.setIdentity("PsyChObALL")
