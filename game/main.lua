@@ -10,7 +10,8 @@ require "psychoball"
 
 local socket = require "socket"
 local http = require "socket.http"
-response = http.request{url=URL, create=function()
+
+response = http.request{ url=URL, create=function()
   local req_sock = socket.tcp()
   req_sock:settimeout(5)
   return req_sock
@@ -40,12 +41,11 @@ function writestats()
 end
 
 function love.load()
-	
-	muted=false
-	volume=100
+	muted = false
+	volume = 100
 
 	for k,v in pairs(love) do
-		if type(v)== 'table' and not _G[k] then
+		if type(v) == 'table' and not _G[k] then
 			_G[k] = v
 		end
 	end
@@ -75,10 +75,10 @@ function love.load()
 	}
 
 	function songfadeout:funcToCall() -- song fades out
-		if song:getVolume()<=(.02*volume/100) then 
+		if song:getVolume() <= (.02 * volume / 100) then 
         	song:setVolume(0) 
             self:stop()
-        else song:setVolume(song:getVolume()-.02) end
+        else song:setVolume(song:getVolume() - .02) end
 	end
 
 	 songfadein = timer:new{
@@ -90,10 +90,10 @@ function love.load()
 	 }
 
 	 function songfadein:funcToCall() -- song fades in
-        if song:getVolume()>=(.98*volume/100) then 
-            song:setVolume(1*volume/100) 
+        if song:getVolume() >= (.98 * volume / 100) then 
+            song:setVolume(volume / 100)
             self:stop()
-        else song:setVolume((song:getVolume()+.02)) end
+        else song:setVolume((song:getVolume() + .02)) end
 	 end
 
 	colortimer = timer:new{
@@ -190,7 +190,7 @@ function love.load()
      	if currentPE ~= noLSD_PE then 
      		song:setPitch(1)
 			timefactor = 1.0
-			currentPE = nil
+			currentPE  = nil
 			currentPET = nil 
     	end
     end
@@ -206,9 +206,8 @@ function reload()
 	
 	song:seek(songsetpoints[math.random(#songsetpoints)])
 	song:setVolume(0)
-	if(muted==false)then
-	songfadein:start()
-	end
+
+	if not muted then songfadein:start() end
 	
 	psycho = psychoball:new{
 		position = vector:new{513,360}
@@ -219,6 +218,7 @@ function reload()
 	effect.bodies = {}
 	circleEffect.bodies = {}
 	enemy.bodies = {}
+
 	paintables[1] = circleEffect.bodies
 	paintables[2] = shot.bodies
 	paintables[3] = enemy.bodies
@@ -234,7 +234,7 @@ function reload()
 
 	function enemyaddtimer:funcToCall() --adds the enemies to a list
         if not self.first then self.first = true self.timelimit = 2 end
-		self.timelimit = .3 + (self.timelimit-.3)/1.09
+		self.timelimit = .3 + (self.timelimit - .3) / 1.09
 		enemylist:push(enemy:new{})
 	end
 
@@ -245,7 +245,7 @@ function reload()
 
 	function enemyreleasetimer:funcToCall(...) --actually releases the enemies on screen
 		if not self.first then self.first = true self.timelimit = 2 return end
-		self.timelimit = .3 + (self.timelimit-.3)/1.09
+		self.timelimit = .3 + (self.timelimit - .3) / 1.09
 		table.insert(enemy.bodies,enemylist:pop())
 	end
 	
@@ -272,7 +272,7 @@ function reload()
 			}
 		end
 		for i,v in pairs(enemy.bodies) do
-			if v.size==15 and math.random(2)==1 --[[reducing chance]] then 
+			if v.size == 15 and math.random(2) == 1 --[[reducing chance]] then 
 				circleEffect:new{
 					based_on = v
 				} 
@@ -303,7 +303,7 @@ end
 function lostgame()
     writestats()
     songfadeout:start()
-	if deathText()=="The LSD wears off" then
+	if deathText() == "The LSD wears off" then
 	    song:setPitch(.8)
 		deathtexts[11] = "MOAR LSD"
 		deathtexts[17] = "MOAR LSD"
@@ -311,7 +311,7 @@ function lostgame()
 		deathtexts[14] = "MOAR LSD"
 		currentPE = noLSD_PE
 		currentPET = noLSD_PET
-	elseif deathText()=="MOAR LSD" then
+	elseif deathText() == "MOAR LSD" then
 	    song:setPitch(1)
 	    deathtexts[11] = "The LSD wears off"
 	    deathtexts[17] = "There is no cake\n   also you died"
@@ -321,8 +321,9 @@ function lostgame()
 		currentPET = nil
 	end
 
-    gamelost = true
+    gamelost   = true
     timefactor = .05
+
     psycho.speed:set(0,0)
     if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
     neweffects(psycho,80)
@@ -331,82 +332,81 @@ end
 function color(x,xt,alpha)
 	xt = xt or colortimer.timelimit
 	x = x % xt
-	local r,g,b
-	if x<=xt/3 then
-		r = 100 		 -- 100%
-		g = 100*x/(xt/3) -- 0->100%
-		b = 0 			 -- 0%
-	elseif x<=xt/2 then
-		r = 100*(1 - ((x-xt/3)/(xt/2-xt/3))) -- 100->0%
-		g = 100 - 20*((x-xt/3)/(xt/2-xt/3))  -- 100->80%
-		b = 0 								 -- 0%
-	elseif x<=7*xt/12 then
-		r = 0 								  -- 0%
-		g = 80 - 20*((x-xt/2)/(7*xt/12-xt/2)) -- 80->60%
-		b = 60*((x-xt/2)/(7*xt/12-xt/2)) 	  -- 0->60%
-	elseif x<=255*xt/360 then
-		r = 11*((x-7*xt/12)/(255*xt/360-7*xt/12)) 	   -- 0->11%
-		g = 60 -49*((x-7*xt/12)/(255*xt/360-7*xt/12))  -- 60->11%
-		b = 60 + 10*((x-7*xt/12)/(255*xt/360-7*xt/12)) -- 60->70%
+	local r, g, b
+	if x <= xt / 3 then
+		r = 100 		 	   -- 100%
+		g = 100 * x / (xt / 3) -- 0->100%
+		b = 0 			 	   -- 0%
+	elseif x <= xt / 2 then
+		r = 100 * (1 - ((x - xt / 3) / (xt / 2 - xt / 3))) -- 100->0%
+		g = 100 - 20 * ((x - xt / 3) / (xt / 2 - xt / 3))  -- 100->80%
+		b = 0 								 			   -- 0%
+	elseif x <= 7 * xt / 12 then
+		r = 0 								  				  -- 0%
+		g = 80 - 20 * ((x - xt / 2) / (7 * xt / 12 - xt / 2)) -- 80->60%
+		b = 60 * ((x - xt / 2) / (7 * xt / 12 - xt / 2)) 	  -- 0->60%
+	elseif x <= 255 * xt/360 then
+		r = 11 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) 	   -- 0->11%
+		g = 60 - 49 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) -- 60->11%
+		b = 60 + 10 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) -- 60->70%
 	elseif x<=318*xt/360 then
-		r = 11 + 59*((x-255*xt/360)/(318*xt/360-255*xt/360))  -- 11->70%
-		g = 11*(1 - ((x-255*xt/360)/(318*xt/360-255*xt/360))) -- 11->0%
-		b = 70 - 10*((x-255*xt/360)/(318*xt/360-255*xt/360))  -- 70->60%
+		r = 11 + 59 * ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))  -- 11->70%
+		g = 11 * (1 - ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))) -- 11->0%
+		b = 70 - 10 * ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))  -- 70->60%
 	else
-		r = 70 + 30*((x-318*xt/360)/(xt-318*xt/360))  -- 70->100%
-		g = 0 										  -- 0%
-		b = 60*(1 - ((x-318*xt/360)/(xt-318*xt/360))) -- 60->0%
+		r = 70 + 30 * ((x - 318 * xt / 360) / (xt - 318 * xt / 360))  -- 70->100%
+		g = 0 										  				  -- 0%
+		b = 60 * (1 - ((x - 318 * xt / 360) / (xt - 318 * xt / 360))) -- 60->0%
 	end
 	
-	return {r*2.55,g*2.55,b*2.55,alpha or 255}
+	return {r * 2.55, g * 2.55, b * 2.55, alpha or 255}
 end
 
 function sign(x)
-    if x>0 then return 1
-    elseif x<0 then return -1
-    else return 0 end
+    return x == 0 and 0 or x < 0 and -1 or 1 
 end
 
 function line()
 	if gamelost then return end
-	graphics.setColor(color(colortimer.time+12))
-	graphics.circle("line",mouse.getX(),mouse.getY(),5)
-	graphics.setColor(color(colortimer.time+12,nil,60))
-	local m = (mouse.getY()-psycho.y)/(mouse.getX()-psycho.x)
+
+	graphics.setColor(color(colortimer.time + 12))
+	graphics.circle("line", mouse.getX(), mouse.getY(), 5)
+	graphics.setColor(color(colortimer.time + 12, nil, 60))
+	local m = (mouse.getY() - psycho.y)/(mouse.getX() - psycho.x)
 	local x,y
-	if (mouse.getX()-psycho.x)>0 then 
+	if (mouse.getX() - psycho.x) > 0 then 
 		x = graphics.getWidth()
-		y = psycho.y + (x-psycho.x)*m
+		y = psycho.y + (x - psycho.x) * m
 	else
 		x = 0
-		y = psycho.y + (x-psycho.x)*m
+		y = psycho.y + (x - psycho.x) * m
 	end
-	graphics.line(psycho.x,psycho.y,x,y)
+	graphics.line(psycho.x, psycho.y, x, y)
 end
 
 function love.draw()
 	graphics.setPixelEffect(currentPE) --things without texture
     graphics.setLine(4)
-	local bc = color(colortimer.time+17*colortimer.timelimit/13)
-	bc[1] = bc[1]/7
-	bc[2] = bc[2]/7
-	bc[3] = bc[3]/7
+	local bc = color(colortimer.time + 17 * colortimer.timelimit / 13)
+	bc[1] = bc[1] / 7
+	bc[2] = bc[2] / 7
+	bc[3] = bc[3] / 7
 	graphics.setColor(bc)
-	graphics.rectangle("fill",0,0,graphics.getWidth(),graphics.getHeight()) --background color
+	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
-    for i,v in pairs(paintables) do
-        for j,m in pairs(v) do
+    for i, v in pairs(paintables) do
+        for j, m in pairs(v) do
 			m:draw()
 		end
     end
 
-	graphics.setColor(color(colortimer.time*1.4))
+	graphics.setColor(color(colortimer.time * 1.4))
 	graphics.setLine(1)
 
-	for i=enemylist.first,enemylist.last-1 do
-		local a = math.atan((enemylist[i].speed.y/enemylist[i].speed.x))
-		if enemylist[i].speed.x<0 then a = a + math.pi end
-		graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a-.15, a+.15)
+	for i = enemylist.first,enemylist.last - 1 do
+		local a = math.atan((enemylist[i].speed.y / enemylist[i].speed.x))
+		if enemylist[i].speed.x < 0 then a = a + math.pi end
+		graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a - .15, a + .15)
 	end
 	line()
 
@@ -415,74 +415,74 @@ function love.draw()
 	
 	
     graphics.setPixelEffect(currentPET) --things with textures
-    graphics.print(string.format("Score: %.0f",score),25,22)
-    graphics.print(string.format("Time: %.1fs",totaltime),25,68)
-	graphics.print(srt,27,96)
-	graphics.print("FPS: " .. love.timer.getFPS(),990,21)
-	if(muted) then
-		graphics.print("Volume: mute",990,35)
+    graphics.print(string.format("Score: %.0f",score), 25, 22)
+    graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
+	graphics.print(srt, 27, 96)
+	graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
+	if muted then
+		graphics.print("Volume: mute", 990, 35)
 	else
-		graphics.print("Volume: " .. volume,990,35)
+		graphics.print("Volume: " .. volume, 990, 35)
 	end
-	graphics.print(string.format("Best Time: %.1fs",math.max(besttime,totaltime)),25,46)
-	if multiplier>bestmult then bestmult = multiplier end
-	graphics.print(string.format("Best Mult: x%.1f",bestmult),965,103)
+	graphics.print(string.format("Best Time: %.1fs", math.max( besttime, totaltime)), 25, 46)
+	if multiplier > bestmult then bestmult = multiplier end
+	graphics.print(string.format("Best Mult: x%.1f", bestmult), 965, 103)
 	graphics.setFont(getFont(40))
-	graphics.print(string.format("x%.1f",multiplier),950,55)
+	graphics.print(string.format("x%.1f", multiplier), 950, 55)
 	graphics.setFont(getFont(12))
 	
 	
 	if firsttime then
-		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
+		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(20))
-		graphics.print("You get points when:",270,36)
-		graphics.print("You kill an enemy",303,72)
-		graphics.print("You lose points when:",607,36)
-		graphics.print("You miss a shot",641,72)
-		graphics.print("You let an enemy escape",641,95)
+		graphics.print("You get points when:", 270, 36)
+		graphics.print("You kill an enemy", 303, 72)
+		graphics.print("You lose points when:", 607, 36)
+		graphics.print("You miss a shot", 641, 72)
+		graphics.print("You let an enemy escape", 641, 95)
 		graphics.setFont(getFont(30))
-		graphics.print("Game Ends when your score hits zero",135,564)
+		graphics.print("Game Ends when your score hits zero", 135, 564)
 		graphics.setFont(getFont(20))
-		graphics.print("Use WASD or arrows to move",202,300)
-		graphics.print("Click to shoot",560,390)
-		graphics.print("Hold space to charge:", 540,432)
-		graphics.print("click to continue",870,645)
+		graphics.print("Use WASD or arrows to move", 202, 300)
+		graphics.print("Click to shoot", 560, 390)
+		graphics.print("Hold space to charge:", 540, 432)
+		graphics.print("click to continue", 870, 645)
 		graphics.setFont(getFont(17))
-		graphics.print("Or when you die.",730,600)
+		graphics.print("Or when you die.", 730, 600)
 		graphics.setFont(getFont(12))
-		graphics.print("v" .. version,1030,679)
-		if latest~=version then
-			graphics.print("Version " .. latest,827,696)
-			graphics.print("is available to download!",915,696)
+		graphics.print("v" .. version, 1030, 679)
+		if latest ~= version then
+			graphics.print("Version " .. latest, 827, 696)
+			graphics.print("is available to download!", 915, 696)
 		end
-		graphics.print("A game by Marvellous Soft/USPGameDev", 14,696)
+		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 		graphics.setFont(getFont(35))
-		graphics.setColor(color(colortimer.time*0.856))
-		graphics.print("ulTrAbLaST",762,420)
+		graphics.setColor(color(colortimer.time * 0.856))
+		graphics.print("ulTrAbLaST", 762, 420)
 
-		graphics.setColor(color(colortimer.time*4.5 + .54))
-		graphics.draw(logo,120,105,nil,0.25,0.20)
+		graphics.setColor(color(colortimer.time * 4.5 + .54))
+		graphics.draw(logo, 120, 105, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 	end
 	if gamelost then
-		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
+		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
 		if besttime == totaltime then
 			graphics.setFont(getFont(60))
-			graphics.print("You beat the best time!",182,144)
+			graphics.print("You beat the best time!", 182, 144)
 		end
 		graphics.setFont(getFont(40))
-		graphics.print(deathText(),270,300)
+		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
-		graphics.print(string.format("You lasted %.1fsecs",totaltime),486,600)
-		if score==0 then graphics.print("Your score hit 0.",432,640) end
+		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 600)
+		if score == 0 then graphics.print("Your score hit 0.", 432, 640) end
 		graphics.setFont(getFont(22))
-		graphics.print("'r' to retry",540,480)
+		graphics.print("'r' to retry", 540, 480)
 		graphics.setFont(getFont(12))
 	end
 	if esc then
-		graphics.setColor(color(colortimer.time-colortimer.timelimit/2))
+		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
-		graphics.print("Paused",270,300)
+		graphics.print("Paused", 270, 300)
 		graphics.setFont(getFont(12))
 	end
 end
@@ -491,38 +491,38 @@ deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the de
 "You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
 "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery"}
+
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
 	return dtn
 end
 
-function love.update(dt)
-	
+function love.update(dt)	
 	isPaused = (esc or pause or firsttime) 
-	if not gamelost and score<=0 then score=0 lostgame() end
+	if not gamelost and score <= 0 then score = 0 lostgame() end
 	
 	
-	timer.updatetimers(dt,timefactor,isPaused,gamelost)
+	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
-	dt = dt*timefactor
+	dt = dt * timefactor
 	
 	if isPaused then return end
-	if not gamelost then totaltime = totaltime+dt end
+	if not gamelost then totaltime = totaltime + dt end
 
     psycho:update(dt)
     local todelete = {}
-    for i,v in pairs(paintables) do
-        for j,m in pairs(v) do
+    for i, v in pairs(paintables) do
+        for j, m in pairs(v) do
 			if not m:update(dt) then
-				table.insert(todelete,j) --deletes items that return false
+				table.insert(todelete, j) --deletes items that return false
 			end
 		end
-		local a=0
-		for k,n in ipairs(todelete) do
+		local a = 0
+		for k, n in ipairs(todelete) do
 			if type(n) == 'number' then
-				v[n-a]:handleDelete()
-				table.remove(v,n-a)
-				a = a+1
+				v[n - a]:handleDelete()
+				table.remove(v, n - a)
+				a = a + 1
 			else
 				v[n]:handleDelete()
 				v[n] = nil
@@ -534,35 +534,35 @@ function love.update(dt)
 	todelete = nil
 end
 
-function love.mousepressed(x,y,button)
+function love.mousepressed(x, y, button)
     if esc or pause then return end
     if firsttime then firsttime = false return end
     if button == 'l' and not gamelost then
-        shoot(x,y)
+        shoot(x, y)
 		shottimer:start()
     end
 end
 
-function love.mousereleased(x,y,button)
+function love.mousereleased(x, y, button)
 	if button == 'l' then
 		shottimer:stop()
 	end
 end
 
-function shoot(x,y)
+function shoot(x, y)
 	local diffx = x - psycho.x
     local diffy = y - psycho.y
-    local Vx = signum(diffx)*math.sqrt((9*v*v*diffx*diffx)/(diffx*diffx + diffy*diffy))
-    local Vy = signum(diffy)*math.sqrt((9*v*v*diffy*diffy)/(diffx*diffx + diffy*diffy))
+    local Vx = signum(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
+    local Vy = signum(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
     table.insert(shot.bodies, shot:new {
     	position = psycho.position:clone(),
-    	speed	 = vector:new {Vx,Vy}
+    	speed	 = vector:new {Vx, Vy}
     	})
 end
 
 function signum(a)
-    if a>0 then return 1
-    elseif a<0 then return -1
+    if a > 0 then return 1
+    elseif a < 0 then return -1
     else return 0 end
 end
 
@@ -572,39 +572,39 @@ function addscore(x)
 	end
 end
 
-function love.keypressed(key,code)
-	if (key=='escape' or key=='p') and not gamelost then esc = not esc end
+function love.keypressed(key, code)
+	if (key == 'escape' or key == 'p') and not gamelost then esc = not esc end
 
 	if not gamelost then 
-	    if key=='w' or key == 'up' then
+	    if key == 'w' or key == 'up' then
 	        psycho.Vy = -v
-	  		if psycho.Vx~=0 then psycho.speed:div(sqr2) end
-	    elseif key=='s' or key == 'down' then 
+	  		if psycho.Vx ~= 0 then psycho.speed:div(sqr2) end
+	    elseif key == 's' or key == 'down' then 
 	        psycho.Vy = v
-	        if psycho.Vx~=0 then psycho.speed:div(sqr2) end
-	    elseif key=='a' or key=='left' then 
+	        if psycho.Vx ~=0 then psycho.speed:div(sqr2) end
+	    elseif key == 'a' or key == 'left' then 
 	        psycho.Vx = -v
-	        if psycho.Vy~=0 then psycho.speed:div(sqr2) end
-	    elseif key=='d' or key=='right' then 
+	        if psycho.Vy ~= 0 then psycho.speed:div(sqr2) end
+	    elseif key == 'd' or key == 'right' then 
 	        psycho.Vx = v
-	        if psycho.Vy~=0 then psycho.speed:div(sqr2) end
+	        if psycho.Vy ~= 0 then psycho.speed:div(sqr2) end
 	    end
 
 		if key == ' ' and not isPaused then
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
-				based_on = psycho,
+				based_on   = psycho,
 				sizeGrowth = 30,
-				alpha = 100,
-				linewidth = 6,
-				index = 'ultrameter'
+				alpha 	   = 100,
+				linewidth  = 6,
+				index 	   = 'ultrameter'
 			}
 			psycho.ultrameter.position = psycho.position
 			ultratimer:start()
 		end
 	end
 	
-	if gamelost and key=='r' then
+	if gamelost and key == 'r' then
 		local x,y
 		if psycho.diereason == "shot" then
 			x = psycho.x
@@ -615,54 +615,54 @@ function love.keypressed(key,code)
 		psycho.y = y or psycho.y
 	end
 	
-	if key=='m' and muted then
-		if not gamelost then
-			song:setVolume(volume/100)
+	if key == 'm' then
+		if muted then
+			if not gamelost then song:setVolume(volume / 100) end
+			muted = false
+		else
+			song:setVolume(0)
+			muted = true
 		end
-		muted = false
-	elseif key=='m' and not muted then
-		song:setVolume(0)
-		muted = true
 	end
 	
-	if key=='.' and muted==false and volume<100 then
-		volume=volume+10
+	if key == '.' and not muted and volume < 100 then
+		volume = volume + 10
 		if not gamelost then
-			song:setVolume(volume/100)
+			song:setVolume(volume / 100)
 		end
-	elseif key==',' and muted==false and volume>0 then
-		volume=volume-10
+	elseif key == ',' and muted == false and volume > 0 then
+		volume = volume - 10
 		if not gamelost and not songfadein.running then
-			song:setVolume(volume/100)
+			song:setVolume(volume / 100)
 		end
 	end
 end
 
 function do_ultrablast()
-	for i=1,ultrablast do
-		shoot(psycho.x+(math.cos(math.pi*2*i/ultrablast)*100),psycho.y+(math.sin(math.pi*2*i/ultrablast)*100))
+	for i=1, ultrablast do
+		shoot(psycho.x + (math.cos(math.pi * 2 * i / ultrablast) * 100), psycho.y + (math.sin(math.pi * 2 * i / ultrablast) * 100))
 	end
 end
 
-function love.keyreleased(key,code)
+function love.keyreleased(key, code)
 	if not gamelost then
-	    if ((key=='w'or key=='up') and (keyboard.isDown('s') or keyboard.isDown('down'))) then
+	    if (key =='w'or key == 'up') and (keyboard.isDown('s') or keyboard.isDown('down')) then
 	        psycho.Vy = math.abs(psycho.Vy)
-	    elseif ((key=='s'or key=='down') and (keyboard.isDown('w') or keyboard.isDown('up'))) then
+	    elseif (key == 's'or key == 'down') and (keyboard.isDown('w') or keyboard.isDown('up')) then
 	        psycho.Vy = -math.abs(psycho.Vy)
-	    elseif ((key=='a'or key=='left') and (keyboard.isDown('d') or keyboard.isDown('right'))) then
+	    elseif (key == 'a'or key == 'left') and (keyboard.isDown('d') or keyboard.isDown('right')) then
 	        psycho.Vx = math.abs(psycho.Vx)
-	    elseif  ((key=='d'or key=='right') and (keyboard.isDown('a') or keyboard.isDown('left'))) then
+	    elseif  (key == 'd'or key == 'right') and (keyboard.isDown('a') or keyboard.isDown('left')) then
 	        psycho.Vx = -math.abs(psycho.Vx)
 	    end
 	    
-	    if (key=='w' or key=='s' or key=='up' or key=='down') and 
-	            not (keyboard.isDown('w') or keyboard.isDown('s') or 
-	                keyboard.isDown('up') or keyboard.isDown('down')) then 
+	    if key == 'w' or key == 's' or key == 'up' or key == 'down' and 
+	            not keyboard.isDown('w') or keyboard.isDown('s') or 
+	                keyboard.isDown('up') or keyboard.isDown('down') then 
 		    psycho.speed:set(signum(psycho.Vx) * v, 0)
-	    elseif (key=='a' or key=='d' or key=='left' or key=='right') and 
-	            not (keyboard.isDown('a') or keyboard.isDown('d') or 
-	                keyboard.isDown('left') or keyboard.isDown('right')) then 
+	    elseif key == 'a' or key == 'd' or key == 'left' or key == 'right' and 
+	            not keyboard.isDown('a') or keyboard.isDown('d') or 
+	                keyboard.isDown('left') or keyboard.isDown('right') then
 			psycho.speed:set( 0, signum(psycho.Vy) * v)
 		end
 
@@ -677,7 +677,7 @@ function love.keyreleased(key,code)
 		end
 	end
 	
-	if key=='scrollock' then 
+	if key == 'scrollock' then 
 	    graphics.newScreenshot():encode('screenshot_' .. screenshotnumber .. '.png')
 	    screenshotnumber = screenshotnumber + 1
 	end
