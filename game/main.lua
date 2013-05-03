@@ -51,6 +51,7 @@ function love.load()
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	logo = graphics.newImage('resources/LogoBeta.png')
+	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
 	v = 220
     version = '0.8.1\n'
