@@ -27,7 +27,7 @@ function readstats()
     local it = file:lines()
     local r = it()
     if not r then r=0 end
-    besttime = 0 + rdd
+    besttime = 0 + r
     bestmult = 0 + r
 end
 
