@@ -104,7 +104,7 @@ function love.load()
 
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
-	sqr2 = math.sqrt(2)
+	sqrt2 = math.sqrt(2)
 	fonts = {}
 	
 	firsttime = true
@@ -292,6 +292,9 @@ function reload()
 
 	srt = " " --random string to be painted
 	dtn = nil
+
+	keyspressed = {}
+	auxspeed = vector:new {}
 end
 
 function getFont(size)
@@ -510,6 +513,7 @@ function love.update(dt)
 	if not gamelost then totaltime = totaltime + dt end
 
     psycho:update(dt)
+
     local todelete = {}
     for i, v in pairs(paintables) do
         for j, m in pairs(v) do
@@ -561,9 +565,7 @@ function shoot(x, y)
 end
 
 function signum(a)
-    if a > 0 then return 1
-    elseif a < 0 then return -1
-    else return 0 end
+    return a == 0 and 0 or a > 0 and 1 or -1 
 end
 
 function addscore(x)
@@ -575,20 +577,20 @@ end
 function love.keypressed(key, code)
 	if (key == 'escape' or key == 'p') and not gamelost then esc = not esc end
 
+	keyspressed[key] = true
+
 	if not gamelost then 
-	    if key == 'w' or key == 'up' then
-	        psycho.Vy = -v
-	  		if psycho.Vx ~= 0 then psycho.speed:div(sqr2) end
-	    elseif key == 's' or key == 'down' then 
-	        psycho.Vy = v
-	        if psycho.Vx ~=0 then psycho.speed:div(sqr2) end
-	    elseif key == 'a' or key == 'left' then 
-	        psycho.Vx = -v
-	        if psycho.Vy ~= 0 then psycho.speed:div(sqr2) end
-	    elseif key == 'd' or key == 'right' then 
-	        psycho.Vx = v
-	        if psycho.Vy ~= 0 then psycho.speed:div(sqr2) end
-	    end
+		auxspeed:add(
+			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
+				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
+			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v or 0) 
+				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v or 0)
+		)
+		psycho.speed:set(auxspeed)
+
+		if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
+			psycho.speed:div(sqrt2)
+		end
 
 		if key == ' ' and not isPaused then
 			ultrablast = 10
@@ -645,25 +647,20 @@ function do_ultrablast()
 end
 
 function love.keyreleased(key, code)
+	if not keyspressed[key] then return
+	else keyspressed[key] = false end
+
 	if not gamelost then
-	    if (key =='w'or key == 'up') and (keyboard.isDown('s') or keyboard.isDown('down')) then
-	        psycho.Vy = math.abs(psycho.Vy)
-	    elseif (key == 's'or key == 'down') and (keyboard.isDown('w') or keyboard.isDown('up')) then
-	        psycho.Vy = -math.abs(psycho.Vy)
-	    elseif (key == 'a'or key == 'left') and (keyboard.isDown('d') or keyboard.isDown('right')) then
-	        psycho.Vx = math.abs(psycho.Vx)
-	    elseif  (key == 'd'or key == 'right') and (keyboard.isDown('a') or keyboard.isDown('left')) then
-	        psycho.Vx = -math.abs(psycho.Vx)
-	    end
-	    
-	    if key == 'w' or key == 's' or key == 'up' or key == 'down' and 
-	            not keyboard.isDown('w') or keyboard.isDown('s') or 
-	                keyboard.isDown('up') or keyboard.isDown('down') then 
-		    psycho.speed:set(signum(psycho.Vx) * v, 0)
-	    elseif key == 'a' or key == 'd' or key == 'left' or key == 'right' and 
-	            not keyboard.isDown('a') or keyboard.isDown('d') or 
-	                keyboard.isDown('left') or keyboard.isDown('right') then
-			psycho.speed:set( 0, signum(psycho.Vy) * v)
+	    auxspeed:sub(
+			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
+				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
+			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v or 0) 
+				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v or 0)
+		)
+		psycho.speed:set(auxspeed)
+
+		if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
+			psycho.speed:div(sqrt2)
 		end
 
 		if key == ' ' then
