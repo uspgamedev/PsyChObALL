@@ -8,7 +8,8 @@ body = lux.object.new {
 
 body.__init = {
 	position = vector:new{},
-	speed = vector:new{}
+	speed 	 = vector:new{},
+	color 	 = {0,0,0,0}
 }
 
 function body.__init:__index( key )

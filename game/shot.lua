@@ -17,7 +17,7 @@ function shot:handleDelete()
 end
 
 function shot:draw()
-	graphics.setColor(color(self.variance + colortimer.time))
+	graphics.setColor(color(self.color, self.variance + colortimer.time))
     graphics.circle(self.mode, self.x, self.y, self.size)
 end
 

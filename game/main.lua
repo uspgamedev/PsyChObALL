@@ -318,14 +318,14 @@ function applyeffect( color )
 	return currentEffect and currentEffect(color) or color
 end
 
-function colorwheel(x, xt, alpha)
+function colorwheel(color, x, xt, alpha)
 	xt = xt or colortimer.timelimit
 	x = x % xt
 	local r, g, b
 	if x <= xt / 3 then
-		r = 100 		 	   -- 100%
+		r = 100 			   -- 100%
 		g = 100 * x / (xt / 3) -- 0->100%
-		b = 0 			 	   -- 0%
+		b = 0 				   -- 0%
 	elseif x <= xt / 2 then
 		r = 100 * (1 - ((x - xt / 3) / (xt / 2 - xt / 3))) -- 100->0%
 		g = 100 - 20 * ((x - xt / 3) / (xt / 2 - xt / 3))  -- 100->80%
@@ -347,20 +347,23 @@ function colorwheel(x, xt, alpha)
 		g = 0 										  				  -- 0%
 		b = 60 * (1 - ((x - 318 * xt / 360) / (xt - 318 * xt / 360))) -- 60->0%
 	end
-	
-	return {r * 2.55, g * 2.55, b * 2.55, alpha or 255}
+	color[1], color[2], color[3], color[4] = r * 2.55, g * 2.55, b * 2.55, alpha or 255
+	return color
 end
 
 function sign(x)
     return x == 0 and 0 or x < 0 and -1 or 1 
 end
 
+local linecolor = {0,0,0,0}
+local mousecirclecolor = {0,0,0,0}
+
 function line()
 	if gamelost then return end
 
-	graphics.setColor(color(colortimer.time + 12))
+	graphics.setColor(color(mousecirclecolor, colortimer.time + 12))
 	graphics.circle("line", mouse.getX(), mouse.getY(), 5)
-	graphics.setColor(color(colortimer.time + 12, nil, 60))
+	graphics.setColor(color(linecolor, colortimer.time + 12, nil, 60))
 	local m = (mouse.getY() - psycho.y)/(mouse.getX() - psycho.x)
 	local x,y
 	if (mouse.getX() - psycho.x) > 0 then 
@@ -373,14 +376,21 @@ function line()
 	graphics.line(psycho.x, psycho.y, x, y)
 end
 
+local backColor = {0,0,0,0}
+local arcsColor = {0,0,0,0}
+local otherstuffcolor = {0,0,0,0}
+local ultrablastcolor = {0,0,0,0}
+local logocolor = {0,0,0,0}
+
 function love.draw()
     graphics.setLine(4)
-	local bc = colorwheel(colortimer.time + 17 * colortimer.timelimit / 13)
-	bc[1] = bc[1] / 7
-	bc[2] = bc[2] / 7
-	bc[3] = bc[3] / 7
-	applyeffect(bc)
-	graphics.setColor(bc)
+
+	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
+	backColor[1] = backColor[1] / 7
+	backColor[2] = backColor[2] / 7
+	backColor[3] = backColor[3] / 7
+	applyeffect(backColor)
+	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
     for i, v in pairs(paintables) do
@@ -389,12 +399,12 @@ function love.draw()
 		end
     end
 
-	graphics.setColor(color(colortimer.time * 1.4))
+    love.graphics.setColor(color(arcsColor, colortimer.time * 1.4))
 	graphics.setLine(1)
 
-	for i = enemylist.first,enemylist.last - 1 do
-		local a = math.atan((enemylist[i].speed.y / enemylist[i].speed.x))
-		if enemylist[i].speed.x < 0 then a = a + math.pi end
+	for i = enemylist.first, enemylist.last - 1 do
+		local a = math.atan((enemylist[i].Vy/ enemylist[i].Vx))
+		if enemylist[i].Vx < 0 then a = a + math.pi end
 		graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a - .15, a + .15)
 	end
 	line()
@@ -421,7 +431,7 @@ function love.draw()
 	
 	
 	if firsttime then
-		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
+		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(20))
 		graphics.print("You get points when:", 270, 36)
 		graphics.print("You kill an enemy", 303, 72)
@@ -445,15 +455,15 @@ function love.draw()
 		end
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 		graphics.setFont(getFont(35))
-		graphics.setColor(color(colortimer.time * 0.856))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
 		graphics.print("ulTrAbLaST", 762, 420)
 
-		graphics.setColor(color(colortimer.time * 4.5 + .54))
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54))
 		graphics.draw(logo, 120, 105, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 	end
 	if gamelost then
-		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
+		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		if besttime == totaltime then
 			graphics.setFont(getFont(60))
 			graphics.print("You beat the best time!", 182, 144)
@@ -468,7 +478,7 @@ function love.draw()
 		graphics.setFont(getFont(12))
 	end
 	if esc then
-		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
+		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getFont(12))

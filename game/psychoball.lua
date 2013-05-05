@@ -23,6 +23,6 @@ end
 
 function psychoball:draw()
 	if gamelost then return end
-	graphics.setColor(color(colortimer.time + self.variance))
+	graphics.setColor(color(self.color, colortimer.time + self.variance))
 	graphics.circle(self.mode, self.x, self.y, self.size)
 end

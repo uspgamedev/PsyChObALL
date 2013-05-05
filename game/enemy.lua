@@ -41,7 +41,6 @@ function enemy:__init()
 	end
 
 	self.variance = math.random(colortimer.timelimit * 1000) / 1000
-	self.color = color(math.random(0, 100 * colortimer.timelimit) / 100)
 end
 
 function enemy:handleDelete()
@@ -90,13 +89,10 @@ function enemy:handleDelete()
 			table.insert(enemy.bodies, e)
 		end
 	end
-
 end
 
-
 function enemy:draw()
-	self.color = color(colortimer.time + self.variance)
-	love.graphics.setColor(self.color)
+	love.graphics.setColor(color(self.color, colortimer.time + self.variance))
 	love.graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 

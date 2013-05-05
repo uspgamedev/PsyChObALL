@@ -26,7 +26,7 @@ end
 
 function circleEffect:draw()
     if self.linewidth then love.graphics.setLine(self.linewidth) end
-    love.graphics.setColor(color(colortimer.time * self.variance, nil, self.alpha))
+    love.graphics.setColor(color(self.color, colortimer.time * self.variance, nil, self.alpha))
     love.graphics.circle('line', self.x, self.y, self.size)
     if self.linewidth then love.graphics.setLine(4) end
 end
