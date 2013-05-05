@@ -110,37 +110,6 @@ function love.load()
 	firsttime = true
 	readstats()	
 	
-	currentPE = nil
-	currentPET = nil
-	noLSD_PET = graphics.newPixelEffect [[
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
-        {
-            vec4 cor_final = Texel(texture, texture_coords) * color;
-            return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
-        }
-    ]]
-    noLSD_PE = graphics.newPixelEffect[[
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
-        {
-            vec4 cor_final = color;
-            return vec4((cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, (cor_final[0]+cor_final[1]+cor_final[2])/3, cor_final[3]);
-        }
-    ]]
-	invertPET = graphics.newPixelEffect [[
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
-        {
-            vec4 cor_final = Texel(texture, texture_coords) * color;
-            return vec4(1-cor_final[0],1-cor_final[1],1-cor_final[2], cor_final[3]);
-        }
-    ]]
-    invertPE = graphics.newPixelEffect [[
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
-        {
-            vec4 cor_final = color;
-            return vec4(1-cor_final[0],1-cor_final[1],1-cor_final[2], cor_final[3]);
-        }
-    ]]
-	
 	multtimer = timer:new {
 		timelimit  = 2.2,
 		running    = false,
@@ -187,11 +156,10 @@ function love.load()
 	}
 
 	function inverttimer:funcToCall() -- disinverts the screen color
-     	if currentPE ~= noLSD_PE then 
+     	if currentEffect ~= noLSDeffect then 
      		song:setPitch(1)
 			timefactor = 1.0
-			currentPE  = nil
-			currentPET = nil 
+			currentEffect = nil
     	end
     end
 
@@ -312,16 +280,14 @@ function lostgame()
 		deathtexts[17] = "MOAR LSD"
 		deathtexts[16] = "MOAR LSD"
 		deathtexts[14] = "MOAR LSD"
-		currentPE = noLSD_PE
-		currentPET = noLSD_PET
+		currentEffect = noLSDeffect
 	elseif deathText() == "MOAR LSD" then
 	    song:setPitch(1)
 	    deathtexts[11] = "The LSD wears off"
 	    deathtexts[17] = "There is no cake\n   also you died"
 	    deathtexts[16] = "Have a nice death"
 	    deathtexts[14] = "USPGameDev Rulez"
-		currentPE = nil 
-		currentPET = nil
+		currentEffect = nil
 	end
 
     gamelost   = true
@@ -332,7 +298,27 @@ function lostgame()
     neweffects(psycho,80)
 end
 
-function color(x,xt,alpha)
+function color( ... )
+	return applyeffect(colorwheel(...))
+end
+
+function inverteffect( color )
+	color[1], color[2], color[3] =
+		255 - color[1], 255 - color[2], 255 - color[3]
+	return color
+end
+
+function noLSDeffect( color )
+	local gray = (color[1] + color[2] + color[3]) / 3
+	color[1], color[2], color[3] = gray, gray, gray
+	return color
+end
+
+function applyeffect( color )
+	return currentEffect and currentEffect(color) or color
+end
+
+function colorwheel(x, xt, alpha)
 	xt = xt or colortimer.timelimit
 	x = x % xt
 	local r, g, b
@@ -388,12 +374,12 @@ function line()
 end
 
 function love.draw()
-	graphics.setPixelEffect(currentPE) --things without texture
     graphics.setLine(4)
-	local bc = color(colortimer.time + 17 * colortimer.timelimit / 13)
+	local bc = colorwheel(colortimer.time + 17 * colortimer.timelimit / 13)
 	bc[1] = bc[1] / 7
 	bc[2] = bc[2] / 7
 	bc[3] = bc[3] / 7
+	applyeffect(bc)
 	graphics.setColor(bc)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
@@ -417,7 +403,6 @@ function love.draw()
 	psycho:draw()
 	
 	
-    graphics.setPixelEffect(currentPET) --things with textures
     graphics.print(string.format("Score: %.0f",score), 25, 22)
     graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
 	graphics.print(srt, 27, 96)
@@ -574,7 +559,7 @@ function addscore(x)
 	end
 end
 
-function love.keypressed(key, code)
+function love.keypressed(key)
 	if (key == 'escape' or key == 'p') and not gamelost then esc = not esc end
 
 	keyspressed[key] = true
