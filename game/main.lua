@@ -271,22 +271,20 @@ function getFont(size)
 	return fonts[size]
 end
 
+local moarLSDchance = 4
+
 function lostgame()
     writestats()
     songfadeout:start()
 	if deathText() == "The LSD wears off" then
 	    song:setPitch(.8)
-		deathtexts[11] = "MOAR LSD"
-		deathtexts[17] = "MOAR LSD"
-		deathtexts[16] = "MOAR LSD"
-		deathtexts[14] = "MOAR LSD"
+	    deathtexts[11] = "MOAR LSD"
+		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
 		currentEffect = noLSDeffect
 	elseif deathText() == "MOAR LSD" then
 	    song:setPitch(1)
 	    deathtexts[11] = "The LSD wears off"
-	    deathtexts[17] = "There is no cake\n   also you died"
-	    deathtexts[16] = "Have a nice death"
-	    deathtexts[14] = "USPGameDev Rulez"
+	    for i = 1, moarLSDchance do table.remove(deathtexts) end
 		currentEffect = nil
 	end
 
