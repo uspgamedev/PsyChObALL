@@ -582,6 +582,8 @@ function love.keypressed(key)
 			devmode = not devmode
 			return
 		end
+	else
+		devprogress = 0
 	end
 	--
 
@@ -642,7 +644,9 @@ function love.keypressed(key)
 		end
 	end
 
-	if devmode and key == 'o' then lostgame() end
+	if devmode then
+		if not paused and key == 'o' then lostgame() end
+	end
 end
 
 function do_ultrablast()
