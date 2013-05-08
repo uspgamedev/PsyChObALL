@@ -179,7 +179,7 @@ function reload()
 	if not muted then songfadein:start() end
 	
 	psycho = psychoball:new{
-		position = vector:new{513,360}
+		position = psycho and psycho.position or vector:new{513,360}
 	}
 	
 	paintables = {}
@@ -277,6 +277,7 @@ local moarLSDchance = 4
 function lostgame()
     writestats()
     songfadeout:start()
+
 	if deathText() == "The LSD wears off" then
 	    song:setPitch(.8)
 	    deathtexts[11] = "MOAR LSD"
@@ -497,7 +498,7 @@ end
 
 function love.update(dt)	
 	isPaused = (esc or pause or firsttime) 
-	if not gamelost and score <= 0 then score = 0 lostgame() end
+	if not gamelost and score <= 0 then score = 0 psycho.diereason = "score" lostgame() end
 	
 	
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
@@ -616,14 +617,7 @@ function love.keypressed(key)
 	end
 	
 	if gamelost and key == 'r' then
-		local x,y
-		if psycho.diereason == "shot" then
-			x = psycho.x
-			y = psycho.y
-		end
 		reload()
-		psycho.x = x or psycho.x
-		psycho.y = y or psycho.y
 	end
 	
 	if key == 'm' then
