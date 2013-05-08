@@ -41,6 +41,7 @@ function writestats()
 end
 
 function love.load()
+	devmode = false
 	muted = false
 	volume = 100
 
@@ -426,6 +427,7 @@ function love.draw()
 	graphics.setFont(getFont(40))
 	graphics.print(string.format("x%.1f", multiplier), 950, 55)
 	graphics.setFont(getFont(12))
+	if devmode then graphics.print("dev Mode on!", 950, 700) end
 	
 	
 	if firsttime then
@@ -567,8 +569,22 @@ function addscore(x)
 	end
 end
 
+local devcode = {'p','s','y','c','h','o'}
+local devprogress = 0
+
 function love.keypressed(key)
-	if (key == 'escape' or key == 'p') and not gamelost then esc = not esc end
+	--checking for dev code
+	if key == devcode[devprogress + 1] then
+		devprogress = devprogress + 1
+		if devprogress == #devcode then
+			devprogress = 0
+			devmode = not devmode
+			return
+		end
+	end
+	--
+
+	if (key == 'escape' or key == 'p') and not (gamelost or firsttime) then esc = not esc end
 
 	keyspressed[key] = true
 
@@ -631,6 +647,8 @@ function love.keypressed(key)
 			song:setVolume(volume / 100)
 		end
 	end
+
+	if devmode and key == 'o' then lostgame() end
 end
 
 function do_ultrablast()
