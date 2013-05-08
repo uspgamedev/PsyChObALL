@@ -42,6 +42,7 @@ end
 
 function love.load()
 	devmode = false
+	invisible = false -- easter eggs
 	muted = false
 	volume = 100
 
@@ -127,7 +128,7 @@ function love.load()
 		self:stop() 
 		self:funcToCall()
 	end
-
+	
 	ultrablastmax = 42 -- maximum number of shots on ultrablast
 	ultratimer = timer:new {
 		timelimit  = .1,
@@ -410,8 +411,9 @@ function love.draw()
 	line()
 
 	--painting PsyChObALL
-	psycho:draw()
-	
+	if not invisible then -- Invisible easter-egg
+		psycho:draw()
+	end
 	
     graphics.print(string.format("Score: %.0f",score), 25, 22)
     graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
@@ -420,7 +422,7 @@ function love.draw()
 	if muted then
 		graphics.print("Volume: mute", 990, 35)
 	else
-		graphics.print("Volume: " .. volume, 990, 35)
+		graphics.print("Volume: " .. volume, 990, 36)
 	end
 	graphics.print(string.format("Best Time: %.1fs", math.max( besttime, totaltime)), 25, 46)
 	if multiplier > bestmult then bestmult = multiplier end
@@ -429,6 +431,10 @@ function love.draw()
 	graphics.print(string.format("x%.1f", multiplier), 950, 55)
 	graphics.setFont(getFont(12))
 	if devmode then graphics.print("dev Mode on!", 950, 700) end
+
+	if invisible then
+		graphics.print("Invisible mode ON!", 930, 690)
+	end
 	
 	
 	if firsttime then
@@ -440,14 +446,14 @@ function love.draw()
 		graphics.print("You miss a shot", 641, 72)
 		graphics.print("You let an enemy escape", 641, 95)
 		graphics.setFont(getFont(30))
-		graphics.print("Game Ends when your score hits zero", 135, 564)
+		graphics.print("Game Ends when your score hits zero", 135, 534)
 		graphics.setFont(getFont(20))
 		graphics.print("Use WASD or arrows to move", 202, 300)
 		graphics.print("Click to shoot", 560, 390)
 		graphics.print("Hold space to charge:", 540, 432)
 		graphics.print("click to continue", 870, 645)
-		graphics.setFont(getFont(17))
-		graphics.print("Or when you die.", 730, 600)
+		graphics.setFont(getFont(25))
+		graphics.print("Or when you get hit.", 670, 570)
 		graphics.setFont(getFont(12))
 		graphics.print("v" .. version, 1030, 679)
 		if latest ~= version then
@@ -472,8 +478,9 @@ function love.draw()
 		graphics.setFont(getFont(40))
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
-		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 600)
-		if score == 0 then graphics.print("Your score hit 0.", 432, 640) end
+		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 550)
+		if score ~= 0 then graphics.print("You were hit.", 132, 180) end
+		if score == 0 then graphics.print("Your score hit 0.", 132, 180) end
 		graphics.setFont(getFont(22))
 		graphics.print("'r' to retry", 540, 480)
 		graphics.setFont(getFont(12))
@@ -633,12 +640,12 @@ function love.keypressed(key)
 	end
 	
 	if key == '.' and not muted and volume < 100 then
-		volume = volume + 10
+		volume = volume + 20
 		if not gamelost then
 			song:setVolume(volume / 100)
 		end
 	elseif key == ',' and muted == false and volume > 0 then
-		volume = volume - 10
+		volume = volume - 20
 		if not gamelost and not songfadein.running then
 			song:setVolume(volume / 100)
 		end
@@ -646,6 +653,13 @@ function love.keypressed(key)
 
 	if devmode then
 		if not paused and key == 'o' then lostgame() end
+		if key == 'i' then         -- invisible
+			if invisible then
+				invisible = false
+			elseif not invisible then
+				invisible = true
+			end
+		end
 	end
 end
 
