@@ -406,13 +406,13 @@ function love.draw()
     graphics.setLine(4)
 
 	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
-	backColor[1] = backColor[1] / 4
-	backColor[2] = backColor[2] / 4
-	backColor[3] = backColor[3] / 4
-	applyeffect(backColor)
 	backColor[1] = backColor[1] / 2
 	backColor[2] = backColor[2] / 2
 	backColor[3] = backColor[3] / 2
+	applyeffect(backColor)
+	backColor[1] = backColor[1] / 4
+	backColor[2] = backColor[2] / 4
+	backColor[3] = backColor[3] / 4
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
