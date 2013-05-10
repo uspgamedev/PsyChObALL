@@ -29,6 +29,8 @@ function readstats()
     local r = it()
     if not r then r = 0 end
     besttime = 0 + r
+    r = it()
+    if not r then r = 0 end
     bestmult = 0 + r
 end
 
