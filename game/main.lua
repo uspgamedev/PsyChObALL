@@ -33,9 +33,12 @@ function readstats()
 end
 
 function writestats()
+	if wasdev then return end
+	if besttime > totaltime and bestmult > multiplier then return end
     local file = filesystem.newFile("high")
     file:open('w')
-    if totaltime>besttime then besttime = totaltime end
+    besttime = math.max(besttime, totaltime)
+    bestmult = math.max(bestmult, multiplier)
     file:write(besttime .. "\n" .. bestmult)
     file:close()
 end
@@ -265,6 +268,8 @@ function reload()
 
 	keyspressed = {}
 	auxspeed = vector:new {}
+
+	wasdev = devmode
 end
 
 function getFont(size)
@@ -387,10 +392,13 @@ function love.draw()
     graphics.setLine(4)
 
 	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
-	backColor[1] = backColor[1] / 7
-	backColor[2] = backColor[2] / 7
-	backColor[3] = backColor[3] / 7
+	backColor[1] = backColor[1] / 4
+	backColor[2] = backColor[2] / 4
+	backColor[3] = backColor[3] / 4
 	applyeffect(backColor)
+	backColor[1] = backColor[1] / 2
+	backColor[2] = backColor[2] / 2
+	backColor[3] = backColor[3] / 2
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
@@ -424,9 +432,8 @@ function love.draw()
 	else
 		graphics.print("Volume: " .. volume, 990, 36)
 	end
-	graphics.print(string.format("Best Time: %.1fs", math.max( besttime, totaltime)), 25, 46)
-	if multiplier > bestmult then bestmult = multiplier end
-	graphics.print(string.format("Best Mult: x%.1f", bestmult), 965, 103)
+	graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
+	graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 103)
 	graphics.setFont(getFont(40))
 	graphics.print(string.format("x%.1f", multiplier), 950, 55)
 	graphics.setFont(getFont(12))
@@ -435,7 +442,6 @@ function love.draw()
 	if invisible then
 		graphics.print("Invisible mode ON!", 930, 690)
 	end
-	
 	
 	if firsttime then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
@@ -469,11 +475,14 @@ function love.draw()
 		graphics.draw(logo, 120, 105, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 	end
+
 	if gamelost then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-		if besttime == totaltime then
+		if wasdev then
+			graphics.print("Your scores didn't count, cheater!", 182, 215)
+		elseif besttime == totaltime then
 			graphics.setFont(getFont(60))
-			graphics.print("You beat the best time!", 182, 144)
+			graphics.print("You beat the best time!", 160, 100)
 		end
 		graphics.setFont(getFont(40))
 		graphics.print(deathText(), 270, 300)
@@ -587,6 +596,7 @@ function love.keypressed(key)
 		if devprogress == #devcode then
 			devprogress = 0
 			devmode = not devmode
+			if devmode then wasdev = true end
 			return
 		end
 	else
@@ -660,6 +670,9 @@ function love.keypressed(key)
 				invisible = true
 			end
 		end
+		if key == '0' then multiplier = multiplier + 2 end
+		if key == '9' then multiplier = multiplier - 2 end
+
 	end
 end
 
