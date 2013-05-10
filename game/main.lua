@@ -382,6 +382,7 @@ function line()
 	graphics.line(psycho.x, psycho.y, x, y)
 end
 
+local maincolor = {0,0,0,0}
 local backColor = {0,0,0,0}
 local arcsColor = {0,0,0,0}
 local otherstuffcolor = {0,0,0,0}
@@ -408,7 +409,7 @@ function love.draw()
 		end
     end
 
-    love.graphics.setColor(color(arcsColor, colortimer.time * 1.4))
+    graphics.setColor(color(arcsColor, colortimer.time * 1.4))
 	graphics.setLine(1)
 
 	for i = enemylist.first, enemylist.last - 1 do
@@ -418,6 +419,7 @@ function love.draw()
 	end
 	line()
 
+	graphics.setColor(color(maincolor, colortimer.time))
 	--painting PsyChObALL
 	if not invisible then -- Invisible easter-egg
 		psycho:draw()
@@ -586,22 +588,40 @@ function addscore(x)
 	end
 end
 
-local devcode = {'p','s','y','c','h','o'}
-local devprogress = 0
+function password( pass )
+	local progress = 0
+	return function ( key )
+		if key == pass[progress + 1] then
+			progress = progress + 1
+			if progress == #pass then
+				progress = 0
+				return true
+			end
+		else
+			progress = 0
+			return false
+		end
+	end
+end
+
+function passwordtoggle( pass )
+	local toggle = false
+	local check = password(pass)
+	return function ( key )
+		if check(key) then toggle = not toggle end
+		return toggle
+	end
+end
+
+local devpass = passwordtoggle {'p','s','y','c','h','o'}
+local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
 
 function love.keypressed(key)
 	--checking for dev code
-	if key == devcode[devprogress + 1] then
-		devprogress = devprogress + 1
-		if devprogress == #devcode then
-			devprogress = 0
-			devmode = not devmode
-			if devmode then wasdev = true end
-			return
-		end
-	else
-		devprogress = 0
-	end
+	if not devmode then
+		devmode = devpass(key)
+		if devmode then wasdev = true return end
+	else devmode = devpass(key) end
 	--
 
 	if (key == 'escape' or key == 'p') and not (gamelost or firsttime) then esc = not esc end
@@ -663,17 +683,13 @@ function love.keypressed(key)
 
 	if devmode then
 		if not paused and key == 'o' then lostgame() end
-		if key == 'i' then         -- invisible
-			if invisible then
-				invisible = false
-			elseif not invisible then
-				invisible = true
-			end
-		end
 		if key == '0' then multiplier = multiplier + 2 end
 		if key == '9' then multiplier = multiplier - 2 end
-
+		if key == '8' then addscore(100) end
+		if key == '7' then addscore(-100) end
 	end
+
+	invisible = invisiblepass(key)
 end
 
 function do_ultrablast()
