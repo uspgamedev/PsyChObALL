@@ -27,7 +27,7 @@ function readstats()
     file:open('r')
     local it = file:lines()
     local r = it()
-    if not r then r=0 end
+    if not r then r = 0 end
     besttime = 0 + r
     bestmult = 0 + r
 end
@@ -66,7 +66,6 @@ function love.load()
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
 	timer.ts = {}
-	filesystem.setIdentity("PsyChObALL")
 	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
 	song:play()
 	song:setLooping(true)
