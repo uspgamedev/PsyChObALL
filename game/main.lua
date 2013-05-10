@@ -629,10 +629,15 @@ local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
 
 function love.keypressed(key)
 	--checking for dev code
-	if not devmode then
+	if devmode then
+		devmode = devpass(key)
+		if not devmode then 
+			v = 220
+		end
+	else 
 		devmode = devpass(key)
 		if devmode then wasdev = true return end
-	else devmode = devpass(key) end
+	end
 	--
 
 	if (key == 'escape' or key == 'p') and not (gamelost or firsttime) then esc = not esc end
@@ -697,11 +702,13 @@ function love.keypressed(key)
 	end
 
 	if devmode then
-		if not paused and key == 'o' then lostgame() end
-		if key == '0' then multiplier = multiplier + 2 end
-		if key == '9' then multiplier = multiplier - 2 end
-		if key == '8' then addscore(100) end
-		if key == '7' then addscore(-100) end
+		if not paused and key == 'k' then lostgame() end
+		if key == '0' then multiplier = multiplier + 2
+		elseif key == '9' then multiplier = multiplier - 2
+		elseif key == '8' then addscore(100)
+		elseif key == '7' then addscore(-100)
+		elseif key == '6' then v = v + 10
+		elseif key == '5' then v = v - 10 end
 	end
 
 	invisible = invisiblepass(key)
