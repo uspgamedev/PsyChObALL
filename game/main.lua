@@ -172,6 +172,19 @@ function love.load()
     	self:stop()
     	self:funcToCall()
     end
+
+    --sound images
+    soundimage = graphics.newImage("resources/SoundIcons.png")
+    soundquads = {
+    	graphics.newQuad(200, 0, 40, 40, 300, 40),
+    	graphics.newQuad(160, 0, 40, 40, 300, 40),
+    	graphics.newQuad(120, 0, 40, 40, 300, 40),
+    	graphics.newQuad(80,  0, 40, 40, 300, 40),
+    	graphics.newQuad(40,  0, 40, 40, 300, 40),
+    	graphics.newQuad(0,   0, 40, 40, 300, 40),
+    	graphics.newQuad(240, 0, 40, 40, 300, 40)
+	}
+	soundquadindex = 6
 end
 
 function reload()
@@ -419,6 +432,7 @@ function love.draw()
 	end
 	line()
 
+	
 	graphics.setColor(color(maincolor, colortimer.time))
 	--painting PsyChObALL
 	if not invisible then -- Invisible easter-egg
@@ -429,17 +443,14 @@ function love.draw()
     graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
 	graphics.print(srt, 27, 96)
 	graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
-	if muted then
-		graphics.print("Volume: mute", 990, 35)
-	else
-		graphics.print("Volume: " .. volume, 990, 36)
-	end
 	graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
-	graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 103)
+	graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
 	graphics.setFont(getFont(40))
-	graphics.print(string.format("x%.1f", multiplier), 950, 55)
+	graphics.print(string.format("x%.1f", multiplier), 950, 35)
 	graphics.setFont(getFont(12))
 	if devmode then graphics.print("dev Mode on!", 950, 700) end
+	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
+	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
 
 	if invisible then
 		graphics.print("Invisible mode ON!", 930, 690)
@@ -463,7 +474,7 @@ function love.draw()
 		graphics.setFont(getFont(25))
 		graphics.print("Or when you get hit.", 670, 570)
 		graphics.setFont(getFont(12))
-		graphics.print("v" .. version, 1030, 679)
+		graphics.print("v" .. version, 1030, 663)
 		if latest ~= version then
 			graphics.print("Version " .. latest, 827, 696)
 			graphics.print("is available to download!", 915, 696)
@@ -663,19 +674,23 @@ function love.keypressed(key)
 		if muted then
 			if not gamelost then song:setVolume(volume / 100) end
 			muted = false
+			soundquadindex = volume/20 + 1
 		else
 			song:setVolume(0)
 			muted = true
+			soundquadindex = 7
 		end
 	end
 	
 	if key == '.' and not muted and volume < 100 then
 		volume = volume + 20
+		soundquadindex = volume/20 + 1
 		if not gamelost then
 			song:setVolume(volume / 100)
 		end
 	elseif key == ',' and muted == false and volume > 0 then
 		volume = volume - 20
+		soundquadindex = volume/20 + 1
 		if not gamelost and not songfadein.running then
 			song:setVolume(volume / 100)
 		end
