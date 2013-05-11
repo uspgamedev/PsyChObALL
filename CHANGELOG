@@ -3,7 +3,13 @@ THE HISTORY OF PSYCHOBALL
 =========================
 
 ************************
-(xx/xx/2013) Patch 0.8.0
+(xx/xx/2013) Patch 0.8.1
+************************
+
+-Changes on text placement
+
+************************
+(11/05/2013) Patch 0.8.0
 ************************
 
 -Major change on the script
@@ -13,17 +19,21 @@ THE HISTORY OF PSYCHOBALL
 -Added sound controller
 	-You can press 'm' to mute the game
 	-You can press ',' or '.' to decrease or increase the volume
+	-Added images representing current sound level
 -Added the logo
 -Added slow-motion effect on death
 -Added version checker
+-Added devmode
+-Added hidden easter-egg: "ghost mode"
 	-Lets you know if there is a newer version available at the site
 	-Timeouts if it doesn't get any info from the site after a set time
 -You can't leave the screen anymore
 -Explosion particles have the colour of their "origin"
--Minor changes on text placement
+-Changes on text placement
 -More death messages
 	-Getting "LSD worn out" effect is more difficult
 	-Leaving "LSD worn out" effect is more common
+-Changed 10x multiplier colour effect
 
 ************************
 (25/04/2013) Patch 0.7.9

@@ -62,7 +62,7 @@ function love.load()
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
 	v = 220
-    version = '0.8.0\n'
+    version = '0.8.1\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
 	timer.ts = {}
@@ -447,12 +447,12 @@ function love.draw()
 	graphics.setFont(getFont(40))
 	graphics.print(string.format("x%.1f", multiplier), 950, 35)
 	graphics.setFont(getFont(12))
-	if devmode then graphics.print("dev Mode on!", 950, 700) end
+	if devmode then graphics.print("dev Mode on!", 444, 5) end
 	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
 	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
 
 	if invisible then
-		graphics.print("Invisible mode ON!", 930, 690)
+		graphics.print("Invisible mode ON!", 432, 18)
 	end
 	
 	if firsttime then
@@ -473,10 +473,10 @@ function love.draw()
 		graphics.setFont(getFont(25))
 		graphics.print("Or when you get hit.", 670, 570)
 		graphics.setFont(getFont(12))
-		graphics.print("v" .. version, 1030, 663)
+		graphics.print("v" .. version, 513, 687)
 		if latest ~= version then
-			graphics.print("Version " .. latest, 827, 696)
-			graphics.print("is available to download!", 915, 696)
+			graphics.print("Version " .. latest, 422, 700)
+			graphics.print("is available to download!", 510, 700)
 		end
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 		graphics.setFont(getFont(35))
