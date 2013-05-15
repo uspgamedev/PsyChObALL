@@ -450,12 +450,10 @@ function love.draw()
 	graphics.print(string.format("x%.1f", multiplier), 950, 35)
 	graphics.setFont(getFont(12))
 	if devmode then graphics.print("dev Mode on!", 950, 700) end
+	if invisible then graphics.print("Invisible mode ON!", 930, 690) end
 	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
 	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
 
-	if invisible then
-		graphics.print("Invisible mode ON!", 930, 690)
-	end
 	
 	if firsttime then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
