@@ -6,6 +6,7 @@ require "enemy"
 require "shot"
 require "timer"
 require "list"
+require "boss"
 require "psychoball"
 
 local socket = require "socket"
@@ -67,7 +68,6 @@ function love.load()
     version = '0.8.1\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
-	timer.ts = {}
 	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
 	song:play()
 	song:setLooping(true)
@@ -230,7 +230,7 @@ function reload()
 		timelimit = 0
 	}
 
-	function enemyreleasetimer:funcToCall(...) --actually releases the enemies on screen
+	function enemyreleasetimer:funcToCall() --actually releases the enemies on screen
 		if not self.first then self.first = true self.timelimit = 2 return end
 		self.timelimit = .3 + (self.timelimit - .3) / 1.09
 		table.insert(enemy.bodies,enemylist:pop())
@@ -266,6 +266,9 @@ function reload()
 			end
 		end
 	end
+
+	theboss = boss:new{}
+
 	
 	totaltime = 0
 	
@@ -422,6 +425,7 @@ function love.draw()
 			m:draw()
 		end
     end
+	theboss:draw()
 
     graphics.setColor(color(arcsColor, colortimer.time * 1.4))
 	graphics.setLine(1)
@@ -538,6 +542,7 @@ function love.update(dt)
 	if isPaused then return end
 	if not gamelost then totaltime = totaltime + dt end
 
+    theboss:update(dt)
     psycho:update(dt)
 
     local todelete = {}

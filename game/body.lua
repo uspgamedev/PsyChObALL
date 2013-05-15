@@ -3,6 +3,7 @@ require 'vector'
 
 body = lux.object.new {
 	size = 0,
+	mode = 'fill',
 	__type = 'unnamed body'
 }
 

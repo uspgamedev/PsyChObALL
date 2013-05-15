@@ -8,7 +8,8 @@ timer = lux.object.new {
 	timeaffected = true,
 	persistent 	 = false, -- continues on death
 	delete 		 = false,
-	works_on_gamelost = true
+	works_on_gamelost = true,
+	ts = {}
 }
 
 function timer:__init()
