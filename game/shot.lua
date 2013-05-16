@@ -4,6 +4,7 @@ shot = body:new {
 	collides = false,
 	mode 	 = 'fill',
 	size 	 = 4,
+	explosionEffects = true,
 	__type   = 'shot'
 }
 
@@ -13,12 +14,12 @@ end
 
 function shot:handleDelete()
 	addscore(-2 * ((multiplier - 1) / 2 + 0.85))
-	if not self.collides then neweffects(self, 7) end
+	if self.explosionEffects then neweffects(self, 7) end
 end
 
 function shot:draw()
 	graphics.setColor(color(self.color, self.variance + colortimer.time))
-    graphics.circle(self.mode, self.x, self.y, self.size)
+   graphics.circle(self.mode, self.x, self.y, self.size)
 end
 
 function shot:update(dt)

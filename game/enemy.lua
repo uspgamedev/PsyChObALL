@@ -103,6 +103,7 @@ function enemy:update(dt)
 		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
 			self.collides = true
 			v.collides = true
+			v.explosionEffects = false
 			self.diereason = "shot"
 			break
 		end

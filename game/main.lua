@@ -108,6 +108,8 @@ function love.load()
 		persistent = true
 	}
 
+	wasdev = false
+
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	
 	sqrt2 = math.sqrt(2)
@@ -285,8 +287,6 @@ function reload()
 
 	keyspressed = {}
 	auxspeed = vector:new {}
-
-	wasdev = devmode
 end
 
 function getFont(size)
@@ -637,9 +637,6 @@ function love.keypressed(key)
 	--checking for dev code
 	if devmode then
 		devmode = devpass(key)
-		if not devmode then 
-			v = 220
-		end
 	else 
 		devmode = devpass(key)
 		if devmode then wasdev = true return end
@@ -714,7 +711,10 @@ function love.keypressed(key)
 		elseif key == '8' then addscore(100)
 		elseif key == '7' then addscore(-100)
 		elseif key == '6' then v = v + 10
-		elseif key == '5' then v = v - 10 end
+		elseif key == '5' then v = v - 10
+		elseif key == '4' then timefactor = timefactor * 1.1
+		elseif key == '3' then timefactor = timefactor * 0.9
+		end
 	end
 
 	invisible = invisiblepass(key)

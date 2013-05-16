@@ -50,5 +50,15 @@ function boss:update(dt)
 	if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
 	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 
-	
+	for i,v in pairs(shot.bodies) do
+		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
+			v.collides = true
+			break
+		end
+	end
+
+	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
+		psycho.diereason = "shot"
+		lostgame()
+	end
 end
