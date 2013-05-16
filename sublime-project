@@ -5,13 +5,14 @@
 			"path": "game"
 		}
 	],
+	"settings":
+    {
+        "tab_size": 3,
+        "translate_tabs_to_spaces": false,
+        "rulers": [ 95 ]
+    },
 	"build_systems":
 	[
-		{
-			"name": "LOVE2D with console",
-			"working_dir": "${project_path}",
-			"cmd": ["love", "--console", "game"]
-		},
 		{
 			"name": "LOVE2D",
 			"working_dir": "${project_path}",

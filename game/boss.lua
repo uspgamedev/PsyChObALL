@@ -8,7 +8,10 @@ boss = body:new {
 
 function boss:__init()
 	self.position = vector:new {50, 50}
-	self.speed	  = vector:new {-math.random(v,v+50), -math.random(v,v+50)}
+	local vx, vy = math.random(-50, 50), math.random(-50, 50)
+	vx = vx + v*signum(vx)
+	vy = vy + v*signum(vy)
+	self.speed	  = vector:new {vx, vy}
 	self.shoottimer = timer:new {
 		timelimit = 1,
 		works_on_gamelost = false
@@ -20,6 +23,17 @@ function boss:__init()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
 		e.speed = (pos:sub(self.position)):normalize():mult(2 * v, 2 * v)
 		table.insert(enemy.bodies,e)
+	end
+
+	self.speedtimer = timer:new {
+		timelimit = math.random()*3 + 1
+	}
+	function self.speedtimer.funcToCall(timer)
+		timer.timelimit = math.random()*3 + 1
+		local vx, vy = math.random(-50, 50), math.random(-50, 50)
+		vx = vx + v*signum(vx)
+		vy = vy + v*signum(vy)
+		self.speed:set(vx, vy)
 	end
 end
 
@@ -35,4 +49,6 @@ function boss:update(dt)
 
 	if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
 	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
+
+	
 end
