@@ -457,8 +457,8 @@ function love.draw()
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
 		graphics.setFont(getFont(12))
-		if devmode then graphics.print("dev Mode on!", 446, 5) end
-		if invisible then graphics.print("Invisible mode ON!", 432, 18) end
+		if devmode then graphics.print("dev mode on!", 446, 5) end
+		if invisible then graphics.print("Invisible mode on!", 432, 18) end
 	end
 	
 	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
@@ -467,24 +467,22 @@ function love.draw()
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 	if jj < 900 then
-		graphics.setFont(getFont(60))
-		graphics.print("CONTROLS:", 400 + jj, 36)
+		graphics.setFont(getFont(45))
+		graphics.print("Controls:", 380 + jj, 36)
+		graphics.setFont(getFont(30))
+		graphics.print("Survivor Mode:", 170 + jj, 315)
 		graphics.setFont(getFont(20))
-		graphics.print("You get points when:", 170 + jj, 150)
-		graphics.print("-You kill an enemy", 193 + jj, 180)
-		graphics.print("You lose points when:", 670 + jj, 150)
-		graphics.print("-You miss a shot", 693 + jj, 180)
-		graphics.print("-You let an enemy escape", 713 + jj, 210)
+		graphics.print("You get points when", 600 + jj, 370)
+		graphics.print("  you kill an enemy", 623 + jj, 400)
+		graphics.print("Survive as long as you can!", 200 + jj, 370)
 		graphics.setFont(getFont(20))
-		graphics.print("Use WASD or arrows to move", 202 + jj, 300)
-		graphics.print("Click to shoot", 560 + jj, 390)
-		graphics.print("Hold space to charge:", 540 + jj, 432)
-		graphics.print("click to go back", 870 + jj, 645)
-		graphics.setFont(getFont(25))
-		graphics.print("Or when you get hit.", 670 + jj, 570)
+		graphics.print("Use WASD or arrows to move", 152 + jj, 200)
+		graphics.print("Click to shoot", 560 + jj, 190)
+		graphics.print("Hold space to charge", 540 + jj, 232)
+		graphics.print("click to go back", 800 + jj, 645)
 		graphics.setFont(getFont(35))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 762 + jj, 420)
+		graphics.print("ulTrAbLaST", 762 + jj, 220)
 	end
 
 	graphics.setFont(getFont(12))
@@ -517,13 +515,12 @@ function love.draw()
 		graphics.setFont(getFont(40))
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
-		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 550)
-		graphics.print("You were hit.", 132, 180)
-		graphics.setFont(getFont(22))
-		graphics.print("'r' to retry", 540, 480)
-		graphics.setFont(getFont(20))
-		graphics.print("Press b", 680, 690)
-		graphics.print(pauseText(), 760, 690)
+		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
+		graphics.setFont(getFont(23))
+		graphics.print("Press 'r' to retry", 300, 645)
+		graphics.setFont(getFont(18))
+		graphics.print("Press b", 580, 650)
+		graphics.print(pauseText(), 649, 650)
 		graphics.setFont(getFont(12))
 	end
 	if esc and survivor then
@@ -531,8 +528,8 @@ function love.draw()
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getFont(20))
-		graphics.print("Press b", 600, 550)
-		graphics.print(pauseText(), 680, 550)
+		graphics.print("Press b", 603, 550)
+		graphics.print(pauseText(), 682, 550)
 		graphics.setFont(getFont(12))
 	end
 end
@@ -542,7 +539,7 @@ pausetexts = {"to surrender","to go back","to give up","to admit defeat"}
 deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
 "You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
-"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery","You failed"}
+"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery","You failed","BAD END","CONFLITO PRO YAN SDKASJDAKJKAH"}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -554,10 +551,7 @@ function pauseText()
 	return pst
 end
 
-time = 0
-
 function love.update(dt)	
-	time = dt
 
 	isPaused = (esc or pause or menu or tutorial) 
 	
