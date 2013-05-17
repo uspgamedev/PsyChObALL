@@ -4,12 +4,12 @@ boss = body:new {
 	size = 40,
 	variance = 13,
 	life = 60,
-	lifecolor = {0,0,0,0},
 	__type = 'boss'
 }
 
 function boss:__init()
 	self.position = vector:new {50, 50}
+	self.lifecolor = {0,0,0,0}
 
 	local vx, vy = math.random(-50, 50), math.random(-50, 50)
 	vx = vx + v*signum(vx)
@@ -89,4 +89,7 @@ end
 
 function boss:handleDelete()
 	neweffects(self,100)
+	self.lifeCircle.size = -1
+	self.shoottimer:stop()
+	self.speedtimer:stop()
 end
