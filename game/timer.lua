@@ -41,7 +41,7 @@ function timer.updatetimers(dt,timefactor,paused,gamelost)
 	local todelete
 	for i,v in pairs(timer.ts) do
 		if v.delete then
-		    if not todelete then todelete = {v}
+		    if not todelete then todelete = {i}
 		    else table.insert(todelete,i) end
 		else
 		    v:update(dt, timefactor, paused, gamelost)
