@@ -1,13 +1,16 @@
+module('bosses', package.seeall)
+
 require 'body'
 
-boss = body:new {
+
+superball = body:new {
 	size = 40,
 	variance = 13,
 	life = 60,
-	__type = 'boss'
+	__type = 'superball'
 }
 
-function boss:__init()
+function superball:__init()
 	self.position = self.position or vector:new {50, 50}
 	self.lifecolor = {0,0,0,0}
 
@@ -52,13 +55,13 @@ function boss:__init()
 	}
 end
 
-function boss:draw()
+function superball:draw()
 	graphics.setColor(color(self.color, self.variance + colortimer.time))
 	graphics.circle(self.mode, self.x, self.y, self.size)
 end
 
-function boss:update(dt)
-	boss:__super().update(self, dt)
+function superball:update(dt)
+	superball:__super().update(self, dt)
 	if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
 	elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
 
@@ -88,7 +91,7 @@ function boss:update(dt)
 	end
 end
 
-function boss:handleDelete()
+function superball:handleDelete()
 	neweffects(self,100)
 	self.lifeCircle.size = -1
 	self.shoottimer:stop()

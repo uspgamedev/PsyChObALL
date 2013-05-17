@@ -14,10 +14,11 @@ THE HISTORY OF PSYCHOBALL
 	-From pause or death screen you can go back to menu
 -Added random pause messages
 -Added new death messages
+-Added new type of enemy: suPerbALLs 
 -Changes on how score works
 	-It counts how many points you've made
 	-You no longer dies if you score hits 0
--Changes on "Lsd worn out" effect 
+-Changes on "Lsd worn out" effect
 
 ************************
 (11/05/2013) Patch 0.8.0
