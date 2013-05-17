@@ -3,10 +3,17 @@ THE HISTORY OF PSYCHOBALL
 =========================
 
 ************************
-(xx/xx/2013) Patch 0.8.1
+(xx/xx/2013) Patch 0.9.0
 ************************
 
 -Changes on text placement
+-Added a menu
+	-New screen for Controls
+	-Regular mode is now Survivor
+-Changes on how score works
+	-It counts how many points you've made
+	-You no longer dies if you score hits 0
+-Changes on "Lsd worn out" effect 
 
 ************************
 (11/05/2013) Patch 0.8.0

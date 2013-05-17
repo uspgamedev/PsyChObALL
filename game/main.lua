@@ -47,6 +47,9 @@ function writestats()
 end
 
 function love.load()
+	menu = true -- menu
+	survivor = false -- modo de jogo survivor
+	tutorial = false -- tutorial
 	devmode = false
 	invisible = false -- easter eggs
 	muted = false
@@ -58,14 +61,14 @@ function love.load()
 		end
 	end
 
-   screenshotnumber = 1
+	screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	logo = graphics.newImage('resources/LogoBeta.png')
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
 	v = 220
-   version = '0.8.1\n'
+	version = '0.9.0\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
 	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
@@ -82,9 +85,9 @@ function love.load()
 
 	function songfadeout:funcToCall() -- song fades out
 		if song:getVolume() <= (.02 * volume / 100) then 
-        	song:setVolume(0) 
-            self:stop()
-        else song:setVolume(song:getVolume() - .02) end
+			song:setVolume(0) 
+			self:stop()
+		else song:setVolume(song:getVolume() - .02) end
 	end
 
 	songfadein = timer:new{
@@ -96,10 +99,10 @@ function love.load()
 	}
 
 	function songfadein:funcToCall() -- song fades in
-       if song:getVolume() >= (.98 * volume / 100) then 
-           song:setVolume(volume / 100)
-           self:stop()
-       else song:setVolume((song:getVolume() + .02)) end
+		if song:getVolume() >= (.98 * volume / 100) then 
+			song:setVolume(volume / 100)
+			self:stop()
+		else song:setVolume((song:getVolume() + .02)) end
 	end
 
 	colortimer = timer:new{
@@ -116,7 +119,6 @@ function love.load()
 	sqrt2 = math.sqrt(2)
 	fonts = {}
 	
-	firsttime = true
 	readstats()	
 	
 	multtimer = timer:new {
@@ -277,7 +279,7 @@ function reload()
 	
 	timefactor = 1.0
 	
-	score = 200
+	score = 0
 
 	pause = false
 	gamelost = false
@@ -427,81 +429,91 @@ function love.draw()
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
-   for i, v in pairs(paintables) do
-      for j, m in pairs(v) do
-			m:draw()
+	if survivor then
+		for i, v in pairs(paintables) do
+			for j, m in pairs(v) do
+				m:draw()
+			end
 		end
-   end
-   if theboss then theboss:draw() end
+		if theboss and survivor then theboss:draw() end
 
-   graphics.setColor(color(arcsColor, colortimer.time * 1.4))
-	graphics.setLine(1)
+		graphics.setColor(color(arcsColor, colortimer.time * 1.4))
+		graphics.setLine(1)
 
-	for i = enemylist.first, enemylist.last - 1 do
-		local a = math.atan((enemylist[i].Vy/ enemylist[i].Vx))
-		if enemylist[i].Vx < 0 then a = a + math.pi end
-		graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a - .15, a + .15)
+		for i = enemylist.first, enemylist.last - 1 do
+			local a = math.atan((enemylist[i].Vy/ enemylist[i].Vx))
+			if enemylist[i].Vx < 0 then a = a + math.pi end
+			graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a - .15, a + .15)
+		end
+		line()
 	end
-	line()
 
 	
 	graphics.setColor(color(maincolor, colortimer.time))
 	--painting PsyChObALL
-	if not invisible then -- Invisible easter-egg
+	if not invisible and survivor then -- Invisible easter-egg
 		psycho:draw()
 	end
-	
-   graphics.print(string.format("Score: %.0f",score), 25, 22)
-   graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
-	graphics.print(srt, 27, 96)
-	graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
-	graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
-	graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
-	graphics.setFont(getFont(40))
-	graphics.print(string.format("x%.1f", multiplier), 950, 35)
-	graphics.setFont(getFont(12))
-	if devmode then graphics.print("dev Mode on!", 444, 5) end
+
+	if survivor then
+		graphics.print(string.format("Score: %.0f",score), 25, 22)
+		graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
+		graphics.print(srt, 27, 96)
+		graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
+		graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
+		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
+		graphics.setFont(getFont(40))
+		graphics.print(string.format("x%.1f", multiplier), 950, 35)
+		
+		graphics.setFont(getFont(12))
+		if devmode then graphics.print("dev Mode on!", 446, 5) end
+		if invisible then graphics.print("Invisible mode ON!", 432, 18) end
+	end
 	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
 	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
-
-	if invisible then
-		graphics.print("Invisible mode ON!", 432, 18)
-	end
 	
-	if firsttime then
-		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
+
+	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
+	if tutorial == true then
+		graphics.setFont(getFont(60))
+		graphics.print("CONTROLS:", 400, 36)
 		graphics.setFont(getFont(20))
-		graphics.print("You get points when:", 270, 36)
-		graphics.print("You kill an enemy", 303, 72)
-		graphics.print("You lose points when:", 607, 36)
-		graphics.print("You miss a shot", 641, 72)
-		graphics.print("You let an enemy escape", 641, 95)
-		graphics.setFont(getFont(30))
-		graphics.print("Game Ends when your score hits zero", 135, 534)
+		graphics.print("You get points when:", 170, 150)
+		graphics.print("-You kill an enemy", 193, 180)
+		graphics.print("You lose points when:", 670, 150)
+		graphics.print("-You miss a shot", 693, 180)
+		graphics.print("-You let an enemy escape", 713, 210)
 		graphics.setFont(getFont(20))
 		graphics.print("Use WASD or arrows to move", 202, 300)
 		graphics.print("Click to shoot", 560, 390)
 		graphics.print("Hold space to charge:", 540, 432)
-		graphics.print("click to continue", 870, 645)
+		graphics.print("click to go back", 870, 645)
 		graphics.setFont(getFont(25))
 		graphics.print("Or when you get hit.", 670, 570)
-		graphics.setFont(getFont(12))
+		graphics.setFont(getFont(35))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
+		graphics.print("ulTrAbLaST", 762, 420)
+	end
+
+	graphics.setFont(getFont(12))
+	if menu then
 		graphics.print("v" .. version, 513, 687)
+
 		if latest ~= version then
 			graphics.print("Version " .. latest, 422, 700)
 			graphics.print("is available to download!", 510, 700)
 		end
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
-		graphics.setFont(getFont(35))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 762, 420)
 
 		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54))
-		graphics.draw(logo, 120, 105, nil, 0.25, 0.20)
-		graphics.setFont(getFont(12))
+		if menu then
+			graphics.draw(logo, 120, 105, nil, 0.25, 0.20)
+			graphics.setFont(getFont(12))
+		end
 	end
+	
 
-	if gamelost then
+	if gamelost and survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		if wasdev then
 			graphics.print("Your scores didn't count, cheater!", 182, 215)
@@ -513,19 +525,26 @@ function love.draw()
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
 		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 550)
-		if score ~= 0 then graphics.print("You were hit.", 132, 180) end
-		if score == 0 then graphics.print("Your score hit 0.", 132, 180) end
+		graphics.print("You were hit.", 132, 180)
 		graphics.setFont(getFont(22))
 		graphics.print("'r' to retry", 540, 480)
+		graphics.setFont(getFont(20))
+		graphics.print("Press b", 680, 690)
+		graphics.print(pauseText(), 760, 690)
 		graphics.setFont(getFont(12))
 	end
-	if esc then
+	if esc and survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
+		graphics.setFont(getFont(20))
+		graphics.print("Press b", 600, 550)
+		graphics.print(pauseText(), 680, 550)
 		graphics.setFont(getFont(12))
 	end
 end
+
+pausetexts = {"to surrender","to go back","to give up"}
 
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud", "Snake? Snake?\n   Snaaaaaaaaaake", "Already?",
@@ -537,11 +556,15 @@ function deathText()
 	return dtn
 end
 
+function pauseText()
+	pst = pst or pausetexts[math.random(table.getn(pausetexts))]
+	return pst
+end
+
 local todelete = {}
 
 function love.update(dt)	
-	isPaused = (esc or pause or firsttime) 
-	if not gamelost and score <= 0 then score = 0 psycho.diereason = "score" lostgame() end
+	isPaused = (esc or pause or menu or tutorial) 
 	
 	
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
@@ -552,17 +575,17 @@ function love.update(dt)
 	if not gamelost then totaltime = totaltime + dt end
 
 	if theboss then
-	   theboss:update(dt)
-	   if theboss.delete then
-	   	theboss:handleDelete()
-	   	theboss = nil
-	   end
+		theboss:update(dt)
+		if theboss.delete then
+			theboss:handleDelete()
+			theboss = nil
+		end
 	end
-   psycho:update(dt)
+	psycho:update(dt)
 
-   for i, v in pairs(paintables) do
-      for j, m in pairs(v) do
-      	m:update(dt)
+	for i, v in pairs(paintables) do
+		for j, m in pairs(v) do
+			m:update(dt)
 			if m.delete then
 				table.insert(todelete, j)
 			end
@@ -579,16 +602,27 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
-   if esc or pause then return end
-   if firsttime then 
-   	firsttime = false
-   	mouse.setGrab(true)
-   	return 
-   end
-   if button == 'l' and not gamelost then
-       shoot(x, y)
-	shottimer:start()
-   end
+		if esc or pause then return end
+		if button == 'l' and menu then
+			menu = false
+			survivor = true
+			mouse.setGrab(true)
+			reload() return
+		end
+		if button == 'r' and menu then
+			menu = false
+			tutorial = true
+			return
+		end
+		if button == 'l' and tutorial then
+			menu = true
+			tutorial = false
+			return
+		end
+		if (button == 'l' or button == 'r') and not gamelost then
+			shoot(x, y)
+			shottimer:start()
+		end
 end
 
 function love.mousereleased(x, y, button)
@@ -599,17 +633,17 @@ end
 
 function shoot(x, y)
 	local diffx = x - psycho.x
-   local diffy = y - psycho.y
-   local Vx = signum(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
-   local Vy = signum(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
-   table.insert(shot.bodies, shot:new {
-   	position = psycho.position:clone(),
-   	speed	 = vector:new {Vx, Vy}
-   	})
+	local diffy = y - psycho.y
+	local Vx = signum(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
+	local Vy = signum(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
+	table.insert(shot.bodies, shot:new {
+		position = psycho.position:clone(),
+		speed	 = vector:new {Vx, Vy}
+		})
 end
 
 function signum(a)
-   return a == 0 and 0 or a > 0 and 1 or -1 
+	return a == 0 and 0 or a > 0 and 1 or -1 
 end
 
 function addscore(x)
@@ -654,16 +688,15 @@ function love.keypressed(key)
 		devmode = devpass(key)
 		if devmode then wasdev = true return end
 	end
-	--
 
-	if (key == 'escape' or key == 'p') and not (gamelost or firsttime) then 
-		esc = not esc
+	if (key == 'escape' or key == 'p') and not (gamelost or menu or tutorial) then 
+		esc = not esc 
 		mouse.setGrab(not esc)
 	end
 
 	keyspressed[key] = true
 
-	if not gamelost then 
+	if not gamelost and survivor then 
 		auxspeed:add(
 			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
 				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
@@ -676,7 +709,7 @@ function love.keypressed(key)
 			psycho.speed:div(sqrt2)
 		end
 
-		if key == ' ' and not isPaused then
+		if key == ' ' and not isPaused and survivor then
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
 				based_on   = psycho,
@@ -695,6 +728,15 @@ function love.keypressed(key)
 	end
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
+
+	if (gamelost or esc) and key == 'b' then
+		survivor = false
+		esc = false
+		menu = true
+		song:setPitch(1.0)
+		timefactor = 1.0
+		currentEffect = nil
+	end
 	
 	if key == 'm' then
 		if muted then
@@ -722,7 +764,8 @@ function love.keypressed(key)
 		end
 	end
 
-	if devmode then
+
+	if devmode and survivor then
 		if not esc and key == 'k' then lostgame() end
 		if key == '0' then multiplier = multiplier + 2
 		elseif key == '9' then multiplier = multiplier - 2
@@ -749,7 +792,7 @@ function love.keyreleased(key, code)
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 
-	if not gamelost then
+	if not gamelost and survivor then
 	    auxspeed:sub(
 			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
 				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
