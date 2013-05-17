@@ -4,6 +4,7 @@ require 'vector'
 body = lux.object.new {
 	size = 0,
 	mode = 'fill',
+	dead = false,
 	__type = 'unnamed body'
 }
 

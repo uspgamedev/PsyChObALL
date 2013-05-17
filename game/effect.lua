@@ -14,7 +14,8 @@ end
 function effect:update(dt)
 	self.position:add(self.speed * dt)
 	self.etc = self.etc + dt
-	return self.etc < self.timetogo
+	
+	self.delete = self.etc > self.timetogo
 end
 
 function neweffects( based_on, times)

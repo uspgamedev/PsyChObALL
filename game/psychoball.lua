@@ -5,7 +5,7 @@ psychoball = body:new {
 }
 
 function psychoball:update(dt)
-	if gamelost then return true end
+	if gamelost then return end
 	self.position:add(self.speed * dt)
 
 	self.position:set(

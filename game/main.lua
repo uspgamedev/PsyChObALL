@@ -58,14 +58,14 @@ function love.load()
 		end
 	end
 
-    screenshotnumber = 1
+   screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	logo = graphics.newImage('resources/LogoBeta.png')
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
 	v = 220
-    version = '0.8.1\n'
+   version = '0.8.1\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
 	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
@@ -87,20 +87,20 @@ function love.load()
         else song:setVolume(song:getVolume() - .02) end
 	end
 
-	 songfadein = timer:new{
-	 	timelimit 	 = .03,
-	 	running 	 = false,
-	 	pausable 	 = false,
-	 	timeaffected = false,
-	 	persistent 	 = true
-	 }
+	songfadein = timer:new{
+		timelimit 	 = .03,
+		running 	 = false,
+		pausable 	 = false,
+		timeaffected = false,
+		persistent 	 = true
+	}
 
-	 function songfadein:funcToCall() -- song fades in
-        if song:getVolume() >= (.98 * volume / 100) then 
-            song:setVolume(volume / 100)
-            self:stop()
-        else song:setVolume((song:getVolume() + .02)) end
-	 end
+	function songfadein:funcToCall() -- song fades in
+       if song:getVolume() >= (.98 * volume / 100) then 
+           song:setVolume(volume / 100)
+           self:stop()
+       else song:setVolume((song:getVolume() + .02)) end
+	end
 
 	colortimer = timer:new{
 		timelimit  = 10,
@@ -169,16 +169,16 @@ function love.load()
 			timefactor = 1.0
 			currentEffect = nil
     	end
-    end
+   end
 
-    function inverttimer:handlereset()
-    	self:stop()
-    	self:funcToCall()
-    end
+   function inverttimer:handlereset()
+   	self:stop()
+   	self:funcToCall()
+   end
 
     --sound images
-    soundimage = graphics.newImage("resources/SoundIcons.png")
-    soundquads = {
+   soundimage = graphics.newImage("resources/SoundIcons.png")
+   soundquads = {
     	graphics.newQuad(200, 0, 40, 40, 300, 40),
     	graphics.newQuad(160, 0, 40, 40, 300, 40),
     	graphics.newQuad(120, 0, 40, 40, 300, 40),
@@ -298,27 +298,27 @@ end
 local moarLSDchance = 4
 
 function lostgame()
-    writestats()
-    songfadeout:start()
+   writestats()
+   songfadeout:start()
 
 	if deathText() == "The LSD wears off" then
-	    song:setPitch(.8)
-	    deathtexts[11] = "MOAR LSD"
+	   song:setPitch(.8)
+	   deathtexts[11] = "MOAR LSD"
 		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
 		currentEffect = noLSDeffect
 	elseif deathText() == "MOAR LSD" then
-	    song:setPitch(1)
-	    deathtexts[11] = "The LSD wears off"
-	    for i = 1, moarLSDchance do table.remove(deathtexts) end
+	   song:setPitch(1)
+	   deathtexts[11] = "The LSD wears off"
+	   for i = 1, moarLSDchance do table.remove(deathtexts) end
 		currentEffect = nil
 	end
 
-    gamelost   = true
-    timefactor = .05
+   gamelost   = true
+   timefactor = .05
 
-    psycho.speed:set(0,0)
-    if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
-    neweffects(psycho,80)
+   psycho.speed:set(0,0)
+   if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
+   neweffects(psycho,80)
 end
 
 function color( ... )
@@ -407,7 +407,7 @@ local ultrablastcolor = {0,0,0,0}
 local logocolor = {0,0,0,0}
 
 function love.draw()
-    graphics.setLine(4)
+   graphics.setLine(4)
 
 	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
 	backColor[1] = backColor[1] / 2
@@ -420,14 +420,14 @@ function love.draw()
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
-    for i, v in pairs(paintables) do
-        for j, m in pairs(v) do
+   for i, v in pairs(paintables) do
+      for j, m in pairs(v) do
 			m:draw()
 		end
-    end
-	theboss:draw()
+   end
+   if theboss then theboss:draw() end
 
-    graphics.setColor(color(arcsColor, colortimer.time * 1.4))
+   graphics.setColor(color(arcsColor, colortimer.time * 1.4))
 	graphics.setLine(1)
 
 	for i = enemylist.first, enemylist.last - 1 do
@@ -444,8 +444,8 @@ function love.draw()
 		psycho:draw()
 	end
 	
-    graphics.print(string.format("Score: %.0f",score), 25, 22)
-    graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
+   graphics.print(string.format("Score: %.0f",score), 25, 22)
+   graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
 	graphics.print(srt, 27, 96)
 	graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
 	graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
@@ -530,6 +530,8 @@ function deathText()
 	return dtn
 end
 
+local todelete = {}
+
 function love.update(dt)	
 	isPaused = (esc or pause or firsttime) 
 	if not gamelost and score <= 0 then score = 0 psycho.diereason = "score" lostgame() end
@@ -542,31 +544,31 @@ function love.update(dt)
 	if isPaused then return end
 	if not gamelost then totaltime = totaltime + dt end
 
-    theboss:update(dt)
-    psycho:update(dt)
+	if theboss then
+	   theboss:update(dt)
+	   if theboss.delete then
+	   	theboss:handleDelete()
+	   	theboss = nil
+	   end
+	end
+   psycho:update(dt)
 
-    local todelete = {}
-    for i, v in pairs(paintables) do
-        for j, m in pairs(v) do
-			if not m:update(dt) then
-				table.insert(todelete, j) --deletes items that return false
+   for i, v in pairs(paintables) do
+      for j, m in pairs(v) do
+      	m:update(dt)
+			if m.delete then
+				table.insert(todelete, j)
 			end
 		end
-		local a = 0
-		for k, n in ipairs(todelete) do
-			if type(n) == 'number' then
-				v[n - a]:handleDelete()
-				table.remove(v, n - a)
-				a = a + 1
-			else
-				v[n]:handleDelete()
-				v[n] = nil
-			end
+
+		local n
+		for k = #todelete, 1, -1 do
+			n = todelete[k]
+			todelete[k] = nil
+			v[n]:handleDelete()
+			v[n] = nil
 		end
-		todelete = nil
-		todelete = {}
-    end
-	todelete = nil
+	end
 end
 
 function love.mousepressed(x, y, button)
@@ -586,17 +588,17 @@ end
 
 function shoot(x, y)
 	local diffx = x - psycho.x
-    local diffy = y - psycho.y
-    local Vx = signum(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
-    local Vy = signum(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
-    table.insert(shot.bodies, shot:new {
-    	position = psycho.position:clone(),
-    	speed	 = vector:new {Vx, Vy}
-    	})
+   local diffy = y - psycho.y
+   local Vx = signum(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
+   local Vy = signum(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
+   table.insert(shot.bodies, shot:new {
+   	position = psycho.position:clone(),
+   	speed	 = vector:new {Vx, Vy}
+   	})
 end
 
 function signum(a)
-    return a == 0 and 0 or a > 0 and 1 or -1 
+   return a == 0 and 0 or a > 0 and 1 or -1 
 end
 
 function addscore(x)
@@ -761,5 +763,5 @@ function love.keyreleased(key, code)
 end
 
 function love.focus(f)
-    pause = not f
+   pause = not f
 end
