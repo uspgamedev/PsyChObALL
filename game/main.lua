@@ -67,7 +67,7 @@ function love.load()
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
 	v = 220
-    version = '0.8.1\n'
+    version = '0.9.0\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
 	timer.ts = {}
@@ -273,7 +273,7 @@ function reload()
 	
 	timefactor = 1.0
 	
-	score = 200
+	score = 0
 
 	pause = false
 	gamelost = false
@@ -472,8 +472,6 @@ function love.draw()
 		graphics.print("You lose points when:", 670, 150)
 		graphics.print("-You miss a shot", 693, 180)
 		graphics.print("-You let an enemy escape", 713, 210)
-		graphics.setFont(getFont(30))
-		graphics.print("Game Ends when your score hits zero", 135, 534)
 		graphics.setFont(getFont(20))
 		graphics.print("Use WASD or arrows to move", 202, 300)
 		graphics.print("Click to shoot", 560, 390)
@@ -516,8 +514,7 @@ function love.draw()
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
 		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 550)
-		if score ~= 0 then graphics.print("You were hit.", 132, 180) end
-		if score == 0 then graphics.print("Your score hit 0.", 132, 180) end
+		graphics.print("You were hit.", 132, 180)
 		graphics.setFont(getFont(22))
 		graphics.print("'r' to retry", 540, 480)
 		graphics.setFont(getFont(20))
@@ -555,7 +552,6 @@ end
 
 function love.update(dt)	
 	isPaused = (esc or pause or menu or tutorial) 
-	if not gamelost and score <= 0 then score = 0 psycho.diereason = "score" lostgame() end
 	
 	
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)

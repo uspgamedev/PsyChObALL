@@ -71,7 +71,6 @@ function enemy:handleDelete()
 			} 
 		end
 	else
-		if self.size >= 15 then addscore(-4 * multiplier) end
 		neweffects(self, 4)
 	end
 
