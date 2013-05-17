@@ -185,6 +185,23 @@ function love.load()
 		self:funcToCall()
 	end
 
+	swypetimer = timer:new {
+		timelimit = .1,
+		running = false,
+		var = 0,
+		limit = 500,
+		persistent = true
+	}
+
+	function swypetimer:funcToCall()
+		if self.limit > self.var then self.var = self.var + 1 end
+	end
+
+	function swypetimer:handlereset()
+		self:stop()
+		self.var = 0
+	end
+
 	--sound images
 	soundimage = graphics.newImage("resources/SoundIcons.png")
 	soundquads = {
