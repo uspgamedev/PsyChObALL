@@ -53,6 +53,9 @@ function love.load()
 	invisible = false -- easter eggs
 	muted = false
 	volume = 100
+	kk = 0
+	jj = 900
+	ii = 255
 
 	for k,v in pairs(love) do
 		if type(v) == 'table' and not _G[k] then
@@ -463,40 +466,41 @@ function love.draw()
 	
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-	if tutorial == true then
+	if jj < 900 then
 		graphics.setFont(getFont(60))
-		graphics.print("CONTROLS:", 400, 36)
+		graphics.print("CONTROLS:", 400 + jj, 36)
 		graphics.setFont(getFont(20))
-		graphics.print("You get points when:", 170, 150)
-		graphics.print("-You kill an enemy", 193, 180)
-		graphics.print("You lose points when:", 670, 150)
-		graphics.print("-You miss a shot", 693, 180)
-		graphics.print("-You let an enemy escape", 713, 210)
+		graphics.print("You get points when:", 170 + jj, 150)
+		graphics.print("-You kill an enemy", 193 + jj, 180)
+		graphics.print("You lose points when:", 670 + jj, 150)
+		graphics.print("-You miss a shot", 693 + jj, 180)
+		graphics.print("-You let an enemy escape", 713 + jj, 210)
 		graphics.setFont(getFont(20))
-		graphics.print("Use WASD or arrows to move", 202, 300)
-		graphics.print("Click to shoot", 560, 390)
-		graphics.print("Hold space to charge:", 540, 432)
-		graphics.print("click to go back", 870, 645)
+		graphics.print("Use WASD or arrows to move", 202 + jj, 300)
+		graphics.print("Click to shoot", 560 + jj, 390)
+		graphics.print("Hold space to charge:", 540 + jj, 432)
+		graphics.print("click to go back", 870 + jj, 645)
 		graphics.setFont(getFont(25))
-		graphics.print("Or when you get hit.", 670, 570)
+		graphics.print("Or when you get hit.", 670 + jj, 570)
 		graphics.setFont(getFont(35))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 762, 420)
+		graphics.print("ulTrAbLaST", 762 + jj, 420)
 	end
 
 	graphics.setFont(getFont(12))
-	if menu then
-		graphics.print("v" .. version, 513, 687)
+	if kk > -900 and ii > 0 then
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, ii))
+		graphics.print("v" .. version, 513 + kk, 687)
 
 		if latest ~= version then
-			graphics.print("Version " .. latest, 422, 700)
-			graphics.print("is available to download!", 510, 700)
+			graphics.print("Version " .. latest, 422 + kk, 700)
+			graphics.print("is available to download!", 510 + kk, 700)
 		end
-		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
+		graphics.print("A game by Marvellous Soft/USPGameDev", 14 + kk, 696)
 
-		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54))
-		if menu then
-			graphics.draw(logo, 120, 105, nil, 0.25, 0.20)
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, ii))
+		if kk > -900 then
+			graphics.draw(logo, 120 + kk, 75, nil, 0.25, 0.20)
 			graphics.setFont(getFont(12))
 		end
 	end
@@ -533,12 +537,12 @@ function love.draw()
 	end
 end
 
-pausetexts = {"to surrender","to go back","to give up"}
+pausetexts = {"to surrender","to go back","to give up","to admit defeat"}
 
 deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
 "You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
 "All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
-"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery"}
+"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery","You failed"}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -550,13 +554,42 @@ function pauseText()
 	return pst
 end
 
+time = 0
+
 function love.update(dt)	
+	time = dt
+
 	isPaused = (esc or pause or menu or tutorial) 
 	
 	
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
 	dt = dt * timefactor
+
+	if menu2tutorial then
+		jj = jj - 5000 * dt
+		if jj < 0 then jj = 0 end
+		kk = kk - 5000 * dt
+		if kk < -900 then kk = -900 end
+	end
+
+	if tutorial2menu then
+		jj = jj + 5000 * dt
+		if jj > 900 then jj = 900 end
+		kk = kk + 5000 * dt
+		if kk > 0 then kk = 0 end	
+	end
+
+	if menu2survivor then
+		ii = ii - 1000 * dt
+		if ii < 0 then ii = 0 end
+	end
+
+	if survivor2menu then
+		ii = ii + 1000 * dt
+		if ii > 255 then ii = 255 end
+	end
+
 	
 	if isPaused then return end
 	if not gamelost then totaltime = totaltime + dt end
@@ -590,21 +623,27 @@ end
 function love.mousepressed(x, y, button)
     if esc or pause then return end
     if button == 'l' and menu then
+    	menu2survivor = true
+    	survivor2menu = false
     	menu = false
     	survivor = true
     	reload() return
     end
     if button == 'r' and menu then
+    	menu2tutorial = true
+    	tutorial2menu = false
     	menu = false
     	tutorial = true
     	return
     end
-    if button == 'l' and tutorial then
+    if (button == 'l' or button == 'r') and tutorial then
+    	tutorial2menu = true
+    	menu2tutorial = false
     	menu = true
     	tutorial = false
     	return
     end
-    if (button == 'l' or button == 'r') and not gamelost then
+    if button == 'l' and not gamelost then
         shoot(x, y)
 		shottimer:start()
     end
@@ -678,7 +717,12 @@ function love.keypressed(key)
 	end
 	--
 
-	if (key == 'escape' or key == 'p') and not (gamelost or menu or tutorial) then esc = not esc end
+	if (key == 'escape' or key == 'p') and not (gamelost or menu or tutorial) then
+		if esc then
+			pst = nil
+		end
+		esc = not esc
+	end
 
 	keyspressed[key] = true
 
@@ -717,6 +761,8 @@ function love.keypressed(key)
 		survivor = false
 		esc = false
 		menu = true
+		survivor2menu = true
+		menu2survivor = false
 		song:setPitch(1.0)
 		timefactor = 1.0
 		currentEffect = nil
