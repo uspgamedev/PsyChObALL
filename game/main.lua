@@ -111,6 +111,7 @@ function love.load()
 	wasdev = false
 
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
+	mouse.setGrab(false)
 	
 	sqrt2 = math.sqrt(2)
 	fonts = {}
@@ -287,6 +288,8 @@ function reload()
 
 	keyspressed = {}
 	auxspeed = vector:new {}
+
+	mouse.setGrab(true)
 end
 
 function getFont(size)
@@ -300,15 +303,16 @@ local moarLSDchance = 4
 function lostgame()
    writestats()
    songfadeout:start()
+   mouse.setGrab(false)
 
 	if deathText() == "The LSD wears off" then
 	   song:setPitch(.8)
-	   deathtexts[11] = "MOAR LSD"
+	   deathtexts[1] = "MOAR LSD"
 		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
 		currentEffect = noLSDeffect
 	elseif deathText() == "MOAR LSD" then
 	   song:setPitch(1)
-	   deathtexts[11] = "The LSD wears off"
+	   deathtexts[1] = "The LSD wears off"
 	   for i = 1, moarLSDchance do table.remove(deathtexts) end
 		currentEffect = nil
 	end
@@ -333,7 +337,10 @@ end
 
 function noLSDeffect( color )
 	local gray = (color[1] + color[2] + color[3]) / 3
-	color[1], color[2], color[3] = gray, gray, gray
+	color[1], color[2], color[3] = 
+		color[1] + (gray - color[1])/1.1,
+		color[2] + (gray - color[2])/1.1,
+		color[3] + (gray - color[3])/1.1
 	return color
 end
 
@@ -520,10 +527,10 @@ function love.draw()
 	end
 end
 
-deathtexts = {"Game Over", "No one will\n miss you","You now lay\n   with the dead","Yo momma so fat\n   you died",
-"You ceased to exist","Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?",
-"All your base\n are belong to BALLS","You wake up and\n realize it was all a nightmare","The LSD wears off",
-"MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death","There is no cake\n   also you died","You have died of\n  dysentery"}
+deathtexts = {"The LSD wears off", "Game Over", "No one will\n miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
+"You ceased to exist", "Your mother\n   wouldn't be proud", "Snake? Snake?\n   Snaaaaaaaaaake", "Already?",
+"All your base\n are belong to BALLS", "You wake up and\n realize it was all a nightmare", "MIND BLOWN",
+"Just one more", "USPGameDev Rulez", "A winner is not you", "Have a nice death", "There is no cake\n   also you died", "You have died of\n  dysentery"}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -572,12 +579,16 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
-    if esc or pause then return end
-    if firsttime then firsttime = false return end
-    if button == 'l' and not gamelost then
-        shoot(x, y)
-		shottimer:start()
-    end
+   if esc or pause then return end
+   if firsttime then 
+   	firsttime = false
+   	mouse.setGrab(true)
+   	return 
+   end
+   if button == 'l' and not gamelost then
+       shoot(x, y)
+	shottimer:start()
+   end
 end
 
 function love.mousereleased(x, y, button)
@@ -645,7 +656,10 @@ function love.keypressed(key)
 	end
 	--
 
-	if (key == 'escape' or key == 'p') and not (gamelost or firsttime) then esc = not esc end
+	if (key == 'escape' or key == 'p') and not (gamelost or firsttime) then 
+		esc = not esc
+		mouse.setGrab(not esc)
+	end
 
 	keyspressed[key] = true
 
@@ -679,6 +693,8 @@ function love.keypressed(key)
 	if gamelost and key == 'r' then
 		reload()
 	end
+
+	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 	
 	if key == 'm' then
 		if muted then
@@ -707,7 +723,7 @@ function love.keypressed(key)
 	end
 
 	if devmode then
-		if not paused and key == 'k' then lostgame() end
+		if not esc and key == 'k' then lostgame() end
 		if key == '0' then multiplier = multiplier + 2
 		elseif key == '9' then multiplier = multiplier - 2
 		elseif key == '8' then addscore(100)
@@ -716,6 +732,7 @@ function love.keypressed(key)
 		elseif key == '5' then v = v - 10
 		elseif key == '4' then timefactor = timefactor * 1.1
 		elseif key == '3' then timefactor = timefactor * 0.9
+		elseif key == 'l' then dtn = deathtexts[1] lostgame()
 		end
 	end
 
