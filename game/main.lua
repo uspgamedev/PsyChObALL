@@ -280,8 +280,17 @@ function reload()
 		end
 	end
 
-	bosses.newsuperball{ position = vector:new{width - 30,  30} }
-	bosses.newsuperball{ position = vector:new{30, height - 30} }
+	superballtimer = timer:new {
+		timelimit = 23,
+		works_on_gamelost = false
+	}
+
+	function superballtimer:funcToCall()
+		if #bosses.bodies == 0 then self.timelimit = 2 end
+		bosses.newsuperball{ position = vector:new{width - 30,  30} }
+		self.timelimit = 23
+	end
+
 
 	
 	totaltime = 0

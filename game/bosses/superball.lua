@@ -20,9 +20,9 @@ function superball:__init()
 	self.speed	  = vector:new {vx, vy}
 
 	self.shoottimer = timer:new {
-		timelimit = 1.5,
+		timelimit = 1.7,
 		works_on_gamelost = false,
-		time = 1.3
+		time = math.random()*1.6
 	}
 
 	function self.shoottimer.funcToCall()
