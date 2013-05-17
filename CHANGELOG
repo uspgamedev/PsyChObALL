@@ -8,8 +8,12 @@ THE HISTORY OF PSYCHOBALL
 
 -Changes on text placement
 -Added a menu
+	-Transition between screens
 	-New screen for Controls
 	-Regular mode is now Survivor
+	-From pause or death screen you can go back to menu
+-Added random pause messages
+-Added new death messages
 -Changes on how score works
 	-It counts how many points you've made
 	-You no longer dies if you score hits 0
