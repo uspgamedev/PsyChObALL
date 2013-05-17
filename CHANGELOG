@@ -14,7 +14,8 @@ THE HISTORY OF PSYCHOBALL
 	-From pause or death screen you can go back to menu
 -Added random pause messages
 -Added new death messages
--Added new type of enemy: suPerbALLs 
+-Added new type of enemy: suPerbALLs
+	-They appear on survivor mode after 23 seconds
 -Changes on how score works
 	-It counts how many points you've made
 	-You no longer dies if you score hits 0
