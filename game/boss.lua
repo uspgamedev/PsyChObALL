@@ -43,7 +43,7 @@ function boss:__init()
 	end
 
 	self.lifeCircle = circleEffect:new {
-		alpha = 30,
+		alpha = 60,
 		sizeGrowth = 0,
 		size = self.size + self.life,
 		position = self.position,
@@ -54,8 +54,6 @@ end
 function boss:draw()
 	graphics.setColor(color(self.color, self.variance + colortimer.time))
 	graphics.circle(self.mode, self.x, self.y, self.size)
-	graphics.setColor(color(self.lifecolor, self.variance + 3 + colortimer.time))
-	self.lifeCircle:draw()
 end
 
 function boss:update(dt)
