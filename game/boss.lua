@@ -8,7 +8,7 @@ boss = body:new {
 }
 
 function boss:__init()
-	self.position = vector:new {50, 50}
+	self.position = self.position or vector:new {50, 50}
 	self.lifecolor = {0,0,0,0}
 
 	local vx, vy = math.random(-50, 50), math.random(-50, 50)
@@ -17,8 +17,9 @@ function boss:__init()
 	self.speed	  = vector:new {vx, vy}
 
 	self.shoottimer = timer:new {
-		timelimit = 1,
-		works_on_gamelost = false
+		timelimit = 1.5,
+		works_on_gamelost = false,
+		time = 1.3
 	}
 
 	function self.shoottimer.funcToCall()
@@ -31,7 +32,7 @@ function boss:__init()
 	end
 
 	self.speedtimer = timer:new {
-		timelimit = math.random()*3 + 1
+		timelimit = math.random()*4 + 1
 	}
 
 	function self.speedtimer.funcToCall(timer)
@@ -91,5 +92,7 @@ function boss:handleDelete()
 	neweffects(self,100)
 	self.lifeCircle.size = -1
 	self.shoottimer:stop()
+	self.shoottimer.delete = true
 	self.speedtimer:stop()
+	self.speedtimer.delete = true
 end

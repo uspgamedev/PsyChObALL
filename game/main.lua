@@ -19,31 +19,34 @@ response = http.request{ url=URL, create=function()
 end}
 
 function readstats()
-    local file = filesystem.newFile("high")
-    if not filesystem.exists("high") then
-        file:open('w')
-        file:write("0\n0")
-        file:close()
-    end
-    file:open('r')
-    local it = file:lines()
-    local r = it()
-    if not r then r = 0 end
-    besttime = 0 + r
-    r = it()
-    if not r then r = 0 end
-    bestmult = 0 + r
+	local file = filesystem.newFile("high")
+
+	if not filesystem.exists("high") then
+	  file:open('w')
+	  file:write("0\n0")
+	  file:close()
+	end
+
+	file:open('r')
+	local it = file:lines()
+
+	local r = it()
+	if not r then r = 0 end
+	besttime = 0 + r
+	r = it()
+	if not r then r = 0 end
+	bestmult = 0 + r
 end
 
 function writestats()
 	if wasdev then return end
 	if besttime > totaltime and bestmult > multiplier then return end
-    local file = filesystem.newFile("high")
-    file:open('w')
-    besttime = math.max(besttime, totaltime)
-    bestmult = math.max(bestmult, multiplier)
-    file:write(besttime .. "\n" .. bestmult)
-    file:close()
+	local file = filesystem.newFile("high")
+	file:open('w')
+	besttime = math.max(besttime, totaltime)
+	bestmult = math.max(bestmult, multiplier)
+	file:write(besttime .. "\n" .. bestmult)
+	file:close()
 end
 
 function love.load()
@@ -167,28 +170,28 @@ function love.load()
 	}
 
 	function inverttimer:funcToCall() -- disinverts the screen color
-     	if currentEffect ~= noLSDeffect then 
-     		song:setPitch(1)
+		if currentEffect ~= noLSDeffect then 
+			song:setPitch(1)
 			timefactor = 1.0
 			currentEffect = nil
-    	end
-   end
+		end
+	end
 
-   function inverttimer:handlereset()
-   	self:stop()
-   	self:funcToCall()
-   end
+	function inverttimer:handlereset()
+		self:stop()
+		self:funcToCall()
+	end
 
-    --sound images
-   soundimage = graphics.newImage("resources/SoundIcons.png")
-   soundquads = {
-    	graphics.newQuad(200, 0, 40, 40, 300, 40),
-    	graphics.newQuad(160, 0, 40, 40, 300, 40),
-    	graphics.newQuad(120, 0, 40, 40, 300, 40),
-    	graphics.newQuad(80,  0, 40, 40, 300, 40),
-    	graphics.newQuad(40,  0, 40, 40, 300, 40),
-    	graphics.newQuad(0,   0, 40, 40, 300, 40),
-    	graphics.newQuad(240, 0, 40, 40, 300, 40)
+	--sound images
+	soundimage = graphics.newImage("resources/SoundIcons.png")
+	soundquads = {
+		graphics.newQuad(200, 0, 40, 40, 300, 40),
+		graphics.newQuad(160, 0, 40, 40, 300, 40),
+		graphics.newQuad(120, 0, 40, 40, 300, 40),
+		graphics.newQuad(80,  0, 40, 40, 300, 40),
+		graphics.newQuad(40,  0, 40, 40, 300, 40),
+		graphics.newQuad(0,   0, 40, 40, 300, 40),
+		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
 	soundquadindex = 6
 end
@@ -225,7 +228,7 @@ function reload()
 	}
 
 	function enemyaddtimer:funcToCall() --adds the enemies to a list
-        if not self.first then self.first = true self.timelimit = 2 end
+		if not self.first then self.first = true self.timelimit = 2 end
 		self.timelimit = .3 + (self.timelimit - .3) / 1.09
 		enemylist:push(enemy:new{})
 	end
@@ -303,24 +306,24 @@ end
 local moarLSDchance = 4
 
 function lostgame()
-   writestats()
-   songfadeout:start()
-   mouse.setGrab(false)
+	writestats()
+	songfadeout:start()
+	mouse.setGrab(false)
 
 	if deathText() == "The LSD wears off" then
-	   song:setPitch(.8)
-	   deathtexts[1] = "MOAR LSD"
+		song:setPitch(.8)
+		deathtexts[1] = "MOAR LSD"
 		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
 		currentEffect = noLSDeffect
 	elseif deathText() == "MOAR LSD" then
-	   song:setPitch(1)
-	   deathtexts[1] = "The LSD wears off"
-	   for i = 1, moarLSDchance do table.remove(deathtexts) end
+		song:setPitch(1)
+		deathtexts[1] = "The LSD wears off"
+		for i = 1, moarLSDchance do table.remove(deathtexts) end
 		currentEffect = nil
 	end
 
-   gamelost   = true
-   timefactor = .05
+	gamelost   = true
+	timefactor = .05
 
    psycho.speed:set(0,0)
    if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
