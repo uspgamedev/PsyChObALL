@@ -5,6 +5,7 @@ require "effect"
 require "enemy"
 require "shot"
 require "timer"
+require "vartimer"
 require "list"
 require "bosses"
 require "psychoball"
@@ -50,9 +51,10 @@ function writestats()
 end
 
 function love.load()
-	menu = true -- menu
-	survivor = false -- modo de jogo survivor
-	tutorial = false -- tutorial
+	state = 0
+	mainmenu = 0 -- mainmenu
+	tutorialmenu = 1
+	survivor = 2 -- modo de jogo survivor
 	devmode = false
 	invisible = false -- easter eggs
 	muted = false
@@ -189,22 +191,12 @@ function love.load()
 		self:funcToCall()
 	end
 
-	swypetimer = timer:new {
-		timelimit = .1,
+	swypetimer = vartimer:new {
 		running = false,
 		var = 0,
-		limit = 500,
-		persistent = true
+		limit = width,
+		speed = 3000
 	}
-
-	function swypetimer:funcToCall()
-		if self.limit > self.var then self.var = self.var + 1 end
-	end
-
-	function swypetimer:handlereset()
-		self:stop()
-		self.var = 0
-	end
 
 	--sound images
 	soundimage = graphics.newImage("resources/SoundIcons.png")
@@ -461,6 +453,7 @@ local logocolor = {0,0,0,0}
 
 function love.draw()
 	graphics.setLine(4)
+	graphics.setFont(getFont(12))
 
 	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
 	backColor[1] = backColor[1] / 2
@@ -473,7 +466,7 @@ function love.draw()
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
-	if survivor then
+	if state == survivor then
 		for i, v in pairs(paintables) do
 			for j, m in pairs(v) do
 				m:draw()
@@ -494,11 +487,11 @@ function love.draw()
 	
 	graphics.setColor(color(maincolor, colortimer.time))
 	--painting PsyChObALL
-	if not invisible and survivor then -- Invisible easter-egg
+	if not invisible and state == survivor then -- Invisible easter-egg
 		psycho:draw()
 	end
-	graphics.print(string.format("FPS:%.0f", 60 / 1000 * love.timer.getFPS()), 1000, 15) -- BUGADO
-	if survivor then
+	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 15)
+	if state == survivor then
 		graphics.setFont(getCoolFont(22))
 		graphics.print(string.format("%.0f", score), 68, 20)
 		graphics.print(string.format("%.1fs", totaltime), 68, 42)
@@ -521,50 +514,53 @@ function love.draw()
 	
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-	if jj < 900 then
-		graphics.setFont(getCoolFont(50))
-		graphics.print("CONTROLS", 380 + jj, 36)
-		graphics.setFont(getCoolFont(40))
-		graphics.print("Survivor Mode:", 170 + jj, 315)
-		graphics.setFont(getCoolFont(20))
-		graphics.print("You get points when", 600 + jj, 370)
-		graphics.print("  you kill an enemy", 623 + jj, 400)
-		graphics.print("Survive as long as you can!", 200 + jj, 380)
-		graphics.setFont(getCoolFont(20))
-		graphics.print("Use WASD or arrows to move", 152 + jj, 200)
-		graphics.print("Click to shoot", 540 + jj, 190)
-		graphics.print("Hold space to charge", 570 + jj, 222)
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Click to go back", 800 + jj, 645)
-		graphics.setFont(getCoolFont(35))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 792 + jj, 210)
-		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54))
-		graphics.circle("fill", 130 + jj, 210, 10)
-		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
-		graphics.circle("fill", 520 + jj, 210, 10)
-	end
 
-	graphics.setFont(getFont(12))
-	if kk > -900 and ii > 0 then
+	if state == mainmenu or state == tutorialmenu then
+		graphics.translate(-swypetimer.var, 0)
+		--mainmenu
+		graphics.setFont(getFont(12))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, ii))
-		graphics.print("v" .. version, 513 + kk, 687)
+		graphics.print("v" .. version, 513, 687)
 
 		if latest ~= version then
-			graphics.print("Version " .. latest, 422 + kk, 700)
-			graphics.print("is available to download!", 510 + kk, 700)
+			graphics.print("Version " .. latest, 422, 700)
+			graphics.print("is available to download!", 510, 700)
 		end
-		graphics.print("A game by Marvellous Soft/USPGameDev", 14 + kk, 696)
+		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 
 		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, ii))
-		if kk > -900 then
-			graphics.draw(logo, 120 + kk, 75, nil, 0.25, 0.20)
-			graphics.setFont(getFont(12))
-		end
+		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
+		graphics.setFont(getFont(12))
+
+		graphics.translate(width, 0)
+		--tutorialmenu
+		graphics.setFont(getCoolFont(50))
+		graphics.print("CONTROLS", 380, 36)
+		graphics.setFont(getCoolFont(40))
+		graphics.print("Survivor Mode:", 170, 315)
+		graphics.setFont(getCoolFont(20))
+		graphics.print("You get points when", 600, 370)
+		graphics.print("  you kill an enemy", 623, 400)
+		graphics.print("Survive as long as you can!", 200, 380)
+		graphics.setFont(getCoolFont(20))
+		graphics.print("Use WASD or arrows to move", 152, 200)
+		graphics.print("Click to shoot", 540, 190)
+		graphics.print("Hold space to charge", 570, 222)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Click to go back", 800, 645)
+		graphics.setFont(getCoolFont(35))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
+		graphics.print("ulTrAbLaST", 792, 210)
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54))
+		graphics.circle("fill", 130, 210, 10)
+		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
+		graphics.circle("fill", 520, 210, 10)
+
+		graphics.translate(swypetimer.var - width, 0)
 	end
 	
 
-	if gamelost and survivor then
+	if gamelost and state == survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		if wasdev then
 			graphics.setFont(getCoolFont(20))
@@ -584,7 +580,8 @@ function love.draw()
 		graphics.print(pauseText(), 649, 650)
 		graphics.setFont(getFont(12))
 	end
-	if esc and survivor then
+
+	if esc and state == survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
@@ -616,27 +613,14 @@ local todelete = {}
 
 function love.update(dt)	
 
-	isPaused = (esc or pause or menu or tutorial) 
+	isPaused = (esc or pause or state == mainmenu or state == tutorialmenu) 
 	
 	
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
 	dt = dt * timefactor
 
-	if menu2tutorial then
-		jj = jj - 5000 * dt
-		if jj < 0 then jj = 0 end
-		kk = kk - 5000 * dt
-		if kk < -900 then kk = -900 end
-	end
-
-	if tutorial2menu then
-		jj = jj + 5000 * dt
-		if jj > 900 then jj = 900 end
-		kk = kk + 5000 * dt
-		if kk > 0 then kk = 0 end	
-	end
-
+	--replace this
 	if menu2survivor then
 		ii = ii - 1000 * dt
 		if ii < 0 then ii = 0 end
@@ -678,30 +662,23 @@ end
 
 function love.mousepressed(x, y, button)
     if esc or pause then return end
-    if button == 'l' and menu then
-    	menu2survivor = true
-    	survivor2menu = false
-    	menu = false
-    	survivor = true
+    if button == 'l' and state == mainmenu then
+    	state = survivor
 		mouse.setGrab(true)
     	reload() return
     end
-    if button == 'r' and menu then
-    	menu2tutorial = true
-    	tutorial2menu = false
-    	menu = false
-    	tutorial = true
+    if button == 'r' and state == mainmenu then
+    	swypetimer:setAndGo(0, width)
+    	state = tutorialmenu
     	return
     end
-    if (button == 'l' or button == 'r') and tutorial then
-    	tutorial2menu = true
-    	menu2tutorial = false
-    	menu = true
-    	tutorial = false
+    if (button == 'l' or button == 'r') and state == tutorialmenu then
+    	swypetimer:setAndGo(width, 0)
+    	state = mainmenu
     	return
     end
     if button == 'l' and not gamelost then
-        shoot(x, y)
+      shoot(x, y)
 		shottimer:start()
     end
 end
@@ -763,7 +740,7 @@ local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
 
 function love.keypressed(key)
 	--checking for dev code
-	if survivor then
+	if state == survivor then
 		if devmode then
 			devmode = devpass(key)
 		else 
@@ -772,15 +749,17 @@ function love.keypressed(key)
 		end
 	end
 
-	if (key == 'escape' or key == 'p') and not (gamelost or menu or tutorial) then
+	if (key == 'escape' or key == 'p') and not (gamelost or state == mainmenu or state == tutorialmenu) then
 		pst = nil
 		esc = not esc
 		mouse.setGrab(not esc)
 	end
 
+	if key=='i' then print(swypetimer.var) end
+
 	keyspressed[key] = true
 
-	if not gamelost and survivor then 
+	if not gamelost and state == survivor then 
 		auxspeed:add(
 			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
 				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
@@ -793,7 +772,7 @@ function love.keypressed(key)
 			psycho.speed:div(sqrt2)
 		end
 
-		if key == ' ' and not isPaused and survivor then
+		if key == ' ' and not isPaused and state == survivor then
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
 				based_on   = psycho,
@@ -814,9 +793,8 @@ function love.keypressed(key)
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
 	if (gamelost or esc) and key == 'b' then
-		survivor = false
 		esc = false
-		menu = true
+		state = mainmenu
 		survivor2menu = true
 		menu2survivor = false
 		song:setPitch(1.0)
@@ -851,7 +829,7 @@ function love.keypressed(key)
 	end
 
 
-	if devmode and survivor then
+	if devmode and state == survivor then
 		if not esc and key == 'k' then lostgame() end
 		if key == '0' then multiplier = multiplier + 2
 		elseif key == '9' then multiplier = multiplier - 2
@@ -864,7 +842,7 @@ function love.keypressed(key)
 		elseif key == 'l' then dtn = deathtexts[1] lostgame()
 		end
 	end
-	if survivor then
+	if state == survivor then
 		invisible = invisiblepass(key)
 	end
 end
@@ -879,7 +857,7 @@ function love.keyreleased(key, code)
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 
-	if not gamelost and survivor then
+	if not gamelost and state == survivor then
 	    auxspeed:sub(
 			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
 				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
