@@ -14,7 +14,7 @@ local http = require "socket.http"
 
 response = http.request{ url=URL, create=function()
   local req_sock = socket.tcp()
-  req_sock:settimeout(5)
+  req_sock:settimeout(3)
   return req_sock
 end}
 
@@ -497,13 +497,17 @@ function love.draw()
 	if not invisible and survivor then -- Invisible easter-egg
 		psycho:draw()
 	end
-
+	graphics.print(string.format("FPS:%.0f", 60 / 1000 * love.timer.getFPS()), 1000, 15) -- BUGADO
 	if survivor then
-		graphics.print(string.format("Score: %.0f",score), 25, 22)
-		graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
+		graphics.setFont(getCoolFont(22))
+		graphics.print(string.format("%.0f", score), 68, 20)
+		graphics.print(string.format("%.1fs", totaltime), 68, 42)
+		graphics.setFont(getFont(12))
+		graphics.print("Score:", 25, 24)
+		graphics.print("Time:", 25, 48)
 		graphics.print(srt, 27, 96)
-		graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
-		graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
+		graphics.print("Best Score: x", 25, 68)
+		graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 85)
 		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
 		graphics.setFont(getCoolFont(40))
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
