@@ -25,10 +25,11 @@ function vartimer:funcToCall( dt )
 	end
 end
 
-function vartimer:set( starts, ends )
+function vartimer:set( starts, ends, speed )
 	self.var = starts
 	self.limit = ends
 	self.backwards = ends < starts
+	self.speed = speed or self.speed
 end
 
 function vartimer:setAndGo( ... )

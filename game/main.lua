@@ -194,8 +194,13 @@ function love.load()
 	swypetimer = vartimer:new {
 		running = false,
 		var = 0,
-		limit = width,
 		speed = 3000
+	}
+
+	alphatimer = vartimer:new {
+		running = false,
+		var = 255,
+		speed = 300
 	}
 
 	--sound images
@@ -515,11 +520,11 @@ function love.draw()
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 
-	if state == mainmenu or state == tutorialmenu then
+	if alphatimer.var > 0 then
 		graphics.translate(-swypetimer.var, 0)
 		--mainmenu
 		graphics.setFont(getFont(12))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, ii))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, alphatimer.var))
 		graphics.print("v" .. version, 513, 687)
 
 		if latest ~= version then
@@ -528,7 +533,7 @@ function love.draw()
 		end
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 
-		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, ii))
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, alphatimer.var))
 		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 
@@ -619,23 +624,6 @@ function love.update(dt)
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
 	dt = dt * timefactor
-
-	--replace this
-	if menu2survivor then
-		ii = ii - 1000 * dt
-		if ii < 0 then ii = 0 end
-	end
-
-	if survivor2menu then
-		ii = ii + 1000 * dt
-		if ii > 255 then ii = 255 end
-		if muted then
-			song:setVolume(0)
-   		else
-			song:setVolume(volume / 100)
-		end
-	end
-
 	
 	if isPaused then return end
 	if not gamelost then totaltime = totaltime + dt end
@@ -664,6 +652,7 @@ function love.mousepressed(x, y, button)
     if esc or pause then return end
     if button == 'l' and state == mainmenu then
     	state = survivor
+    	alphatimer:setAndGo(255, 0)
 		mouse.setGrab(true)
     	reload() return
     end
@@ -755,8 +744,6 @@ function love.keypressed(key)
 		mouse.setGrab(not esc)
 	end
 
-	if key=='i' then print(swypetimer.var) end
-
 	keyspressed[key] = true
 
 	if not gamelost and state == survivor then 
@@ -795,8 +782,12 @@ function love.keypressed(key)
 	if (gamelost or esc) and key == 'b' then
 		esc = false
 		state = mainmenu
-		survivor2menu = true
-		menu2survivor = false
+		alphatimer:setAndGo(0, 255)
+		if muted then
+			song:setVolume(0)
+   		else
+			song:setVolume(volume / 100)
+		end
 		song:setPitch(1.0)
 		timefactor = 1.0
 		currentEffect = nil
