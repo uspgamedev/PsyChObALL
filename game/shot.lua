@@ -4,13 +4,11 @@ shot = body:new {
 	collides = false,
 	mode 	 = 'fill',
 	size 	 = 4,
+	color = {0,0,0,0},
+	variance = 0,
 	explosionEffects = true,
 	__type   = 'shot'
 }
-
-function shot:__init()
-	self.variance = math.random(0, 100 * colortimer.timelimit) / 100
-end
 
 function shot:handleDelete()
 	if self.explosionEffects then neweffects(self, 7) end
@@ -18,7 +16,7 @@ function shot:handleDelete()
 end
 
 function shot:draw()
-	graphics.setColor(color(self.color, self.variance + colortimer.time))
+	graphics.setColor(color(self.color, colortimer.time))
    graphics.circle(self.mode, self.x, self.y, self.size)
 end
 
