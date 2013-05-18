@@ -67,6 +67,7 @@ function love.load()
 		end
 	end
 
+
 	screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
@@ -90,6 +91,7 @@ function love.load()
 	}
 
 	function songfadeout:funcToCall() -- song fades out
+		if muted then return end
 		if song:getVolume() <= (.02 * volume / 100) then 
 			song:setVolume(0) 
 			self:stop()
@@ -105,6 +107,7 @@ function love.load()
 	}
 
 	function songfadein:funcToCall() -- song fades in
+		if muted then return end
 		if song:getVolume() >= (.98 * volume / 100) then 
 			song:setVolume(volume / 100)
 			self:stop()
@@ -124,6 +127,7 @@ function love.load()
 	
 	sqrt2 = math.sqrt(2)
 	fonts = {}
+	coolfonts = {}
 	
 	readstats()	
 	
@@ -335,6 +339,12 @@ function getFont(size)
 	return fonts[size]
 end
 
+function getCoolFont(size)
+	if coolfonts[size] then return coolfonts[size] end
+	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
+	return coolfonts[size]
+	-- body
+end
 local moarLSDchance = 4
 
 function lostgame()
@@ -365,7 +375,6 @@ end
 function color( ... )
 	return applyeffect(colorwheel(...))
 end
-
 function inverteffect( color )
 	color[1], color[2], color[3] =
 		255 - color[1], 255 - color[2], 255 - color[3]
@@ -451,7 +460,7 @@ local ultrablastcolor = {0,0,0,0}
 local logocolor = {0,0,0,0}
 
 function love.draw()
-   graphics.setLine(4)
+	graphics.setLine(4)
 
 	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
 	backColor[1] = backColor[1] / 2
@@ -496,7 +505,7 @@ function love.draw()
 		graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
 		graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
 		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
-		graphics.setFont(getFont(40))
+		graphics.setFont(getCoolFont(40))
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
 		graphics.setFont(getFont(12))
@@ -509,22 +518,27 @@ function love.draw()
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 	if jj < 900 then
-		graphics.setFont(getFont(45))
-		graphics.print("Controls:", 380 + jj, 36)
-		graphics.setFont(getFont(30))
+		graphics.setFont(getCoolFont(50))
+		graphics.print("CONTROLS", 380 + jj, 36)
+		graphics.setFont(getCoolFont(40))
 		graphics.print("Survivor Mode:", 170 + jj, 315)
-		graphics.setFont(getFont(20))
+		graphics.setFont(getCoolFont(20))
 		graphics.print("You get points when", 600 + jj, 370)
 		graphics.print("  you kill an enemy", 623 + jj, 400)
-		graphics.print("Survive as long as you can!", 200 + jj, 370)
-		graphics.setFont(getFont(20))
+		graphics.print("Survive as long as you can!", 200 + jj, 380)
+		graphics.setFont(getCoolFont(20))
 		graphics.print("Use WASD or arrows to move", 152 + jj, 200)
-		graphics.print("Click to shoot", 560 + jj, 190)
-		graphics.print("Hold space to charge", 540 + jj, 232)
-		graphics.print("click to go back", 800 + jj, 645)
-		graphics.setFont(getFont(35))
+		graphics.print("Click to shoot", 540 + jj, 190)
+		graphics.print("Hold space to charge", 570 + jj, 222)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Click to go back", 800 + jj, 645)
+		graphics.setFont(getCoolFont(35))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 762 + jj, 220)
+		graphics.print("ulTrAbLaST", 792 + jj, 210)
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54))
+		graphics.circle("fill", 130 + jj, 210, 10)
+		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
+		graphics.circle("fill", 520 + jj, 210, 10)
 	end
 
 	graphics.setFont(getFont(12))
@@ -549,18 +563,19 @@ function love.draw()
 	if gamelost and survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		if wasdev then
-			graphics.print("Your scores didn't count, cheater!", 182, 215)
+			graphics.setFont(getCoolFont(20))
+			graphics.print("Your scores didn't count, cheater!", 382, 215)
 		elseif besttime == totaltime then
 			graphics.setFont(getFont(60))
 			graphics.print("You beat the best time!", 160, 100)
 		end
-		graphics.setFont(getFont(40))
+		graphics.setFont(getCoolFont(40))
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
 		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
-		graphics.setFont(getFont(23))
+		graphics.setFont(getCoolFont(23))
 		graphics.print("Press 'r' to retry", 300, 645)
-		graphics.setFont(getFont(18))
+		graphics.setFont(getCoolFont(18))
 		graphics.print("Press b", 580, 650)
 		graphics.print(pauseText(), 649, 650)
 		graphics.setFont(getFont(12))
@@ -569,7 +584,7 @@ function love.draw()
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
-		graphics.setFont(getFont(20))
+		graphics.setFont(getCoolFont(20))
 		graphics.print("Press b", 603, 550)
 		graphics.print(pauseText(), 682, 550)
 		graphics.setFont(getFont(12))
@@ -626,6 +641,11 @@ function love.update(dt)
 	if survivor2menu then
 		ii = ii + 1000 * dt
 		if ii > 255 then ii = 255 end
+		if muted then
+			song:setVolume(0)
+   		else
+			song:setVolume(volume / 100)
+		end
 	end
 
 	
@@ -739,11 +759,13 @@ local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
 
 function love.keypressed(key)
 	--checking for dev code
-	if devmode then
-		devmode = devpass(key)
-	else 
-		devmode = devpass(key)
-		if devmode then wasdev = true return end
+	if survivor then
+		if devmode then
+			devmode = devpass(key)
+		else 
+			devmode = devpass(key)
+			if devmode then wasdev = true return end
+		end
 	end
 
 	if (key == 'escape' or key == 'p') and not (gamelost or menu or tutorial) then
@@ -838,8 +860,9 @@ function love.keypressed(key)
 		elseif key == 'l' then dtn = deathtexts[1] lostgame()
 		end
 	end
-
-	invisible = invisiblepass(key)
+	if survivor then
+		invisible = invisiblepass(key)
+	end
 end
 
 function do_ultrablast()

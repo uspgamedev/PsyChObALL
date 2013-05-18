@@ -6,7 +6,6 @@ THE HISTORY OF PSYCHOBALL
 (xx/xx/2013) Patch 0.9.0
 ************************
 
--Changes on text placement
 -Added a menu
 	-Transition between screens
 	-New screen for Controls
@@ -14,11 +13,19 @@ THE HISTORY OF PSYCHOBALL
 	-From pause or death screen you can go back to menu
 -Added random pause messages
 -Added new death messages
--Added new type of enemy: suPerbALLs 
+-Added new type of enemy: suPerbALLs
+-You can only use easter-eggs and devmode on survivor for now 
+-Changes on text placement
+	-New font for some texts
+-Changes on focus
+	-While on survivor mode you can't lose focus
+	-While paused or anywhere else you can
 -Changes on how score works
 	-It counts how many points you've made
 	-You no longer dies if you score hits 0
 -Changes on "Lsd worn out" effect
+-Fixed some sound control bugs
+	-Muting when the song is weither fading in or fading out
 
 ************************
 (11/05/2013) Patch 0.8.0
