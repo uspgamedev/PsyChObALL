@@ -3,40 +3,25 @@ require 'body'
 enemy = body:new {
 	collides = false,
 	diereason = 'leftscreen',
-	mode = 'fill',
-	size = 15,
+	size = 16,
 	__type = 'enemy'
 }
 
 function enemy:__init()
 	local side = math.random(4)
-	if		side == 1 then --top
-		self.x = math.random(15, love.graphics.getWidth() - self.size - 1)
-		self.y = 1
-		self.Vy = math.random(v, v + 50)
+	if	side == 1 or side == 2 then -- top or bottom
+		self.x = math.random(15, width - self.size - 1)
+		self.y = side == 1 and 1 or height - 1
+		self.Vy = math.random(v, v + 50) * (side == 1 and 1 or -1)
 		local n = -1
-		if self.x < love.graphics.getWidth() / 2 then n = 1 end
+		if self.x < width / 2 then n = 1 end
 		self.Vx = n * math.random(0, v)
-	elseif	side == 2 then --bottom
-		self.x = math.random(15, love.graphics.getWidth() - self.size - 1)
-		self.y = love.graphics.getHeight()-1
-		self.Vy = -math.random(v, (v + 50))
+	elseif side == 3 or side == 4 then -- left or right
+		self.x = side == 3 and 1 or width - 1
+		self.y = math.random(15, height - self.size - 1)
+		self.Vx = math.random(v, v + 50) * (side == 3 and 1 or -1)
 		local n = -1
-		if self.x < love.graphics.getWidth() / 2 then n = 1 end
-		self.Vx = n * math.random(0, v)
-	elseif	side == 3 then --left
-		self.x = 1
-		self.y = math.random(15, love.graphics.getHeight() - self.size - 1)
-		self.Vx = math.random(v, v + 50)
-		local n = -1
-		if self.y < love.graphics.getHeight() / 2 then n = 1 end
-		self.Vy = n * math.random(0, v)
-	elseif side == 4 then --right
-		self.x = love.graphics.getWidth() - 1
-		self.y = math.random(15, love.graphics.getHeight() - self.size - 1)
-		self.Vx = -math.random(v, v + 50)
-		local n = -1
-		if self.y < love.graphics.getHeight() / 2 then n = 1 end
+		if self.y < height / 2 then n = 1 end
 		self.Vy = n * math.random(0, v)
 	end
 
@@ -74,25 +59,20 @@ function enemy:handleDelete()
 		neweffects(self, 4)
 	end
 
-	if self.size >= 10 then 
-		for i = 1,3 do
+	if self.size >= 10 then
+		local times = self.size >= 15 and 3 or 2
+		local size  = self.size >= 15 and self.size/3 + 5 or 6
+		for i = 1, times do
 			local e = enemy:new{
-				size = self.size - 5
+				size = size
 			}
-			e.x = self.x
-			e.y = self.y
-			e.Vx = math.random(v)-v / 2 + 1.3 * self.Vx
-			e.Vy = math.random(v)-v / 2 + 1.3 * self.Vy
+			e.position:set(self.position):add(math.random(self.size), math.random(self.size))
+			e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
 			if e.Vy + e.Vx < 10 then e.Vy = signum(self.Vy) * math.random(3 * v / 4, v) end
 			e.variance = self.variance
 			table.insert(enemy.bodies, e)
 		end
 	end
-end
-
-function enemy:draw()
-	love.graphics.setColor(color(self.color, colortimer.time + self.variance))
-	love.graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function enemy:update(dt)

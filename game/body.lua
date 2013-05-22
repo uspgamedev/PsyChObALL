@@ -5,6 +5,7 @@ body = lux.object.new {
 	size = 0,
 	mode = 'fill',
 	dead = false,
+	variance = 0,
 	__type = 'unnamed body'
 }
 
@@ -35,7 +36,8 @@ function body:update( dt )
 end
 
 function body:draw()
-	-- abstract
+	love.graphics.setColor(color(self.color, colortimer.time + self.variance))
+	love.graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function body:handleDelete()

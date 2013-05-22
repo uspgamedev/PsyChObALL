@@ -59,9 +59,6 @@ function love.load()
 	invisible = false -- easter eggs
 	muted = false
 	volume = 100
-	kk = 0
-	jj = 900
-	ii = 255
 
 	for k,v in pairs(love) do
 		if type(v) == 'table' and not _G[k] then
@@ -76,7 +73,7 @@ function love.load()
 	logo = graphics.newImage('resources/LogoBeta.png')
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
-	v = 220
+	v = 240
 	version = '0.9.0\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
@@ -247,25 +244,26 @@ function reload()
 	enemylist:push(enemy:new{})
 
 	enemyaddtimer = timer:new {
-		timelimit = 1
+		timelimit = 2
 	}
 
 	function enemyaddtimer:funcToCall() --adds the enemies to a list
-		if not self.first then self.first = true self.timelimit = 2 end
 		self.timelimit = .3 + (self.timelimit - .3) / 1.09
 		enemylist:push(enemy:new{})
 	end
 
+	enemyaddtimer:start(2)
 
 	enemyreleasetimer = timer:new {
-		timelimit = 0
+		timelimit = 2
 	}
 
 	function enemyreleasetimer:funcToCall() --actually releases the enemies on screen
-		if not self.first then self.first = true self.timelimit = 2 return end
 		self.timelimit = .3 + (self.timelimit - .3) / 1.09
 		table.insert(enemy.bodies,enemylist:pop())
 	end
+
+	enemyreleasetimer:start(1.5)
 	
 	shottimer = timer:new{
 		timelimit = .18,
@@ -299,15 +297,18 @@ function reload()
 	end
 
 	superballtimer = timer:new {
-		timelimit = 23,
+		timelimit = 15,
+		running = false,
 		works_on_gamelost = false
 	}
 
 	function superballtimer:funcToCall()
-		if #bosses.bodies == 0 then self.timelimit = 2 end
+		if #bosses.bodies ~= 0 then self.timelimit = 2 end
 		bosses.newsuperball{ position = vector:new{width - 30,  30} }
-		self.timelimit = 23
+		self.timelimit = 15
 	end
+
+	superballtimer:start(9)
 
 
 	
@@ -750,10 +751,10 @@ function love.keypressed(key)
 
 	if not gamelost and state == survivor then 
 		auxspeed:add(
-			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
-				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
-			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v or 0) 
-				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v or 0)
+			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
+				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
+			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v*1.3 or 0) 
+				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v*1.3 or 0)
 		)
 		psycho.speed:set(auxspeed)
 
@@ -852,10 +853,10 @@ function love.keyreleased(key, code)
 
 	if not gamelost and state == survivor then
 	    auxspeed:sub(
-			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
-				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
-			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v or 0) 
-				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v or 0)
+			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
+				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
+			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v * 1.3 or 0) 
+				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v * 1.3 or 0)
 		)
 		psycho.speed:set(auxspeed)
 
