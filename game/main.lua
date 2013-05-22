@@ -22,21 +22,16 @@ end}
 function readstats()
 	local file = filesystem.newFile("high")
 
-	if not filesystem.exists("high") then
-	  file:open('w')
-	  file:write("0\n0")
-	  file:close()
+	local err = pcall(file.open, file, 'r')
+	if not err then
+		file:open("w")
 	end
 
-	file:open('r')
 	local it = file:lines()
+	besttime = tonumber(it() or 0)
+	bestmult = tonumber(it() or 0)
 
-	local r = it()
-	if not r then r = 0 end
-	besttime = 0 + r
-	r = it()
-	if not r then r = 0 end
-	bestmult = 0 + r
+	file:close()
 end
 
 function writestats()
@@ -57,6 +52,7 @@ function love.load()
 	survivor = 2 -- modo de jogo survivor
 	devmode = false
 	invisible = false -- easter eggs
+	imagecheat = false
 	muted = false
 	volume = 100
 
@@ -65,6 +61,10 @@ function love.load()
 			_G[k] = v
 		end
 	end
+
+	pizzaimage = graphics.newImage("resources/pizza.png")
+	yanimage = graphics.newImage("resources/yan.png")
+	imageoverride = nil --image to be painted instead of circles
 
 
 	screenshotnumber = 1
@@ -346,9 +346,12 @@ end
 local moarLSDchance = 4
 
 function lostgame()
+	if gamelost then return end
 	writestats()
 	songfadeout:start()
 	mouse.setGrab(false)
+
+	if deathText() == "Supreme." then dtn = nil end --make it much rarer
 
 	if deathText() == "The LSD wears off" then
 		song:setPitch(.8)
@@ -491,11 +494,13 @@ function love.draw()
 	end
 
 	
-	graphics.setColor(color(maincolor, colortimer.time))
 	--painting PsyChObALL
 	if not invisible and state == survivor then -- Invisible easter-egg
 		psycho:draw()
 	end
+	graphics.setColor(color(maincolor, colortimer.time))
+
+
 	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 15)
 	if state == survivor then
 		graphics.setFont(getCoolFont(22))
@@ -605,7 +610,7 @@ pausetexts = {"to surrender","to go back","to give up","to admit defeat"}
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n are belong to BALLS",
 "You wake up and\n realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
-"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END"}
+"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END", "Supreme."}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -729,6 +734,8 @@ end
 
 local devpass = passwordtoggle {'p','s','y','c','h','o'}
 local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
+local pizzapass = password {'p', 'i', 'z', 'z', 'a'}
+local yanpass = password {'y', 'a', 'n'}
 
 function love.keypressed(key)
 	--checking for dev code
@@ -838,6 +845,17 @@ function love.keypressed(key)
 	end
 	if state == survivor then
 		invisible = invisiblepass(key)
+	end
+
+	if pizzapass(key) then
+		imagecheat = not imagecheat
+		imagecheatwithalpha = false
+		if imagecheat then imageoverride = pizzaimage end
+	end
+	if yanpass(key) then
+		imagecheat = not imagecheat
+		imagecheatwithalpha = true
+		if imagecheat then imageoverride = yanimage end
 	end
 end
 

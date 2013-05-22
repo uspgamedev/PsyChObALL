@@ -36,8 +36,14 @@ function body:update( dt )
 end
 
 function body:draw()
-	love.graphics.setColor(color(self.color, colortimer.time + self.variance))
-	love.graphics.circle(self.mode, self.position[1], self.position[2], self.size)
+	if imagecheat then
+		if imagecheatwithalpha then graphics.setColor(color(self.color, colortimer.time + self.variance))
+		else graphics.setColor(255,255,255) end
+		graphics.draw(imageoverride, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / imageoverride:getWidth(), 2*self.size / imageoverride:getHeight())
+		return
+	end
+	graphics.setColor(color(self.color, colortimer.time + self.variance))
+	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function body:handleDelete()

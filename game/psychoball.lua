@@ -23,5 +23,5 @@ end
 
 function psychoball:draw()
 	if gamelost then return end
-	graphics.circle(self.mode, self.x, self.y, self.size)
+	body.draw(self)
 end
