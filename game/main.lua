@@ -156,9 +156,9 @@ function love.load()
 		self:funcToCall()
 	end
 	
-	ultrablastmax = 42 -- maximum number of shots on ultrablast
+	ultrablastmax = 84 -- maximum number of shots on ultrablast
 	ultratimer = timer:new {
-		timelimit  = .1,
+		timelimit  = .02,
 		running    = false,
 		persistent = true
 	}
@@ -224,7 +224,7 @@ function love.load()
 end
 
 function reload()
-	ultrameter = 5
+	ultracounter = 3
 
 	timer.closenonessential()
 	
@@ -322,10 +322,12 @@ function reload()
 	superballtimer:start(5)
 
 	totaltime = 0
+	blastime = 0
 
 	timefactor = 1.0
 
 	score = 0
+	blastscore = 0 --Variavel que da ultrablast points por pontos
 
 	pause = false
 	gamelost = false
@@ -510,7 +512,7 @@ function love.draw()
 	graphics.setColor(color(maincolor, colortimer.time))
 
 
-	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 15)
+	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 10)
 	if state == survivor then
 		graphics.setFont(getCoolFont(22))
 		graphics.print(string.format("%.0f", score), 68, 20)
@@ -525,8 +527,9 @@ function love.draw()
 		graphics.setFont(getFont(14))
 		graphics.print("ulTrAbLaST:", 25, 105)
 		graphics.setFont(getCoolFont(20))
-		graphics.print(string.format("%d", ultrameter), 110, 100)
-		graphics.print("_________", 25, 106)
+		graphics.print(string.format("%d", ultracounter), 110, 100)
+		graphics.setFont(getFont(20))
+		graphics.print("___________", 25, 106)
 		graphics.setFont(getCoolFont(40))
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
@@ -552,8 +555,8 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, alphatimer.var))
 		graphics.print("v" .. version, 513, 687)
-		graphics.print('Write "gg" to delete stats' , 15, 15)
-		if resetted then graphics.print("~~stats deleted~~", 25, 28) end
+		graphics.print('Write "gg" to delete stats' , 15, 10)
+		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
 
 
 		if latest ~= version then
@@ -568,29 +571,39 @@ function love.draw()
 
 		graphics.translate(width, 0)
 		--tutorialmenu
+		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54, nil, alphatimer.var))
 		graphics.setFont(getCoolFont(50))
 		graphics.print("CONTROLS", 380, 36)
 		graphics.setFont(getCoolFont(40))
-		graphics.print("Survivor Mode:", 170, 300)
+		graphics.print("Survivor Mode:", 170, 350)
+		graphics.setColor(color(logocolor, colortimer.time * 2.5 + .54, nil, alphatimer.var))
 		graphics.setFont(getCoolFont(20))
-		graphics.print("You get points when", 540, 380)
-		graphics.print("  you kill an enemy", 570, 410)
-		graphics.print("Survive as long as you can!", 152, 390)
+		graphics.print("You get points when", 540, 425)
+		graphics.print("  you kill an enemy", 570, 455)
+		graphics.print("Survive as long as you can!", 152, 440)
+		graphics.print("You get one more ulTrAbLaST for every 30 seconds you survive!", 182, 500)
+		graphics.print("You have a limited amount of ulTrAbLaSTs to use", 540, 230)
+		graphics.print("You get one more ulTrAbLaST for every 1000 points!", 540, 270)
 		graphics.setFont(getCoolFont(20))
-		graphics.print("Use WASD or arrows to move", 152, 200)
-		graphics.print("Click to shoot", 540, 190)
-		graphics.print("Hold space to charge", 570, 222)
+		graphics.print("Use WASD or arrows to move", 152, 170)
+		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
+		graphics.print("Hold space to charge", 70, 252)
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Click to go back", 800, 645)
 		graphics.setFont(getCoolFont(35))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 792, 210)
+		graphics.print("ulTrAbLaST", 290, 242)
 		graphics.setColor(color(logocolor, colortimer.time * 6.5 + .54))
-		graphics.circle("fill", 130, 210, 10)
-		graphics.circle("fill", 520, 400, 10)
+		graphics.circle("fill", 130, 180, 10)
+		graphics.circle("fill", 520, 450, 10)
+		graphics.circle("fill", 160, 510, 10)
+		graphics.circle("fill", 520, 240, 10)
+		graphics.circle("fill", 520, 280, 10)
 		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
-		graphics.circle("fill", 520, 210, 10)
-		graphics.circle("fill", 130, 400, 10)
+		graphics.circle("fill", 520, 180, 10)
+		graphics.circle("fill", 130, 450, 10)
+		graphics.circle("fill", 50, 263, 10)
+
 
 		graphics.translate(swypetimer.var - width, 0)
 	end
@@ -662,7 +675,14 @@ function love.update(dt)
 	dt = dt * timefactor
 	
 	if isPaused then return end
-	if not gamelost then totaltime = totaltime + dt end
+	if not gamelost then
+		totaltime = totaltime + dt
+		blastime = blastime + dt
+		if blastime >= 30 then
+			blastime = blastime - 30
+			ultracounter = ultracounter + 1
+		end
+	end
 
 	psycho:update(dt)
 
@@ -732,6 +752,11 @@ end
 function addscore(x)
 	if not gamelost then
 		score = score + x
+		blastscore = blastscore + x
+		if blastscore >= 500 then
+			blastscore = blastscore - 500
+			ultracounter = ultracounter + 1
+		end
 	end
 end
 
@@ -800,12 +825,12 @@ function love.keypressed(key)
 			psycho.speed:div(sqrt2)
 		end
 
-		if key == ' ' and not isPaused and state == survivor and ultrameter > 0 then
-			ultrameter = ultrameter - 1
+		if key == ' ' and not isPaused and state == survivor and ultracounter > 0 then
+			ultracounter = ultracounter - 1
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
 				based_on   = psycho,
-				sizeGrowth = 30,
+				sizeGrowth = 25,
 				alpha 	   = 100,
 				linewidth  = 6,
 				index 	   = 'ultrameter'

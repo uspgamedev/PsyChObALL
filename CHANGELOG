@@ -16,11 +16,12 @@ THE HISTORY OF PSYCHOBALL
 	-From pause or death screen you can go back to menu
 -Added random pause messages
 -Added new death messages
+	-Added a very rare death message
 -Added new type of enemy: suPerbALLs
 -Added new easter-eggs
 	-Added David Robert Jones mode
 	-Added Italian mode
-	-Added mode
+	-Added Richard mode
 	-Added Detective mode
 -You can reset your stats in the main menu
 -You can only use easter-eggs and devmode on survivor for now 
@@ -36,8 +37,8 @@ THE HISTORY OF PSYCHOBALL
 	-Saves your highscore
 -Changes on Ultrablast
 	-Limited times you can use it
-	-You get more if you get more points // not added
-	-You get more if you survive more time // not added
+	-You get more if you get more points
+	-You get more if you survive more time
 -Changes on color settings
 	-Changes on "Lsd worn out" effect
 	-Changes on color of "bullets"
