@@ -9,6 +9,7 @@ require "vartimer"
 require "list"
 require "bosses"
 require "psychoball"
+require "filemanager"
 
 local socket = require "socket"
 local http = require "socket.http"
@@ -20,29 +21,25 @@ response = http.request{ url=URL, create=function()
 end}
 
 function readstats()
-	local file = filesystem.newFile("high")
+	local stats = filemanager.readtable "stats"
 
-	local err = pcall(file.open, file, 'r')
-	if not err then
-		file:open("w")
-	end
-
-	local it = file:lines()
-	besttime = tonumber(it() or 0)
-	bestmult = tonumber(it() or 0)
-
-	file:close()
+	besttime  = stats.besttime  or 0
+	bestmult  = stats.bestmult  or 0
+	bestscore = stats.bestscore or 0
 end
 
 function writestats()
 	if wasdev then return end
-	if besttime > totaltime and bestmult > multiplier then return end
-	local file = filesystem.newFile("high")
-	file:open('w')
-	besttime = math.max(besttime, totaltime)
-	bestmult = math.max(bestmult, multiplier)
-	file:write(besttime .. "\n" .. bestmult)
-	file:close()
+	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
+	besttime  = math.max(besttime, totaltime)
+	bestmult  = math.max(bestmult, multiplier)
+	bestscore = math.max(bestscore, score)
+	local stats = {
+		besttime  = besttime,
+		bestmult  = bestmult,
+		bestscore = bestscore
+	}
+	filemanager.writetable(stats, "stats")
 end
 
 function love.load()
@@ -65,7 +62,6 @@ function love.load()
 	pizzaimage = graphics.newImage("resources/pizza.png")
 	yanimage = graphics.newImage("resources/yan.png")
 	imageoverride = nil --image to be painted instead of circles
-
 
 	screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
@@ -510,9 +506,9 @@ function love.draw()
 		graphics.print("Score:", 25, 24)
 		graphics.print("Time:", 25, 48)
 		graphics.print(srt, 27, 96)
-		graphics.print("Best Score: x", 25, 68)
-		graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 85)
-		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
+		graphics.print(string.format("Best Score: %d",   math.max(bestscore, score)), 25, 68)
+		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
+		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
 		graphics.setFont(getCoolFont(40))
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
