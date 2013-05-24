@@ -5,6 +5,7 @@ body = lux.object.new {
 	size = 0,
 	mode = 'fill',
 	dead = false,
+	variance = 0,
 	__type = 'unnamed body'
 }
 
@@ -35,7 +36,14 @@ function body:update( dt )
 end
 
 function body:draw()
-	-- abstract
+	if imagecheat then
+		if imagecheatwithalpha then graphics.setColor(color(self.color, colortimer.time + self.variance))
+		else graphics.setColor(255,255,255) end
+		graphics.draw(imageoverride, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / imageoverride:getWidth(), 2*self.size / imageoverride:getHeight())
+		return
+	end
+	graphics.setColor(color(self.color, colortimer.time + self.variance))
+	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function body:handleDelete()

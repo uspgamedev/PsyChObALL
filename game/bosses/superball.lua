@@ -55,11 +55,6 @@ function superball:__init()
 	}
 end
 
-function superball:draw()
-	graphics.setColor(color(self.color, self.variance + colortimer.time))
-	graphics.circle(self.mode, self.x, self.y, self.size)
-end
-
 function superball:update(dt)
 	superball:__super().update(self, dt)
 	if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))

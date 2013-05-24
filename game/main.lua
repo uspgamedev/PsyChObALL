@@ -5,61 +5,52 @@ require "effect"
 require "enemy"
 require "shot"
 require "timer"
+require "vartimer"
 require "list"
 require "bosses"
 require "psychoball"
+require "filemanager"
 
 local socket = require "socket"
 local http = require "socket.http"
 
 response = http.request{ url=URL, create=function()
   local req_sock = socket.tcp()
-  req_sock:settimeout(5)
+  req_sock:settimeout(3)
   return req_sock
 end}
 
 function readstats()
-	local file = filesystem.newFile("high")
+	local stats = filemanager.readtable "stats"
 
-	if not filesystem.exists("high") then
-	  file:open('w')
-	  file:write("0\n0")
-	  file:close()
-	end
-
-	file:open('r')
-	local it = file:lines()
-
-	local r = it()
-	if not r then r = 0 end
-	besttime = 0 + r
-	r = it()
-	if not r then r = 0 end
-	bestmult = 0 + r
+	besttime  = stats.besttime  or 0
+	bestmult  = stats.bestmult  or 0
+	bestscore = stats.bestscore or 0
 end
 
 function writestats()
 	if wasdev then return end
-	if besttime > totaltime and bestmult > multiplier then return end
-	local file = filesystem.newFile("high")
-	file:open('w')
-	besttime = math.max(besttime, totaltime)
-	bestmult = math.max(bestmult, multiplier)
-	file:write(besttime .. "\n" .. bestmult)
-	file:close()
+	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
+	besttime  = math.max(besttime, totaltime)
+	bestmult  = math.max(bestmult, multiplier)
+	bestscore = math.max(bestscore, score)
+	filemanager.writetable({
+		besttime  = besttime,
+		bestmult  = bestmult,
+		bestscore = bestscore
+	}, "stats")
 end
 
 function love.load()
-	menu = true -- menu
-	survivor = false -- modo de jogo survivor
-	tutorial = false -- tutorial
+	state = 0
+	mainmenu = 0 -- mainmenu
+	tutorialmenu = 1
+	survivor = 2 -- modo de jogo survivor
 	devmode = false
 	invisible = false -- easter eggs
+	imagecheat = false
 	muted = false
 	volume = 100
-	kk = 0
-	jj = 900
-	ii = 255
 
 	for k,v in pairs(love) do
 		if type(v) == 'table' and not _G[k] then
@@ -67,13 +58,19 @@ function love.load()
 		end
 	end
 
+	pizzaimage = graphics.newImage("resources/pizza.png")
+	yanimage = graphics.newImage("resources/yan.png")
+	ricaimage = graphics.newImage("resources/rica.png")
+	rikaimage = graphics.newImage("resources/rika.png")
+	imageoverride = nil --image to be painted instead of circles
+
 	screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 
 	logo = graphics.newImage('resources/LogoBeta.png')
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 
-	v = 220
+	v = 240
 	version = '0.9.0\n'
 	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
 
@@ -90,6 +87,7 @@ function love.load()
 	}
 
 	function songfadeout:funcToCall() -- song fades out
+		if muted then return end
 		if song:getVolume() <= (.02 * volume / 100) then 
 			song:setVolume(0) 
 			self:stop()
@@ -105,6 +103,7 @@ function love.load()
 	}
 
 	function songfadein:funcToCall() -- song fades in
+		if muted then return end
 		if song:getVolume() >= (.98 * volume / 100) then 
 			song:setVolume(volume / 100)
 			self:stop()
@@ -124,6 +123,7 @@ function love.load()
 	
 	sqrt2 = math.sqrt(2)
 	fonts = {}
+	coolfonts = {}
 	
 	readstats()	
 	
@@ -185,6 +185,18 @@ function love.load()
 		self:funcToCall()
 	end
 
+	swypetimer = vartimer:new {
+		running = false,
+		var = 0,
+		speed = 3000
+	}
+
+	alphatimer = vartimer:new {
+		running = false,
+		var = 255,
+		speed = 300
+	}
+
 	--sound images
 	soundimage = graphics.newImage("resources/SoundIcons.png")
 	soundquads = {
@@ -229,25 +241,26 @@ function reload()
 	enemylist:push(enemy:new{})
 
 	enemyaddtimer = timer:new {
-		timelimit = 1
+		timelimit = 2
 	}
 
 	function enemyaddtimer:funcToCall() --adds the enemies to a list
-		if not self.first then self.first = true self.timelimit = 2 end
-		self.timelimit = .3 + (self.timelimit - .3) / 1.09
+		self.timelimit = .8 + (self.timelimit - .8) / 1.09
 		enemylist:push(enemy:new{})
 	end
 
+	enemyaddtimer:start(2)
 
 	enemyreleasetimer = timer:new {
-		timelimit = 0
+		timelimit = 2
 	}
 
 	function enemyreleasetimer:funcToCall() --actually releases the enemies on screen
-		if not self.first then self.first = true self.timelimit = 2 return end
-		self.timelimit = .3 + (self.timelimit - .3) / 1.09
+		self.timelimit = .8 + (self.timelimit - .8) / 1.09
 		table.insert(enemy.bodies,enemylist:pop())
 	end
+
+	enemyreleasetimer:start(1.5)
 	
 	shottimer = timer:new{
 		timelimit = .18,
@@ -281,22 +294,23 @@ function reload()
 	end
 
 	superballtimer = timer:new {
-		timelimit = 23,
+		timelimit = 30,
+		running = false,
 		works_on_gamelost = false
 	}
 
 	function superballtimer:funcToCall()
-		if #bosses.bodies == 0 then self.timelimit = 2 end
+		if #bosses.bodies ~= 0 then self.timelimit = 2 end
 		bosses.newsuperball{ position = vector:new{width - 30,  30} }
-		self.timelimit = 23
+		self.timelimit = 30
 	end
 
+	superballtimer:start(5)
 
-	
 	totaltime = 0
-	
+
 	timefactor = 1.0
-	
+
 	score = 0
 
 	pause = false
@@ -318,12 +332,21 @@ function getFont(size)
 	return fonts[size]
 end
 
+function getCoolFont(size)
+	if coolfonts[size] then return coolfonts[size] end
+	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
+	return coolfonts[size]
+	-- body
+end
 local moarLSDchance = 4
 
 function lostgame()
+	if gamelost then return end
 	writestats()
 	songfadeout:start()
 	mouse.setGrab(false)
+
+	if deathText() == "Supreme." then dtn = nil end --make it much rarer
 
 	if deathText() == "The LSD wears off" then
 		song:setPitch(.8)
@@ -348,7 +371,6 @@ end
 function color( ... )
 	return applyeffect(colorwheel(...))
 end
-
 function inverteffect( color )
 	color[1], color[2], color[3] =
 		255 - color[1], 255 - color[2], 255 - color[3]
@@ -434,7 +456,8 @@ local ultrablastcolor = {0,0,0,0}
 local logocolor = {0,0,0,0}
 
 function love.draw()
-   graphics.setLine(4)
+	graphics.setLine(4)
+	graphics.setFont(getFont(12))
 
 	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
 	backColor[1] = backColor[1] / 2
@@ -447,7 +470,7 @@ function love.draw()
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
-	if survivor then
+	if state == survivor then
 		for i, v in pairs(paintables) do
 			for j, m in pairs(v) do
 				m:draw()
@@ -466,105 +489,135 @@ function love.draw()
 	end
 
 	
-	graphics.setColor(color(maincolor, colortimer.time))
 	--painting PsyChObALL
-	if not invisible and survivor then -- Invisible easter-egg
+	if not invisible and state == survivor then -- Invisible easter-egg
 		psycho:draw()
 	end
+	graphics.setColor(color(maincolor, colortimer.time))
 
-	if survivor then
-		graphics.print(string.format("Score: %.0f",score), 25, 22)
-		graphics.print(string.format("Time: %.1fs",totaltime), 25, 68)
+
+	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 15)
+	if state == survivor then
+		graphics.setFont(getCoolFont(22))
+		graphics.print(string.format("%.0f", score), 68, 20)
+		graphics.print(string.format("%.1fs", totaltime), 68, 42)
+		graphics.setFont(getFont(12))
+		graphics.print("Score:", 25, 24)
+		graphics.print("Time:", 25, 48)
 		graphics.print(srt, 27, 96)
-		graphics.print("FPS: " .. love.timer.getFPS(), 990, 21)
-		graphics.print(string.format("Best Time: %.1fs", math.max(besttime, totaltime)), 25, 46)
-		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult, multiplier)), 965, 83)
-		graphics.setFont(getFont(40))
+		graphics.print(string.format("Best Score: %0.f",   math.max(bestscore, score)), 25, 68)
+		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
+		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
+		graphics.setFont(getCoolFont(40))
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
 		graphics.setFont(getFont(12))
 		if devmode then graphics.print("dev mode on!", 446, 5) end
 		if invisible then graphics.print("Invisible mode on!", 432, 18) end
+		if imagecheat then
+			if imageoverride == yanimage then graphics.print("David Robert Jones mode on!", 395, 32)
+			elseif imageoverride == pizzaimage then graphics.print("Italian mode on!", 438, 32) 
+			elseif imageoverride == ricaimage then graphics.print("Tiny mode on!", 443, 32)
+			elseif imageoverride == rikaimage then graphics.print("Detective mode on!", 428, 32) end
+		end
 	end
 	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
 	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
 	
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-	if jj < 900 then
-		graphics.setFont(getFont(45))
-		graphics.print("Controls:", 380 + jj, 36)
-		graphics.setFont(getFont(30))
-		graphics.print("Survivor Mode:", 170 + jj, 315)
-		graphics.setFont(getFont(20))
-		graphics.print("You get points when", 600 + jj, 370)
-		graphics.print("  you kill an enemy", 623 + jj, 400)
-		graphics.print("Survive as long as you can!", 200 + jj, 370)
-		graphics.setFont(getFont(20))
-		graphics.print("Use WASD or arrows to move", 152 + jj, 200)
-		graphics.print("Click to shoot", 560 + jj, 190)
-		graphics.print("Hold space to charge", 540 + jj, 232)
-		graphics.print("click to go back", 800 + jj, 645)
-		graphics.setFont(getFont(35))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 762 + jj, 220)
-	end
 
-	graphics.setFont(getFont(12))
-	if kk > -900 and ii > 0 then
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, ii))
-		graphics.print("v" .. version, 513 + kk, 687)
+	if alphatimer.var > 0 then
+		graphics.translate(-swypetimer.var, 0)
+		--mainmenu
+		graphics.setFont(getFont(12))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, alphatimer.var))
+		graphics.print("v" .. version, 513, 687)
 
 		if latest ~= version then
-			graphics.print("Version " .. latest, 422 + kk, 700)
-			graphics.print("is available to download!", 510 + kk, 700)
+			graphics.print("Version " .. latest, 422, 700)
+			graphics.print("is available to download!", 510, 700)
 		end
-		graphics.print("A game by Marvellous Soft/USPGameDev", 14 + kk, 696)
+		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 
-		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, ii))
-		if kk > -900 then
-			graphics.draw(logo, 120 + kk, 75, nil, 0.25, 0.20)
-			graphics.setFont(getFont(12))
-		end
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, alphatimer.var))
+		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
+		graphics.setFont(getFont(12))
+
+		graphics.translate(width, 0)
+		--tutorialmenu
+		graphics.setFont(getCoolFont(50))
+		graphics.print("CONTROLS", 380, 36)
+		graphics.setFont(getCoolFont(40))
+		graphics.print("Survivor Mode:", 170, 300)
+		graphics.setFont(getCoolFont(20))
+		graphics.print("You get points when", 540, 380)
+		graphics.print("  you kill an enemy", 570, 410)
+		graphics.print("Survive as long as you can!", 152, 390)
+		graphics.setFont(getCoolFont(20))
+		graphics.print("Use WASD or arrows to move", 152, 200)
+		graphics.print("Click to shoot", 540, 190)
+		graphics.print("Hold space to charge", 570, 222)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Click to go back", 800, 645)
+		graphics.setFont(getCoolFont(35))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
+		graphics.print("ulTrAbLaST", 792, 210)
+		graphics.setColor(color(logocolor, colortimer.time * 6.5 + .54))
+		graphics.circle("fill", 130, 210, 10)
+		graphics.circle("fill", 520, 400, 10)
+		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
+		graphics.circle("fill", 520, 210, 10)
+		graphics.circle("fill", 130, 400, 10)
+
+		graphics.translate(swypetimer.var - width, 0)
 	end
 	
 
-	if gamelost and survivor then
+	if gamelost and state == survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		if wasdev then
-			graphics.print("Your scores didn't count, cheater!", 182, 215)
-		elseif besttime == totaltime then
-			graphics.setFont(getFont(60))
-			graphics.print("You beat the best time!", 160, 100)
+			graphics.setFont(getCoolFont(20))
+			graphics.print("Your scores didn't count, cheater!", 382, 215)
+		else
+			if besttime == totaltime then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best time!", 260, 100)
+			end	
+			if bestscore == score then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best score!", 290, 140)
+			end
 		end
-		graphics.setFont(getFont(40))
+		graphics.setFont(getCoolFont(40))
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
 		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
-		graphics.setFont(getFont(23))
+		graphics.setFont(getCoolFont(23))
 		graphics.print("Press 'r' to retry", 300, 645)
-		graphics.setFont(getFont(18))
+		graphics.setFont(getCoolFont(18))
 		graphics.print("Press b", 580, 650)
 		graphics.print(pauseText(), 649, 650)
 		graphics.setFont(getFont(12))
 	end
-	if esc and survivor then
+
+	if esc and state == survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
-		graphics.setFont(getFont(20))
+		graphics.setFont(getCoolFont(20))
 		graphics.print("Press b", 603, 550)
 		graphics.print(pauseText(), 682, 550)
 		graphics.setFont(getFont(12))
 	end
 end
 
-pausetexts = {"to surrender","to go back","to give up","to admit defeat"}
+pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff"}
 
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n are belong to BALLS",
 "You wake up and\n realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
-"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END"}
+"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END", "YOU WIN!!! \n           Nope, Chuck Testa"}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -580,37 +633,11 @@ local todelete = {}
 
 function love.update(dt)	
 
-	isPaused = (esc or pause or menu or tutorial) 
-	
-	
+	isPaused = (esc or pause or state == mainmenu or state == tutorialmenu)
+
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
 	dt = dt * timefactor
-
-	if menu2tutorial then
-		jj = jj - 5000 * dt
-		if jj < 0 then jj = 0 end
-		kk = kk - 5000 * dt
-		if kk < -900 then kk = -900 end
-	end
-
-	if tutorial2menu then
-		jj = jj + 5000 * dt
-		if jj > 900 then jj = 900 end
-		kk = kk + 5000 * dt
-		if kk > 0 then kk = 0 end	
-	end
-
-	if menu2survivor then
-		ii = ii - 1000 * dt
-		if ii < 0 then ii = 0 end
-	end
-
-	if survivor2menu then
-		ii = ii + 1000 * dt
-		if ii > 255 then ii = 255 end
-	end
-
 	
 	if isPaused then return end
 	if not gamelost then totaltime = totaltime + dt end
@@ -637,30 +664,24 @@ end
 
 function love.mousepressed(x, y, button)
     if esc or pause then return end
-    if button == 'l' and menu then
-    	menu2survivor = true
-    	survivor2menu = false
-    	menu = false
-    	survivor = true
+    if button == 'l' and state == mainmenu then
+    	state = survivor
+    	alphatimer:setAndGo(255, 0)
 		mouse.setGrab(true)
     	reload() return
     end
-    if button == 'r' and menu then
-    	menu2tutorial = true
-    	tutorial2menu = false
-    	menu = false
-    	tutorial = true
+    if button == 'r' and state == mainmenu then
+    	swypetimer:setAndGo(0, width)
+    	state = tutorialmenu
     	return
     end
-    if (button == 'l' or button == 'r') and tutorial then
-    	tutorial2menu = true
-    	menu2tutorial = false
-    	menu = true
-    	tutorial = false
+    if (button == 'l' or button == 'r') and state == tutorialmenu then
+    	swypetimer:setAndGo(width, 0)
+    	state = mainmenu
     	return
     end
     if button == 'l' and not gamelost then
-        shoot(x, y)
+      shoot(x, y)
 		shottimer:start()
     end
 end
@@ -719,17 +740,23 @@ end
 
 local devpass = passwordtoggle {'p','s','y','c','h','o'}
 local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
+local pizzapass = password {'p', 'i', 'z', 'z', 'a'}
+local yanpass = password {'y', 'a', 'n'}
+local ricapass = password {'r', 'i', 'c','a'}
+local rikapass = password {'r', 'i', 'k','a'}
 
 function love.keypressed(key)
 	--checking for dev code
-	if devmode then
-		devmode = devpass(key)
-	else 
-		devmode = devpass(key)
-		if devmode then wasdev = true return end
+	if state == survivor then
+		if devmode then
+			devmode = devpass(key)
+		else 
+			devmode = devpass(key)
+			if devmode then wasdev = true return end
+		end
 	end
 
-	if (key == 'escape' or key == 'p') and not (gamelost or menu or tutorial) then
+	if (key == 'escape' or key == 'p') and not (gamelost or state == mainmenu or state == tutorialmenu) then
 		pst = nil
 		esc = not esc
 		mouse.setGrab(not esc)
@@ -737,12 +764,12 @@ function love.keypressed(key)
 
 	keyspressed[key] = true
 
-	if not gamelost and survivor then 
+	if not gamelost and state == survivor then 
 		auxspeed:add(
-			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
-				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
-			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v or 0) 
-				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v or 0)
+			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
+				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
+			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v*1.3 or 0) 
+				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v*1.3 or 0)
 		)
 		psycho.speed:set(auxspeed)
 
@@ -750,7 +777,7 @@ function love.keypressed(key)
 			psycho.speed:div(sqrt2)
 		end
 
-		if key == ' ' and not isPaused and survivor then
+		if key == ' ' and not isPaused and state == survivor then
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
 				based_on   = psycho,
@@ -771,11 +798,19 @@ function love.keypressed(key)
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
 	if (gamelost or esc) and key == 'b' then
-		survivor = false
 		esc = false
-		menu = true
-		survivor2menu = true
-		menu2survivor = false
+		state = mainmenu
+
+		devmode = false
+		imagecheat = false
+		invisible = false
+
+		alphatimer:setAndGo(0, 255)
+		if muted then
+			song:setVolume(0)
+   		else
+			song:setVolume(volume / 100)
+		end
 		song:setPitch(1.0)
 		timefactor = 1.0
 		currentEffect = nil
@@ -808,7 +843,7 @@ function love.keypressed(key)
 	end
 
 
-	if devmode and survivor then
+	if devmode and state == survivor then
 		if not esc and key == 'k' then lostgame() end
 		if key == '0' then multiplier = multiplier + 2
 		elseif key == '9' then multiplier = multiplier - 2
@@ -821,8 +856,36 @@ function love.keypressed(key)
 		elseif key == 'l' then dtn = deathtexts[1] lostgame()
 		end
 	end
+	if state == survivor then
+		invisible = invisiblepass(key)
+		
+		if pizzapass(key) then
+			if not imagecheat then imagecheat = true end
+			if imageoverride == pizzaimage then imagecheat = false end
+			if imagecheat then imageoverride = pizzaimage end
+		end
+		
+		if yanpass(key) then
+			if not imagecheat then imagecheat = true end
+			if imageoverride == yanimage then imagecheat = false end
+			imagecheatwithalpha = true
+			if imagecheat then imageoverride = yanimage end
+		end
 
-	invisible = invisiblepass(key)
+		if ricapass(key) then
+			if not imagecheat then imagecheat = true end
+			if imageoverride == ricaimage then imagecheat = false end
+			imagecheatwithalpha = true
+			if imagecheat then imageoverride = ricaimage end
+		end
+
+		if rikapass(key) then
+			if not imagecheat then imagecheat = true end
+			if imageoverride == rikaimage then imagecheat = false end
+			imagecheatwithalpha = true
+			if imagecheat then imageoverride = rikaimage end
+		end
+	end
 end
 
 function do_ultrablast()
@@ -835,12 +898,12 @@ function love.keyreleased(key, code)
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 
-	if not gamelost and survivor then
+	if not gamelost and state == survivor then
 	    auxspeed:sub(
-			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v or 0) 
-				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v or 0),
-			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v or 0) 
-				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v or 0)
+			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
+				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
+			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v * 1.3 or 0) 
+				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v * 1.3 or 0)
 		)
 		psycho.speed:set(auxspeed)
 

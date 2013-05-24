@@ -1,7 +1,6 @@
 require 'body'
 
 effect = body:new {
-	mode 	 = 'fill',
 	size	 = 3,
 	__type   = 'effect'
 }

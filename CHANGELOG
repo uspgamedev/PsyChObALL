@@ -2,11 +2,13 @@
 THE HISTORY OF PSYCHOBALL
 =========================
 
-************************
-(xx/xx/2013) Patch 0.9.0
-************************
+*************************************************
+(xx/xx/2013) Patch 0.9.0    -  Patch Madness
+*************************************************
 
--Changes on text placement
+-Change on the script
+	-More "understandable" code!
+	-Support for images
 -Added a menu
 	-Transition between screens
 	-New screen for Controls
@@ -15,15 +17,31 @@ THE HISTORY OF PSYCHOBALL
 -Added random pause messages
 -Added new death messages
 -Added new type of enemy: suPerbALLs
-	-They appear on survivor mode after 23 seconds
+-Added new easter-eggs
+	-Added David Robert Jones mode
+	-Added Italian mode
+	-Added mode
+	-Added Detective mode
+-You can only use easter-eggs and devmode on survivor for now 
+-Major changes on difficulty of Survivor mode
+-Changes on text placement
+	-New font for some texts
+-Changes on focus
+	-While on survivor mode you can't lose focus
+	-While paused or anywhere else you can
 -Changes on how score works
 	-It counts how many points you've made
 	-You no longer dies if you score hits 0
--Changes on "Lsd worn out" effect
+	-Saves your highscore
+-Changes on color settings
+	-Changes on "Lsd worn out" effect
+	-Changes on color of "bullets"
+-Fixed some sound control bugs
+	-Muting when the song is weither fading in or fading out
 
-************************
-(11/05/2013) Patch 0.8.0
-************************
+*************************************************
+(11/05/2013) Patch 0.8.0    -   UltraPatch
+*************************************************
 
 -Major change on the script
 	-"Cleaner" code
@@ -48,9 +66,9 @@ THE HISTORY OF PSYCHOBALL
 	-Leaving "LSD worn out" effect is more common
 -Changed 10x multiplier colour effect
 
-************************
-(25/04/2013) Patch 0.7.9
-************************
+*************************************************
+(25/04/2013) Patch 0.7.9   -  Everyday Patch
+*************************************************
 
 -Fixed generic sound bugs
 -Added instructions to "Ultrablast"
@@ -59,9 +77,9 @@ THE HISTORY OF PSYCHOBALL
     -Multiplier on losing points slightly reduced
     -Multiplier on wining points slightly increased
 
-************************
-(17/04/2013) Patch 0.7.8
-************************
+*************************************************
+(17/04/2013) Patch 0.7.8  - The Rise of the Patch
+*************************************************
 
 -First release of PsyChObALL!
 

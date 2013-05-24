@@ -3,6 +3,7 @@ require 'body'
 circleEffect = body:new {
 	alpha = 10,
 	maxsize = width / 1.9,
+	mode = 'line',
 	__type = 'circle'
 }
 
@@ -27,7 +28,7 @@ end
 function circleEffect:draw()
     if self.linewidth then love.graphics.setLine(self.linewidth) end
     love.graphics.setColor(color(self.color, colortimer.time * self.variance, nil, self.alpha))
-    love.graphics.circle('line', self.x, self.y, self.size)
+    love.graphics.circle(self.mode, self.x, self.y, self.size)
     if self.linewidth then love.graphics.setLine(4) end
 end
 
