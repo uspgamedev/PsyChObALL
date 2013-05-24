@@ -41,11 +41,23 @@ function writestats()
 	}, "stats")
 end
 
+function resetstats()
+	besttime  = 0
+	bestmult  = 0
+	bestscore = 0
+	filemanager.writetable({
+		besttime  = besttime,
+		bestmult  = bestmult,
+		bestscore = bestscore
+	}, "stats")
+end
+
 function love.load()
 	state = 0
 	mainmenu = 0 -- mainmenu
 	tutorialmenu = 1
 	survivor = 2 -- modo de jogo survivor
+	resetted = false
 	devmode = false
 	invisible = false -- easter eggs
 	imagecheat = false
@@ -212,6 +224,8 @@ function love.load()
 end
 
 function reload()
+	ultrameter = 5
+
 	timer.closenonessential()
 	
 	song:seek(songsetpoints[math.random(#songsetpoints)])
@@ -508,6 +522,11 @@ function love.draw()
 		graphics.print(string.format("Best Score: %0.f",   math.max(bestscore, score)), 25, 68)
 		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
 		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
+		graphics.setFont(getFont(14))
+		graphics.print("ulTrAbLaST:", 25, 105)
+		graphics.setFont(getCoolFont(20))
+		graphics.print(string.format("%d", ultrameter), 110, 100)
+		graphics.print("_________", 25, 106)
 		graphics.setFont(getCoolFont(40))
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
@@ -517,7 +536,7 @@ function love.draw()
 		if imagecheat then
 			if imageoverride == yanimage then graphics.print("David Robert Jones mode on!", 395, 32)
 			elseif imageoverride == pizzaimage then graphics.print("Italian mode on!", 438, 32) 
-			elseif imageoverride == ricaimage then graphics.print("Tiny mode on!", 443, 32)
+			elseif imageoverride == ricaimage then graphics.print("Richard mode on!", 433, 32)
 			elseif imageoverride == rikaimage then graphics.print("Detective mode on!", 428, 32) end
 		end
 	end
@@ -533,6 +552,9 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, alphatimer.var))
 		graphics.print("v" .. version, 513, 687)
+		graphics.print('Write "gg" to delete stats' , 15, 15)
+		if resetted then graphics.print("~~stats deleted~~", 25, 28) end
+
 
 		if latest ~= version then
 			graphics.print("Version " .. latest, 422, 700)
@@ -594,7 +616,7 @@ function love.draw()
 		graphics.setFont(getFont(30))
 		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
 		graphics.setFont(getCoolFont(23))
-		graphics.print("Press 'r' to retry", 300, 645)
+		graphics.print("Press r to retry", 300, 645)
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Press b", 580, 650)
 		graphics.print(pauseText(), 649, 650)
@@ -617,7 +639,7 @@ pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n are belong to BALLS",
 "You wake up and\n realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
-"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END", "YOU WIN!!! \n           Nope, Chuck Testa"}
+"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END", "YOU WIN!!! \n           Nope, Chuck Testa","Supreme."}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -744,6 +766,7 @@ local pizzapass = password {'p', 'i', 'z', 'z', 'a'}
 local yanpass = password {'y', 'a', 'n'}
 local ricapass = password {'r', 'i', 'c','a'}
 local rikapass = password {'r', 'i', 'k','a'}
+local resetpass = password {'g','g'}
 
 function love.keypressed(key)
 	--checking for dev code
@@ -777,7 +800,8 @@ function love.keypressed(key)
 			psycho.speed:div(sqrt2)
 		end
 
-		if key == ' ' and not isPaused and state == survivor then
+		if key == ' ' and not isPaused and state == survivor and ultrameter > 0 then
+			ultrameter = ultrameter - 1
 			ultrablast = 10
 			psycho.ultrameter = circleEffect:new {
 				based_on   = psycho,
@@ -801,9 +825,11 @@ function love.keypressed(key)
 		esc = false
 		state = mainmenu
 
+
 		devmode = false
 		imagecheat = false
 		invisible = false
+		resetted = false
 
 		alphatimer:setAndGo(0, 255)
 		if muted then
@@ -856,7 +882,15 @@ function love.keypressed(key)
 		elseif key == 'l' then dtn = deathtexts[1] lostgame()
 		end
 	end
+	
+	if state == mainmenu then
+		resetted = resetpass (key)
+		if resetted then resetstats() end
+	end
+
+
 	if state == survivor then
+		
 		invisible = invisiblepass(key)
 		
 		if pizzapass(key) then

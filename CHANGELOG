@@ -22,8 +22,9 @@ THE HISTORY OF PSYCHOBALL
 	-Added Italian mode
 	-Added mode
 	-Added Detective mode
+-You can reset your stats in the main menu
 -You can only use easter-eggs and devmode on survivor for now 
--Major changes on difficulty of Survivor mode OI
+-Major changes on difficulty of Survivor mode
 -Changes on text placement
 	-New font for some texts
 -Changes on focus
@@ -33,6 +34,10 @@ THE HISTORY OF PSYCHOBALL
 	-It counts how many points you've made
 	-You no longer dies if you score hits 0
 	-Saves your highscore
+-Changes on Ultrablast
+	-Limited times you can use it
+	-You get more if you get more points // not added
+	-You get more if you survive more time // not added
 -Changes on color settings
 	-Changes on "Lsd worn out" effect
 	-Changes on color of "bullets"
