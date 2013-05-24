@@ -34,12 +34,11 @@ function writestats()
 	besttime  = math.max(besttime, totaltime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)
-	local stats = {
+	filemanager.writetable({
 		besttime  = besttime,
 		bestmult  = bestmult,
 		bestscore = bestscore
-	}
-	filemanager.writetable(stats, "stats")
+	}, "stats")
 end
 
 function love.load()
@@ -306,12 +305,10 @@ function reload()
 
 	superballtimer:start(9)
 
-
-	
 	totaltime = 0
-	
+
 	timefactor = 1.0
-	
+
 	score = 0
 
 	pause = false
