@@ -57,6 +57,7 @@ function love.load()
 	mainmenu = 0 -- mainmenu
 	tutorialmenu = 1
 	survivor = 2 -- modo de jogo survivor
+	achmenu = 3 -- Tela de achievements
 	resetted = false
 	devmode = false
 	invisible = false -- easter eggs
@@ -308,7 +309,7 @@ function reload()
 	end
 
 	superballtimer = timer:new {
-		timelimit = 20,
+		timelimit = 35,
 		running = false,
 		works_on_gamelost = false
 	}
@@ -317,7 +318,7 @@ function reload()
 	function superballtimer:funcToCall()
 		if #bosses.bodies ~= 0 then self.timelimit = 2 end
 		bosses.newsuperball{ position = vector:new(possiblePositions[math.random(4)]) }
-		self.timelimit = 20
+		self.timelimit = 30
 	end
 
 	superballtimer:start(5)
@@ -557,7 +558,7 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, alphatimer.var))
 		graphics.print("v" .. version, 513, 687)
-		graphics.print('Write "gg" to delete stats' , 15, 10)
+		graphics.print('Write "reset" to delete stats' , 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
 
 
@@ -605,7 +606,18 @@ function love.draw()
 		graphics.circle("fill", 520, 180, 10)
 		graphics.circle("fill", 130, 450, 10)
 		graphics.circle("fill", 50, 263, 10)
-
+		
+		graphics.translate(-2 * width, 0)
+		--achmenu
+		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54, nil, alphatimer.var))
+		graphics.setFont(getCoolFont(50))
+		graphics.print("ACHIEVEMENTS", 340, 36)
+		graphics.setColor(color(logocolor, colortimer.time * 6.5 + .54))
+		graphics.circle("fill", 130, 180, 5)
+		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
+		graphics.circle("fill", 130, 210, 5)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Click or press the right arrow key to go back", 670, 645)
 
 		graphics.translate(swypetimer.var - width, 0)
 	end
@@ -725,6 +737,11 @@ function love.mousepressed(x, y, button)
     	state = mainmenu
     	return
     end
+    if (button == 'l' or button == 'r') and state == achmenu then
+    	swypetimer:setAndGo(-width, 0)
+    	state = mainmenu
+    	return
+    end
     if button == 'l' and not gamelost then
       shoot(x, y)
 		shottimer:start()
@@ -794,7 +811,7 @@ local pizzapass = password {'p', 'i', 'z', 'z', 'a'}
 local yanpass = password {'y', 'a', 'n'}
 local ricapass = password {'r', 'i', 'c','a'}
 local rikapass = password {'r', 'i', 'k','a'}
-local resetpass = password {'g','g'}
+local resetpass = password {'r','e','s','e','t'}
 
 function love.keypressed(key)
 	--checking for dev code
@@ -856,6 +873,17 @@ function love.keypressed(key)
     if key == 'right' and state == mainmenu then
     	swypetimer:setAndGo(0, width)
     	state = tutorialmenu
+    	return
+    end
+
+    if key == 'left' and state == mainmenu then
+    	swypetimer:setAndGo(0, -width)
+    	state = achmenu
+    end
+
+    if key == 'right' and state == achmenu then
+    	swypetimer:setAndGo(-width, 0)
+    	state = mainmenu
     	return
     end
 
