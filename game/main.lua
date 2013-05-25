@@ -643,13 +643,13 @@ function love.draw()
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getCoolFont(20))
-		graphics.print("Press b to", 603, 550)
-		graphics.print(pauseText(), 707, 550)
+		graphics.print("Press b ", 603, 550) -- Frases nao necesariamente vao começar com to yan =/
+		graphics.print(pauseText(), 682, 550)
 		graphics.setFont(getFont(12))
 	end
 end
 
-pausetexts = {"surrender","go back","give up","admit defeat","/ff", "RAGE QUIT"}
+pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"} -- Exemple given
 
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
