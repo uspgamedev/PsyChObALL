@@ -115,7 +115,7 @@ function love.load()
 	}
 
 	function songfadein:funcToCall() -- song fades in
-		if muted then return end
+		if muted or gamelost then return end
 		if song:getVolume() >= (.98 * volume / 100) then 
 			song:setVolume(volume / 100)
 			self:stop()
@@ -589,7 +589,7 @@ function love.draw()
 		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
 		graphics.print("Hold space to charge", 70, 252)
 		graphics.setFont(getCoolFont(18))
-		graphics.print("Click to go back", 800, 645)
+		graphics.print("Click or press the left arrow key to go back", 670, 645)
 		graphics.setFont(getCoolFont(35))
 		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
 		graphics.print("ulTrAbLaST", 290, 242)
@@ -649,10 +649,11 @@ end
 
 pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff"}
 
-deathtexts = {"The LSD wears off", "Game Over", "No one will\n miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
-"You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n are belong to BALLS",
-"You wake up and\n realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
-"There is no cake\n   also you died","You have died of\n  dysentery","You failed", "Epic fail", "BAD END", "YOU WIN!!! \n           Nope, Chuck Testa","Supreme."}
+deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
+"You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
+"You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
+"There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
+"YOU WIN!!! \n                       nope, chuck testa","Supreme."}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
@@ -843,6 +844,18 @@ function love.keypressed(key)
 	if gamelost and key == 'r' then
 		reload()
 	end
+
+	if key == 'left' and state == tutorialmenu then
+    	swypetimer:setAndGo(width, 0)
+    	state = mainmenu
+    	return
+    end
+
+    if key == 'right' and state == mainmenu then
+    	swypetimer:setAndGo(0, width)
+    	state = tutorialmenu
+    	return
+    end
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
