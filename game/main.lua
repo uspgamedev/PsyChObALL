@@ -308,15 +308,16 @@ function reload()
 	end
 
 	superballtimer = timer:new {
-		timelimit = 30,
+		timelimit = 20,
 		running = false,
 		works_on_gamelost = false
 	}
 
+	local possiblePositions = {{30, 30}, {width - 30, 30}, {width - 30, height - 30}, {30, height - 30}}
 	function superballtimer:funcToCall()
 		if #bosses.bodies ~= 0 then self.timelimit = 2 end
-		bosses.newsuperball{ position = vector:new{width - 30,  30} }
-		self.timelimit = 30
+		bosses.newsuperball{ position = vector:new(possiblePositions[math.random(4)]) }
+		self.timelimit = 20
 	end
 
 	superballtimer:start(5)
@@ -378,6 +379,7 @@ function lostgame()
 
 	gamelost   = true
 	timefactor = .05
+	pst = nil
 
    psycho.speed:set(0,0)
    if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
@@ -631,8 +633,8 @@ function love.draw()
 		graphics.setFont(getCoolFont(23))
 		graphics.print("Press r to retry", 300, 645)
 		graphics.setFont(getCoolFont(18))
-		graphics.print("Press b", 580, 650)
-		graphics.print(pauseText(), 649, 650)
+		graphics.print("Press b to", 580, 650)
+		graphics.print(pauseText(), 673, 650)
 		graphics.setFont(getFont(12))
 	end
 
@@ -641,13 +643,13 @@ function love.draw()
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getCoolFont(20))
-		graphics.print("Press b", 603, 550)
-		graphics.print(pauseText(), 682, 550)
+		graphics.print("Press b to", 603, 550)
+		graphics.print(pauseText(), 707, 550)
 		graphics.setFont(getFont(12))
 	end
 end
 
-pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff"}
+pausetexts = {"surrender","go back","give up","admit defeat","/ff", "RAGE QUIT"}
 
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
@@ -656,12 +658,12 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "YOU WIN!!! \n                       nope, chuck testa","Supreme."}
 
 function deathText()
-	dtn = dtn or deathtexts[math.random(table.getn(deathtexts))]
+	dtn = dtn or deathtexts[math.random(#deathtexts)]
 	return dtn
 end
 
 function pauseText()
-	pst = pst or pausetexts[math.random(table.getn(pausetexts))]
+	pst = pst or pausetexts[math.random(#pausetexts)]
 	return pst
 end
 
@@ -669,7 +671,7 @@ local todelete = {}
 
 function love.update(dt)	
 
-	isPaused = (esc or pause or state == mainmenu or state == tutorialmenu)
+	isPaused = (esc or state == mainmenu or state == tutorialmenu)
 
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
@@ -918,6 +920,7 @@ function love.keypressed(key)
 		elseif key == '4' then timefactor = timefactor * 1.1
 		elseif key == '3' then timefactor = timefactor * 0.9
 		elseif key == 'l' then dtn = deathtexts[1] lostgame()
+		elseif key == 'u' then love.update(10) --skips 10 seconds
 		end
 	end
 	
@@ -1001,5 +1004,5 @@ function love.keyreleased(key, code)
 end
 
 function love.focus(f)
-   pause = not f
+   if not (f or gamelost or state == mainmenu or state == tutorialmenu) then esc = true end
 end
