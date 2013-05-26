@@ -26,14 +26,13 @@ function circleEffect:__init()
 end
 
 function circleEffect:draw()
-    if self.linewidth then love.graphics.setLine(self.linewidth) end
-    love.graphics.setColor(color(self.color, colortimer.time * self.variance, nil, self.alpha))
-    love.graphics.circle(self.mode, self.x, self.y, self.size)
-    if self.linewidth then love.graphics.setLine(4) end
+	if self.linewidth then love.graphics.setLine(self.linewidth) end
+	love.graphics.setColor(color(self.color, colortimer.time * self.variance, self.alpha))
+	love.graphics.circle(self.mode, self.x, self.y, self.size)
+	if self.linewidth then love.graphics.setLine(4) end
 end
 
 function circleEffect:update(dt)
-    self.size = self.size + self.sizeGrowth * dt
-    
-    self.delete = self.size < 0 or self.size > self.maxsize
+	self.size = self.size + self.sizeGrowth * dt
+	self.delete = self.size < 0 or self.size > self.maxsize
 end

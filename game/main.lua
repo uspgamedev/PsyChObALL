@@ -1,4 +1,4 @@
-width, height = love.graphics.getWidth(),love.graphics.getHeight()
+width, height = 1080, 720
 
 require "circleEffect"
 require "effect"
@@ -56,8 +56,8 @@ function love.load()
 	state = 0
 	mainmenu = 0 -- mainmenu
 	tutorialmenu = 1
-	survivor = 2 -- modo de jogo survivor
-	achmenu = 3 -- Tela de achievements
+	achmenu  = 2 -- Tela de achievements
+	survivor = 10 -- modo de jogo survivor
 	resetted = false
 	devmode = false
 	invisible = false -- easter eggs
@@ -309,16 +309,16 @@ function reload()
 	end
 
 	superballtimer = timer:new {
-		timelimit = 35,
+		timelimit = 20,
 		running = false,
 		works_on_gamelost = false
 	}
 
-	local possiblePositions = {{30, 30}, {width - 30, 30}, {width - 30, height - 30}, {30, height - 30}}
+	local possiblePositions = {vector:new{30, 30}, vector:new{width - 30, 30}, vector:new{width - 30, height - 30}, vector:new{30, height - 30}}
 	function superballtimer:funcToCall()
 		if #bosses.bodies ~= 0 then self.timelimit = 2 end
-		bosses.newsuperball{ position = vector:new(possiblePositions[math.random(4)]) }
-		self.timelimit = 30
+		bosses.newsuperball{ position = possiblePositions[math.random(4)]:clone() }
+		self.timelimit = 20
 	end
 
 	superballtimer:start(5)
@@ -342,6 +342,14 @@ function reload()
 	auxspeed = vector:new {}
 
 	mouse.setGrab(true)
+end
+
+function onMenu()
+	return state < 10
+end
+
+function onGame()
+	return state >= 10 and state < 20
 end
 
 function getFont(size)
@@ -409,9 +417,9 @@ function applyeffect( color )
 	return currentEffect and currentEffect(color) or color
 end
 
-function colorwheel(color, x, xt, alpha)
-	xt = xt or colortimer.timelimit
-	x = x % xt
+local xt = 10 -- = colortimer.timelimit
+function colorwheel(color, x, alpha)
+	x = x % colortimer.timelimit
 	local r, g, b
 	if x <= xt / 3 then
 		r = 100 			   -- 100%
@@ -438,7 +446,7 @@ function colorwheel(color, x, xt, alpha)
 		g = 0 										  				  -- 0%
 		b = 60 * (1 - ((x - 318 * xt / 360) / (xt - 318 * xt / 360))) -- 60->0%
 	end
-	color[1], color[2], color[3], color[4] = r * 2.55, g * 2.55, b * 2.55, alpha or 255
+	color[1], color[2], color[3], color[4] = r * 2.55, g * 2.55, b * 2.55, alpha or color[4] or 255
 	return color
 end
 
@@ -454,7 +462,7 @@ function line()
 
 	graphics.setColor(color(mousecirclecolor, colortimer.time + 12))
 	graphics.circle("line", mouse.getX(), mouse.getY(), 5)
-	graphics.setColor(color(linecolor, colortimer.time + 12, nil, 60))
+	graphics.setColor(color(linecolor, colortimer.time + 12, 60))
 	local m = (mouse.getY() - psycho.y)/(mouse.getX() - psycho.x)
 	local x,y
 	if (mouse.getX() - psycho.x) > 0 then 
@@ -546,17 +554,18 @@ function love.draw()
 			elseif imageoverride == rikaimage then graphics.print("Detective mode on!", 428, 32) end
 		end
 	end
-	graphics.setColor(color(maincolor, colortimer.time, nil, 70))
+	graphics.setColor(color(maincolor, colortimer.time, 70))
 	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
 	
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 
 	if alphatimer.var > 0 then
-		graphics.translate(-swypetimer.var, 0)
+		graphics.push()
+		graphics.translate(math.floor(-swypetimer.var), 0)
 		--mainmenu
 		graphics.setFont(getFont(12))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, nil, alphatimer.var))
+		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, alphatimer.var))
 		graphics.print("v" .. version, 513, 687)
 		graphics.print('Write "reset" to delete stats' , 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
@@ -568,18 +577,18 @@ function love.draw()
 		end
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 
-		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, nil, alphatimer.var))
+		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, alphatimer.var))
 		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 
 		graphics.translate(width, 0)
 		--tutorialmenu
-		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54, nil, alphatimer.var))
+		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54))
 		graphics.setFont(getCoolFont(50))
 		graphics.print("CONTROLS", 380, 36)
 		graphics.setFont(getCoolFont(40))
 		graphics.print("Survivor Mode:", 170, 350)
-		graphics.setColor(color(logocolor, colortimer.time * 2.5 + .54, nil, alphatimer.var))
+		graphics.setColor(color(logocolor, colortimer.time * 2.5 + .54))
 		graphics.setFont(getCoolFont(20))
 		graphics.print("You get points when", 540, 425)
 		graphics.print("  you kill an enemy", 570, 455)
@@ -609,7 +618,7 @@ function love.draw()
 		
 		graphics.translate(-2 * width, 0)
 		--achmenu
-		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54, nil, alphatimer.var))
+		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54))
 		graphics.setFont(getCoolFont(50))
 		graphics.print("ACHIEVEMENTS", 340, 36)
 		graphics.setColor(color(logocolor, colortimer.time * 6.5 + .54))
@@ -619,7 +628,7 @@ function love.draw()
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Click or press the right arrow key to go back", 670, 645)
 
-		graphics.translate(swypetimer.var - width, 0)
+		graphics.pop()
 	end
 	
 
@@ -645,8 +654,8 @@ function love.draw()
 		graphics.setFont(getCoolFont(23))
 		graphics.print("Press r to retry", 300, 645)
 		graphics.setFont(getCoolFont(18))
-		graphics.print("Press b to", 580, 650)
-		graphics.print(pauseText(), 673, 650)
+		graphics.print("Press b", 580, 650)
+		graphics.print(pauseText(), 649, 650)
 		graphics.setFont(getFont(12))
 	end
 
@@ -655,13 +664,13 @@ function love.draw()
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getCoolFont(20))
-		graphics.print("Press b ", 603, 550) -- Frases nao necesariamente vao começar com to yan =/
+		graphics.print("Press b", 603, 550)
 		graphics.print(pauseText(), 682, 550)
 		graphics.setFont(getFont(12))
 	end
 end
 
-pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"} -- Exemple given
+pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"}
 
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
@@ -681,9 +690,8 @@ end
 
 local todelete = {}
 
-function love.update(dt)	
-
-	isPaused = (esc or state == mainmenu or state == tutorialmenu)
+function love.update(dt)
+	isPaused = (esc or onMenu())
 
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
@@ -824,7 +832,7 @@ function love.keypressed(key)
 		end
 	end
 
-	if (key == 'escape' or key == 'p') and not (gamelost or state == mainmenu or state == tutorialmenu) then
+	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
 		pst = nil
 		esc = not esc
 		mouse.setGrab(not esc)
@@ -865,27 +873,28 @@ function love.keypressed(key)
 	end
 
 	if key == 'left' and state == tutorialmenu then
-    	swypetimer:setAndGo(width, 0)
-    	state = mainmenu
-    	return
-    end
+		swypetimer:setAndGo(width, 0)
+		state = mainmenu
+		return
+	end
 
-    if key == 'right' and state == mainmenu then
-    	swypetimer:setAndGo(0, width)
-    	state = tutorialmenu
-    	return
-    end
+	if key == 'right' and state == mainmenu then
+		swypetimer:setAndGo(0, width)
+		state = tutorialmenu
+		return
+	end
 
-    if key == 'left' and state == mainmenu then
-    	swypetimer:setAndGo(0, -width)
-    	state = achmenu
-    end
+	if key == 'left' and state == mainmenu then
+		swypetimer:setAndGo(0, -width)
+		state = achmenu
+		return
+	end
 
-    if key == 'right' and state == achmenu then
-    	swypetimer:setAndGo(-width, 0)
-    	state = mainmenu
-    	return
-    end
+	if key == 'right' and state == achmenu then
+		swypetimer:setAndGo(-width, 0)
+		state = mainmenu
+		return
+	end
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
@@ -1032,5 +1041,5 @@ function love.keyreleased(key, code)
 end
 
 function love.focus(f)
-   if not (f or gamelost or state == mainmenu or state == tutorialmenu) then esc = true end
+   if not (f or gamelost or onMenu()) then esc = true end
 end
