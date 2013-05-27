@@ -446,7 +446,7 @@ function colorwheel(color, x, alpha)
 		g = 0 										  				  -- 0%
 		b = 60 * (1 - ((x - 318 * xt / 360) / (xt - 318 * xt / 360))) -- 60->0%
 	end
-	color[1], color[2], color[3], color[4] = r * 2.55, g * 2.55, b * 2.55, alpha or color[4] or 255
+	color[1], color[2], color[3], color[4] = r * 2.55, g * 2.55, b * 2.55, alpha or 255
 	return color
 end
 
