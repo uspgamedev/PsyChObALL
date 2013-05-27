@@ -36,10 +36,10 @@ function body:update( dt )
 end
 
 function body:draw()
-	if imagecheat then
-		if imagecheatwithalpha then graphics.setColor(color(self.color, colortimer.time + self.variance))
+	if imagecheat.enabled then
+		if imagecheat.painted then graphics.setColor(color(self.color, colortimer.time + self.variance))
 		else graphics.setColor(255,255,255) end
-		graphics.draw(imageoverride, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / imageoverride:getWidth(), 2*self.size / imageoverride:getHeight())
+		graphics.draw(imagecheat.image, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / imagecheat.image:getWidth(), 2*self.size / imagecheat.image:getHeight())
 		return
 	end
 	graphics.setColor(color(self.color, colortimer.time + self.variance))

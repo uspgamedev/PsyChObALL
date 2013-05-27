@@ -10,6 +10,7 @@ require "list"
 require "bosses"
 require "psychoball"
 require "filemanager"
+require "cheats"
 
 local socket = require "socket"
 local http = require "socket.http"
@@ -42,13 +43,11 @@ function writestats()
 end
 
 function resetstats()
-	besttime  = 0
-	bestmult  = 0
-	bestscore = 0
+	besttime, bestmult, bestscore  = 0, 0, 0
 	filemanager.writetable({
-		besttime  = besttime,
-		bestmult  = bestmult,
-		bestscore = bestscore
+		besttime  = 0,
+		bestmult  = 0,
+		bestscore = 0
 	}, "stats")
 end
 
@@ -61,7 +60,6 @@ function love.load()
 	resetted = false
 	devmode = false
 	invisible = false -- easter eggs
-	imagecheat = false
 	muted = false
 	volume = 100
 
@@ -70,12 +68,6 @@ function love.load()
 			_G[k] = v
 		end
 	end
-
-	pizzaimage = graphics.newImage("resources/pizza.png")
-	yanimage = graphics.newImage("resources/yan.png")
-	ricaimage = graphics.newImage("resources/rica.png")
-	rikaimage = graphics.newImage("resources/rika.png")
-	imageoverride = nil --image to be painted instead of circles
 
 	screenshotnumber = 1
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
@@ -222,6 +214,25 @@ function love.load()
 		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
 	soundquadindex = 6
+
+	-- image cheats
+	imagecheat:new {
+		pass = 'pizza',
+		image = 	graphics.newImage("resources/pizza.png"),
+		painted = false
+	}
+	imagecheat:new {
+		pass = 'yan',
+		image = graphics.newImage("resources/yan.png")
+	}
+	imagecheat:new {
+		pass = 'rica',
+		image = graphics.newImage("resources/rica.png")
+	}
+	imagecheat:new {
+		pass = 'rika',
+		image = graphics.newImage("resources/rika.png")
+	}
 end
 
 function reload()
@@ -422,28 +433,28 @@ function colorwheel(color, x, alpha)
 	x = x % colortimer.timelimit
 	local r, g, b
 	if x <= xt / 3 then
-		r = 100 			   -- 100%
+		r = 100					  -- 100%
 		g = 100 * x / (xt / 3) -- 0->100%
-		b = 0 				   -- 0%
+		b = 0						  -- 0%
 	elseif x <= xt / 2 then
-		r = 100 * (1 - ((x - xt / 3) / (xt / 2 - xt / 3))) -- 100->0%
-		g = 100 - 20 * ((x - xt / 3) / (xt / 2 - xt / 3))  -- 100->80%
-		b = 0 								 			   -- 0%
+		r = 100 * (1 - ((x - xt / 3) / (xt / 2 - xt / 3)))	-- 100->0%
+		g = 100 - 20 * ((x - xt / 3) / (xt / 2 - xt / 3))	-- 100->80%
+		b = 05															-- 0%
 	elseif x <= 7 * xt / 12 then
-		r = 0 								  				  -- 0%
-		g = 80 - 20 * ((x - xt / 2) / (7 * xt / 12 - xt / 2)) -- 80->60%
-		b = 60 * ((x - xt / 2) / (7 * xt / 12 - xt / 2)) 	  -- 0->60%
-	elseif x <= 255 * xt/360 then
-		r = 11 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) 	   -- 0->11%
+		r = 05																-- 0%
+		g = 80 - 20 * ((x - xt / 2) / (7 * xt / 12 - xt / 2))	-- 80->60%
+		b = 60 * ((x - xt / 2) / (7 * xt / 12 - xt / 2))		-- 0->60%
+	elseif x <= 255 * xt / 360 then
+		r = 11 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12))		 -- 0->11%
 		g = 60 - 49 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) -- 60->11%
 		b = 60 + 10 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) -- 60->70%
-	elseif x<=318*xt/360 then
+	elseif x <= 318 * xt / 360 then
 		r = 11 + 59 * ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))  -- 11->70%
 		g = 11 * (1 - ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))) -- 11->0%
 		b = 70 - 10 * ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))  -- 70->60%
 	else
 		r = 70 + 30 * ((x - 318 * xt / 360) / (xt - 318 * xt / 360))  -- 70->100%
-		g = 0 										  				  -- 0%
+		g = 0 																		  -- 0%
 		b = 60 * (1 - ((x - 318 * xt / 360) / (xt - 318 * xt / 360))) -- 60->0%
 	end
 	color[1], color[2], color[3], color[4] = r * 2.55, g * 2.55, b * 2.55, alpha or 255
@@ -547,11 +558,11 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		if devmode then graphics.print("dev mode on!", 446, 5) end
 		if invisible then graphics.print("Invisible mode on!", 432, 18) end
-		if imagecheat then
-			if imageoverride == yanimage then graphics.print("David Robert Jones mode on!", 395, 32)
-			elseif imageoverride == pizzaimage then graphics.print("Italian mode on!", 438, 32) 
-			elseif imageoverride == ricaimage then graphics.print("Richard mode on!", 433, 32)
-			elseif imageoverride == rikaimage then graphics.print("Detective mode on!", 428, 32) end
+		if imagecheat.enabled then
+			if 	 imagecheat.pass == 'yan' then graphics.print("David Robert Jones mode on!", 395, 32)
+			elseif imagecheat.pass == 'pizza' then graphics.print("Italian mode on!", 438, 32) 
+			elseif imagecheat.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
+			elseif imagecheat.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
 		end
 	end
 	graphics.setColor(color(maincolor, colortimer.time, 70))
@@ -788,38 +799,9 @@ function addscore(x)
 	end
 end
 
-function password( pass )
-	local progress = 0
-	return function ( key )
-		if key == pass[progress + 1] then
-			progress = progress + 1
-			if progress == #pass then
-				progress = 0
-				return true
-			end
-		else
-			progress = 0
-			return false
-		end
-	end
-end
-
-function passwordtoggle( pass )
-	local toggle = false
-	local check = password(pass)
-	return function ( key )
-		if check(key) then toggle = not toggle end
-		return toggle
-	end
-end
-
-local devpass = passwordtoggle {'p','s','y','c','h','o'}
-local invisiblepass = passwordtoggle {'g', 'h', 'o', 's', 't'}
-local pizzapass = password {'p', 'i', 'z', 'z', 'a'}
-local yanpass = password {'y', 'a', 'n'}
-local ricapass = password {'r', 'i', 'c','a'}
-local rikapass = password {'r', 'i', 'k','a'}
-local resetpass = password {'r','e','s','e','t'}
+local devpass = passwordtoggle 'psycho'
+local invisiblepass = passwordtoggle 'ghost'
+local resetpass = password 'reset'
 
 function love.keypressed(key)
 	--checking for dev code
@@ -904,7 +886,7 @@ function love.keypressed(key)
 
 
 		devmode = false
-		imagecheat = false
+		imagecheat.enabled = false
 		invisible = false
 		resetted = false
 
@@ -968,35 +950,8 @@ function love.keypressed(key)
 
 
 	if state == survivor then
-		
 		invisible = invisiblepass(key)
-		
-		if pizzapass(key) then
-			if not imagecheat then imagecheat = true end
-			if imageoverride == pizzaimage then imagecheat = false end
-			if imagecheat then imageoverride = pizzaimage end
-		end
-		
-		if yanpass(key) then
-			if not imagecheat then imagecheat = true end
-			if imageoverride == yanimage then imagecheat = false end
-			imagecheatwithalpha = true
-			if imagecheat then imageoverride = yanimage end
-		end
-
-		if ricapass(key) then
-			if not imagecheat then imagecheat = true end
-			if imageoverride == ricaimage then imagecheat = false end
-			imagecheatwithalpha = true
-			if imagecheat then imageoverride = ricaimage end
-		end
-
-		if rikapass(key) then
-			if not imagecheat then imagecheat = true end
-			if imageoverride == rikaimage then imagecheat = false end
-			imagecheatwithalpha = true
-			if imagecheat then imageoverride = rikaimage end
-		end
+		imagecheat.processCheats(key)
 	end
 end
 
