@@ -637,6 +637,10 @@ function love.draw()
 				graphics.setFont(getFont(35))
 				graphics.print("You beat the best score!", 290, 140)
 			end
+			if bestmult == multiplier then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best multiplier!", 320, 180)
+			end
 		end
 		graphics.setFont(getCoolFont(40))
 		graphics.print(deathText(), 270, 300)
