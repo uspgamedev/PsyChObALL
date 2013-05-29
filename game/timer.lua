@@ -1,13 +1,13 @@
 require 'lux.object'
 
 timer = lux.object.new {
-	time 		 = 0,
-	onceonly 	 = false,
-	pausable 	 = true, -- If pause
-	running 	 = true,
+	time			 = 0,
+	onceonly		 = false,
+	pausable		 = true, -- If pause
+	running		 = true,
 	timeaffected = true,
-	persistent 	 = false, -- continues on death
-	delete 		 = false,
+	persistent	 = false, -- continues on death
+	delete		 = false,
 	works_on_gamelost = true,
 	ts = {}
 }
@@ -42,16 +42,16 @@ function timer.updatetimers(dt,timefactor,paused,gamelost)
 	local todelete
 	for i,v in pairs(timer.ts) do
 		if v.delete then
-		    if not todelete then todelete = {i}
-		    else table.insert(todelete,i) end
+			if not todelete then todelete = {i}
+			else table.insert(todelete,i) end
 		else
-		    v:update(dt, timefactor, paused, gamelost)
+			v:update(dt, timefactor, paused, gamelost)
 		end
 	end
 	if todelete then
-	    for i,v in ipairs(todelete) do
-	        table.remove(todelete, v)
-	    end
+		for i,v in ipairs(todelete) do
+			table.remove(todelete, v)
+		end
 	end
 end
 

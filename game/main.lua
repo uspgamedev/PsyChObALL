@@ -16,9 +16,9 @@ local socket = require "socket"
 local http = require "socket.http"
 
 response = http.request{ url=URL, create=function()
-  local req_sock = socket.tcp()
-  req_sock:settimeout(3)
-  return req_sock
+	local req_sock = socket.tcp()
+	req_sock:settimeout(3)
+	return req_sock
 end}
 
 function readstats()
@@ -32,12 +32,12 @@ end
 function readachievements()
 	local achievements = filemanager.readtable "achievements"
 
-	twentymult  = achievements.twentymult  or 0
+	twentymult  = achievements.twentymult or false
 end
 
 function writeachievements()
 	filemanager.writetable({
-		twentymult  = twentymult,
+		twentymult  = twentymult
 	}, "achievements")
 end
 
@@ -63,6 +63,25 @@ function resetstats()
 	}, "stats")
 end
 
+function readconfig()
+	local config = filemanager.readtable "config"
+
+	volume = config.volume or 100
+	muted  = config.muted == true
+
+	if version ~= config.version then
+		--handle something maybe
+	end
+end
+
+function writeconfig()
+	filemanager.writetable({
+		volume = volume,
+		muted = muted,
+		version = version
+		}, "config")
+end
+
 function love.load()
 	state = 0
 	mainmenu = 0 -- mainmenu
@@ -72,8 +91,7 @@ function love.load()
 	resetted = false
 	devmode = false
 	invisible = false -- easter eggs
-	muted = false
-	volume = 100
+	imagecheat = false
 
 	for k,v in pairs(love) do
 		if type(v) == 'table' and not _G[k] then
@@ -96,11 +114,11 @@ function love.load()
 	song:setLooping(true)
 	songsetpoints = {20,123,180,308,340}
 	songfadeout = timer:new{
-		timelimit 	 = .01,
-	 	running 	 = false,
-	 	pausable 	 = false,
-	 	timeaffected = false,
-	 	persistent 	 = true
+		timelimit	 = .01,
+		running		 = false,
+		pausable		 = false,
+		timeaffected = false,
+		persistent	 = true
 	}
 
 	function songfadeout:funcToCall() -- song fades out
@@ -142,13 +160,13 @@ function love.load()
 	fonts = {}
 	coolfonts = {}
 	
+	readconfig()
 	readstats()
 	readachievements()	
 	
 	multtimer = timer:new {
-		timelimit  = 2.2,
-		running    = false,
-		onceonly   = true,
+		timelimit  = 2.2, 
+		onceonly	  = true,
 		persistent = true,
 		works_on_gamelost = false
 	}
@@ -226,7 +244,7 @@ function love.load()
 		graphics.newQuad(0,   0, 40, 40, 300, 40),
 		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
-	soundquadindex = 6
+	soundquadindex = muted and 7 or volume/20 + 1
 
 	-- image cheats
 	imagecheat:new {
@@ -414,9 +432,9 @@ function lostgame()
 	timefactor = .05
 	pst = nil
 
-   psycho.speed:set(0,0)
-   if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
-   neweffects(psycho,80)
+	psycho.speed:set(0,0)
+	if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
+	neweffects(psycho,80)
 end
 
 function color( ... )
@@ -752,32 +770,32 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
-    if esc or pause then return end
-    if button == 'l' and state == mainmenu then
-    	state = survivor
-    	alphatimer:setAndGo(255, 0)
+	if esc or pause then return end
+	if button == 'l' and state == mainmenu then
+		state = survivor
+		alphatimer:setAndGo(255, 0)
 		mouse.setGrab(true)
-    	reload() return
-    end
-    if button == 'r' and state == mainmenu then
-    	swypetimer:setAndGo(0, width)
-    	state = tutorialmenu
-    	return
-    end
-    if (button == 'l' or button == 'r') and state == tutorialmenu then
-    	swypetimer:setAndGo(width, 0)
-    	state = mainmenu
-    	return
-    end
-    if (button == 'l' or button == 'r') and state == achmenu then
-    	swypetimer:setAndGo(-width, 0)
-    	state = mainmenu
-    	return
-    end
-    if button == 'l' and not gamelost then
-      shoot(x, y)
+		reload() return
+	end
+	if button == 'r' and state == mainmenu then
+		swypetimer:setAndGo(0, width)
+		state = tutorialmenu
+		return
+	end
+	if (button == 'l' or button == 'r') and state == tutorialmenu then
+		swypetimer:setAndGo(width, 0)
+		state = mainmenu
+		return
+	end
+	if (button == 'l' or button == 'r') and state == achmenu then
+		swypetimer:setAndGo(-width, 0)
+		state = mainmenu
+		return
+	end
+	if button == 'l' and not gamelost then
+		shoot(x, y)
 		shottimer:start()
-    end
+	end
 end
 
 function love.mousereleased(x, y, button)
@@ -906,7 +924,7 @@ function love.keypressed(key)
 		alphatimer:setAndGo(0, 255)
 		if muted then
 			song:setVolume(0)
-   		else
+		else
 			song:setVolume(volume / 100)
 		end
 		song:setPitch(1.0)
@@ -979,7 +997,7 @@ function love.keyreleased(key, code)
 	else keyspressed[key] = false end
 
 	if not gamelost and state == survivor then
-	    auxspeed:sub(
+		auxspeed:sub(
 			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
 				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
 			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v * 1.3 or 0) 
@@ -1010,4 +1028,8 @@ end
 
 function love.focus(f)
    if not (f or gamelost or onMenu()) then esc = true end
+end
+
+function love.quit()
+	writeconfig()
 end
