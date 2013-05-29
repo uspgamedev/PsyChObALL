@@ -29,6 +29,18 @@ function readstats()
 	bestscore = stats.bestscore or 0
 end
 
+function readachievements()
+	local achievements = filemanager.readtable "achievements"
+
+	twentymult  = achievements.twentymult  or 0
+end
+
+function writeachievements()
+	filemanager.writetable({
+		twentymult  = twentymult,
+	}, "achievements")
+end
+
 function writestats()
 	if wasdev then return end
 	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
@@ -130,7 +142,8 @@ function love.load()
 	fonts = {}
 	coolfonts = {}
 	
-	readstats()	
+	readstats()
+	readachievements()	
 	
 	multtimer = timer:new {
 		timelimit  = 2.2,
