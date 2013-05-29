@@ -1,7 +1,15 @@
 require 'lux.object'
 
+module('cheats', package.seeall)
+local global = _G
+
+devmode = false
+invisible = false
+wasdev = false
+imagecheats = {}
+
 function password( pass )
-	if type(pass)=='string' then
+	if type(pass) == 'string' then
 		local str = pass
 		pass = {}
 		for char in str:gmatch '.' do table.insert(pass,char) end
@@ -30,31 +38,84 @@ function passwordtoggle( pass )
 	end
 end
 
-imagecheat = lux.object.new {
+function init()
+	devpass = passwordtoggle 'psycho'
+	invisiblepass = passwordtoggle 'ghost'
+	resetpass = password 'reset'
+
+	image:new {
+		pass = 'pizza',
+		image = 	graphics.newImage("resources/pizza.png"),
+		painted = false
+	}
+	image:new {
+		pass = 'yan',
+		image = graphics.newImage("resources/yan.png")
+	}
+	image:new {
+		pass = 'rica',
+		image = graphics.newImage("resources/rica.png")
+	}
+	image:new {
+		pass = 'rika',
+		image = graphics.newImage("resources/rika.png")
+	}
+end
+
+function handleCheats( key )
+	if onGame() then
+		
+		if devmode then
+			devmode = devpass(key)
+		else
+			devmode = devpass(key)
+			if devmode then wasdev = true return end
+		end
+
+		invisible = invisiblepass(key)
+		image.processCheats(key)
+
+		if devmode then
+			if not esc and key == 'k' then lostgame() end
+			if 	 key == '0' then global.multiplier = multiplier + 2
+			elseif key == '9' then global.multiplier = multiplier - 2
+			elseif key == '8' then addscore(100)
+			elseif key == '7' then addscore(-100)
+			elseif key == '6' then global.v = v + 10
+			elseif key == '5' then global.v = v - 10
+			elseif key == '4' then global.timefactor = timefactor * 1.1
+			elseif key == '3' then global.timefactor = timefactor * 0.9
+			elseif key == 'l' and not gamelost then global.dtn = deathtexts[1] lostgame()
+			elseif key == 'u' then love.update(10) --skips 10 seconds
+			end
+		end
+	end
+end
+
+image = lux.object.new {
 	pass = 'none',
 	image = nil,
 	painted = true,
-	enabled = false,
-	cheats = {}
+	enabled = false
 }
 
-function imagecheat:__init()
-	table.insert(self.cheats, self)
+function image:__init()
+	table.insert(imagecheats, self)
 	self.passcheck = password(self.pass)
 	self.painted = self.painted == nil and true or self.painted
 end
 
-function imagecheat.processCheats( key )
-	for _, cheat in ipairs(imagecheat.cheats) do
-		if cheat.passcheck(key) then
-			if imagecheat.image == cheat.image then
-				imagecheat.enabled = false
-				imagecheat.image = nil
+function image.processCheats( key )
+	for _, icheat in ipairs(imagecheats) do
+		if icheat.passcheck(key) then
+			if image.image == icheat.image then
+				image.enabled = false
+				image.image = nil
 			else
-				imagecheat.enabled = true
-				imagecheat.painted = cheat.painted
-				imagecheat.image = cheat.image
-				imagecheat.pass = cheat.pass
+				image.enabled = true
+				image.painted = icheat.painted
+				image.image = icheat.image
+				image.pass = icheat.pass
 			end
 		end
 	end

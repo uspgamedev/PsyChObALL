@@ -29,7 +29,7 @@ function readstats()
 	bestscore = stats.bestscore or 0
 end
 
-function readachievements()
+--[[function readachievements()
 	local achievements = filemanager.readtable "achievements"
 
 	twentymult  = achievements.twentymult or false
@@ -39,10 +39,10 @@ function writeachievements()
 	filemanager.writetable({
 		twentymult  = twentymult
 	}, "achievements")
-end
+end]]
 
 function writestats()
-	if wasdev then return end
+	if cheats.wasdev then return end
 	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
 	besttime  = math.max(besttime, totaltime)
 	bestmult  = math.max(bestmult, multiplier)
@@ -89,9 +89,6 @@ function love.load()
 	achmenu  = 2 -- Tela de achievements
 	survivor = 10 -- modo de jogo survivor
 	resetted = false
-	devmode = false
-	invisible = false -- easter eggs
-	imagecheat = false
 
 	for k,v in pairs(love) do
 		if type(v) == 'table' and not _G[k] then
@@ -151,7 +148,7 @@ function love.load()
 		persistent = true
 	}
 
-	wasdev = false
+	cheats.init()
 
 	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
 	mouse.setGrab(false)
@@ -162,7 +159,6 @@ function love.load()
 	
 	readconfig()
 	readstats()
-	readachievements()	
 	
 	multtimer = timer:new {
 		timelimit  = 2.2, 
@@ -245,25 +241,6 @@ function love.load()
 		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
 	soundquadindex = muted and 7 or volume/20 + 1
-
-	-- image cheats
-	imagecheat:new {
-		pass = 'pizza',
-		image = 	graphics.newImage("resources/pizza.png"),
-		painted = false
-	}
-	imagecheat:new {
-		pass = 'yan',
-		image = graphics.newImage("resources/yan.png")
-	}
-	imagecheat:new {
-		pass = 'rica',
-		image = graphics.newImage("resources/rica.png")
-	}
-	imagecheat:new {
-		pass = 'rika',
-		image = graphics.newImage("resources/rika.png")
-	}
 end
 
 function reload()
@@ -559,7 +536,7 @@ function love.draw()
 
 	
 	--painting PsyChObALL
-	if not invisible and state == survivor then -- Invisible easter-egg
+	if not cheats.invisible and state == survivor then -- Invisible easter-egg
 		psycho:draw()
 	end
 	graphics.setColor(color(maincolor, colortimer.time))
@@ -587,13 +564,13 @@ function love.draw()
 		graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		
 		graphics.setFont(getFont(12))
-		if devmode then graphics.print("dev mode on!", 446, 5) end
-		if invisible then graphics.print("Invisible mode on!", 432, 18) end
-		if imagecheat.enabled then
-			if 	 imagecheat.pass == 'yan' then graphics.print("David Robert Jones mode on!", 395, 32)
-			elseif imagecheat.pass == 'pizza' then graphics.print("Italian mode on!", 438, 32) 
-			elseif imagecheat.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
-			elseif imagecheat.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
+		if cheats.devmode then graphics.print("dev mode on!", 446, 5) end
+		if cheats.invisible then graphics.print("Invisible mode on!", 432, 18) end
+		if cheats.image.enabled then
+			if 	 cheats.image.pass == 'yan' then graphics.print("David Robert Jones mode on!", 395, 32)
+			elseif cheats.image.pass == 'pizza' then graphics.print("Italian mode on!", 438, 32) 
+			elseif cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
+			elseif cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
 		end
 	end
 	graphics.setColor(color(maincolor, colortimer.time, 70))
@@ -676,7 +653,7 @@ function love.draw()
 
 	if gamelost and state == survivor then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-		if wasdev then
+		if cheats.wasdev then
 			graphics.setFont(getCoolFont(20))
 			graphics.print("Your scores didn't count, cheater!", 382, 215)
 		else
@@ -830,21 +807,7 @@ function addscore(x)
 	end
 end
 
-local devpass = passwordtoggle 'psycho'
-local invisiblepass = passwordtoggle 'ghost'
-local resetpass = password 'reset'
-
 function love.keypressed(key)
-	--checking for dev code
-	if state == survivor then
-		if devmode then
-			devmode = devpass(key)
-		else 
-			devmode = devpass(key)
-			if devmode then wasdev = true return end
-		end
-	end
-
 	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
 		pst = nil
 		esc = not esc
@@ -916,9 +879,8 @@ function love.keypressed(key)
 		state = mainmenu
 
 
-		devmode = false
+		cheats.devmode = false
 		imagecheat.enabled = false
-		invisible = false
 		resetted = false
 
 		alphatimer:setAndGo(0, 255)
@@ -958,31 +920,11 @@ function love.keypressed(key)
 		end
 	end
 
-
-	if devmode and state == survivor then
-		if not esc and key == 'k' then lostgame() end
-		if key == '0' then multiplier = multiplier + 2
-		elseif key == '9' then multiplier = multiplier - 2
-		elseif key == '8' then addscore(100)
-		elseif key == '7' then addscore(-100)
-		elseif key == '6' then v = v + 10
-		elseif key == '5' then v = v - 10
-		elseif key == '4' then timefactor = timefactor * 1.1
-		elseif key == '3' then timefactor = timefactor * 0.9
-		elseif key == 'l' then dtn = deathtexts[1] lostgame()
-		elseif key == 'u' then love.update(10) --skips 10 seconds
-		end
-	end
+	cheats.handleCheats(key)
 	
 	if state == mainmenu then
 		resetted = resetpass (key)
 		if resetted then resetstats() end
-	end
-
-
-	if state == survivor then
-		invisible = invisiblepass(key)
-		imagecheat.processCheats(key)
 	end
 end
 
