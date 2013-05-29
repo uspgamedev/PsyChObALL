@@ -22,6 +22,7 @@ function superball:__init()
 	self.shoottimer = timer:new {
 		timelimit = 1.7,
 		works_on_gamelost = false,
+		running = true,
 		time = math.random()*1.6
 	}
 
@@ -35,7 +36,8 @@ function superball:__init()
 	end
 
 	self.speedtimer = timer:new {
-		timelimit = math.random()*4 + 1
+		timelimit = math.random()*4 + 1,
+		running = true
 	}
 
 	function self.speedtimer.funcToCall(timer)

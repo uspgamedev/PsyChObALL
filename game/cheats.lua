@@ -41,7 +41,6 @@ end
 function init()
 	devpass = passwordtoggle 'psycho'
 	invisiblepass = passwordtoggle 'ghost'
-	resetpass = password 'reset'
 
 	image:new {
 		pass = 'pizza',
@@ -62,7 +61,7 @@ function init()
 	}
 end
 
-function handleCheats( key )
+function handleKey( key )
 	if onGame() then
 		
 		if devmode then

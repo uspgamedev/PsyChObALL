@@ -10,6 +10,7 @@ require "list"
 require "bosses"
 require "psychoball"
 require "filemanager"
+require "soundmanager"
 require "cheats"
 
 local socket = require "socket"
@@ -66,8 +67,8 @@ end
 function readconfig()
 	local config = filemanager.readtable "config"
 
-	volume = config.volume or 100
-	muted  = config.muted == true
+	soundmanager.volume = config.volume or 100
+	soundmanager.muted  = config.muted == true
 
 	if version ~= config.version then
 		--handle something maybe
@@ -76,90 +77,85 @@ end
 
 function writeconfig()
 	filemanager.writetable({
-		volume = volume,
-		muted = muted,
+		volume =	 soundmanager.volume,
+		muted =	 soundmanager.muted,
 		version = version
 		}, "config")
 end
 
-function love.load()
-	state = 0
-	mainmenu = 0 -- mainmenu
-	tutorialmenu = 1
-	achmenu  = 2 -- Tela de achievements
-	survivor = 10 -- modo de jogo survivor
-	resetted = false
 
+function love.load()
+	initBase()
+	initGamerVars()
+
+	reload() -- reload()-> things that should be resetted when player dies
+	mouse.setGrab(false)
+	
+end
+
+function initBase()
+	-- [["Localizing" Love2D tables]]
 	for k,v in pairs(love) do
 		if type(v) == 'table' and not _G[k] then
 			_G[k] = v
 		end
 	end
+	-- [[End of"Localizing" Love2D tables]]
 
-	screenshotnumber = 1
-	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
-
-	logo = graphics.newImage('resources/LogoBeta.png')
-	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
-
-	v = 240
-	version = '0.9.0\n'
-	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
-
-	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
-	song:play()
-	song:setLooping(true)
-	songsetpoints = {20,123,180,308,340}
-	songfadeout = timer:new{
-		timelimit	 = .01,
-		running		 = false,
-		pausable		 = false,
-		timeaffected = false,
-		persistent	 = true
-	}
-
-	function songfadeout:funcToCall() -- song fades out
-		if muted then return end
-		if song:getVolume() <= (.02 * volume / 100) then 
-			song:setVolume(0) 
-			self:stop()
-		else song:setVolume(song:getVolume() - .02) end
-	end
-
-	songfadein = timer:new{
-		timelimit 	 = .03,
-		running 	 = false,
-		pausable 	 = false,
-		timeaffected = false,
-		persistent 	 = true
-	}
-
-	function songfadein:funcToCall() -- song fades in
-		if muted or gamelost then return end
-		if song:getVolume() >= (.98 * volume / 100) then 
-			song:setVolume(volume / 100)
-			self:stop()
-		else song:setVolume((song:getVolume() + .02)) end
-	end
-
-	colortimer = timer:new{
-		timelimit  = 10,
-		pausable   = false,
-		persistent = true
-	}
-
-	cheats.init()
-
-	reload() -- reload()-> things that should be resetted when player dies, the rest-> one time only
-	mouse.setGrab(false)
-	
+	-- [[Initing Variables]]
+	v = 240 --main velocity of everything
+	state = 0
+	mainmenu = 0 -- mainmenu
+	tutorialmenu = 1
+	achmenu  = 2 -- Tela de achievements
+	survivor = 10 -- modo de jogo survivor
 	sqrt2 = math.sqrt(2)
 	fonts = {}
 	coolfonts = {}
+	resetted = false
+
+	paintables = {}
+	shot.bodies = {}
+	effect.bodies = {}
+	circleEffect.bodies = {}
+	enemy.bodies = {}
+	bosses.bodies = {}
+
+	paintables[1] = circleEffect.bodies
+	paintables[2] = shot.bodies
+	paintables[3] = enemy.bodies
+	paintables[4] = effect.bodies
+	paintables[5] = bosses.bodies
+	-- [[End of Initing Variables]]
 	
+	-- [[Reading Files]]
 	readconfig()
 	readstats()
+	-- [[end of Reading Files]]
 	
+	-- [[Loading Resources]]
+	logo = graphics.newImage('resources/LogoBeta.png')
+
+	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
+	version = '0.9.0\n'
+	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
+	soundmanager.init()
+	cheats.init()
+	--[[End of Loading Resources]]
+
+	screenshotnumber = 1
+	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
+end
+
+function initGamerVars()
+	-- [[Creating Persistent Timers]]
+	colortimer = timer:new{
+		timelimit  = 10,
+		pausable   = false,
+		persistent = true,
+		running = true
+	}
+
 	multtimer = timer:new {
 		timelimit  = 2.2, 
 		onceonly	  = true,
@@ -179,7 +175,6 @@ function love.load()
 	ultrablastmax = 84 -- maximum number of shots on ultrablast
 	ultratimer = timer:new {
 		timelimit  = .02,
-		running    = false,
 		persistent = true
 	}
 
@@ -198,7 +193,6 @@ function love.load()
 
 	inverttimer = timer:new {
 		timelimit  = 2.2,
-		running    = false,
 		onceonly   = true,
 		persistent = true,
 		works_on_gamelost = false
@@ -206,7 +200,7 @@ function love.load()
 
 	function inverttimer:funcToCall() -- disinverts the screen color
 		if currentEffect ~= noLSDeffect then 
-			song:setPitch(1)
+			soundmanager.setPitch(1)
 			timefactor = 1.0
 			currentEffect = nil
 		end
@@ -217,61 +211,44 @@ function love.load()
 		self:funcToCall()
 	end
 
-	swypetimer = vartimer:new {
-		running = false,
+	swypetimer = vartimer:new { -- swypes the screen on menu change
 		var = 0,
 		speed = 3000
 	}
 
-	alphatimer = vartimer:new {
-		running = false,
+	alphatimer = vartimer:new { --fades out and in the logo
 		var = 255,
 		speed = 300
 	}
-
-	--sound images
-	soundimage = graphics.newImage("resources/SoundIcons.png")
-	soundquads = {
-		graphics.newQuad(200, 0, 40, 40, 300, 40),
-		graphics.newQuad(160, 0, 40, 40, 300, 40),
-		graphics.newQuad(120, 0, 40, 40, 300, 40),
-		graphics.newQuad(80,  0, 40, 40, 300, 40),
-		graphics.newQuad(40,  0, 40, 40, 300, 40),
-		graphics.newQuad(0,   0, 40, 40, 300, 40),
-		graphics.newQuad(240, 0, 40, 40, 300, 40)
-	}
-	soundquadindex = muted and 7 or volume/20 + 1
+	-- [[End of Creating Persistent Timers]]
+	
+	enemylist = list:new{}
 end
 
-function reload()
+function resetVars()
 	ultracounter = 3
-
-	timer.closenonessential()
-	
-	song:seek(songsetpoints[math.random(#songsetpoints)])
-	song:setVolume(0)
-
-	if not muted then songfadein:start() end
-	
 	psycho = psychoball:new{
 		position = psycho and psycho.position or vector:new{513,360}
 	}
+	enemylist:clear()
+	--[[Resetting Paintables]]
+	cleartable(shot.bodies)
+	cleartable(effect.bodies)
+	cleartable(circleEffect.bodies)
+	cleartable(enemy.bodies)
+	cleartable(bosses.bodies)
+	--[[End of Resetting Paintables]]
 	
-	paintables = {}
-	shot.bodies = {}
-	effect.bodies = {}
-	circleEffect.bodies = {}
-	enemy.bodies = {}
-	bosses.bodies = {}
+end
+function cleartable( t )
+	for k in pairs(t) do t[k] = nil end
+end
 
-	paintables[1] = circleEffect.bodies
-	paintables[2] = shot.bodies
-	paintables[3] = enemy.bodies
-	paintables[4] = effect.bodies
-	paintables[5] = bosses.bodies
+function reload()
+	resetVars()
+	timer.closenonessential()
+	soundmanager.restart()
 	
-	enemylist = list:new{}
-
 	enemylist:push(enemy:new{})
 
 	enemyaddtimer = timer:new {
@@ -283,8 +260,6 @@ function reload()
 		enemylist:push(enemy:new{})
 	end
 
-	enemyaddtimer:start(2)
-
 	enemyreleasetimer = timer:new {
 		timelimit = 2
 	}
@@ -294,11 +269,11 @@ function reload()
 		table.insert(enemy.bodies,enemylist:pop())
 	end
 
+	enemyaddtimer:start(2)
 	enemyreleasetimer:start(1.5)
 	
 	shottimer = timer:new{
-		timelimit = .18,
-		running   = false
+		timelimit = .18
 	}
 
 	function shottimer:funcToCall() -- continues shooting when you hold the mouse
@@ -307,9 +282,9 @@ function reload()
 	
 	multiplier = 1
 	
-	
 	circletimer = timer:new{
-		timelimit = .2
+		timelimit = .2,
+		running	 = true
 	}
 
 	function circletimer:funcToCall() -- releases cirleEffects
@@ -329,13 +304,12 @@ function reload()
 
 	superballtimer = timer:new {
 		timelimit = 20,
-		running = false,
 		works_on_gamelost = false
 	}
 
 	local possiblePositions = {vector:new{30, 30}, vector:new{width - 30, 30}, vector:new{width - 30, height - 30}, vector:new{30, height - 30}}
 	function superballtimer:funcToCall()
-		if #bosses.bodies ~= 0 then self.timelimit = 2 end
+		if #bosses.bodies > 0 then self.timelimit = 2 return end
 		bosses.newsuperball{ position = possiblePositions[math.random(4)]:clone() }
 		self.timelimit = 20
 	end
@@ -354,7 +328,6 @@ function reload()
 	gamelost = false
 	esc = false
 
-	srt = " " --random string to be painted
 	dtn = nil
 
 	keyspressed = {}
@@ -381,25 +354,25 @@ function getCoolFont(size)
 	if coolfonts[size] then return coolfonts[size] end
 	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
 	return coolfonts[size]
-	-- body
 end
-local moarLSDchance = 4
+
+local moarLSDchance = 3
 
 function lostgame()
 	if gamelost then return end
 	writestats()
-	songfadeout:start()
+	soundmanager.fadeout()
 	mouse.setGrab(false)
 
 	if deathText() == "Supreme." then dtn = nil end --make it much rarer
 
 	if deathText() == "The LSD wears off" then
-		song:setPitch(.8)
+		soundmanager.setPitch(.8)
 		deathtexts[1] = "MOAR LSD"
 		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
 		currentEffect = noLSDeffect
 	elseif deathText() == "MOAR LSD" then
-		song:setPitch(1)
+		soundmanager.setPitch(1)
 		deathtexts[1] = "The LSD wears off"
 		for i = 1, moarLSDchance do table.remove(deathtexts) end
 		currentEffect = nil
@@ -516,7 +489,7 @@ function love.draw()
 	graphics.setColor(backColor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 
-	if state == survivor then
+	if onGame() then
 		for i, v in pairs(paintables) do
 			for j, m in pairs(v) do
 				m:draw()
@@ -536,21 +509,20 @@ function love.draw()
 
 	
 	--painting PsyChObALL
-	if not cheats.invisible and state == survivor then -- Invisible easter-egg
+	if not cheats.invisible and onGame() then -- Invisible easter-egg
 		psycho:draw()
 	end
 	graphics.setColor(color(maincolor, colortimer.time))
 
 
 	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 10)
-	if state == survivor then
+	if onGame() then
 		graphics.setFont(getCoolFont(22))
 		graphics.print(string.format("%.0f", score), 68, 20)
 		graphics.print(string.format("%.1fs", totaltime), 68, 42)
 		graphics.setFont(getFont(12))
 		graphics.print("Score:", 25, 24)
 		graphics.print("Time:", 25, 48)
-		graphics.print(srt, 27, 96)
 		graphics.print(string.format("Best Score: %0.f",   math.max(bestscore, score)), 25, 68)
 		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
 		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
@@ -574,7 +546,7 @@ function love.draw()
 		end
 	end
 	graphics.setColor(color(maincolor, colortimer.time, 70))
-	graphics.drawq(soundimage, soundquads[soundquadindex], 1030, 675)
+	soundmanager.drawSoundIcon(1030, 675)
 	
 
 	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
@@ -651,7 +623,7 @@ function love.draw()
 	end
 	
 
-	if gamelost and state == survivor then
+	if gamelost and onGame() then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		if cheats.wasdev then
 			graphics.setFont(getCoolFont(20))
@@ -678,7 +650,7 @@ function love.draw()
 		graphics.setFont(getFont(12))
 	end
 
-	if esc and state == survivor then
+	if esc and onGame() then
 		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
@@ -807,6 +779,8 @@ function addscore(x)
 	end
 end
 
+resetpass = cheats.password 'reset'
+
 function love.keypressed(key)
 	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
 		pst = nil
@@ -884,43 +858,14 @@ function love.keypressed(key)
 		resetted = false
 
 		alphatimer:setAndGo(0, 255)
-		if muted then
-			song:setVolume(0)
-		else
-			song:setVolume(volume / 100)
-		end
-		song:setPitch(1.0)
+
+		soundmanager.reset()
 		timefactor = 1.0
 		currentEffect = nil
 	end
-	
-	if key == 'm' then
-		if muted then
-			if not gamelost then song:setVolume(volume / 100) end
-			muted = false
-			soundquadindex = volume/20 + 1
-		else
-			song:setVolume(0)
-			muted = true
-			soundquadindex = 7
-		end
-	end
-	
-	if key == '.' and not muted and volume < 100 then
-		volume = volume + 20
-		soundquadindex = volume/20 + 1
-		if not gamelost then
-			song:setVolume(volume / 100)
-		end
-	elseif key == ',' and muted == false and volume > 0 then
-		volume = volume - 20
-		soundquadindex = volume/20 + 1
-		if not gamelost and not songfadein.running then
-			song:setVolume(volume / 100)
-		end
-	end
 
-	cheats.handleCheats(key)
+	cheats.handleKey(key)
+	soundmanager.handleKey(key)
 	
 	if state == mainmenu then
 		resetted = resetpass (key)
@@ -938,7 +883,7 @@ function love.keyreleased(key, code)
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 
-	if not gamelost and state == survivor then
+	if not gamelost and onGame() then
 		auxspeed:sub(
 			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
 				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
