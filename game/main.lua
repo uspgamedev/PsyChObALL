@@ -12,6 +12,7 @@ require "psychoball"
 require "filemanager"
 require "soundmanager"
 require "cheats"
+require "button"
 
 local socket = require "socket"
 local http = require "socket.http"
@@ -87,6 +88,7 @@ end
 function love.load()
 	initBase()
 	initGameVars()
+	initMenu()
 
 	--reload() -- reload()-> things that should be resetted when player dies
 	mouse.setGrab(false)
@@ -104,11 +106,11 @@ function initBase()
 
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
-	state = 0
-	mainmenu = 0 -- mainmenu
-	tutorialmenu = 1
-	achmenu  = 2 -- Tela de achievements
+	mainmenu = 1 -- mainmenu
+	tutorialmenu = 2
+	achmenu  = 0 -- Tela de achievements
 	survivor = 10 -- modo de jogo survivor
+	state = mainmenu
 	sqrt2 = math.sqrt(2)
 	fonts = {}
 	coolfonts = {}
@@ -120,6 +122,9 @@ function initBase()
 	paintables[3] = enemy.bodies
 	paintables[4] = effect.bodies
 	paintables[5] = bosses.bodies
+
+	paintablesMenu = {}
+	paintablesMenu[1] = button.bodies
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
@@ -158,6 +163,8 @@ function initGameVars()
 
 	shot.init()
 
+	psychoball.init()
+
 	multtimer = timer:new {
 		timelimit  = 2.2, 
 		onceonly	  = true,
@@ -172,25 +179,6 @@ function initGameVars()
 	function multtimer:handlereset()
 		self:stop() 
 		self:funcToCall()
-	end
-	
-	ultrablastmax = 84 -- maximum number of shots on ultrablast
-	ultratimer = timer:new {
-		timelimit  = .02,
-		persistent = true
-	}
-
-	function ultratimer:funcToCall() -- adds more shots to ultrablast
-		if ultrablast < ultrablastmax then
-			ultrablast = ultrablast + 1
-		end
-		if ultrablast == ultrablastmax - 1 then
-			psycho.ultrameter.sizeGrowth = 0
-		end
-	end
-
-	function ultratimer:handlereset()
-		self:stop()
 	end
 
 	inverttimer = timer:new {
@@ -235,11 +223,29 @@ function initGameVars()
 	timefactor = 1.0
 end
 
+function initMenu()
+	playbutton = button:new{
+		size = 100,
+		position = vector:new {width/2,510},
+		text = playText(),
+		fontsize = 40
+	}
+
+	function playbutton:pressed()
+		state = survivor
+		alphatimer:setAndGo(255, 0)
+		mouse.setGrab(true)
+		reload()
+		button.bodies['play'] = nil
+		neweffects(self, 100)
+	end
+
+	button.bodies['play'] = playbutton
+end
+
 function resetVars()
 	ultracounter = 3
-	psycho = psychoball:new{
-		position = psycho and psycho.position or vector:new{513,360}
-	}
+	
 	enemylist:clear()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
@@ -251,6 +257,11 @@ function resetVars()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
 	
+
+	psycho = psychoball:new{
+		position = psycho and psycho.position or vector:new{513,360}
+	}
+
 	timefactor = 1.0
 	multiplier = 1
 	totaltime = 0
@@ -258,7 +269,6 @@ function resetVars()
 	score = 0
 	blastscore = 0 --Variavel que da ultrablast points por pontos
 
-	pause = false
 	gamelost = false
 	esc = false
 
@@ -329,9 +339,7 @@ function lostgame()
 	timefactor = .05
 	pausemessage = nil
 
-	psycho.speed:set(0,0)
-	if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
-	neweffects(psycho,80)
+	psycho:handleDelete() --not really deleting but anyway
 end
 
 function color( ... )
@@ -455,12 +463,9 @@ function love.draw()
 			graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a - .15, a + .15)
 		end
 		line()
-	end
-
-	
-	--painting PsyChObALL
-	if not cheats.invisible and onGame() then -- Invisible easter-egg
-		psycho:draw()
+		if not cheats.invisible then
+			psycho:draw()
+		end
 	end
 	graphics.setColor(color(maincolor, colortimer.time))
 
@@ -522,6 +527,12 @@ function love.draw()
 		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 
+		for _,v in pairs(paintablesMenu) do
+			for k, p in pairs(v) do
+				p:draw()
+			end
+		end
+
 		graphics.translate(width, 0)
 		--tutorialmenu
 		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54))
@@ -569,6 +580,7 @@ function love.draw()
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Click or press the right arrow key to go back", 670, 645)
 
+
 		graphics.pop()
 	end
 	
@@ -615,6 +627,8 @@ function love.draw()
 	end
 end
 
+playtexts = {"go", "run", "are you ready?", "start mission", "game.\nplay()", "don't click me"}
+
 pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"}
 
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
@@ -622,7 +636,7 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
 "There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
 "YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
-"Rest in Peace","Die in shame","You've found your end"}
+"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased"}
 
 function deathText()
 	deathmessage = deathmessage or deathtexts[math.random(#deathtexts)]
@@ -632,6 +646,11 @@ end
 function pauseText()
 	pausemessage = pausemessage or pausetexts[math.random(#pausetexts)]
 	return pausemessage
+end
+
+function playText()
+	playmessage = playmessage or playtexts[math.random(#playtexts)]
+	return playmessage
 end
 
 local todelete = {}
@@ -673,37 +692,28 @@ function love.update(dt)
 	end
 end
 
-function love.mousepressed(x, y, button)
-	if esc or pause then return end
-	if button == 'l' and state == mainmenu then
-		state = survivor
-		alphatimer:setAndGo(255, 0)
-		mouse.setGrab(true)
-		reload() return
-	end
-	if button == 'r' and state == mainmenu then
+function love.mousepressed(x, y, btn)
+	button.mousepressed(x,y,button)
+	if esc then return end
+
+	if btn == 'r' and state == mainmenu then
 		swypetimer:setAndGo(0, width)
 		state = tutorialmenu
-		return
-	end
-	if (button == 'l' or button == 'r') and state == tutorialmenu then
+	elseif (btn == 'l' or btn == 'r') and state == tutorialmenu then
 		swypetimer:setAndGo(width, 0)
 		state = mainmenu
-		return
-	end
-	if (button == 'l' or button == 'r') and state == achmenu then
+	elseif (btn == 'l' or btn == 'r') and state == achmenu then
 		swypetimer:setAndGo(-width, 0)
 		state = mainmenu
-		return
-	end
-	if button == 'l' and onGame() then
+	elseif btn == 'l' and onGame() and not gamelost then
 		shoot(x, y)
 		shot.timer:start()
 	end
 end
 
-function love.mousereleased(x, y, button)
-	if button == 'l' and onGame() then
+function love.mousereleased(x, y, btn)
+	button.mousereleased(x,y,button)
+	if btn == 'l' and onGame() then
 		shot.timer:stop()
 	end
 end
@@ -745,32 +755,8 @@ function love.keypressed(key)
 
 	keyspressed[key] = true
 
-	if not gamelost and state == survivor then 
-		auxspeed:add(
-			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
-				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
-			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v*1.3 or 0) 
-				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v*1.3 or 0)
-		)
-		psycho.speed:set(auxspeed)
-
-		if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
-			psycho.speed:div(sqrt2)
-		end
-
-		if key == ' ' and not isPaused and state == survivor and ultracounter > 0 then
-			ultracounter = ultracounter - 1
-			ultrablast = 10
-			psycho.ultrameter = circleEffect:new {
-				based_on   = psycho,
-				sizeGrowth = 25,
-				alpha 	   = 100,
-				linewidth  = 6,
-				index 	   = 'ultrameter'
-			}
-			psycho.ultrameter.position = psycho.position
-			ultratimer:start()
-		end
+	if not gamelost and onGame() then 
+		psycho:keypressed(key)
 	end
 	
 	if gamelost and key == 'r' then
@@ -780,25 +766,15 @@ function love.keypressed(key)
 	if key == 'left' and state == tutorialmenu then
 		swypetimer:setAndGo(width, 0)
 		state = mainmenu
-		return
-	end
-
-	if key == 'right' and state == mainmenu then
+	elseif key == 'right' and state == mainmenu then
 		swypetimer:setAndGo(0, width)
 		state = tutorialmenu
-		return
-	end
-
-	if key == 'left' and state == mainmenu then
+	elseif key == 'left' and state == mainmenu then
 		swypetimer:setAndGo(0, -width)
 		state = achmenu
-		return
-	end
-
-	if key == 'right' and state == achmenu then
+	elseif key == 'right' and state == achmenu then
 		swypetimer:setAndGo(-width, 0)
 		state = mainmenu
-		return
 	end
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
@@ -806,7 +782,6 @@ function love.keypressed(key)
 	if (gamelost or esc) and key == 'b' then
 		esc = false
 		state = mainmenu
-
 
 		cheats.devmode = false
 		cheats.image.enabled = false
@@ -817,10 +792,14 @@ function love.keypressed(key)
 		soundmanager.reset()
 		timefactor = 1.0
 		currentEffect = nil
+
+		playmessage = nil
+		playbutton:setText(playText())
+		button.bodies['play'] = playbutton
 	end
 
-	cheats.handleKey(key)
-	soundmanager.handleKey(key)
+	cheats.processKey(key)
+	soundmanager.processKey(key)
 	
 	if state == mainmenu then
 		resetted = resetpass (key)
@@ -828,38 +807,12 @@ function love.keypressed(key)
 	end
 end
 
-function do_ultrablast()
-	for i=1, ultrablast do
-		shoot(psycho.x + (math.cos(math.pi * 2 * i / ultrablast) * 100), psycho.y + (math.sin(math.pi * 2 * i / ultrablast) * 100))
-	end
-end
-
-function love.keyreleased(key, code)
+function love.keyreleased(key)
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 
 	if not gamelost and onGame() then
-		auxspeed:sub(
-			((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
-				+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
-			((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v * 1.3 or 0) 
-				+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v * 1.3 or 0)
-		)
-		psycho.speed:set(auxspeed)
-
-		if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
-			psycho.speed:div(sqrt2)
-		end
-
-		if key == ' ' then
-			if ultratimer.running then
-				ultratimer:stop()
-				if psycho.ultrameter then
-					psycho.ultrameter.sizeGrowth = -300
-				end
-				if not isPaused then do_ultrablast() end
-			end
-		end
+		psycho:keyreleased(key)
 	end
 	
 	if key == 'scrollock' then 

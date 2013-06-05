@@ -72,7 +72,7 @@ function reset()
 	song:setPitch(1.0)
 end
 
-function handleKey( key )
+function processKey( key )
 	if muted then
 		if key == 'm' then
 			muted = false

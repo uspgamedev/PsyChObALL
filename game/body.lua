@@ -42,7 +42,7 @@ function body:draw()
 		graphics.draw(cheats.image.image, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / cheats.image.image:getWidth(), 2*self.size / cheats.image.image:getHeight())
 		return
 	end
-	graphics.setColor(color(self.color, colortimer.time + self.variance))
+	graphics.setColor(color(self.color, colortimer.time + self.variance, self.alpha))
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 

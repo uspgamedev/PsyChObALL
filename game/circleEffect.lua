@@ -16,11 +16,12 @@ function circleEffect:__init()
 	end
 	
 	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
-	self.variance = self.variance or math.random(30,300) / 100
+	self.variance = self.variance or math.random(0, 10*colortimer.timelimit) / 10
 	if #circleEffect.bodies > 250 then table.remove(circleEffect.bodies, 1) end
-	if self.index then
-		circleEffect.bodies[self.index] = self
-		self.index = nil
+	if self.index ~= nil then
+		if self.index ~= false then
+			circleEffect.bodies[self.index] = self
+		end
 	else
 		table.insert(circleEffect.bodies, self)
 	end
@@ -51,7 +52,7 @@ end
 
 function circleEffect:draw()
 	if self.linewidth then love.graphics.setLine(self.linewidth) end
-	love.graphics.setColor(color(self.color, colortimer.time * self.variance, self.alpha))
+	love.graphics.setColor(color(self.color, colortimer.time + self.variance, self.alpha))
 	love.graphics.circle(self.mode, self.x, self.y, self.size)
 	if self.linewidth then love.graphics.setLine(4) end
 end

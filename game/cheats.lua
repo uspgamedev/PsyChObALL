@@ -62,7 +62,7 @@ function init()
 	}
 end
 
-function handleKey( key )
+function processKey( key )
 	if onGame() then
 		
 		if devmode then
