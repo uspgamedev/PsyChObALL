@@ -665,6 +665,10 @@ function love.draw()
 				graphics.setFont(getFont(35))
 				graphics.print("You beat the best score!", 290, 140)
 			end
+			if bestmult == multiplier then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best multiplier!", 320, 180)
+			end
 		end
 		graphics.setFont(getCoolFont(40))
 		graphics.print(deathText(), 270, 300)
@@ -695,7 +699,8 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
 "There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
-"YOU WIN!!! \n                       nope, chuck testa","Supreme."}
+"YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
+"Rest in Peace","Die in shame","You've found your end"}
 
 function deathText()
 	dtn = dtn or deathtexts[math.random(#deathtexts)]

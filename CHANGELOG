@@ -23,6 +23,9 @@ THE HISTORY OF PSYCHOBALL
 	-Added Italian mode
 	-Added Richard mode
 	-Added Detective mode
+-New file that saves your configurations
+	-Saves your last sound control setting when the game is closed
+-Changes on how files are created/read
 -You can reset your stats in the main menu
 -You can only use easter-eggs and devmode on survivor for now 
 -Major changes on difficulty of Survivor mode
@@ -38,7 +41,7 @@ THE HISTORY OF PSYCHOBALL
 -Changes on Ultrablast
 	-Limited times you can use it
 	-You get more if you get more points
-	-You get more if you survive more time
+	-You get more if you survive more time (survivor mode)
 -Changes on color settings
 	-Changes on "Lsd worn out" effect
 	-Changes on color of "bullets"
