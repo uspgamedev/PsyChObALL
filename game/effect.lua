@@ -2,7 +2,8 @@ require 'body'
 
 effect = body:new {
 	size	 = 3,
-	__type   = 'effect'
+	__type   = 'effect',
+	bodies = {}
 }
 
 function effect:draw()

@@ -41,6 +41,7 @@ end
 function init()
 	devpass = passwordtoggle 'psycho'
 	invisiblepass = passwordtoggle 'ghost'
+	tiltpass = password 'tilt'
 
 	image:new {
 		pass = 'pizza',
@@ -73,6 +74,8 @@ function handleKey( key )
 
 		invisible = invisiblepass(key)
 		image.processCheats(key)
+
+		if tiltpass(key) then angle:setAndGo(0, math.pi/25, 1) end
 
 		if devmode then
 			if not esc and key == 'k' then lostgame() end

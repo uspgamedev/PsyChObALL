@@ -4,7 +4,8 @@ enemy = body:new {
 	collides = false,
 	diereason = 'leftscreen',
 	size = 16,
-	__type = 'enemy'
+	__type = 'enemy',
+	bodies = {}
 }
 
 function enemy:__init()
@@ -26,6 +27,36 @@ function enemy:__init()
 	end
 
 	self.variance = math.random(colortimer.timelimit * 1000) / 1000
+end
+
+function enemy.init()
+	enemy.addtimer = timer:new {
+		timelimit = 2,
+		persistent = true
+	}
+
+	function enemy.addtimer:funcToCall() --adds the enemies to a list
+		self.timelimit = .8 + (self.timelimit - .8) / 1.09
+		enemylist:push(enemy:new{})
+	end
+
+	function enemy.addtimer:handlereset()
+		self:stop()
+	end
+
+	enemy.releasetimer = timer:new {
+		timelimit = 2,
+		persistent = true
+	}
+
+	function enemy.releasetimer:funcToCall() --actually releases the enemies on screen
+		self.timelimit = .8 + (self.timelimit - .8) / 1.09
+		table.insert(enemy.bodies,enemylist:pop())
+	end
+
+	function enemy.releasetimer:handlereset()
+		self:stop()
+	end
 end
 
 function enemy:handleDelete()

@@ -9,11 +9,11 @@ timer = lux.object.new {
 	persistent	 = false, -- continues on death
 	delete		 = false,
 	works_on_gamelost = true,
-	ts = {}
+	timers = {}
 }
 
 function timer:__init()
-	table.insert(timer.ts, self)
+	table.insert(timer.timers, self)
 end
 
 function timer:update(dt,timefactor,paused,gamelost)
@@ -40,7 +40,7 @@ end
 
 function timer.updatetimers(dt,timefactor,paused,gamelost)
 	local todelete
-	for i,v in pairs(timer.ts) do
+	for i,v in pairs(timer.timers) do
 		if v.delete then
 			if not todelete then todelete = {i}
 			else table.insert(todelete,i) end
@@ -57,7 +57,7 @@ end
 
 function timer.closenonessential()
 	local todelete = {}
-	for i,v in pairs(timer.ts) do
+	for i,v in pairs(timer.timers) do
 		if not v.persistent then table.insert(todelete, i)
 		else 
 			if v.handlereset then v:handlereset() end 
@@ -65,7 +65,7 @@ function timer.closenonessential()
 	end
 	local a = 0
 	for j,k in pairs(todelete) do
-		table.remove(timer.ts, k - a)
+		table.remove(timer.timers, k - a)
 		a = a + 1
 	end
 end

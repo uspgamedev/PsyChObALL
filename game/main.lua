@@ -86,9 +86,9 @@ end
 
 function love.load()
 	initBase()
-	initGamerVars()
+	initGameVars()
 
-	reload() -- reload()-> things that should be resetted when player dies
+	--reload() -- reload()-> things that should be resetted when player dies
 	mouse.setGrab(false)
 	
 end
@@ -115,12 +115,6 @@ function initBase()
 	resetted = false
 
 	paintables = {}
-	shot.bodies = {}
-	effect.bodies = {}
-	circleEffect.bodies = {}
-	enemy.bodies = {}
-	bosses.bodies = {}
-
 	paintables[1] = circleEffect.bodies
 	paintables[2] = shot.bodies
 	paintables[3] = enemy.bodies
@@ -147,7 +141,7 @@ function initBase()
 	while(filesystem.exists('screenshot_' .. screenshotnumber .. '.png')) do screenshotnumber = screenshotnumber + 1 end
 end
 
-function initGamerVars()
+function initGameVars()
 	-- [[Creating Persistent Timers]]
 	colortimer = timer:new{
 		timelimit  = 10,
@@ -155,6 +149,14 @@ function initGamerVars()
 		persistent = true,
 		running = true
 	}
+
+	circleEffect.init()
+
+	enemy.init()
+
+	bosses.init()
+
+	shot.init()
 
 	multtimer = timer:new {
 		timelimit  = 2.2, 
@@ -220,9 +222,17 @@ function initGamerVars()
 		var = 255,
 		speed = 300
 	}
+
+	angle = vartimer:new {
+		var = 0,
+		speed = 1
+	}
 	-- [[End of Creating Persistent Timers]]
 	
 	enemylist = list:new{}
+	auxspeed = vector:new {}
+	keyspressed = {}
+	timefactor = 1.0
 end
 
 function resetVars()
@@ -231,6 +241,7 @@ function resetVars()
 		position = psycho and psycho.position or vector:new{513,360}
 	}
 	enemylist:clear()
+	auxspeed:reset()
 	--[[Resetting Paintables]]
 	cleartable(shot.bodies)
 	cleartable(effect.bodies)
@@ -238,89 +249,12 @@ function resetVars()
 	cleartable(enemy.bodies)
 	cleartable(bosses.bodies)
 	--[[End of Resetting Paintables]]
+	cleartable(keyspressed)
 	
-end
-function cleartable( t )
-	for k in pairs(t) do t[k] = nil end
-end
-
-function reload()
-	resetVars()
-	timer.closenonessential()
-	soundmanager.restart()
-	
-	enemylist:push(enemy:new{})
-
-	enemyaddtimer = timer:new {
-		timelimit = 2
-	}
-
-	function enemyaddtimer:funcToCall() --adds the enemies to a list
-		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		enemylist:push(enemy:new{})
-	end
-
-	enemyreleasetimer = timer:new {
-		timelimit = 2
-	}
-
-	function enemyreleasetimer:funcToCall() --actually releases the enemies on screen
-		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		table.insert(enemy.bodies,enemylist:pop())
-	end
-
-	enemyaddtimer:start(2)
-	enemyreleasetimer:start(1.5)
-	
-	shottimer = timer:new{
-		timelimit = .18
-	}
-
-	function shottimer:funcToCall() -- continues shooting when you hold the mouse
-		shoot(mouse.getPosition()) 
-	end
-	
+	timefactor = 1.0
 	multiplier = 1
-	
-	circletimer = timer:new{
-		timelimit = .2,
-		running	 = true
-	}
-
-	function circletimer:funcToCall() -- releases cirleEffects
-		if not gamelost then
-			circleEffect:new {
-				based_on = psycho
-			}
-		end
-		for i,v in pairs(enemy.bodies) do
-			if v.size == 15 and math.random(2) == 1 --[[reducing chance]] then 
-				circleEffect:new{
-					based_on = v
-				} 
-			end
-		end
-	end
-
-	superballtimer = timer:new {
-		timelimit = 20,
-		works_on_gamelost = false
-	}
-
-	local possiblePositions = {vector:new{30, 30}, vector:new{width - 30, 30}, vector:new{width - 30, height - 30}, vector:new{30, height - 30}}
-	function superballtimer:funcToCall()
-		if #bosses.bodies > 0 then self.timelimit = 2 return end
-		bosses.newsuperball{ position = possiblePositions[math.random(4)]:clone() }
-		self.timelimit = 20
-	end
-
-	superballtimer:start(5)
-
 	totaltime = 0
 	blastime = 0
-
-	timefactor = 1.0
-
 	score = 0
 	blastscore = 0 --Variavel que da ultrablast points por pontos
 
@@ -328,10 +262,23 @@ function reload()
 	gamelost = false
 	esc = false
 
-	dtn = nil
+	deathmessage = nil
+end
 
-	keyspressed = {}
-	auxspeed = vector:new {}
+function cleartable( t )
+	for k in pairs(t) do t[k] = nil end
+end
+
+function reload()
+	resetVars()
+	timer.closenonessential()
+	
+	enemylist:push(enemy:new{})
+
+	soundmanager.restart()
+	bosses.restart()
+	enemy.addtimer:start(2)
+	enemy.releasetimer:start(1.5)
 
 	mouse.setGrab(true)
 end
@@ -364,7 +311,7 @@ function lostgame()
 	soundmanager.fadeout()
 	mouse.setGrab(false)
 
-	if deathText() == "Supreme." then dtn = nil end --make it much rarer
+	if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
 
 	if deathText() == "The LSD wears off" then
 		soundmanager.setPitch(.8)
@@ -380,7 +327,7 @@ function lostgame()
 
 	gamelost   = true
 	timefactor = .05
-	pst = nil
+	pausemessage = nil
 
 	psycho.speed:set(0,0)
 	if psycho.ultrameter then psycho.ultrameter.sizeGrowth = -300 end
@@ -475,6 +422,9 @@ local ultrablastcolor = {0,0,0,0}
 local logocolor = {0,0,0,0}
 
 function love.draw()
+	graphics.translate(width/2, height/2)
+	graphics.rotate(angle.var)
+	graphics.translate(-width/2, -height/2)
 	graphics.setLine(4)
 	graphics.setFont(getFont(12))
 
@@ -675,13 +625,13 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "Rest in Peace","Die in shame","You've found your end"}
 
 function deathText()
-	dtn = dtn or deathtexts[math.random(#deathtexts)]
-	return dtn
+	deathmessage = deathmessage or deathtexts[math.random(#deathtexts)]
+	return deathmessage
 end
 
 function pauseText()
-	pst = pst or pausetexts[math.random(#pausetexts)]
-	return pst
+	pausemessage = pausemessage or pausetexts[math.random(#pausetexts)]
+	return pausemessage
 end
 
 local todelete = {}
@@ -746,15 +696,15 @@ function love.mousepressed(x, y, button)
 		state = mainmenu
 		return
 	end
-	if button == 'l' and not gamelost then
+	if button == 'l' and onGame() then
 		shoot(x, y)
-		shottimer:start()
+		shot.timer:start()
 	end
 end
 
 function love.mousereleased(x, y, button)
-	if button == 'l' then
-		shottimer:stop()
+	if button == 'l' and onGame() then
+		shot.timer:stop()
 	end
 end
 
@@ -788,7 +738,7 @@ resetpass = cheats.password 'reset'
 
 function love.keypressed(key)
 	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
-		pst = nil
+		pausemessage = nil
 		esc = not esc
 		mouse.setGrab(not esc)
 	end
@@ -859,7 +809,7 @@ function love.keypressed(key)
 
 
 		cheats.devmode = false
-		imagecheat.enabled = false
+		cheats.image.enabled = false
 		resetted = false
 
 		alphatimer:setAndGo(0, 255)
