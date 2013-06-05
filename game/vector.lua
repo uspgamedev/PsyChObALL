@@ -222,5 +222,6 @@ function vector:normalize()
 end
 
 function vector:reset()
-	return self:set(0, 0)
+	self[1], self[2] = 0, 0
+	return self
 end

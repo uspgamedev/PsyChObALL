@@ -4,7 +4,8 @@ circleEffect = body:new {
 	alpha = 10,
 	maxsize = width / 1.9,
 	mode = 'line',
-	__type = 'circle'
+	__type = 'circle',
+	bodies = {}
 }
 
 function circleEffect:__init()
@@ -22,6 +23,29 @@ function circleEffect:__init()
 		self.index = nil
 	else
 		table.insert(circleEffect.bodies, self)
+	end
+end
+
+function circleEffect.init()
+	circleEffect.timer = timer:new{
+		timelimit = .2,
+		running = true,
+		persistent = true
+	}
+
+	function circleEffect.timer:funcToCall() -- releases cirleEffects
+		if not gamelost then
+			circleEffect:new {
+				based_on = psycho
+			}
+		end
+		for i,v in pairs(enemy.bodies) do
+			if v.size == 15 and math.random() < .5 --[[reducing chance]] then 
+				circleEffect:new{
+					based_on = v
+				} 
+			end
+		end
 	end
 end
 

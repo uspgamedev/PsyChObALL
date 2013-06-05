@@ -4,7 +4,8 @@ enemy = body:new {
 	collides = false,
 	diereason = 'leftscreen',
 	size = 16,
-	__type = 'enemy'
+	__type = 'enemy',
+	bodies = {}
 }
 
 function enemy:__init()
@@ -28,6 +29,36 @@ function enemy:__init()
 	self.variance = math.random(colortimer.timelimit * 1000) / 1000
 end
 
+function enemy.init()
+	enemy.addtimer = timer:new {
+		timelimit = 2,
+		persistent = true
+	}
+
+	function enemy.addtimer:funcToCall() --adds the enemies to a list
+		self.timelimit = .8 + (self.timelimit - .8) / 1.09
+		enemylist:push(enemy:new{})
+	end
+
+	function enemy.addtimer:handlereset()
+		self:stop()
+	end
+
+	enemy.releasetimer = timer:new {
+		timelimit = 2,
+		persistent = true
+	}
+
+	function enemy.releasetimer:funcToCall() --actually releases the enemies on screen
+		self.timelimit = .8 + (self.timelimit - .8) / 1.09
+		table.insert(enemy.bodies,enemylist:pop())
+	end
+
+	function enemy.releasetimer:handlereset()
+		self:stop()
+	end
+end
+
 function enemy:handleDelete()
 	if self.diereason == "shot" then
 		addscore((self.size / 3) * multiplier)
@@ -40,7 +71,7 @@ function enemy:handleDelete()
 		if  not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
 			if not inverttimer.running then
 				inverttimer:start()
-				song:setPitch(1.5)
+				soundmanager.setPitch(1.1)
 				timefactor = 1.1
 				currentEffect = inverteffect
 			else inverttimer.time = 0 end

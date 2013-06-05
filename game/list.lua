@@ -17,3 +17,11 @@ function list:pop()
 	self.first = self.first + 1
 	return x
 end
+
+function list:clear()
+	for i = self.first, self.last-1 do
+		self[i] = nil
+	end
+	self.first = 1
+	self.last = 1
+end

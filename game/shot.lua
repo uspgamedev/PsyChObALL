@@ -6,8 +6,24 @@ shot = body:new {
 	color = {0,0,0,0},
 	variance = 0,
 	explosionEffects = true,
-	__type   = 'shot'
+	__type   = 'shot',
+	bodies = {}
 }
+
+function shot.init()
+	shot.timer = timer:new{
+		timelimit = .18,
+		persistent = true
+	}
+
+	function shot.timer:funcToCall() -- continues shooting when you hold the mouse
+		shoot(mouse.getPosition()) 
+	end
+
+	function shot.timer:handlereset()
+		self:stop()
+	end
+end
 
 function shot:handleDelete()
 	if self.explosionEffects then neweffects(self, 7) end

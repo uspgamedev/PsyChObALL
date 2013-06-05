@@ -24,4 +24,7 @@ end
 function psychoball:draw()
 	if gamelost then return end
 	body.draw(self)
+	graphics.setLine(2)
+	graphics.setColor(inverteffect(self.color))
+	graphics.circle('line', self.x, self.y, self.size)
 end
