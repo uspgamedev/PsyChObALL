@@ -1,5 +1,3 @@
-require 'body'
-
 shot = body:new {
 	collides = false,
 	size 	 = 4,

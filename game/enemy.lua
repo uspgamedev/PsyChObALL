@@ -1,5 +1,3 @@
-require 'body'
-
 enemy = body:new {
 	collides = false,
 	diereason = 'leftscreen',

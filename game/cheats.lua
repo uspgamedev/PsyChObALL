@@ -1,7 +1,4 @@
-require 'lux.object'
-
-module('cheats', package.seeall)
-local global = _G
+module('cheats', base.globalize)
 
 devmode = false
 invisible = false
@@ -79,15 +76,15 @@ function processKey( key )
 
 		if devmode then
 			if not esc and key == 'k' then lostgame() end
-			if 	 key == '0' then global.multiplier = multiplier + 2
-			elseif key == '9' then global.multiplier = multiplier - 2
+			if 	 key == '0' then multiplier = multiplier + 2
+			elseif key == '9' then multiplier = multiplier - 2
 			elseif key == '8' then addscore(100)
 			elseif key == '7' then addscore(-100)
-			elseif key == '6' then global.v = v + 10
-			elseif key == '5' then global.v = v - 10
-			elseif key == '4' then global.timefactor = timefactor * 1.1
-			elseif key == '3' then global.timefactor = timefactor * 0.9
-			elseif key == 'l' and not gamelost then global.dtn = deathtexts[1] lostgame()
+			elseif key == '6' then v = v + 10
+			elseif key == '5' then v = v - 10
+			elseif key == '4' then timefactor = timefactor * 1.1
+			elseif key == '3' then timefactor = timefactor * 0.9
+			elseif key == 'l' and not gamelost then deathText(1) lostgame()
 			elseif key == 'u' then love.update(10) --skips 10 seconds
 			end
 		end

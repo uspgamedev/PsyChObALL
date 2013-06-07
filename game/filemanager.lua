@@ -1,4 +1,66 @@
-module('filemanager', package.seeall)
+module('filemanager', base.globalize)
+
+function readstats()
+	local stats = filemanager.readtable "stats"
+
+	besttime  = stats.besttime  or 0
+	bestmult  = stats.bestmult  or 0
+	bestscore = stats.bestscore or 0
+end
+
+function writestats()
+	if cheats.wasdev then return end
+	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
+	besttime  = math.max(besttime, totaltime)
+	bestmult  = math.max(bestmult, multiplier)
+	bestscore = math.max(bestscore, score)
+	filemanager.writetable({
+		besttime  = besttime,
+		bestmult  = bestmult,
+		bestscore = bestscore
+	}, "stats")
+end
+
+function resetstats()
+	besttime, bestmult, bestscore  = 0, 0, 0
+	filemanager.writetable({
+		besttime  = 0,
+		bestmult  = 0,
+		bestscore = 0
+	}, "stats")
+end
+
+--[[function readachievements()
+	local achievements = filemanager.readtable "achievements"
+
+	twentymult  = achievements.twentymult or false
+end
+
+function writeachievements()
+	filemanager.writetable({
+		twentymult  = twentymult
+	}, "achievements")
+end]]
+
+function readconfig()
+	local config = filemanager.readtable "config"
+
+	soundmanager.volume = config.volume or 100
+	soundmanager.muted  = config.muted == true
+
+	if version ~= config.version then
+		--handle something maybe
+	end
+end
+
+function writeconfig()
+	filemanager.writetable({
+		volume =	 soundmanager.volume,
+		muted =	 soundmanager.muted,
+		version = version
+		}, "config")
+end
+
 
 -- writes a table to disk, supports writing numbers, strings and booleans for now
 function writetable( t, filename )

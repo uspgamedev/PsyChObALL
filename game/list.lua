@@ -1,5 +1,3 @@
-require 'lux.object'
-
 list = lux.object.new {
 	first = 1,
 	last = 1

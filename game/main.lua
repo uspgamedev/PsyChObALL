@@ -1,5 +1,7 @@
 width, height = 1080, 720
 
+require "base"
+require "body"
 require "circleEffect"
 require "effect"
 require "enemy"
@@ -9,80 +11,10 @@ require "vartimer"
 require "list"
 require "bosses"
 require "psychoball"
+require "button"
 require "filemanager"
 require "soundmanager"
 require "cheats"
-require "button"
-
-local socket = require "socket"
-local http = require "socket.http"
-
-response = http.request{ url=URL, create=function()
-	local req_sock = socket.tcp()
-	req_sock:settimeout(3)
-	return req_sock
-end}
-
-function readstats()
-	local stats = filemanager.readtable "stats"
-
-	besttime  = stats.besttime  or 0
-	bestmult  = stats.bestmult  or 0
-	bestscore = stats.bestscore or 0
-end
-
---[[function readachievements()
-	local achievements = filemanager.readtable "achievements"
-
-	twentymult  = achievements.twentymult or false
-end
-
-function writeachievements()
-	filemanager.writetable({
-		twentymult  = twentymult
-	}, "achievements")
-end]]
-
-function writestats()
-	if cheats.wasdev then return end
-	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
-	besttime  = math.max(besttime, totaltime)
-	bestmult  = math.max(bestmult, multiplier)
-	bestscore = math.max(bestscore, score)
-	filemanager.writetable({
-		besttime  = besttime,
-		bestmult  = bestmult,
-		bestscore = bestscore
-	}, "stats")
-end
-
-function resetstats()
-	besttime, bestmult, bestscore  = 0, 0, 0
-	filemanager.writetable({
-		besttime  = 0,
-		bestmult  = 0,
-		bestscore = 0
-	}, "stats")
-end
-
-function readconfig()
-	local config = filemanager.readtable "config"
-
-	soundmanager.volume = config.volume or 100
-	soundmanager.muted  = config.muted == true
-
-	if version ~= config.version then
-		--handle something maybe
-	end
-end
-
-function writeconfig()
-	filemanager.writetable({
-		volume =	 soundmanager.volume,
-		muted =	 soundmanager.muted,
-		version = version
-		}, "config")
-end
 
 
 function love.load()
@@ -90,19 +22,10 @@ function love.load()
 	initGameVars()
 	initMenu()
 
-	--reload() -- reload()-> things that should be resetted when player dies
 	mouse.setGrab(false)
-	
 end
 
 function initBase()
-	-- [["Localizing" Love2D tables]]
-	for k,v in pairs(love) do
-		if type(v) == 'table' and not _G[k] then
-			_G[k] = v
-		end
-	end
-	-- [[End of"Localizing" Love2D tables]]
 
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
@@ -125,11 +48,13 @@ function initBase()
 
 	paintablesMenu = {}
 	paintablesMenu[1] = button.bodies
+
+	bestscore, besttime, bestmult = 0, 0, 0
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
-	readconfig()
-	readstats()
+	filemanager.readconfig()
+	filemanager.readstats()
 	-- [[end of Reading Files]]
 	
 	-- [[Loading Resources]]
@@ -137,7 +62,7 @@ function initBase()
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '0.9.0\n'
-	latest = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest") or version
+	latest = base.getLatestVersion() or version
 	soundmanager.init()
 	cheats.init()
 	--[[End of Loading Resources]]
@@ -226,7 +151,7 @@ end
 function initMenu()
 	playbutton = button:new{
 		size = 100,
-		position = vector:new {width/2,510},
+		position = vector:new {width/2, 510},
 		text = playText(),
 		fontsize = 40
 	}
@@ -235,12 +160,23 @@ function initMenu()
 		state = survivor
 		alphatimer:setAndGo(255, 0)
 		mouse.setGrab(true)
-		reload()
+		reloadGame()
 		button.bodies['play'] = nil
 		neweffects(self, 100)
 	end
 
 	button.bodies['play'] = playbutton
+
+	local rightbutton = button:new {
+		size = 80,
+		position = vector:new {width - 100, height - 100},
+		text = "Controls",
+		fontsize = 20
+	}
+
+	function rightbutton:pressed()
+		-- go right
+	end
 end
 
 function resetVars()
@@ -279,7 +215,7 @@ function cleartable( t )
 	for k in pairs(t) do t[k] = nil end
 end
 
-function reload()
+function reloadGame()
 	resetVars()
 	timer.closenonessential()
 	
@@ -317,9 +253,9 @@ local moarLSDchance = 3
 
 function lostgame()
 	if gamelost then return end
-	writestats()
-	soundmanager.fadeout()
 	mouse.setGrab(false)
+	soundmanager.fadeout()
+	filemanager.writestats()
 
 	if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
 
@@ -478,7 +414,7 @@ function love.draw()
 		graphics.setFont(getFont(12))
 		graphics.print("Score:", 25, 24)
 		graphics.print("Time:", 25, 48)
-		graphics.print(string.format("Best Score: %0.f",   math.max(bestscore, score)), 25, 68)
+		graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
 		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
 		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
 		graphics.setFont(getFont(14))
@@ -627,7 +563,7 @@ function love.draw()
 	end
 end
 
-playtexts = {"go", "run", "are you ready?", "start mission", "game.\nplay()", "don't click me"}
+playtexts = {"go", "run", "are you ready?", "start mission", "game.\nplay()", "don't click me", "ready, set, GO!"}
 
 pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"}
 
@@ -638,8 +574,8 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
 "Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased"}
 
-function deathText()
-	deathmessage = deathmessage or deathtexts[math.random(#deathtexts)]
+function deathText( n )
+	deathmessage = n and deathtexts[n] or (deathmessage or deathtexts[math.random(#deathtexts)])
 	return deathmessage
 end
 
@@ -760,7 +696,7 @@ function love.keypressed(key)
 	end
 	
 	if gamelost and key == 'r' then
-		reload()
+		reloadGame()
 	end
 
 	if key == 'left' and state == tutorialmenu then
@@ -826,5 +762,5 @@ function love.focus(f)
 end
 
 function love.quit()
-	writeconfig()
+	filemanager.writeconfig()
 end

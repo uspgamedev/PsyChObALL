@@ -1,8 +1,5 @@
 module('bosses', package.seeall)
 
-require 'body'
-
-
 superball = body:new {
 	size = 40,
 	variance = 13,
@@ -66,7 +63,7 @@ function superball:update(dt)
 	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 
 	for i,v in pairs(shot.bodies) do
-		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
+		if (v.size + self.lifeCircle.size) * (v.size + self.lifeCircle.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
 			v.collides = true
 			v.explosionEffects = false
 			local bakvariance = v.variance

@@ -24,7 +24,7 @@ function body.__init:__index( key )
 end
 
 function body.__init:__newindex( key, v )
-	if 	   key == 'x' then  self.position[1] = v
+	if		 key == 'x' then  self.position[1] = v
 	elseif key == 'y' then  self.position[2] = v
 	elseif key == 'Vx' then self.speed[1] 	 = v
 	elseif key == 'Vy' then self.speed[2] 	 = v

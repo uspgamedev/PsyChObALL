@@ -1,5 +1,3 @@
-require 'lux.object'
-
 timer = lux.object.new {
 	time			 = 0,
 	onceonly		 = false,
