@@ -12,8 +12,8 @@ function superball:__init()
 	self.lifecolor = {0,0,0,0}
 
 	local vx, vy = math.random(-50, 50), math.random(-50, 50)
-	vx = vx + v*signum(vx)
-	vy = vy + v*signum(vy)
+	vx = vx + v*sign(vx)
+	vy = vy + v*sign(vy)
 	self.speed	  = vector:new {vx, vy}
 
 	self.shoottimer = timer:new {
@@ -40,8 +40,8 @@ function superball:__init()
 	function self.speedtimer.funcToCall(timer)
 		timer.timelimit = math.random()*3 + 1
 		local vx, vy = math.random(-50, 50), math.random(-50, 50)
-		vx = vx + v*signum(vx)
-		vy = vy + v*signum(vy)
+		vx = vx + v*sign(vx)
+		vy = vy + v*sign(vy)
 		self.speed:set(vx, vy)
 	end
 

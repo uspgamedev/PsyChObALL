@@ -167,7 +167,7 @@ function initMenu()
 
 	button.bodies['play'] = playbutton
 
-	local rightbutton = button:new {
+	--[[local rightbutton = button:new {
 		size = 80,
 		position = vector:new {width - 100, height - 100},
 		text = "Controls",
@@ -176,7 +176,7 @@ function initMenu()
 
 	function rightbutton:pressed()
 		-- go right
-	end
+	end]] --TODO
 end
 
 function resetVars()
@@ -206,7 +206,7 @@ function resetVars()
 	blastscore = 0 --Variavel que da ultrablast points por pontos
 
 	gamelost = false
-	esc = false
+	paused = false
 
 	deathmessage = nil
 end
@@ -219,7 +219,7 @@ function reloadGame()
 	resetVars()
 	timer.closenonessential()
 	
-	enemylist:push(enemy:new{})
+	enemy.addtimer:funcToCall()
 
 	soundmanager.restart()
 	bosses.restart()
@@ -278,9 +278,222 @@ function lostgame()
 	psycho:handleDelete() --not really deleting but anyway
 end
 
+local maincolor = {0,0,0,0}
+
+function love.draw()
+	-- [[Setting camera]]
+	graphics.translate(width/2, height/2)
+	graphics.rotate(angle.var)
+	graphics.translate(-width/2, -height/2)
+	graphics.setLine(3)
+	graphics.setFont(getFont(12))
+
+	colorwheel(maincolor, colortimer.time*.654)
+	maincolor[1] = maincolor[1] / 3
+	maincolor[2] = maincolor[2] / 3
+	maincolor[3] = maincolor[3] / 3
+	applyeffect(maincolor)
+	maincolor[1] = maincolor[1] / 6
+	maincolor[2] = maincolor[2] / 6
+	maincolor[3] = maincolor[3] / 6
+	graphics.setColor(maincolor)
+	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
+	--[[End of setting camera]]
+	--[[Drawing Game Objects]]
+	if onGame() then
+		for i, v in pairs(paintables) do
+			for j, m in pairs(v) do
+				m:draw()
+			end
+		end
+
+		graphics.setColor(color(maincolor, colortimer.time * 1.4))
+		graphics.setLine(1)
+		-- drawing enemy arcs
+		for i = enemylist.first, enemylist.last - 1 do
+			graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, enemylist[i].arctan - .15, enemylist[i].arctan + .15)
+		end
+		--drawing mouse line
+		line()
+		--drawing psychoball
+		if not cheats.invisible then
+			psycho:draw()
+		end
+	end
+	--[[End of Drawing Game Objects]]
+
+	--[[Drawing On-Game Info]]
+	if onGame() then
+		graphics.setFont(getCoolFont(22))
+		graphics.print(string.format("%.0f", score), 68, 20)
+		graphics.print(string.format("%.1fs", totaltime), 68, 42)
+		graphics.setFont(getFont(12))
+		graphics.print("Score:", 25, 24)
+		graphics.print("Time:", 25, 48)
+		graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
+		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
+		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
+		graphics.setFont(getFont(14))
+		graphics.print("ulTrAbLaST:", 25, 105)
+		graphics.setFont(getCoolFont(20))
+		graphics.print(string.format("%d", ultracounter), 110, 100)
+		graphics.setFont(getFont(20))
+		graphics.print("___________", 25, 106)
+		graphics.setFont(getCoolFont(40))
+		graphics.print(string.format("x%.1f", multiplier), 950, 35)
+		
+		graphics.setFont(getFont(12))
+		if cheats.devmode then graphics.print("dev mode on!", 446, 5) end
+		if cheats.invisible then graphics.print("Invisible mode on!", 432, 18) end
+		if cheats.image.enabled then
+			if 	 cheats.image.pass == 'yan' then graphics.print("David Robert Jones mode on!", 395, 32)
+			elseif cheats.image.pass == 'pizza' then graphics.print("Italian mode on!", 438, 32) 
+			elseif cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
+			elseif cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
+		end
+	end
+	--[[End of Drawing On-Game Info]]
+
+	--[[Drawing Things that show up on every page]]
+	graphics.setColor(color(maincolor, colortimer.time))
+	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 10)
+	maincolor[4] = 70 --alpha
+	graphics.setColor(maincolor)
+	soundmanager.drawSoundIcon(1030, 675)
+	--[[End of Drawing Things that show up on every page]]
+
+	--[[Drawing Death Screen]]
+	if gamelost and onGame() then
+		graphics.setColor(color(maincolor, colortimer.time - colortimer.timelimit / 2))
+		if cheats.wasdev then
+			graphics.setFont(getCoolFont(20))
+			graphics.print("Your scores didn't count, cheater!", 382, 215)
+		else
+			if besttime == totaltime then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best time!", 260, 100)
+			end	
+			if bestscore == score then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best score!", 290, 140)
+			end
+			if bestmult == multiplier then
+				graphics.setFont(getFont(35))
+				graphics.print("You beat the best multiplier!", 320, 180)
+			end
+		end
+		graphics.setFont(getCoolFont(40))
+		graphics.print(deathText(), 270, 300)
+		graphics.setFont(getFont(30))
+		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
+		graphics.setFont(getCoolFont(23))
+		graphics.print("Press r to retry", 300, 645)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Press b", 580, 650)
+		graphics.print(pauseText(), 649, 650)
+	end
+	--[[End of Drawing Death Screen]]
+
+	--[[Drawing Menu]]
+	if alphatimer.var > 0 then
+		graphics.setColor(color(maincolor, colortimer.time - colortimer.timelimit / 2))
+		graphics.push()
+		graphics.translate(math.floor(-swypetimer.var), 0)
+		--drawing menu paintables
+		for _,v in pairs(paintablesMenu) do
+			for k, p in pairs(v) do
+				p:draw()
+			end
+		end
+		--drawing mainmenu
+		graphics.setFont(getFont(12))
+		graphics.setColor(color(maincolor, colortimer.time * 0.856, alphatimer.var))
+		graphics.print("v" .. version, 513, 687)
+		graphics.print('Write "reset" to delete stats' , 15, 10)
+		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
+
+		if latest ~= version then
+			graphics.print("Version " .. latest, 422, 700)
+			graphics.print("is available to download!", 510, 700)
+		end
+
+		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
+
+		graphics.setColor(color(maincolor, colortimer.time * 4.5 + .54, alphatimer.var))
+		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
+		graphics.setFont(getFont(12))
+		--end of mainmenu
+
+		graphics.translate(width, 0)
+		--drawing tutorialmenu
+		graphics.setColor(color(maincolor, colortimer.time * 1.5 + .54))
+		graphics.setFont(getCoolFont(50))
+		graphics.print("CONTROLS", 380, 36)
+		graphics.setFont(getCoolFont(40))
+		graphics.print("Survivor Mode:", 170, 350)
+		graphics.setColor(color(maincolor, colortimer.time * 2.5 + .54))
+		graphics.setFont(getCoolFont(20))
+		graphics.print("You get points when", 540, 425)
+		graphics.print("  you kill an enemy", 570, 455)
+		graphics.print("Survive as long as you can!", 152, 440)
+		graphics.print("You get one more ulTrAbLaST for every 30 seconds you survive!", 182, 500)
+		graphics.print("You have a limited amount of ulTrAbLaSTs to use", 540, 230)
+		graphics.print("You get one more ulTrAbLaST for every 1000 points!", 540, 270)
+		graphics.setFont(getCoolFont(20))
+		graphics.print("Use WASD or arrows to move", 152, 170)
+		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
+		graphics.print("Hold space to charge", 70, 252)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Click or press the left arrow key to go back", 670, 645)
+		graphics.setFont(getCoolFont(35))
+		graphics.setColor(color(maincolor, colortimer.time * 0.856))
+		graphics.print("ulTrAbLaST", 290, 242)
+		graphics.setColor(color(maincolor, colortimer.time * 6.5 + .54))
+		graphics.circle("fill", 130, 180, 10)
+		graphics.circle("fill", 520, 450, 10)
+		graphics.circle("fill", 160, 510, 10)
+		graphics.circle("fill", 520, 240, 10)
+		graphics.circle("fill", 520, 280, 10)
+		graphics.setColor(color(maincolor, colortimer.time * 7.5 + .54))
+		graphics.circle("fill", 520, 180, 10)
+		graphics.circle("fill", 130, 450, 10)
+		graphics.circle("fill", 50, 263, 10)
+		--end of tutorialmenu
+
+		graphics.translate(-2 * width, 0)
+		--drawing achievmentsmenu
+		graphics.setColor(color(maincolor, colortimer.time * 1.5 + .54))
+		graphics.setFont(getCoolFont(50))
+		graphics.print("ACHIEVEMENTS", 340, 36)
+		graphics.setColor(color(maincolor, colortimer.time * 6.5 + .54))
+		graphics.circle("fill", 130, 180, 5)
+		graphics.setColor(color(maincolor, colortimer.time * 7.5 + .54))
+		graphics.circle("fill", 130, 210, 5)
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Click or press the right arrow key to go back", 670, 645)
+		--end of achievmentsmenu
+
+		graphics.pop()
+	end
+	--[[End of Drawing Menu]]
+	
+	--[[Drawing Pause Menu]]
+	if paused and onGame() then
+		graphics.setColor(color(maincolor, colortimer.time - colortimer.timelimit / 2))
+		graphics.setFont(getFont(40))
+		graphics.print("Paused", 270, 300)
+		graphics.setFont(getCoolFont(20))
+		graphics.print("Press b", 603, 550)
+		graphics.print(pauseText(), 682, 550)
+		graphics.setFont(getFont(12))
+	end
+	--[[End of Drawing Pause Menu]]
+end
+
 function color( ... )
 	return applyeffect(colorwheel(...))
 end
+
 function inverteffect( color )
 	color[1], color[2], color[3] =
 		255 - color[1], 255 - color[2], 255 - color[3]
@@ -333,234 +546,16 @@ function colorwheel(color, x, alpha)
 	return color
 end
 
-function sign(x)
-    return x == 0 and 0 or x < 0 and -1 or 1 
-end
-
-local linecolor = {0,0,0,0}
-local mousecirclecolor = {0,0,0,0}
 
 function line()
 	if gamelost then return end
-
-	graphics.setColor(color(mousecirclecolor, colortimer.time + 12))
-	graphics.circle("line", mouse.getX(), mouse.getY(), 5)
-	graphics.setColor(color(linecolor, colortimer.time + 12, 60))
-	local m = (mouse.getY() - psycho.y)/(mouse.getX() - psycho.x)
-	local x,y
-	if (mouse.getX() - psycho.x) > 0 then 
-		x = graphics.getWidth()
-		y = psycho.y + (x - psycho.x) * m
-	else
-		x = 0
-		y = psycho.y + (x - psycho.x) * m
-	end
-	graphics.line(psycho.x, psycho.y, x, y)
-end
-
-local maincolor = {0,0,0,0}
-local backColor = {0,0,0,0}
-local arcsColor = {0,0,0,0}
-local otherstuffcolor = {0,0,0,0}
-local ultrablastcolor = {0,0,0,0}
-local logocolor = {0,0,0,0}
-
-function love.draw()
-	graphics.translate(width/2, height/2)
-	graphics.rotate(angle.var)
-	graphics.translate(-width/2, -height/2)
-	graphics.setLine(4)
-	graphics.setFont(getFont(12))
-
-	colorwheel(backColor, colortimer.time + 17 * colortimer.timelimit / 13)
-	backColor[1] = backColor[1] / 2
-	backColor[2] = backColor[2] / 2
-	backColor[3] = backColor[3] / 2
-	applyeffect(backColor)
-	backColor[1] = backColor[1] / 4
-	backColor[2] = backColor[2] / 4
-	backColor[3] = backColor[3] / 4
-	graphics.setColor(backColor)
-	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
-
-	if onGame() then
-		for i, v in pairs(paintables) do
-			for j, m in pairs(v) do
-				m:draw()
-			end
-		end
-
-		graphics.setColor(color(arcsColor, colortimer.time * 1.4))
-		graphics.setLine(1)
-
-		for i = enemylist.first, enemylist.last - 1 do
-			local a = math.atan((enemylist[i].Vy/ enemylist[i].Vx))
-			if enemylist[i].Vx < 0 then a = a + math.pi end
-			graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, a - .15, a + .15)
-		end
-		line()
-		if not cheats.invisible then
-			psycho:draw()
-		end
-	end
-	graphics.setColor(color(maincolor, colortimer.time))
-
-
-	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 10)
-	if onGame() then
-		graphics.setFont(getCoolFont(22))
-		graphics.print(string.format("%.0f", score), 68, 20)
-		graphics.print(string.format("%.1fs", totaltime), 68, 42)
-		graphics.setFont(getFont(12))
-		graphics.print("Score:", 25, 24)
-		graphics.print("Time:", 25, 48)
-		graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
-		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
-		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
-		graphics.setFont(getFont(14))
-		graphics.print("ulTrAbLaST:", 25, 105)
-		graphics.setFont(getCoolFont(20))
-		graphics.print(string.format("%d", ultracounter), 110, 100)
-		graphics.setFont(getFont(20))
-		graphics.print("___________", 25, 106)
-		graphics.setFont(getCoolFont(40))
-		graphics.print(string.format("x%.1f", multiplier), 950, 35)
-		
-		graphics.setFont(getFont(12))
-		if cheats.devmode then graphics.print("dev mode on!", 446, 5) end
-		if cheats.invisible then graphics.print("Invisible mode on!", 432, 18) end
-		if cheats.image.enabled then
-			if 	 cheats.image.pass == 'yan' then graphics.print("David Robert Jones mode on!", 395, 32)
-			elseif cheats.image.pass == 'pizza' then graphics.print("Italian mode on!", 438, 32) 
-			elseif cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
-			elseif cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
-		end
-	end
-	graphics.setColor(color(maincolor, colortimer.time, 70))
-	soundmanager.drawSoundIcon(1030, 675)
-	
-
-	graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-
-	if alphatimer.var > 0 then
-		graphics.push()
-		graphics.translate(math.floor(-swypetimer.var), 0)
-		--mainmenu
-		graphics.setFont(getFont(12))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856, alphatimer.var))
-		graphics.print("v" .. version, 513, 687)
-		graphics.print('Write "reset" to delete stats' , 15, 10)
-		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
-
-
-		if latest ~= version then
-			graphics.print("Version " .. latest, 422, 700)
-			graphics.print("is available to download!", 510, 700)
-		end
-		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
-
-		graphics.setColor(color(logocolor, colortimer.time * 4.5 + .54, alphatimer.var))
-		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
-		graphics.setFont(getFont(12))
-
-		for _,v in pairs(paintablesMenu) do
-			for k, p in pairs(v) do
-				p:draw()
-			end
-		end
-
-		graphics.translate(width, 0)
-		--tutorialmenu
-		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54))
-		graphics.setFont(getCoolFont(50))
-		graphics.print("CONTROLS", 380, 36)
-		graphics.setFont(getCoolFont(40))
-		graphics.print("Survivor Mode:", 170, 350)
-		graphics.setColor(color(logocolor, colortimer.time * 2.5 + .54))
-		graphics.setFont(getCoolFont(20))
-		graphics.print("You get points when", 540, 425)
-		graphics.print("  you kill an enemy", 570, 455)
-		graphics.print("Survive as long as you can!", 152, 440)
-		graphics.print("You get one more ulTrAbLaST for every 30 seconds you survive!", 182, 500)
-		graphics.print("You have a limited amount of ulTrAbLaSTs to use", 540, 230)
-		graphics.print("You get one more ulTrAbLaST for every 1000 points!", 540, 270)
-		graphics.setFont(getCoolFont(20))
-		graphics.print("Use WASD or arrows to move", 152, 170)
-		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
-		graphics.print("Hold space to charge", 70, 252)
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Click or press the left arrow key to go back", 670, 645)
-		graphics.setFont(getCoolFont(35))
-		graphics.setColor(color(ultrablastcolor, colortimer.time * 0.856))
-		graphics.print("ulTrAbLaST", 290, 242)
-		graphics.setColor(color(logocolor, colortimer.time * 6.5 + .54))
-		graphics.circle("fill", 130, 180, 10)
-		graphics.circle("fill", 520, 450, 10)
-		graphics.circle("fill", 160, 510, 10)
-		graphics.circle("fill", 520, 240, 10)
-		graphics.circle("fill", 520, 280, 10)
-		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
-		graphics.circle("fill", 520, 180, 10)
-		graphics.circle("fill", 130, 450, 10)
-		graphics.circle("fill", 50, 263, 10)
-		
-		graphics.translate(-2 * width, 0)
-		--achmenu
-		graphics.setColor(color(logocolor, colortimer.time * 1.5 + .54))
-		graphics.setFont(getCoolFont(50))
-		graphics.print("ACHIEVEMENTS", 340, 36)
-		graphics.setColor(color(logocolor, colortimer.time * 6.5 + .54))
-		graphics.circle("fill", 130, 180, 5)
-		graphics.setColor(color(logocolor, colortimer.time * 7.5 + .54))
-		graphics.circle("fill", 130, 210, 5)
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Click or press the right arrow key to go back", 670, 645)
-
-
-		graphics.pop()
-	end
-	
-
-	if gamelost and onGame() then
-		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-		if cheats.wasdev then
-			graphics.setFont(getCoolFont(20))
-			graphics.print("Your scores didn't count, cheater!", 382, 215)
-		else
-			if besttime == totaltime then
-				graphics.setFont(getFont(35))
-				graphics.print("You beat the best time!", 260, 100)
-			end	
-			if bestscore == score then
-				graphics.setFont(getFont(35))
-				graphics.print("You beat the best score!", 290, 140)
-			end
-			if bestmult == multiplier then
-				graphics.setFont(getFont(35))
-				graphics.print("You beat the best multiplier!", 320, 180)
-			end
-		end
-		graphics.setFont(getCoolFont(40))
-		graphics.print(deathText(), 270, 300)
-		graphics.setFont(getFont(30))
-		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
-		graphics.setFont(getCoolFont(23))
-		graphics.print("Press r to retry", 300, 645)
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Press b", 580, 650)
-		graphics.print(pauseText(), 649, 650)
-		graphics.setFont(getFont(12))
-	end
-
-	if esc and onGame() then
-		graphics.setColor(color(otherstuffcolor, colortimer.time - colortimer.timelimit / 2))
-		graphics.setFont(getFont(40))
-		graphics.print("Paused", 270, 300)
-		graphics.setFont(getCoolFont(20))
-		graphics.print("Press b", 603, 550)
-		graphics.print(pauseText(), 682, 550)
-		graphics.setFont(getFont(12))
-	end
+	local mx, my = mouse.getX(), mouse.getY()
+	graphics.setColor(color(maincolor, colortimer.time + 2))
+	graphics.circle("line", mx, my, 5)
+	maincolor[4] = 60 -- alpha
+	graphics.setColor(maincolor)
+	local x = mx > psycho.x and width or 0
+	graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
 end
 
 playtexts = {"go", "run", "are you ready?", "start mission", "game.\nplay()", "don't click me", "ready, set, GO!"}
@@ -572,7 +567,7 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
 "There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
 "YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
-"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased"}
+"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace"}
 
 function deathText( n )
 	deathmessage = n and deathtexts[n] or (deathmessage or deathtexts[math.random(#deathtexts)])
@@ -592,7 +587,7 @@ end
 local todelete = {}
 
 function love.update(dt)
-	isPaused = (esc or onMenu())
+	isPaused = (paused or onMenu())
 
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	
@@ -630,7 +625,7 @@ end
 
 function love.mousepressed(x, y, btn)
 	button.mousepressed(x,y,button)
-	if esc then return end
+	if paused then return end
 
 	if btn == 'r' and state == mainmenu then
 		swypetimer:setAndGo(0, width)
@@ -657,15 +652,15 @@ end
 function shoot(x, y)
 	local diffx = x - psycho.x
 	local diffy = y - psycho.y
-	local Vx = signum(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
-	local Vy = signum(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
+	local Vx = sign(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
+	local Vy = sign(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
 	table.insert(shot.bodies, shot:new {
 		position = psycho.position:clone(),
 		speed	 = vector:new {Vx, Vy}
 		})
 end
 
-function signum(a)
+function sign(a)
 	return a == 0 and 0 or a > 0 and 1 or -1 
 end
 
@@ -683,10 +678,12 @@ end
 resetpass = cheats.password 'reset'
 
 function love.keypressed(key)
+	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
+
 	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
-		pausemessage = nil
-		esc = not esc
-		mouse.setGrab(not esc)
+		pausemessage = nil --resets pauseText()
+		paused = not paused --pauses or unpauses
+		mouse.setGrab(not paused) --releases the mouse if paused
 	end
 
 	keyspressed[key] = true
@@ -713,10 +710,8 @@ function love.keypressed(key)
 		state = mainmenu
 	end
 
-	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
-
-	if (gamelost or esc) and key == 'b' then
-		esc = false
+	if (gamelost or paused) and key == 'b' then
+		paused = false
 		state = mainmenu
 
 		cheats.devmode = false
@@ -752,13 +747,13 @@ function love.keyreleased(key)
 	end
 	
 	if key == 'scrollock' then 
-	    graphics.newScreenshot():encode('screenshot_' .. screenshotnumber .. '.png')
-	    screenshotnumber = screenshotnumber + 1
+		graphics.newScreenshot():encode('screenshot_' .. screenshotnumber .. '.png')
+		screenshotnumber = screenshotnumber + 1
 	end
 end
 
 function love.focus(f)
-   if not (f or gamelost or onMenu()) then esc = true end
+	if not (f or gamelost or onMenu()) then paused = true end
 end
 
 function love.quit()

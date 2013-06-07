@@ -6,13 +6,13 @@ body = lux.object.new {
 	mode = 'fill',
 	dead = false,
 	variance = 0,
+	color = {0,0,0,0},
 	__type = 'unnamed body'
 }
 
 body.__init = {
 	position = vector:new{},
-	speed 	 = vector:new{},
-	color 	 = {0,0,0,0}
+	speed 	 = vector:new{}
 }
 
 function body.__init:__index( key )

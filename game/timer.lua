@@ -14,7 +14,7 @@ function timer:__init()
 	table.insert(timer.timers, self)
 end
 
-function timer:update(dt,timefactor,paused,gamelost)
+function timer:update(dt, timefactor, paused, gamelost)
 	if not self.running or (paused and self.pausable) or (gamelost and not self.works_on_gamelost) then return end
 	if self.timeaffected then dt = dt * timefactor end
 	if not self.timelimit and self.funcToCall then self:funcToCall(dt) return end 
@@ -36,7 +36,7 @@ function timer:stop()
 end
 
 
-function timer.updatetimers(dt,timefactor,paused,gamelost)
+function timer.updatetimers(dt, timefactor, paused, gamelost)
 	local todelete
 	for i,v in pairs(timer.timers) do
 		if v.delete then

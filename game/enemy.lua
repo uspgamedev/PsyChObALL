@@ -35,7 +35,9 @@ function enemy.init()
 
 	function enemy.addtimer:funcToCall() --adds the enemies to a list
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		enemylist:push(enemy:new{})
+		local e = enemy:new{}
+		e.arctan = math.atan(e.Vy/ e.Vx) + (e.Vx < 0 and math.pi or 0)
+		enemylist:push(e)
 	end
 
 	function enemy.addtimer:handlereset()
@@ -97,7 +99,7 @@ function enemy:handleDelete()
 			}
 			e.position:set(self.position):add(math.random(self.size), math.random(self.size))
 			e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
-			if e.Vy + e.Vx < 10 then e.Vy = signum(self.Vy) * math.random(3 * v / 4, v) end
+			if e.Vy + e.Vx < 10 then e.Vy = sign(self.Vy) * math.random(3 * v / 4, v) end
 			e.variance = self.variance
 			table.insert(enemy.bodies, e)
 		end

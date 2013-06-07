@@ -1,7 +1,6 @@
 shot = body:new {
 	collides = false,
 	size 	 = 4,
-	color = {0,0,0,0},
 	variance = 0,
 	explosionEffects = true,
 	__type   = 'shot',
