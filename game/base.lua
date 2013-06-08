@@ -24,6 +24,7 @@ function base.globalize( t )
 			else rawset(t, k, v) end
 		end
 		})
+	t.global = _G
 end
 
 local http = require "socket.http"

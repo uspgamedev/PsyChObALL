@@ -16,12 +16,12 @@ function psychoball:__init()
 	self.ring.position = self.position
 
 	function self.ring:draw()
-		color(self.color, colortimer.time + self.variance, self.alpha)
+		color(colortimer.time + self.variance, self.alpha)
 		--[[self.color[1], self.color[2], self.color[3] = 
 			self.color[1]/3, self.color[2]/3, self.color[3]/3
 		self.color[1], self.color[2], self.color[3] = 
 			255 - (255 - self.color[1])/1.3, 255 - (255 - self.color[2])/1.3, 255 - (255 - self.color[3])/1.3]]
-		graphics.setColor(self.color)
+		graphics.setColor(maincolor)
 		graphics.setLine(self.linewidth)
 		graphics.circle('line', self.x, self.y, self.size)
 		graphics.setLine(1)

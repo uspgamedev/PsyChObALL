@@ -5,7 +5,7 @@ effect = body:new {
 }
 
 function effect:draw()
-	love.graphics.setColor(color(self.color, self.variance + colortimer.time))
+	love.graphics.setColor(color(self.variance + colortimer.time))
 	love.graphics.rectangle(self.mode, self.x, self.y, self.size, self.size)
 end
 

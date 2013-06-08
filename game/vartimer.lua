@@ -26,9 +26,9 @@ function vartimer:funcToCall( dt )
 end
 
 function vartimer:set( starts, ends, speed )
-	self.var = starts
-	self.limit = ends
-	self.backwards = ends < starts
+	self.var = starts or self.var
+	self.limit = ends or self.limit
+	self.backwards = self.limit < self.var
 	self.speed = speed or self.speed
 end
 

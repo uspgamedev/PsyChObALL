@@ -3,10 +3,12 @@ require 'lux.functional'
 
 function init()
 	song = audio.newSource("resources/Phantom - Psychodelic.ogg")
-	song:setLooping(true)
-	song:play()
-
 	songsetpoints = {20,123,180,308,340}
+	song:setLooping(true)
+	song:setVolume(muted and 0 or volume/100)
+	song:play()
+	song:seek(songsetpoints[math.random(#songsetpoints)])
+
 	songfadeout = timer:new{
 		timelimit	 = .01,
 		running		 = false,
@@ -72,7 +74,7 @@ function reset()
 	song:setPitch(1.0)
 end
 
-function processKey( key )
+function keypressed( key )
 	if muted then
 		if key == 'm' then
 			muted = false

@@ -59,7 +59,7 @@ function init()
 	}
 end
 
-function processKey( key )
+function keypressed( key )
 	if onGame() then
 		
 		if devmode then
