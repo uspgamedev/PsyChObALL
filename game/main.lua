@@ -174,7 +174,7 @@ function resetVars()
 	totaltime = 0
 	blastime = 0
 	score = 0
-	blastscore = 0 --Variavel que da ultrablast points por pontos
+	blastscore = 0 --Variavel que dá ultrablast points por pontos
 
 	gamelost = false
 	paused = false

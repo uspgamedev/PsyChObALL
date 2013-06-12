@@ -17,7 +17,7 @@ function button:draw()
 	self.alpha = alphatimer.var
 	body.draw(self)
 	graphics.setColor(inverteffect(maincolor))
-	graphics.setFont(getFont(self.fontsize))
+	graphics.setFont(getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')
 end
 

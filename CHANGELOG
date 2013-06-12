@@ -10,10 +10,12 @@ THE HISTORY OF PSYCHOBALL
 	-More "understandable" code!
 	-Support for images
 -Added a menu
+	-Buttons
 	-Transition between screens
 	-New screen for Controls
 	-Regular mode is now Survivor
 	-From pause or death screen you can go back to menu
+-Added random menu messages
 -Added random pause messages
 -Added new death messages
 	-Added a very rare death message
@@ -42,6 +44,7 @@ THE HISTORY OF PSYCHOBALL
 	-Limited times you can use it
 	-You get more if you get more points
 	-You get more if you survive more time (survivor mode)
+	-Instead of a ring, PsyChObALL will grow when using Ultrablast
 -Changes on color settings
 	-Changes on "Lsd worn out" effect
 	-Changes on color of "bullets"
