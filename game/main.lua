@@ -27,7 +27,6 @@ function love.load()
 end
 
 function initBase()
-
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
 	mainmenu = 1 -- mainmenu
@@ -262,9 +261,9 @@ function love.draw()
 	maincolor[2] = maincolor[2] / 3
 	maincolor[3] = maincolor[3] / 3
 	applyeffect(maincolor)
-	maincolor[1] = maincolor[1] / 6
-	maincolor[2] = maincolor[2] / 6
-	maincolor[3] = maincolor[3] / 6
+	maincolor[1] = maincolor[1] / 4
+	maincolor[2] = maincolor[2] / 4
+	maincolor[3] = maincolor[3] / 4
 	graphics.setColor(maincolor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 	--[[End of setting camera]]
@@ -373,7 +372,7 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
 "There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
 "YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
-"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace"}
+"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace", "Valar Morghulis", "What is dead may never die"}
 
 function deathText( n )
 	deathmessage = n and deathtexts[n] or (deathmessage or deathtexts[math.random(#deathtexts)])
@@ -470,8 +469,6 @@ function addscore(x)
 	end
 end
 
-resetpass = cheats.password 'reset'
-
 function love.keypressed(key)
 	keyspressed[key] = true
 
@@ -491,10 +488,6 @@ function love.keypressed(key)
 	cheats.keypressed(key)
 	soundmanager.keypressed(key)
 
-	if state == mainmenu then
-		resetted = resetpass (key)
-		if resetted then resetstats() end
-	end
 end
 
 function love.keyreleased(key)

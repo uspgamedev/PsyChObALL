@@ -28,6 +28,8 @@ function init()
 	}
 
 	table.insert(button.bodies, rightbutton)
+
+	resetpass = cheats.password 'reset'
 end
 
 function toTutorialMenu()
@@ -88,6 +90,11 @@ function keypressed( key )
 		button.bodies['play'] = playbutton
 	end
 
+
+	if state == mainmenu then
+		resetted = resetpass (key)
+		if resetted then resetstats() end
+	end
 end
 
 function draw()

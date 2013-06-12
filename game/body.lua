@@ -6,6 +6,7 @@ body = lux.object.new {
 	mode = 'fill',
 	dead = false,
 	variance = 0,
+	changesimage = true,
 	__type = 'unnamed body'
 }
 
@@ -35,7 +36,7 @@ function body:update( dt )
 end
 
 function body:draw()
-	if cheats.image.enabled then
+	if self.changesimage and cheats.image.enabled then
 		if cheats.image.painted then graphics.setColor(color(colortimer.time + self.variance))
 		else graphics.setColor(255,255,255) end
 		graphics.draw(cheats.image.image, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / cheats.image.image:getWidth(), 2*self.size / cheats.image.image:getHeight())
