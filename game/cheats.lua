@@ -39,6 +39,7 @@ function init()
 	devpass = passwordtoggle 'psycho'
 	invisiblepass = passwordtoggle 'ghost'
 	tiltpass = password 'tilt'
+	allimagespass = passwordtoggle 'imaeg'
 
 	image:new {
 		pass = 'pizza',
@@ -70,9 +71,10 @@ function keypressed( key )
 		end
 
 		invisible = invisiblepass(key)
+		circleEffect.changesimage = allimagespass(key)
 		image.processCheats(key)
 
-		if tiltpass(key) then angle:setAndGo(0, math.pi/25, 1) end
+		if tiltpass(key) then angle:setAndGo(nil, math.pi/25, 1) end
 
 		if devmode then
 			if not esc and key == 'k' then lostgame() end
