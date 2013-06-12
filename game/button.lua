@@ -1,6 +1,7 @@
 button = body:new {
 	text = '',
 	fontsize = 12,
+	onHover = false,
 	__type = 'button',
 	bodies = {}
 }
@@ -11,14 +12,44 @@ function button:__init()
 	end
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
+	--[[self.effectsBurst = timer:new {
+		timelimit = 2,
+		pausable = false,
+		persistent = true
+	}
+	function self.effectsBurst.funcToCall(timer)
+		neweffects(self, 2)
+	end
+
+	self.hoverring = circleEffect:new {
+		size = .1,
+		sizeGrowth = 10,
+		alpha = 255,
+		linewidth = 3,
+		index = false
+	}]]
 end
 
 function button:draw()
 	self.alpha = alphatimer.var
-	body.draw(self)
+	--body.draw(self)
 	graphics.setColor(inverteffect(maincolor))
 	graphics.setFont(getFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')
+end
+
+function button:update( dt )
+	if self.menu ~= state then
+		if self.onHover then 
+			self.onHover = false
+			self:hover(false)
+		end
+		return
+	end
+	if self.onHover ~= ((mouseX - self.x)^2 + (mouseY - self.y)^2 < self.size^2) then
+		self.onHover = not self.onHover
+		self:hover(self.onHover)
+	end
 end
 
 function button:setText( t )
@@ -32,6 +63,15 @@ end
 
 function button:pressed()
 	print 'pressed'
+end
+
+function button:hover(hovering)
+	--[[if hovering then
+		self.effectsBurst:start()
+		--table.insert(circleEffect.bodies, self.hoverring)
+	else
+		self.effectsBurst:stop()
+	end]]
 end
 
 function button.mousepressed( x, y, btn )

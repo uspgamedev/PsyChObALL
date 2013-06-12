@@ -9,6 +9,7 @@ function init()
 	}
 
 	function playbutton:pressed()
+		closeMenu()
 		state = survivor
 		alphatimer:setAndGo(255, 0)
 		mouse.setGrab(true)
@@ -30,6 +31,8 @@ function init()
 	table.insert(button.bodies, rightbutton)
 
 	resetpass = cheats.password 'reset'
+
+	restartMenu()
 end
 
 function toTutorialMenu()
@@ -45,6 +48,18 @@ end
 function toAchievMenu()
 	swypetimer:setAndGo(nil, -width)
 	state = achievmenu
+end
+
+function closeMenu()
+	--[[for _,b in pairs(button.bodies) do
+		b.effectsBurst:stop()
+	end]]
+end
+
+function restartMenu()
+	state = mainmenu
+	resetVars()
+	timer.closenonessential()
 end
 
 function mousepressed( x, y, btn )
@@ -73,7 +88,7 @@ function keypressed( key )
 
 	if (gamelost or paused) and key == 'b' then
 		paused = false
-		state = mainmenu
+		restartMenu()
 
 		cheats.devmode = false
 		cheats.image.enabled = false
@@ -94,6 +109,14 @@ function keypressed( key )
 	if state == mainmenu then
 		resetted = resetpass (key)
 		if resetted then resetstats() end
+	end
+end
+
+function update(dt)
+	for _,v in pairs(paintables) do
+		for _,b in pairs(v) do
+			b:update(dt)
+		end
 	end
 end
 

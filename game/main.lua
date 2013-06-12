@@ -185,11 +185,10 @@ function cleartable( t )
 	for k in pairs(t) do t[k] = nil end
 end
 
-function reloadGame()
+function reloadGame()	
+	enemy.addtimer:funcToCall()
 	resetVars()
 	timer.closenonessential()
-	
-	enemy.addtimer:funcToCall()
 
 	soundmanager.restart()
 	bosses.restart()
