@@ -23,9 +23,10 @@ function button:__init()
 
 	self.hoverring = circleEffect:new {
 		size = .1,
-		sizeGrowth = 10,
+		sizeGrowth = 0,
 		alpha = 255,
 		linewidth = 3,
+		position = self.position,
 		index = false
 	}
 end
@@ -39,6 +40,10 @@ function button:draw()
 end
 
 function button:update( dt )
+	if self.hoverring.size > self.size then
+		self.hoverring.size = self.size
+		self.hoverring.sizeGrowth = 0
+	end
 	if self.menu ~= state then
 		if self.onHover then 
 			self.onHover = false
@@ -75,15 +80,18 @@ end
 function button:hover(hovering)
 	if hovering then
 		self.effectsBurst:start(.2)
-		--table.insert(circleEffect.bodies, self.hoverring)
+		self.hoverring.size = 0
+		self.hoverring.sizeGrowth = 350
+		circleEffect.bodies[self] = self.hoverring
 	else
 		self.effectsBurst:stop()
+		self.hoverring.sizeGrowth = -350
 	end
 end
 
 function button.mousepressed( x, y, btn )
 	for k, b in pairs(button.bodies) do
-		if b.menu == state and ((x-b.x)^2 + (y-b.y)^2) < b.size^2 then
+		if ((x-b.x)^2 + (y-b.y)^2) < b.size^2 then
 			b:pressed()
 		end
 	end

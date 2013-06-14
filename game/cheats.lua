@@ -2,7 +2,9 @@ module('cheats', base.globalize)
 
 devmode = false
 invisible = false
+imaegmode = false
 wasdev = false
+konamicode = false
 imagecheats = {}
 
 function password( pass )
@@ -39,8 +41,9 @@ function init()
 	devpass = passwordtoggle 'psycho'
 	invisiblepass = passwordtoggle 'ghost'
 	tiltpass = passwordtoggle 'tilt'
-	allimagespass = passwordtoggle 'imaeg'
-
+	allimagespass = passwordtoggle 'bighead'
+	konamipass = password {'up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'}
+	
 	image:new {
 		pass = 'pizza',
 		image = 	graphics.newImage("resources/pizza.png"),
@@ -72,7 +75,8 @@ function keypressed( key )
 
 		invisible = invisiblepass(key)
 		tiltmode = tiltpass(key)
-		circleEffect.changesimage = allimagespass(key)
+		dkmode = allimagespass(key)
+		circleEffect.changesimage = dkmode
 		image.processCheats(key)
 
 		if tiltmode then
@@ -95,6 +99,11 @@ function keypressed( key )
 			elseif key == 'u' then love.update(10) --skips 10 seconds
 			end
 		end
+		
+	end
+
+	if onMenu() then
+		konamicode = konamipass(key)
 	end
 end
 

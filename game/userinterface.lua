@@ -29,8 +29,9 @@ function init()
 	}
 	local backbutton = button:new {
 		size = 80,
-		position = vector:new {width + 100, height - 100},
+		position = vector:new {100, height - 100},
 		text = "Back",
+		menu = tutorialmenu,
 		fontsize = 20,
 		pressed = toMainMenu
 	}
@@ -83,17 +84,13 @@ function mousepressed( x, y, btn )
 	end
 end
 
+function mousereleased( x, y, btn )
+	button.mousereleased(x, y, btn)
+end
+
 function keypressed( key )
 	if gamelost and key == 'r' then
 		reloadGame()
-	end
-
-	if (key == 'left' and state == tutorialmenu) or (key == 'right' and state == achievmenu) then
-		toMainMenu()
-	elseif key == 'right' and state == mainmenu then
-		toTutorialMenu()
-	elseif key == 'left' and state == mainmenu then
-		toAchievMenu()
 	end
 
 	if (gamelost or paused) and key == 'b' then
@@ -119,6 +116,12 @@ function keypressed( key )
 	if state == mainmenu then
 		resetted = resetpass (key)
 		if resetted then resetstats() end
+	end
+
+	if state == mainmenu and key == 'q' then
+		toAchievMenu()
+	elseif state == achievmenu and key == 'q' then
+		toMainMenu()
 	end
 end
 
@@ -161,7 +164,7 @@ function draw()
 			elseif cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
 			elseif cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
 		end
-		--if cheats.tiltmode then graphics.print("TILT", 446, 45) end
+		if cheats.dkmode then graphics.print("DK mode on!", 448, 45) end
 		graphics.setFont(getCoolFont(40))
 		if cheats.tiltmode then graphics.print("*TILT*", 446, 80, -math.pi/25) end
 		graphics.setFont(getFont(12))
@@ -212,7 +215,7 @@ function draw()
 	if alphatimer.var > 0 then
 		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
 		graphics.push()
-		graphics.translate(math.floor(-swypetimer.var), 0)
+		
 		--drawing menu paintables
 		for _,v in pairs(paintables) do
 			for k, p in pairs(v) do
@@ -232,6 +235,11 @@ function draw()
 		end
 
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
+
+		graphics.setFont(getCoolFont(24))
+		if cheats.konamicode then
+			graphics.print("KONAMI CODE!", 450, 5)
+		end
 
 		graphics.setColor(color(colortimer.time * 4.5 + .54, alphatimer.var))
 		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)

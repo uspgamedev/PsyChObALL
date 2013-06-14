@@ -17,7 +17,6 @@ require "filemanager"
 require "soundmanager"
 require "cheats"
 
-
 function love.load()
 	initBase()
 	initGameVars()
@@ -150,7 +149,12 @@ function initGameVars()
 end
 
 function resetVars()
-	ultracounter = 3
+	if cheats.konamicode then
+		ultracounter = 30
+		cheats.konamicode = false
+	else
+		ultracounter = 3
+	end
 	
 	enemylist:clear()
 	auxspeed:reset()
@@ -265,6 +269,7 @@ function love.draw()
 	maincolor[3] = maincolor[3] / 4
 	graphics.setColor(maincolor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
+	graphics.translate(math.floor(-swypetimer.var), 0)
 	--[[End of setting camera]]
 	for i, v in pairs(paintables) do
 		for j, m in pairs(v) do
@@ -391,6 +396,7 @@ local todelete = {}
 
 function love.update(dt)
 	mouseX, mouseY = mouse.getPosition()
+	mouseX = mouseX + swypetimer.var
 	isPaused = (paused or onMenu())
 
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
@@ -429,7 +435,7 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, btn)
-	UI.mousepressed(x, y, btn)
+	UI.mousepressed(x + swypetimer.var, y, btn)
 	if paused then return end
 	if btn == 'l' and onGame() and not gamelost then
 		shot.timer:start(shot.timer.timelimit) --starts shooting already
@@ -437,7 +443,7 @@ function love.mousepressed(x, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
-	button.mousereleased(x,y,button)
+	UI.mousereleased(x + swypetimer.var,y,button)
 	if btn == 'l' and onGame() then
 		shot.timer:stop()
 	end
