@@ -12,8 +12,8 @@ function button:__init()
 	end
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
-	--[[self.effectsBurst = timer:new {
-		timelimit = 2,
+	self.effectsBurst = timer:new {
+		timelimit = .1,
 		pausable = false,
 		persistent = true
 	}
@@ -27,7 +27,7 @@ function button:__init()
 		alpha = 255,
 		linewidth = 3,
 		index = false
-	}]]
+	}
 end
 
 function button:draw()
@@ -65,13 +65,20 @@ function button:pressed()
 	print 'pressed'
 end
 
+function button:close()
+	if self.onHover then 
+		self.onHover = false
+		self:hover(false)
+	end
+end
+
 function button:hover(hovering)
-	--[[if hovering then
-		self.effectsBurst:start()
+	if hovering then
+		self.effectsBurst:start(.2)
 		--table.insert(circleEffect.bodies, self.hoverring)
 	else
 		self.effectsBurst:stop()
-	end]]
+	end
 end
 
 function button.mousepressed( x, y, btn )

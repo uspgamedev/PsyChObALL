@@ -59,9 +59,11 @@ function toAchievMenu()
 end
 
 function closeMenu()
-	--[[for _,b in pairs(button.bodies) do
-		b.effectsBurst:stop()
-	end]]
+	for _,v in pairs(paintables) do
+		for _,b in pairs(v) do
+			b:close()
+		end
+	end
 end
 
 function restartMenu()
@@ -131,6 +133,7 @@ end
 function draw()
 	--[[Drawing On-Game Info]]
 	if onGame() then
+		graphics.setColor(color(colortimer.time))
 		graphics.setFont(getCoolFont(22))
 		graphics.print(string.format("%.0f", score), 68, 20)
 		graphics.print(string.format("%.1fs", totaltime), 68, 42)

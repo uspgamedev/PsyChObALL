@@ -17,6 +17,7 @@ end
 	otherwise, it will be created on the table
 ]]
 function base.globalize( t )
+	t.global = _G
 	setmetatable(t, {
 		__index = _G,
 		__newindex = function ( t, k, v )
@@ -24,7 +25,6 @@ function base.globalize( t )
 			else rawset(t, k, v) end
 		end
 		})
-	t.global = _G
 end
 
 local http = require "socket.http"

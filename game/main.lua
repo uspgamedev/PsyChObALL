@@ -266,15 +266,14 @@ function love.draw()
 	graphics.setColor(maincolor)
 	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
 	--[[End of setting camera]]
+	for i, v in pairs(paintables) do
+		for j, m in pairs(v) do
+			m:draw()
+		end
+	end
 
 	--[[Drawing Game Objects]]
 	if onGame() then
-		for i, v in pairs(paintables) do
-			for j, m in pairs(v) do
-				m:draw()
-			end
-		end
-
 		graphics.setColor(color(colortimer.time * 1.4))
 		graphics.setLine(1)
 		-- drawing enemy arcs
@@ -391,14 +390,16 @@ end
 local todelete = {}
 
 function love.update(dt)
+	mouseX, mouseY = mouse.getPosition()
 	isPaused = (paused or onMenu())
 
 	timer.updatetimers(dt, timefactor, isPaused, gamelost)
+	UI.update(dt)
 	
 	dt = dt * timefactor
 	
-	if isPaused then return end
-	if not gamelost then
+	if paused then return end
+	if not (gamelost or onMenu()) then
 		totaltime = totaltime + dt
 		blastime = blastime + dt
 		if blastime >= 30 then
