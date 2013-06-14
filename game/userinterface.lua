@@ -110,6 +110,12 @@ function keypressed( key )
 		resetted = resetpass (key)
 		if resetted then resetstats() end
 	end
+
+	if state == mainmenu and key == 'q' then
+		toAchievMenu()
+	elseif state == achievmenu and key == 'q' then
+		toMainMenu()
+	end
 end
 
 function update(dt)
