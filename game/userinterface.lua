@@ -86,14 +86,6 @@ function keypressed( key )
 		reloadGame()
 	end
 
-	if (key == 'left' and state == tutorialmenu) or (key == 'right' and state == achievmenu) then
-		toMainMenu()
-	elseif key == 'right' and state == mainmenu then
-		toTutorialMenu()
-	elseif key == 'left' and state == mainmenu then
-		toAchievMenu()
-	end
-
 	if (gamelost or paused) and key == 'b' then
 		paused = false
 		restartMenu()
@@ -158,7 +150,7 @@ function draw()
 			elseif cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
 			elseif cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
 		end
-		--if cheats.tiltmode then graphics.print("TILT", 446, 45) end
+		if cheats.dkmode then graphics.print("DK mode on!", 448, 45) end
 		graphics.setFont(getCoolFont(40))
 		if cheats.tiltmode then graphics.print("*TILT*", 446, 80, -math.pi/25) end
 		graphics.setFont(getFont(12))
@@ -229,6 +221,11 @@ function draw()
 		end
 
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
+
+		graphics.setFont(getCoolFont(24))
+		if cheats.konamicode then
+			graphics.print("KONAMI CODE!", 450, 5)
+		end
 
 		graphics.setColor(color(colortimer.time * 4.5 + .54, alphatimer.var))
 		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)

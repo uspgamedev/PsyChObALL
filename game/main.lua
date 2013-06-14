@@ -150,7 +150,12 @@ function initGameVars()
 end
 
 function resetVars()
-	ultracounter = 3
+	if cheats.konamicode then
+		ultracounter = 30
+		cheats.konamicode = false
+	else
+		ultracounter = 3
+	end
 	
 	enemylist:clear()
 	auxspeed:reset()
