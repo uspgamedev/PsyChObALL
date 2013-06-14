@@ -3,7 +3,7 @@ module('UI', base.globalize)
 function init()
 	playbutton = button:new{
 		size = 100,
-		position = vector:new {width/2, 510},
+		position = vector:new {width/2, 410},
 		text = playText(),
 		fontsize = 40
 	}
@@ -27,8 +27,16 @@ function init()
 		fontsize = 20,
 		pressed = toTutorialMenu
 	}
+	local backbutton = button:new {
+		size = 80,
+		position = vector:new {width + 100, height - 100},
+		text = "Back",
+		fontsize = 20,
+		pressed = toMainMenu
+	}
 
 	table.insert(button.bodies, rightbutton)
+	table.insert(button.bodies, backbutton)
 
 	resetpass = cheats.password 'reset'
 
@@ -67,8 +75,8 @@ function mousepressed( x, y, btn )
 	if not swypetimer.running then
 		if btn == 'r' and state == mainmenu then
 			toTutorialMenu()
-		elseif (btn == 'l' or btn == 'r') and (state == tutorialmenu or state == achievmenu) then
-			toMainMenu()
+		--elseif (btn == 'l' or btn == 'r') and (state == tutorialmenu or state == achievmenu) then
+		--	toMainMenu()
 		end
 	end
 end
@@ -150,6 +158,10 @@ function draw()
 			elseif cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
 			elseif cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
 		end
+		--if cheats.tiltmode then graphics.print("TILT", 446, 45) end
+		graphics.setFont(getCoolFont(40))
+		if cheats.tiltmode then graphics.print("*TILT*", 446, 80, -math.pi/25) end
+		graphics.setFont(getFont(12))
 	end
 	--[[End of Drawing On-Game Info]]
 
@@ -242,8 +254,8 @@ function draw()
 		graphics.print("Use WASD or arrows to move", 152, 170)
 		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
 		graphics.print("Hold space to charge", 70, 252)
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Click or press the left arrow key to go back", 670, 645)
+		--graphics.setFont(getCoolFont(18))
+		--graphics.print("Click or press the left arrow key to go back", 670, 645)
 		graphics.setFont(getCoolFont(35))
 		graphics.setColor(color(colortimer.time * 0.856))
 		graphics.print("ulTrAbLaST", 290, 242)
@@ -268,8 +280,8 @@ function draw()
 		graphics.circle("fill", 130, 180, 5)
 		graphics.setColor(color(colortimer.time * 7.5 + .54))
 		graphics.circle("fill", 130, 210, 5)
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Click or press the right arrow key to go back", 670, 645)
+		graphics.setFont(getCoolFont(30))
+		graphics.print("YOU SHOULDNT BE HERE", 340, 306)
 		--end of achievmentsmenu
 
 		graphics.pop()

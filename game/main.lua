@@ -362,7 +362,7 @@ function line()
 	graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
 end
 
-playtexts = {"go", "run", "are you ready?", "start mission", "game.\nplay()", "don't click me", "ready, set, GO!"}
+playtexts = {"Start", "START", "Start Mission", "game.\nplay()", "Don't Click Me", "Give me  BALLS"}
 
 pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"}
 
@@ -371,7 +371,7 @@ deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
 "There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
 "YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
-"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace", "Valar Morghulis", "What is dead may never die"}
+"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace", "Valar Morghulis", "What is dead may never die","Mission Failed"}
 
 function deathText( n )
 	deathmessage = n and deathtexts[n] or (deathmessage or deathtexts[math.random(#deathtexts)])

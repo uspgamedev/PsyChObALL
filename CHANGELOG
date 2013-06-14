@@ -25,6 +25,7 @@ THE HISTORY OF PSYCHOBALL
 	-Added Italian mode
 	-Added Richard mode
 	-Added Detective mode
+	-Added TILT mode
 -New file that saves your configurations
 	-Saves your last sound control setting when the game is closed
 -Changes on how files are created/read
