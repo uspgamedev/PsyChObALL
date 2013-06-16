@@ -71,7 +71,7 @@ function enemy:handleDelete()
 		if  not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
 			if not inverttimer.running then
 				inverttimer:start()
-				soundmanager.setPitch(1.1)
+				soundmanager.setPitch(1.03)
 				timefactor = 1.1
 				currentEffect = inverteffect
 			else inverttimer.time = 0 end

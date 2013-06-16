@@ -60,6 +60,7 @@ function toAchievMenu()
 end
 
 function closeMenu()
+	soundmanager.changeSong(soundmanager.gamesong)
 	for _,v in pairs(paintables) do
 		for _,b in pairs(v) do
 			b:close()
@@ -71,6 +72,7 @@ function restartMenu()
 	state = mainmenu
 	resetVars()
 	timer.closenonessential()
+	soundmanager.changeSong(soundmanager.menusong)
 end
 
 function mousepressed( x, y, btn )

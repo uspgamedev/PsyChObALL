@@ -91,7 +91,7 @@ end
 
 function button.mousepressed( x, y, btn )
 	for k, b in pairs(button.bodies) do
-		if ((x-b.x)^2 + (y-b.y)^2) < b.size^2 then
+		if b.menu == state and ((x-b.x)^2 + (y-b.y)^2) < b.size^2 then
 			b:pressed()
 		end
 	end
