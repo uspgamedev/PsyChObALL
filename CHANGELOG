@@ -2,9 +2,62 @@
 THE HISTORY OF PSYCHOBALL
 =========================
 
-************************
-(xx/xx/2013) Patch 0.8.0
-************************
+*************************************************
+(16/06/2013) Patch 0.9.0    -  Patch Madness
+*************************************************
+
+-Change on the script
+	-More "understandable" code!
+	-Support for images
+-Added a menu
+	-Buttons
+	-Transition between screens
+	-New screen for Controls
+	-Regular mode is now Survivor
+	-From pause or death screen you can go back to menu
+	-New menu song "The Synergy vs N.V.R. - Re-Control"
+-Added random menu messages
+-Added random pause messages
+-Added new death messages
+	-Added a very rare death message
+-Added new type of enemy: suPerbALLs
+-Added new easter-eggs
+	-Added David Robert Jones mode
+	-Added Italian mode
+	-Added Richard mode
+	-Added Detective mode
+	-Added TILT mode
+	-Added DK mode
+	-Added The Code
+-New file that saves your configurations
+	-Saves your last sound control setting when the game is closed
+-Changes on how files are created/read
+-You can reset your stats in the main menu
+-You can only use easter-eggs and devmode on survivor for now 
+-Major changes on difficulty of Survivor mode
+-Changes on text placement
+	-New font for some texts
+-Changes on focus
+	-While on survivor mode you can't lose focus
+	-While paused or anywhere else you can
+-Changes on how score works
+	-It counts how many points you've made
+	-You no longer dies if you score hits 0
+	-Saves your highscore
+-Changes on Ultrablast
+	-Limited times you can use it
+	-You get more if you get more points
+	-You get more if you survive more time (survivor mode)
+	-Instead of a ring, PsyChObALL will grow when using Ultrablast
+-Changes on color settings
+	-Changes on "LSD worn out" effect
+	-Changes on color of "bullets"
+-Fixed some sound control bugs
+	-Muting when the song is weither fading in or fading out
+
+*************************************************
+(11/05/2013) Patch 0.8.0    -   UltraPatch
+*************************************************
 
 -Major change on the script
 	-"Cleaner" code
@@ -13,21 +66,25 @@ THE HISTORY OF PSYCHOBALL
 -Added sound controller
 	-You can press 'm' to mute the game
 	-You can press ',' or '.' to decrease or increase the volume
+	-Added images representing current sound level
 -Added the logo
 -Added slow-motion effect on death
 -Added version checker
+-Added devmode
+-Added hidden easter-egg: "ghost mode"
 	-Lets you know if there is a newer version available at the site
 	-Timeouts if it doesn't get any info from the site after a set time
 -You can't leave the screen anymore
 -Explosion particles have the colour of their "origin"
--Minor changes on text placement
+-Changes on text placement
 -More death messages
 	-Getting "LSD worn out" effect is more difficult
 	-Leaving "LSD worn out" effect is more common
+-Changed 10x multiplier colour effect
 
-************************
-(25/04/2013) Patch 0.7.9
-************************
+*************************************************
+(25/04/2013) Patch 0.7.9   -  Everyday Patch
+*************************************************
 
 -Fixed generic sound bugs
 -Added instructions to "Ultrablast"
@@ -36,9 +93,9 @@ THE HISTORY OF PSYCHOBALL
     -Multiplier on losing points slightly reduced
     -Multiplier on wining points slightly increased
 
-************************
-(17/04/2013) Patch 0.7.8
-************************
+*************************************************
+(17/04/2013) Patch 0.7.8  - The Rise of the Patch
+*************************************************
 
 -First release of PsyChObALL!
 

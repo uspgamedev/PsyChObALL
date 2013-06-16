@@ -1,20 +1,19 @@
-require 'body'
-
 effect = body:new {
-	mode 	 = 'fill',
 	size	 = 3,
-	__type   = 'effect'
+	__type   = 'effect',
+	bodies = {}
 }
 
 function effect:draw()
-	love.graphics.setColor(color(self.color, self.variance + colortimer.time))
+	love.graphics.setColor(color(self.variance + colortimer.time))
 	love.graphics.rectangle(self.mode, self.x, self.y, self.size, self.size)
 end
 
 function effect:update(dt)
 	self.position:add(self.speed * dt)
 	self.etc = self.etc + dt
-	return self.etc < self.timetogo
+	
+	self.delete = self.etc > self.timetogo
 end
 
 function neweffects( based_on, times)

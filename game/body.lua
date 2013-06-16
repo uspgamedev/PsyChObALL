@@ -3,13 +3,16 @@ require 'vector'
 
 body = lux.object.new {
 	size = 0,
+	mode = 'fill',
+	dead = false,
+	variance = 0,
+	changesimage = true,
 	__type = 'unnamed body'
 }
 
 body.__init = {
 	position = vector:new{},
-	speed 	 = vector:new{},
-	color 	 = {0,0,0,0}
+	speed 	 = vector:new{}
 }
 
 function body.__init:__index( key )
@@ -21,7 +24,7 @@ function body.__init:__index( key )
 end
 
 function body.__init:__newindex( key, v )
-	if 	   key == 'x' then  self.position[1] = v
+	if		 key == 'x' then  self.position[1] = v
 	elseif key == 'y' then  self.position[2] = v
 	elseif key == 'Vx' then self.speed[1] 	 = v
 	elseif key == 'Vy' then self.speed[2] 	 = v
@@ -33,7 +36,14 @@ function body:update( dt )
 end
 
 function body:draw()
-	-- abstract
+	if self.changesimage and cheats.image.enabled then
+		if cheats.image.painted then graphics.setColor(color(colortimer.time + self.variance))
+		else graphics.setColor(255,255,255) end
+		graphics.draw(cheats.image.image, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / cheats.image.image:getWidth(), 2*self.size / cheats.image.image:getHeight())
+		return
+	end
+	graphics.setColor(color(colortimer.time + self.variance, self.alpha))
+	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function body:handleDelete()
