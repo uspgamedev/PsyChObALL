@@ -5,8 +5,8 @@ effect = body:new {
 }
 
 function effect:draw()
-	love.graphics.setColor(color(self.variance + colortimer.time))
-	love.graphics.rectangle(self.mode, self.x, self.y, self.size, self.size)
+	graphics.setColor(color(self.variance + colortimer.time))
+	graphics.rectangle(self.mode, self.x, self.y, self.size, self.size)
 end
 
 function effect:update(dt)
@@ -17,7 +17,7 @@ function effect:update(dt)
 end
 
 function neweffects( based_on, times)
-	local speedinfluence = based_on.speed * .6
+	--local speedinfluence = based_on.speed * .6
 	for i = 1,times do
 		local e = effect:new{
 			position = based_on.position + {based_on.size * (2 * math.random() - 1),based_on.size * (2 * math.random() - 1)},

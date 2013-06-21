@@ -1,5 +1,3 @@
-width, height = 1080, 720
-
 require "base"
 require "userinterface"
 require "body"
@@ -169,7 +167,7 @@ function resetVars()
 	
 
 	psycho = psychoball:new{
-		position = psycho and psycho.position or vector:new{513,360}
+		position = psycho and psycho.position or vector:new{width/2,height/2}
 	}
 
 	timefactor = 1.0
@@ -211,12 +209,14 @@ function onGame()
 end
 
 function getFont(size)
+	size = math.floor(size*ratio)
 	if fonts[size] then return fonts[size] end
 	fonts[size] = graphics.newFont(size)
 	return fonts[size]
 end
 
 function getCoolFont(size)
+	size = math.floor(size*ratio)
 	if coolfonts[size] then return coolfonts[size] end
 	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
 	return coolfonts[size]
@@ -268,7 +268,7 @@ function love.draw()
 	maincolor[2] = maincolor[2] / 4
 	maincolor[3] = maincolor[3] / 4
 	graphics.setColor(maincolor)
-	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
+	graphics.rectangle("fill", 0, 0, width, height) --background color
 	graphics.translate(math.floor(-swypetimer.var), 0)
 	--[[End of setting camera]]
 	for i, v in pairs(paintables) do
@@ -357,7 +357,7 @@ end
 
 function line()
 	if gamelost then return end
-	local mx, my = mouse.getX(), mouse.getY()
+	local mx, my = mouse.getPosition()
 	graphics.setColor(color(colortimer.time + 2))
 	graphics.circle("line", mx, my, 5)
 	maincolor[4] = 60 -- alpha
@@ -435,6 +435,7 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, btn)
+	x, y  = x/ratio, y/ratio
 	UI.mousepressed(x + swypetimer.var, y, btn)
 	if paused then return end
 	if btn == 'l' and onGame() and not gamelost then
@@ -443,6 +444,7 @@ function love.mousepressed(x, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
+	x, y  = x/ratio, y/ratio		
 	UI.mousereleased(x + swypetimer.var,y,button)
 	if btn == 'l' and onGame() then
 		shot.timer:stop()

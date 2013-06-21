@@ -59,7 +59,7 @@ end
 
 function button:setText( t )
 	self.text = t
-	local font = getFont(self.fontsize)
+	local font = getFont(self.fontsize/ratio)
 	local dx, dy = font:getWrap(self.text, self.size*2)
 	self.ox, self.oy = 
 		self.x - self.size,

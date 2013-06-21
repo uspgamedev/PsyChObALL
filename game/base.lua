@@ -1,12 +1,54 @@
+width, height = 1080, 720
+ratio = 1.3
+love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false)
+
 --mythical stuff
 base = {}
 
 --[[
 	"Localizes" Love2D tables
 ]]
+local function fixPosIgnoreOne( func )
+	return function ( first, x, y, ... )
+		func(first, x*ratio, y*ratio, ...)
+	end
+end
+local function fixPosIgnoreNone( func )
+	return function ( x, y, ... )
+		func(x*ratio, y*ratio, ...)
+	end
+end
+
+love.graphics.getHeight = nil
+love.graphics.getWidth  = nil
+
+graphics = {
+	arc = fixPosIgnoreOne(love.graphics.arc),
+	circle = function ( mode, x, y, r ) love.graphics.circle(mode, x*ratio, y*ratio, r*ratio)	end,
+	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
+	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.drawq(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
+	point = fixPosIgnoreNone(love.graphics.point),
+	print = fixPosIgnoreOne(love.graphics.print),
+	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,
+	translate = fixPosIgnoreNone(love.graphics.translate),
+	rectangle = function (mode, x, y, width, height) love.graphics.rectangle(mode, x*ratio, y*ratio, width*ratio, height*ratio) end,
+	line = function(x1,y1,x2,y2) love.graphics.line(x1*ratio, y1*ratio, x2*ratio, y2*ratio) end
+}
+mouse = {
+	getPosition = function()
+		local x, y = love.mouse.getPosition()
+		return x/ratio, y/ratio
+	end,
+	getX = function() return love.mouse.getX()/ratio end,
+	getY = function() return love.mouse.getY()/ratio end
+}
 for k,v in pairs(love) do
-	if type(v) == 'table' and not _G[k] then
-		_G[k] = v
+	if type(v) == 'table' then
+		if _G[k] then
+			setmetatable(_G[k], { __index = v})
+		else
+			_G[k] = v
+		end
 	end
 end
 

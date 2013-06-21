@@ -168,7 +168,7 @@ function draw()
 		end
 		if cheats.dkmode then graphics.print("DK mode on!", 448, 45) end
 		graphics.setFont(getCoolFont(40))
-		if cheats.tiltmode then graphics.print("*TILT*", 446, 80, -math.pi/25) end
+		if cheats.tiltmode then graphics.print("*TILT*", 446, 80, -angle.var) end
 		graphics.setFont(getFont(12))
 	end
 	--[[End of Drawing On-Game Info]]
