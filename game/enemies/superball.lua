@@ -1,4 +1,4 @@
-module('bosses', package.seeall)
+module('enemies', package.seeall)
 
 superball = body:new {
 	size = 40,

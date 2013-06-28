@@ -1,6 +1,6 @@
-module('bosses', package.seeall)
+module('enemies', package.seeall)
 
-require 'bosses.superball'
+require 'enemies.superball'
 
 bodies = {}
 
@@ -11,6 +11,11 @@ function newsuperball( prototype )
 end
 
 function init()
+	--[[for k, v in ipairs(filesystem.enumerate 'enemies') do
+		local name = v:sub(0,v:len() - 4)
+		require('enemies.' .. name)
+		bodies[name] = {}
+	end]]
 	--[[superball]]
 	superballtimer = timer:new {
 		timelimit = 30,
@@ -33,4 +38,18 @@ end
 
 function restart()
 	superballtimer:start(0)
+end
+
+function iterate()
+	local id, current = next(bodies)
+	local i, v
+	return function ()
+		i, v = next(current, i)
+		if i == nil then
+			id, current = next(bodies, id)
+			if id == nil then return end
+			i, v = next(current)
+		end
+		return i, v, current
+	end
 end

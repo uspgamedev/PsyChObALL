@@ -25,6 +25,11 @@ function circleEffect:__init()
 	else
 		table.insert(circleEffect.bodies, self)
 	end
+	--[[self.stencil = graphics.newStencil( function() 
+		local n = (self.linewidth or 4) + 4
+		graphics.setLine(n)
+		graphics.circle(self.mode, self.x, self.y, self.size - n/2) 
+		end)]]
 end
 
 function circleEffect.init()
@@ -51,9 +56,9 @@ function circleEffect.init()
 end
 
 function circleEffect:draw()
-	if self.linewidth then love.graphics.setLine(self.linewidth) end
+	if self.linewidth then graphics.setLine(self.linewidth) end
 	body.draw(self)
-	if self.linewidth then love.graphics.setLine(4) end
+	if self.linewidth then graphics.setLine(4) end
 end
 
 function circleEffect:update(dt)

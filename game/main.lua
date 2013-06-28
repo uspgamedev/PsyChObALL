@@ -8,7 +8,7 @@ require "shot"
 require "timer"
 require "vartimer"
 require "list"
-require "bosses"
+require "enemies"
 require "psychoball"
 require "button"
 require "filemanager"
@@ -41,7 +41,7 @@ function initBase()
 	paintables[2] = shot.bodies
 	paintables[3] = enemy.bodies
 	paintables[4] = effect.bodies
-	paintables[5] = bosses.bodies
+	paintables[5] = enemies.bodies
 
 	rawset(UI, 'paintables', {}) --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
@@ -82,7 +82,7 @@ function initGameVars()
 
 	enemy.init()
 
-	bosses.init()
+	enemies.init()
 
 	shot.init()
 
@@ -161,7 +161,7 @@ function resetVars()
 	cleartable(effect.bodies)
 	cleartable(circleEffect.bodies)
 	cleartable(enemy.bodies)
-	cleartable(bosses.bodies)
+	cleartable(enemies.bodies)
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
 	
@@ -187,13 +187,17 @@ function cleartable( t )
 	for k in pairs(t) do t[k] = nil end
 end
 
+function clearbodies( t )
+	for k, v, tt in t:iterate() do tt[k] = nil end
+end
+
 function reloadGame()	
 	enemy.addtimer:funcToCall()
 	resetVars()
 	timer.closenonessential()
 
 	soundmanager.restart()
-	bosses.restart()
+	enemies.restart()
 	enemy.addtimer:start(2)
 	enemy.releasetimer:start(1.5)
 

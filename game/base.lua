@@ -1,6 +1,4 @@
 width, height = 1080, 720
-ratio = 1.3
-love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false)
 
 --mythical stuff
 base = {}

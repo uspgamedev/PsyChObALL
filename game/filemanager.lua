@@ -43,7 +43,7 @@ function writeachievements()
 end]]
 
 function readconfig()
-	local config = filemanager.readtable "config"
+	local config = readtable "config"
 
 	soundmanager.volume = config.volume or 100
 	soundmanager.muted  = config.muted == true
@@ -51,16 +51,62 @@ function readconfig()
 	if version ~= config.version then
 		--handle something maybe
 	end
+
+	local options = readCleanTable 'options'
+
+	global.ratio = tonumber(options.screenratio) or 1
+	if ratio ~= 1 then love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false) end
 end
 
 function writeconfig()
-	filemanager.writetable({
+	writetable({
 		volume =	 soundmanager.volume,
 		muted =	 soundmanager.muted,
 		version = version
 		}, "config")
+	writeCleanTable({screenratio = ratio}, 'options')
 end
 
+-- considers everything to be strings, output is better
+function writeCleanTable( t, filename )
+	local file = filesystem.newFile(filename)
+	if not pcall(file.open, file, 'w') then
+		print "some error ocurred"
+		return
+	end
+
+	for k, v in pairs(t) do
+		file:write(k)
+		file:write(' = ')
+		file:write(v)
+		file:write(';\n')
+	end
+
+	file:close()
+end
+
+function readCleanTable( filename )
+	if not filesystem.exists(filename) then return {} end
+	local file = filesystem.newFile(filename)
+	local t = {}
+	if not pcall(file.open, file, 'r') then
+		print "some error hapenned"
+		return t
+	end
+
+	local lines = file:lines()
+	local line
+	repeat
+		line = lines()
+		if not line then break end
+		k, value = line:gmatch('(%w+) = (.+);')()
+		t[k] = value
+	until false
+
+	file:close()
+
+	return t
+end
 
 -- writes a table to disk, supports writing numbers, strings and booleans for now
 function writetable( t, filename )
@@ -107,7 +153,7 @@ function readtable( filename )
 	local t = {}
 	if not pcall(file.open, file, 'r') then
 		print "some error hapenned"
-		return {}
+		return t
 	end
 
 	local key, keyinfo, info, value
