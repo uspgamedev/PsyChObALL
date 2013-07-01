@@ -30,7 +30,7 @@ function init()
 
 	function storybutton:pressed()
 		closeMenu()
-		state = survival
+		state = story
 		alphatimer:setAndGo(255, 0)
 		reloadStory()
 		button.bodies['story'] = nil
@@ -111,8 +111,13 @@ function mousereleased( x, y, btn )
 end
 
 function keypressed( key )
+	if key == 'l' then
+		levels.loadLevel 'leveltest'
+		levels.runLevel()
+	end
 	if gamelost and key == 'r' then
-		reloadGame()
+		if state == survival then reloadSurvival()
+		elseif state == story then reloadStory() end
 	end
 
 	if (gamelost or paused) and key == 'b' then
@@ -160,23 +165,32 @@ function draw()
 	--[[Drawing On-Game Info]]
 	if onGame() then
 		graphics.setColor(color(colortimer.time))
-		graphics.setFont(getCoolFont(22))
-		graphics.print(string.format("%.0f", score), 68, 20)
-		graphics.print(string.format("%.1fs", totaltime), 68, 42)
-		graphics.setFont(getFont(12))
-		graphics.print("Score:", 25, 24)
-		graphics.print("Time:", 25, 48)
-		graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
-		graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
-		graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
-		graphics.setFont(getFont(14))
-		graphics.print("ulTrAbLaST:", 25, 105)
-		graphics.setFont(getCoolFont(20))
-		graphics.print(string.format("%d", ultracounter), 110, 100)
-		graphics.setFont(getFont(20))
-		graphics.print("___________", 25, 106)
-		graphics.setFont(getCoolFont(40))
-		graphics.print(string.format("x%.1f", multiplier), 950, 35)
+		if state == survival then
+			graphics.setFont(getCoolFont(22))
+			graphics.print(string.format("%.0f", score), 68, 20)
+			graphics.print(string.format("%.1fs", totaltime), 68, 42)
+			graphics.setFont(getFont(12))
+			graphics.print("Time:", 25, 48)
+			graphics.print("Score:", 25, 24)
+			graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
+			graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
+			graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
+			graphics.setFont(getFont(14))
+			graphics.print("ulTrAbLaST:", 25, 105)
+			graphics.setFont(getCoolFont(20))
+			graphics.print(string.format("%d", ultracounter), 110, 100)
+			graphics.setFont(getFont(20))
+			graphics.print("___________", 25, 106)
+			graphics.setFont(getCoolFont(40))
+			graphics.print(string.format("x%.1f", multiplier), 950, 35)
+		elseif state == story then
+			graphics.setFont(getCoolFont(20))
+			graphics.print(string.format("%.1fs", totaltime), 68, 20)
+			graphics.setFont(getCoolFont(30))
+			graphics.print(levels.current.fullName, 40, 50)
+			graphics.setFont(getFont(12))
+			graphics.print("Time:", 25, 23)
+		end
 		
 		graphics.setFont(getFont(12))
 		if cheats.devmode then graphics.print("dev mode on!", 446, 5) end
@@ -205,21 +219,23 @@ function draw()
 	--[[Drawing Death Screen]]
 	if gamelost and onGame() then
 		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
-		if cheats.wasdev then
-			graphics.setFont(getCoolFont(20))
-			graphics.print("Your scores didn't count, cheater!", 382, 215)
-		else
-			if besttime == totaltime then
-				graphics.setFont(getFont(35))
-				graphics.print("You beat the best time!", 260, 100)
-			end	
-			if bestscore == score then
-				graphics.setFont(getFont(35))
-				graphics.print("You beat the best score!", 290, 140)
-			end
-			if bestmult == multiplier then
-				graphics.setFont(getFont(35))
-				graphics.print("You beat the best multiplier!", 320, 180)
+		if state == survival then
+			if cheats.wasdev then
+				graphics.setFont(getCoolFont(20))
+				graphics.print("Your scores didn't count, cheater!", 382, 215)
+			else
+				if besttime == totaltime then
+					graphics.setFont(getFont(35))
+					graphics.print("You beat the best time!", 260, 100)
+				end	
+				if bestscore == score then
+					graphics.setFont(getFont(35))
+					graphics.print("You beat the best score!", 290, 140)
+				end
+				if bestmult == multiplier then
+					graphics.setFont(getFont(35))
+					graphics.print("You beat the best multiplier!", 320, 180)
+				end
 			end
 		end
 		graphics.setFont(getCoolFont(40))

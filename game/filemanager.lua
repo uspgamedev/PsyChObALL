@@ -66,13 +66,19 @@ function writeconfig()
 	}, 'config')
 end
 
+function openFile( name, method )
+	local file = filesystem.newFile(name)
+	if not pcall(file.open, file, method) then
+		print "some error ocurred"
+		return nil
+	end
+	return file
+end
+
 -- considers everything to be strings, output is better
 function writeCleanTable( t, filename )
-	local file = filesystem.newFile(filename)
-	if not pcall(file.open, file, 'w') then
-		print "some error ocurred"
-		return
-	end
+	local file = openFile(filename, 'w')
+	if not file then return end
 	local first = true
 
 	for k, v in pairs(t) do
@@ -88,13 +94,9 @@ function writeCleanTable( t, filename )
 end
 
 function readCleanTable( filename )
-	if not filesystem.exists(filename) then return {} end
-	local file = filesystem.newFile(filename)
 	local t = {}
-	if not pcall(file.open, file, 'r') then
-		print "some error hapenned"
-		return t
-	end
+	local file = openFile(filename, 'r')
+	if not file then return t end
 
 	for key, value in file:read():gmatch('(%w+) = ([^;]+);\r\n') do
 		t[key] = value
@@ -108,11 +110,8 @@ end
 -- writes a table to disk, supports writing numbers, strings and booleans for now
 function writeTable( t, filename )
 	--local usedTables = {t} --used to avoid infinite looping --not used yet
-	local file = filesystem.newFile(filename)
-	if not pcall(file.open, file, 'w') then
-		print "some error ocurred"
-		return
-	end
+	local file = openFile(filename, 'w')
+	if not file then return end
 
 	file:write(writestring(t))
 

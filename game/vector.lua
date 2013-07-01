@@ -13,16 +13,12 @@ end
 function vector:__index(n)
 	if n=='x' then return self[1]
 	elseif n=='y' then return self[2]
-	elseif n=='w' then return self[3]
-	elseif n=='z' then return self[4]
 	else return getmetatable(self)[n] end
 end
 
 function vector:__newindex(i, v)
 	if i=='x' then self[1] = v
 	elseif i=='y' then self[2] = v
-	elseif i=='w' then self[3] = v
-	elseif i=='z' then self[4] = v
 	else rawset(self,i,v) end
 end
 
@@ -201,7 +197,7 @@ function vector:dist(x, y)
 end
 
 function vector:unpack()
-	return self[1], self[2], self[3], self[4]
+	return self[1], self[2]
 end
 
 function vector:lengthsqr()
@@ -222,6 +218,6 @@ function vector:normalize()
 end
 
 function vector:reset()
-	self[1], self[2] = 0, 0
+	self[1], self[2] = nil, nil
 	return self
 end

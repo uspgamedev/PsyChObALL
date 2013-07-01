@@ -11,15 +11,14 @@ function superball:__init()
 	self.position = self.position or vector:new {50, 50}
 	self.lifecolor = {0,0,0,0}
 
-	local vx, vy = math.random(-50, 50), math.random(-50, 50)
-	vx = vx + v*sign(vx)
-	vy = vy + v*sign(vy)
+	local vx, vy = math.random(v, v+50), math.random(v, v+50)
+	vx = self.x < height/2 and vx or -vx
+	vy = self.y < width/2 and vy or -vy
 	self.speed	  = vector:new {vx, vy}
 
 	self.shoottimer = timer:new {
 		timelimit = 1.7,
 		works_on_gamelost = false,
-		running = true,
 		time = math.random()*1.6
 	}
 
@@ -33,8 +32,7 @@ function superball:__init()
 	end
 
 	self.speedtimer = timer:new {
-		timelimit = math.random()*4 + 1,
-		running = true
+		timelimit = math.random()*4 + 1
 	}
 
 	function self.speedtimer.funcToCall(timer)
@@ -50,8 +48,15 @@ function superball:__init()
 		sizeGrowth = 0,
 		size = self.size + self.life,
 		position = self.position,
+		index = false,
 		linewidth = 6
 	}
+end
+
+function superball:start()
+	self.shoottimer:start()
+	self.speedtimer:start()
+	table.insert(circleEffect.bodies, self.lifeCircle)
 end
 
 function superball:update(dt)

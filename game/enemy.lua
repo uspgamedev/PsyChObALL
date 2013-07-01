@@ -7,6 +7,8 @@ enemy = body:new {
 }
 
 function enemy:__init()
+	self.variance = math.random(colorcycle * 1000) / 1000
+
 	local side = math.random(4)
 	if	side == 1 or side == 2 then -- top or bottom
 		self.x = math.random(15, width - self.size - 1)
@@ -23,8 +25,6 @@ function enemy:__init()
 		if self.y < height / 2 then n = 1 end
 		self.Vy = n * math.random(0, v)
 	end
-
-	self.variance = math.random(colortimer.timelimit * 1000) / 1000
 end
 
 function enemy.init()
@@ -35,9 +35,7 @@ function enemy.init()
 
 	function enemy.addtimer:funcToCall() --adds the enemies to a list
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		local e = enemy:new{}
-		e.arctan = math.atan(e.Vy/ e.Vx) + (e.Vx < 0 and math.pi or 0)
-		enemylist:push(e)
+		enemylist:push(enemy:new{})
 	end
 
 	function enemy.addtimer:handlereset()

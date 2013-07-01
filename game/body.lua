@@ -52,6 +52,19 @@ function body:handleDelete()
 	-- abstract
 end
 
+function body:getWarning()
+	self.warning = warning:new {
+		based_on = self
+	}
+	warning.bodies[self] = self.warning
+	return self.warning
+end
+
+function body:freeWarning()
+	warning.bodies[self] = nil
+	self.warning = nil
+end
+
 function body:paintOn( p )
 	p[self.__type] = self.bodies
 end

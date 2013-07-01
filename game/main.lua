@@ -1,4 +1,5 @@
 require "base"
+require "levels"
 require "userinterface"
 require "body"
 require "circleEffect"
@@ -10,6 +11,7 @@ require "vartimer"
 require "list"
 require "enemies"
 require "psychoball"
+require "warning"
 require "button"
 require "filemanager"
 require "soundmanager"
@@ -43,6 +45,7 @@ function initBase()
 	enemy:paintOn(paintables)
 	effect:paintOn(paintables)
 	enemies:paintOn(paintables)
+	warning:paintOn(paintables)
 
 	rawset(UI, 'paintables', {}) --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
@@ -73,7 +76,7 @@ end
 function initGameVars()
 	-- [[Creating Persistent Timers]]
 	colortimer = timer:new{
-		timelimit  = 10,
+		timelimit  = 100,
 		pausable   = false,
 		persistent = true,
 		running = true
@@ -163,6 +166,7 @@ function resetVars()
 	circleEffect:clear()
 	enemy:clear()
 	enemies:clear()
+	warning:clear()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
 	
@@ -287,10 +291,6 @@ function love.draw()
 	if onGame() then
 		graphics.setColor(color(colortimer.time * 1.4))
 		graphics.setLine(1)
-		-- drawing enemy arcs
-		for i = enemylist.first, enemylist.last - 1 do
-			graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, enemylist[i].arctan - .15, enemylist[i].arctan + .15)
-		end
 		--drawing mouse line
 		line()
 		--drawing psychoball
@@ -326,10 +326,11 @@ function applyeffect( color )
 	return currentEffect and currentEffect(color) or color
 end
 
-local xt = 10 -- = colortimer.timelimit
+colorcycle = 10 
+local xt = colorcycle
 maincolor = {0,0,0,0}
 function colorwheel(x, alpha)
-	x = x % colortimer.timelimit
+	x = x % colorcycle
 	local r, g, b
 	if x <= xt / 3 then
 		r = 100					  -- 100%
