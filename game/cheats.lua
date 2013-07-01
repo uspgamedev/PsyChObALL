@@ -74,15 +74,16 @@ function keypressed( key )
 		end
 
 		invisible = invisiblepass(key)
-		tiltmode = tiltpass(key)
 		dkmode = allimagespass(key)
 		circleEffect.changesimage = dkmode
 		image.processCheats(key)
 
 		if tiltmode then
-			angle:setAndGo(nil, math.pi/25, 1)
+			tiltmode = tiltpass(key)
+			if not tiltmode then angle:setAndGo(nil, 0, 1) end
 		else
-			angle:setAndGo(nil, 0, 1)
+			tiltmode = tiltpass(key)
+			if tiltmode then angle:setAndGo(nil, math.pi/25, 1) end
 		end
 
 		if devmode then

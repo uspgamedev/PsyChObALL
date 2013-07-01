@@ -59,7 +59,7 @@ function initBase()
 	logo = graphics.newImage('resources/LogoBeta.png')
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
-	version = '0.9.0\n'
+	version = '0.9.0'
 	latest = base.getLatestVersion() or version
 	soundmanager.init()
 	cheats.init()

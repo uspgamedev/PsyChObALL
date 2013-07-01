@@ -76,5 +76,7 @@ response = http.request{ url=URL, create=function()
 end}
 
 function base.getLatestVersion()
-	return http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
+	local version = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
+	version = version:sub(1,version:len()-1) --cutting the '\n' at the end
+	return version
 end
