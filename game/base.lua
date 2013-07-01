@@ -58,6 +58,10 @@ end
 ]]
 function base.globalize( t )
 	t.global = _G
+	t.self = { __index = t, __newindex = function ( nt, k, v )
+		rawset(t, k, v)
+	end}
+	setmetatable(t.self, t.self)
 	setmetatable(t, {
 		__index = _G,
 		__newindex = function ( t, k, v )
@@ -79,4 +83,8 @@ function base.getLatestVersion()
 	local version = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
 	version = version:sub(1,version:len()-1) --cutting the '\n' at the end
 	return version
+end
+
+function cleartable( t )
+	for k in pairs(t) do t[k] = nil end
 end

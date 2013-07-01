@@ -44,7 +44,7 @@ function body:draw()
 		if self.stencil then graphics.setStencil() end
 		return
 	end
-	graphics.setColor(color(colortimer.time + self.variance, self.alpha))
+	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var))
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
@@ -52,10 +52,10 @@ function body:handleDelete()
 	-- abstract
 end
 
-function body:iterate()
-	local k, v
-	return function()
-		k, v = next(self.bodies, k)
-		return k, v, self.bodies
-	end
+function body:paintOn( p )
+	p[self.__type] = self.bodies
+end
+
+function body:clear()
+	cleartable(self.bodies)
 end

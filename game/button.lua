@@ -27,13 +27,14 @@ function button:__init()
 		alpha = 255,
 		linewidth = 3,
 		position = self.position,
+		alphafollows = self.alphafollows,
 		index = false
 	}
 end
 
 function button:draw()
-	self.alpha = alphatimer.var
 	--body.draw(self)
+	maincolor[4] = self.alpha or (self.alphafollows and self.alphafollows.var) or maincolor[4]
 	graphics.setColor(inverteffect(maincolor))
 	graphics.setFont(getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')

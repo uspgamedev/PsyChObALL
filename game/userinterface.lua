@@ -3,28 +3,47 @@ module('UI', base.globalize)
 function init()
 	playbutton = button:new{
 		size = 100,
-		position = vector:new {width/2, 410},
+		position = vector:new {width/2 - 200, 410},
 		text = playText(),
+		alphafollows = alphatimer,
 		fontsize = 40
 	}
 
 	function playbutton:pressed()
 		closeMenu()
-		state = survivor
+		state = survival
 		alphatimer:setAndGo(255, 0)
-		mouse.setGrab(true)
-		reloadGame()
+		reloadSurvival()
 		button.bodies['play'] = nil
 		neweffects(self, 100)
 	end
 
 	button.bodies['play'] = playbutton
 
-	local rightbutton = button:new {
+	storybutton = button:new {
+		size = 100,
+		position = vector:new {width/2 + 200, 410},
+		text = playText(),
+		alphafollows = alphatimer,
+		fontsize = 40
+	}
+
+	function storybutton:pressed()
+		closeMenu()
+		state = survival
+		alphatimer:setAndGo(255, 0)
+		reloadStory()
+		button.bodies['story'] = nil
+		neweffects(self, 50)
+	end
+
+	button.bodies['story'] = storybutton
+	local controlsbutton = button:new {
 		size = 80,
 		position = vector:new {width - 100, height - 100},
 		text = "Controls",
 		fontsize = 20,
+		alphafollows = alphatimer,
 		pressed = toTutorialMenu
 	}
 	local backbutton = button:new {
@@ -33,10 +52,11 @@ function init()
 		text = "Back",
 		menu = tutorialmenu,
 		fontsize = 20,
+		alphafollows = alphatimer,
 		pressed = toMainMenu
 	}
 
-	table.insert(button.bodies, rightbutton)
+	table.insert(button.bodies, controlsbutton)
 	table.insert(button.bodies, backbutton)
 
 	resetpass = cheats.password 'reset'
@@ -112,6 +132,7 @@ function keypressed( key )
 		playmessage = nil
 		playbutton:setText(playText())
 		button.bodies['play'] = playbutton
+		button.bodies['story'] = storybutton
 	end
 
 
@@ -254,7 +275,7 @@ function draw()
 		graphics.setFont(getCoolFont(50))
 		graphics.print("CONTROLS", 380, 36)
 		graphics.setFont(getCoolFont(40))
-		graphics.print("Survivor Mode:", 170, 350)
+		graphics.print("Survival Mode:", 170, 350)
 		graphics.setColor(color(colortimer.time * 2.5 + .54))
 		graphics.setFont(getCoolFont(20))
 		graphics.print("You get points when", 540, 425)

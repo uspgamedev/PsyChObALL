@@ -29,7 +29,8 @@ function initBase()
 	mainmenu = 1 -- mainmenu
 	tutorialmenu = 2
 	achievmenu  = 0 -- Tela de achievements
-	survivor = 10 -- modo de jogo survivor
+	survival = 10 -- modo de jogo survival
+	story = 11
 	state = mainmenu
 	sqrt2 = math.sqrt(2)
 	fonts = {}
@@ -37,15 +38,15 @@ function initBase()
 	resetted = false
 
 	paintables = {}
-	paintables[1] = circleEffect.bodies
-	paintables[2] = shot.bodies
-	paintables[3] = enemy.bodies
-	paintables[4] = effect.bodies
-	paintables[5] = enemies.bodies
+	circleEffect:paintOn(paintables)
+	shot:paintOn(paintables)
+	enemy:paintOn(paintables)
+	effect:paintOn(paintables)
+	enemies:paintOn(paintables)
 
 	rawset(UI, 'paintables', {}) --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
-	UI.paintables[1] = button.bodies
+	button:paintOn(UI.paintables)
 
 	bestscore, besttime, bestmult = 0, 0, 0
 	-- [[End of Initing Variables]]
@@ -157,11 +158,11 @@ function resetVars()
 	enemylist:clear()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
-	cleartable(shot.bodies)
-	cleartable(effect.bodies)
-	cleartable(circleEffect.bodies)
-	cleartable(enemy.bodies)
-	cleartable(enemies.bodies)
+	shot:clear()
+	effect:clear()
+	circleEffect:clear()
+	enemy:clear()
+	enemies:clear()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
 	
@@ -183,15 +184,7 @@ function resetVars()
 	deathmessage = nil
 end
 
-function cleartable( t )
-	for k in pairs(t) do t[k] = nil end
-end
-
-function clearbodies( t )
-	for k, v, tt in t:iterate() do tt[k] = nil end
-end
-
-function reloadGame()	
+function reloadSurvival()
 	enemy.addtimer:funcToCall()
 	resetVars()
 	timer.closenonessential()
@@ -200,6 +193,15 @@ function reloadGame()
 	enemies.restart()
 	enemy.addtimer:start(2)
 	enemy.releasetimer:start(1.5)
+
+	mouse.setGrab(true)
+end
+
+function reloadStory()
+	resetVars()
+	timer.closenonessential()
+
+	soundmanager.restart()
 
 	mouse.setGrab(true)
 end
@@ -440,11 +442,10 @@ end
 
 function love.mousepressed(x, y, btn)
 	x, y  = x/ratio, y/ratio
-	UI.mousepressed(x + swypetimer.var, y, btn)
-	if paused then return end
-	if btn == 'l' and onGame() and not gamelost then
+	if btn == 'l' and onGame() and not (gamelost or paused) then
 		shot.timer:start(shot.timer.timelimit) --starts shooting already
 	end
+	UI.mousepressed(x + swypetimer.var, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
