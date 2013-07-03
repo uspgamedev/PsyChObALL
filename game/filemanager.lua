@@ -54,7 +54,7 @@ function readconfig()
 		--handle something maybe
 	end
 	
-	if ratio ~= 1 then love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false) end
+	if ratio ~= 1 then love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false, false, 0) end
 end
 
 function writeconfig()
@@ -98,7 +98,7 @@ function readCleanTable( filename )
 	local file = openFile(filename, 'r')
 	if not file then return t end
 
-	for key, value in file:read():gmatch('(%w+) = ([^;]+);\r\n') do
+	for key, value in file:read():gmatch('(%w+) = ([^;]+);\r?\n?') do
 		t[key] = value
 	end
 

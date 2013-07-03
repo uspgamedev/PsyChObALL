@@ -11,7 +11,7 @@ body = lux.object.new {
 }
 
 body.__init = {
-	position = vector:new{},
+	position = vector:new{-1,-1},
 	speed 	 = vector:new{}
 }
 
@@ -44,7 +44,7 @@ function body:draw()
 		if self.stencil then graphics.setStencil() end
 		return
 	end
-	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var))
+	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 

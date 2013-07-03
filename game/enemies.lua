@@ -2,12 +2,6 @@ module('enemies', package.seeall)
 
 bodies = {}
 
-function newsuperball( prototype )
-	local mb = superball:new(prototype)
-	superballlist:push(mb)
-	return mb
-end
-
 function init()
 	--[[superball]]
 	superballtimer = timer:new {
@@ -19,7 +13,7 @@ function init()
 	local possiblePositions = {vector:new{30, 30}, vector:new{width - 30, 30}, vector:new{width - 30, height - 30}, vector:new{30, height - 30}}
 	function superballtimer:funcToCall()
 		if #bodies.superball > math.floor(totaltime/90) then self.timelimit = 2 return end
-		newsuperball{ position = possiblePositions[math.random(4)]:clone() }
+		superballlist:push(newsuperball{ position = possiblePositions[math.random(4)]:clone() })
 		self.timelimit = 30
 	end
 
@@ -35,9 +29,7 @@ function init()
 
 	function superballrelease:funcToCall()
 		if #bodies.superball > math.floor(totaltime/90) then self.timelimit = 2 return end
-		local sb = superballlist:pop()
-		sb:start()
-		table.insert(bodies.superball, sb)
+		table.insert(bodies.superball, superballlist:pop())
 		self.timelimit = 30
 	end
 	--[[End of superball]]
@@ -52,9 +44,12 @@ function paintOn( self, p )
 	for k, v in ipairs(filesystem.enumerate 'enemies') do
 		local name = v:sub(0,v:len() - 4)
 		require('enemies.' .. name)
-		self[name .. 'list'] = list:new{}
 		bodies[name] = {}
 		p[name] = bodies[name]
+		self[name .. 'list'] = list:new{}
+		self['new' .. name] = function ( prototype )
+			return self[name]:new(prototype)
+		end
 	end
 end
 

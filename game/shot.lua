@@ -10,6 +10,7 @@ shot = body:new {
 function shot.init()
 	shot.timer = timer:new{
 		timelimit = .18,
+		works_on_gamelost = false,
 		persistent = true
 	}
 
@@ -28,6 +29,6 @@ function shot:handleDelete()
 end
 
 function shot:update(dt)
-    self.position:add(self.speed * dt)
+    body.update(self, dt)
     self.delete = self.delete or (self.collides or self.x < -self.size or self.y < -self.size or self.x + self.size > width or self.y + self.size > height)
 end

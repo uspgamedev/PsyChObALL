@@ -12,12 +12,15 @@ function warning:__init()
 		self.size = self.based_on.size*2
 		self.position = self.based_on.position
 		self.variance = self.based_on.variance
+		self.coloreffect = self.based_on.coloreffect
+		self.alpha = self.based_on.alpha
+		self.alphafollows = self.based_on.alphafollows
 		self.based_on = nil
 	end
 end
 
 function warning:draw()
 	graphics.setLine(self.lineWidth)
-	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var))
+	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.arc(self.mode, self.position[1], self.position[2], self.size, self.arctan - self.piece, self.arctan + self.piece)
 end

@@ -11,7 +11,7 @@ function enemy:__init()
 
 	local side = math.random(4)
 	if	side == 1 or side == 2 then -- top or bottom
-		self.x = math.random(15, width - self.size - 1)
+		self.x = math.random(self.size, width - self.size - 1)
 		self.y = side == 1 and 1 or height - 1
 		self.Vy = math.random(v, v + 50) * (side == 1 and 1 or -1)
 		local n = -1
@@ -19,7 +19,7 @@ function enemy:__init()
 		self.Vx = n * math.random(0, v)
 	elseif side == 3 or side == 4 then -- left or right
 		self.x = side == 3 and 1 or width - 1
-		self.y = math.random(15, height - self.size - 1)
+		self.y = math.random(self.size, height - self.size - 1)
 		self.Vx = math.random(v, v + 50) * (side == 3 and 1 or -1)
 		local n = -1
 		if self.y < height / 2 then n = 1 end
@@ -105,7 +105,7 @@ function enemy:handleDelete()
 end
 
 function enemy:update(dt)
-	self.position:add(self.speed * dt)
+	body.update(self, dt)
 
 	for i,v in pairs(shot.bodies) do
 		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
@@ -115,6 +115,11 @@ function enemy:update(dt)
 			self.diereason = "shot"
 			break
 		end
+	end
+
+	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
+		psycho.diereason = "shot"
+		lostgame()
 	end
 
 	self.delete = self.delete or (self.collides or self.x < -self.size or self.y < -self.size or self.x - self.size > width or self.y - self.size > height)

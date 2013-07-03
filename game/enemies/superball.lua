@@ -8,8 +8,7 @@ superball = body:new {
 }
 
 function superball:__init()
-	self.position = self.position or vector:new {50, 50}
-	self.lifecolor = {0,0,0,0}
+	if self.position:equals(-1, -1) then enemy.__init(self) end
 
 	local vx, vy = math.random(v, v+50), math.random(v, v+50)
 	vx = self.x < height/2 and vx or -vx
@@ -23,12 +22,12 @@ function superball:__init()
 	}
 
 	function self.shoottimer.funcToCall()
-		local e = enemy:new{}
+		local e = state == survival and enemy:new{} or enemies.newsimpleball{}
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
 		e.speed = (pos:sub(self.position)):normalize():mult(2 * v, 2 * v)
-		table.insert(enemy.bodies,e)
+		table.insert(state == survival and enemy.bodies or paintables.simpleball,e)
 	end
 
 	self.speedtimer = timer:new {
@@ -60,7 +59,7 @@ function superball:start()
 end
 
 function superball:update(dt)
-	superball:__super().update(self, dt)
+	body.update(self, dt)
 	if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
 	elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
 

@@ -5,7 +5,7 @@ effect = body:new {
 }
 
 function effect:draw()
-	graphics.setColor(color(self.variance + colortimer.time))
+	graphics.setColor(color(self.variance + colortimer.time, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.rectangle(self.mode, self.x, self.y, self.size, self.size)
 end
 
@@ -21,7 +21,10 @@ function neweffects( based_on, times)
 	for i = 1,times do
 		local e = effect:new{
 			position = based_on.position + {based_on.size * (2 * math.random() - 1),based_on.size * (2 * math.random() - 1)},
-			variance = based_on.variance
+			variance = based_on.variance,
+			coloreffect = based_on.coloreffect,
+			alpha = based_on.alpha,
+			alphafollows = based_on.alphafollows
 		}
 
 		e.speed = (e.position - based_on.position):normalize():mult(math.random() * v, math.random() * v)

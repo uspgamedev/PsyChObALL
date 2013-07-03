@@ -47,7 +47,7 @@ function initBase()
 	enemies:paintOn(paintables)
 	warning:paintOn(paintables)
 
-	rawset(UI, 'paintables', {}) --[[If you just use UI.paintables = {} it actually
+	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
 	button:paintOn(UI.paintables)
 
@@ -273,7 +273,7 @@ function love.draw()
 	maincolor[1] = maincolor[1] / 3
 	maincolor[2] = maincolor[2] / 3
 	maincolor[3] = maincolor[3] / 3
-	applyeffect(maincolor)
+	applyeffect(nil, maincolor)
 	maincolor[1] = maincolor[1] / 4
 	maincolor[2] = maincolor[2] / 4
 	maincolor[3] = maincolor[3] / 4
@@ -303,8 +303,8 @@ function love.draw()
 	UI.draw()
 end
 
-function color( ... )
-	return applyeffect(colorwheel(...))
+function color( x, alpha, effect )
+	return applyeffect(effect, colorwheel(x, alpha))
 end
 
 function inverteffect( color )
@@ -322,8 +322,14 @@ function noLSDeffect( color )
 	return color
 end
 
-function applyeffect( color )
-	return currentEffect and currentEffect(color) or color
+function sincityeffect( color )
+	local gray = (color[1] + color[2] + color[3]) / 3
+	color[1], color[2], color[3] =  gray + (255 - gray)/5, 0, 0
+	return color
+end
+
+function applyeffect( effect, color )
+	return (effect or currentEffect) and (effect or currentEffect)(color) or color
 end
 
 colorcycle = 10 

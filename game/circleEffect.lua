@@ -2,7 +2,7 @@ circleEffect = body:new {
 	alpha = 10,
 	maxsize = width / 1.9,
 	mode = 'line',
-	__type = 'circle',
+	__type = 'circleEffect',
 	changesimage = false,
 	bodies = {}
 }

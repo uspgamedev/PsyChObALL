@@ -1,5 +1,6 @@
 psychoball = circleEffect:new {
 	size	 = 23,
+	maxsize = width,
 	mode	 = 'fill',
 	variance = 0,
 	sizeGrowth = 0,
@@ -44,13 +45,6 @@ function psychoball:update(dt)
 		self.linewidth = 6
 		self.size = 23
 		self.sizeGrowth = 0
-	end
-
-	for i,v in pairs(enemy.bodies) do
-		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
-			lostgame()
-			self.diereason = "shot"
-		end
 	end
 
 	circleEffect.update(self, dt)
