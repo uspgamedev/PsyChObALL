@@ -151,6 +151,7 @@ function initGameVars()
 end
 
 function resetVars()
+	reference = nil
 	if cheats.konamicode then
 		ultracounter = 30
 		cheats.konamicode = false

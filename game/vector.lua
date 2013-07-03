@@ -115,6 +115,13 @@ function vector.__eq( first, second )
 	return (first[1] == second[1]) and (first[2] == second[2])
 end
 
+function vector:negate()
+	self[1] = -self[1]
+	self[2] = -self[2]
+
+	return self
+end
+
 function vector:set(x, y)
 	if x == nil or type(x) == 'number' then
 		self[1] = x or self[1]

@@ -55,10 +55,90 @@ function psychoball:draw()
 	body.draw(self)
 end
 
+local effects = {
+	function ( p1, p2, size )
+		return size
+	end,
+	function ( p1, p2, size )
+		return 1/math.random()
+	end,
+	function ( p1, p2, size )
+		return p1:dist(p2)
+	end,
+	function ( p1, p2, size )
+		return p1:distsqr(p2)/size
+	end,
+	function ( p1, p2, size )
+		return (size - p1:dist(p2))
+	end,
+	function ( p1, p2, size )
+		return (size^2 - p1:distsqr(p2))/size
+	end,
+	function ( p1, p2, size )
+		return (size - p1:distsqr(p2))/size
+	end,
+	function ( p1, p2, size )
+		return math.random()*size
+	end,
+	function ( p1, p2, size )
+		return size/(math.random() + .3)
+	end,
+	function ( p1, p2, size )
+		return (size^1.6)/p1:dist(p2)
+	end,
+	function ( p1, p2, size )
+		return math.tan(p1:distsqr(p2))
+	end,
+	function ( p1, p2, size )
+		return math.asin(p1:dist(p2) % 1)*size^.8
+	end,
+	function ( p1, p2, size )
+		return math.exp(p1:dist(p2) - size/1.3)
+	end,
+	function ( p1, p2, size )
+		return math.log10(p1:dist(p2))*size^.7
+	end
+}
+
 function psychoball:handleDelete()
 	self.speed:set(0,0)
-	if self then self.sizeGrowth = -300 end
-	neweffects(self,80)
+	if not self then return end
+	paintables.psychoeffects = {}
+	self.sizeGrowth = -300
+	local efunc = effects[math.random(#effects)]
+	for i = self.x - self.size, self.x + self.size, effect.size/1.5 do
+		for j = self.y - self.size, self.y + self.size, effect.size/1.5 do
+			if (i - self.x)^2 + (j - self.y)^2 <= self.size^2 then
+				local e = effect:new{
+					position = vector:new{i, j},
+					variance = self.variance,
+					coloreffect = self.coloreffect,
+					alpha = self.alpha,
+					alphafollows = self.alphafollows
+				}
+				local distr = efunc(e.position, self.position, self.size)
+				e.speed = (e.position - self.position):normalize():mult(v * distr, v * distr)
+
+				e.timetogo = math.huge
+				e.etc = 0
+				
+				table.insert(paintables.psychoeffects, e)
+				if not reference then
+					reference = {e, self.position:clone(), self.size^2}
+				end
+			end
+		end
+	end
+	reference[1].update = function ( self, dt )
+		effect.update(self, dt)
+		local d = self.position:distsqr(reference[2])
+		if self.restarting and (d < reference[3] or (self.prevdist and self.prevdist < d)) then
+			paintables.psychoeffects = nil
+			if state == survival then reloadSurvival()
+			elseif state == story then reloadStory() end
+		end
+		self.prevdist = d
+	end
 end
 
 function psychoball:keypressed( key )

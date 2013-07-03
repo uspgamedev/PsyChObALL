@@ -3,8 +3,8 @@ module('UI', base.globalize)
 function init()
 	playbutton = button:new{
 		size = 100,
-		position = vector:new {width/2 - 200, 410},
-		text = playText(),
+		position = vector:new {width/2 + 200, 410},
+		text = "Survival",
 		alphafollows = alphatimer,
 		fontsize = 40
 	}
@@ -22,7 +22,7 @@ function init()
 
 	storybutton = button:new {
 		size = 100,
-		position = vector:new {width/2 + 200, 410},
+		position = vector:new {width/2 - 200, 410},
 		text = playText(),
 		alphafollows = alphatimer,
 		fontsize = 40
@@ -116,8 +116,11 @@ function keypressed( key )
 		levels.runLevel()
 	end
 	if gamelost and key == 'r' then
-		if state == survival then reloadSurvival()
-		elseif state == story then reloadStory() end
+		if reference[1].restarting then return end
+		reference[1].restarting = true
+		for _, eff in pairs(global.paintables.psychoeffects) do
+			eff.speed:negate():mult(3,3)
+		end
 	end
 
 	if (gamelost or paused) and key == 'b' then
@@ -184,12 +187,19 @@ function draw()
 			graphics.setFont(getCoolFont(40))
 			graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		elseif state == story then
-			graphics.setFont(getCoolFont(20))
-			graphics.print(string.format("%.1fs", totaltime), 68, 20)
 			graphics.setFont(getCoolFont(30))
-			graphics.print(levels.current.fullName, 40, 50)
-			graphics.setFont(getFont(12))
-			graphics.print("Time:", 25, 23)
+			graphics.print(string.format("%.0f", score), 25, 48)
+			graphics.setFont(getCoolFont(30))
+			graphics.print(levels.current.fullName, 200, 20)
+			graphics.setFont(getCoolFont(18))
+			graphics.print("Score:", 25, 30)
+			graphics.print("ulTrAbLaST:", 25, 100)
+			graphics.setFont(getCoolFont(30))
+			graphics.print(string.format("%d", ultracounter), 140, 95)
+			graphics.setFont(getFont(24))
+			graphics.print("___________", 25, 106)
+			graphics.setFont(getCoolFont(40))
+			graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		end
 		
 		graphics.setFont(getFont(12))

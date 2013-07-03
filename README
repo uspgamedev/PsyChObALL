@@ -23,7 +23,7 @@ PsyChObALL version 0.9.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For a list of lastest patches, changes and fixes, read "CHANGELOG"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-For Copyright and licensing information, read "LICENSE" or "Phantom - Psychodelic LICENSE"
+For Copyright and licensing information, read "LICENSE" or  the other license files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Found any bugs? Contact us at pudimdefrutas@gmail.com or yancouto@gmail.com
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,6 +31,10 @@ Found any bugs? Contact us at pudimdefrutas@gmail.com or yancouto@gmail.com
 Want to know about incoming projects, new releases and other cool stuff? Of course you do!
 
                            Checkout: http://uspgamedev.org/
+
+Want to see where is the developing process of PsyChObALL, and get a sneak peek on future content?
+
+                	Checkout: https://github.com/uspgamedev/PsyChObALL/
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 + Made using the free framework LÖVE. More info here: https://love2d.org/ +
