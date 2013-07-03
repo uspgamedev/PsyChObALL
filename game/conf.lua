@@ -3,7 +3,7 @@ function love.conf(t)
 	t.author = "Yan Couto and Ricardo Lira"
 	t.url = "http://uspgamedev.org/projetos/psychoball/"
     t.identity = "PsyChObALL"
-    t.version = "0.8.0"
+    t.version = "0.9.0"
     t.console = false
     t.release = false
     t.screen.width = 1080
