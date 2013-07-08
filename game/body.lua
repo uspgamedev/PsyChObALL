@@ -11,7 +11,7 @@ body = lux.object.new {
 }
 
 body.__init = {
-	position = vector:new{-1,-1},
+	position = vector:new{},
 	speed 	 = vector:new{}
 }
 
@@ -52,6 +52,10 @@ function body:handleDelete()
 	-- abstract
 end
 
+function body:start()
+	-- abstract
+end
+
 function body:getWarning()
 	self.warning = warning:new {
 		based_on = self
@@ -73,6 +77,7 @@ function body:clear()
 	cleartable(self.bodies)
 end
 
-function body:register()
+function body:register(...)
+	self:start(...)
 	table.insert(self.bodies, self)
 end

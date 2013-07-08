@@ -18,6 +18,7 @@ function init()
 		neweffects(self, 100)
 	end
 
+	playbutton:start()
 	button.bodies['play'] = playbutton
 
 	storybutton = button:new {
@@ -37,7 +38,9 @@ function init()
 		neweffects(self, 50)
 	end
 
+	storybutton:start()
 	button.bodies['story'] = storybutton
+
 	local controlsbutton = button:new {
 		size = 80,
 		position = vector:new {width - 100, height - 100},
@@ -56,8 +59,8 @@ function init()
 		pressed = toMainMenu
 	}
 
-	table.insert(button.bodies, controlsbutton)
-	table.insert(button.bodies, backbutton)
+	controlsbutton:register()
+	backbutton:register()
 
 	resetpass = cheats.password 'reset'
 

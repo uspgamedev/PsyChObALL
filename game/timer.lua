@@ -21,7 +21,10 @@ function timer:update(dt, timefactor, paused, gamelost)
 	self.time = self.time + dt
 	if self.time >= self.timelimit then
 		self.time = self.time - self.timelimit
-		if self.funcToCall then self:funcToCall(self.extraelements and unpack(self.extraelements)) end
+		if self.funcToCall then
+			if self.extraelements then self:funcToCall(unpack(self.extraelements))
+			else self:funcToCall() end
+		end
 		if self.onceonly then self:stop() end
 	end
 end

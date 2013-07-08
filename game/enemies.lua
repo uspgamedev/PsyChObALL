@@ -29,7 +29,7 @@ function init()
 
 	function superballrelease:funcToCall()
 		if #bodies.superball > math.floor(gametime/90) then self.timelimit = 2 return end
-		table.insert(bodies.superball, superballlist:pop())
+		superballlist:pop():register()
 		self.timelimit = 30
 	end
 	--[[End of superball]]

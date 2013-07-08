@@ -49,7 +49,7 @@ function enemy.init()
 
 	function enemy.releasetimer:funcToCall() --actually releases the enemies on screen
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		table.insert(enemy.bodies,enemylist:pop())
+		enemylist:pop():register()
 	end
 
 	function enemy.releasetimer:handlereset()
@@ -99,7 +99,7 @@ function enemy:handleDelete()
 			e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
 			if e.Vy + e.Vx < 10 then e.Vy = sign(self.Vy) * math.random(3 * v / 4, v) end
 			e.variance = self.variance
-			table.insert(enemy.bodies, e)
+			e:register()
 		end
 	end
 end

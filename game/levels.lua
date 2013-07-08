@@ -6,14 +6,12 @@ current = {
 
 function newEnemiesfor( enemyname )
 	local newEnemiesfuncs = {}
-	local bodies, create = paintables[enemyname], enemies['new' .. enemyname]
+	local bodies, createenemy = paintables[enemyname], enemies['new' .. enemyname]
 	return function (n)
 		if not newEnemiesfuncs[n] then
 			newEnemiesfuncs[n] = function(t, ...)
 				for i= 1, n do
-					local ene = create{}
-					if ene.start then ene:start(...) end
-					table.insert(bodies, ene)
+					createenemy():register(...)
 				end
 			end
 		end
@@ -23,19 +21,19 @@ end
 
 function newEnemiesWarningfor( enemyname )
 	local newEnemieswarn, newEnemiesrelease = {}, {}
-	local bodies, create, list = paintables[enemyname], enemies['new' .. enemyname], enemies[enemyname .. 'list']
+	local createenemy, list = enemies['new' .. enemyname], enemies[enemyname .. 'list']
 	return function ( n )
 		if not newEnemieswarn[n] then
 			newEnemieswarn[n] = function()
 				for i= 1, n do
-					list:push(create{})
+					list:push(createenemy())
 				end
 			end
 		end
 		if not newEnemiesrelease[n] then
 			newEnemiesrelease[n] = function(t, ...)
 				for i= 1, n do
-					table.insert(bodies, list:pop(...))
+					list:pop():register(...)
 				end
 			end
 		end

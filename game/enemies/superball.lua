@@ -8,7 +8,7 @@ superball = body:new {
 }
 
 function superball:__init()
-	if self.position:equals(-1, -1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then enemy.__init(self) end
 
 	local vx, vy = math.random(v, v+50), math.random(v, v+50)
 	vx = self.x < height/2 and vx or -vx
@@ -27,8 +27,7 @@ function superball:__init()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
 		e.speed = (pos:sub(self.position)):normalize():mult(2 * v, 2 * v)
-		if e.start then e:start() end
-		e:register()
+		e:register(self.extra and unpack(self.extra) or nil)
 	end
 
 	self.speedtimer = timer:new {
@@ -53,10 +52,12 @@ function superball:__init()
 	}
 end
 
-function superball:start( shot )
+function superball:start( shot, ... )
 	self.shot = shot and enemies[shot] or state == survival and enemy or enemies.simpleball
+	self.extra = select('#', ...) > 0 and {...} or nil
 	self.shoottimer:start()
 	self.speedtimer:start()
+	self.lifeCircle.position = self.position
 	self.lifeCircle:register()
 end
 

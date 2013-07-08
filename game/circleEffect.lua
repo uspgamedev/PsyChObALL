@@ -20,10 +20,11 @@ function circleEffect:__init()
 	if #circleEffect.bodies > 250 then table.remove(circleEffect.bodies, 1) end
 	if self.index ~= nil then
 		if self.index ~= false then
+			self:start()
 			circleEffect.bodies[self.index] = self
 		end
 	else
-		table.insert(circleEffect.bodies, self)
+		self:register()
 	end
 	--[[self.stencil = graphics.newStencil( function() 
 		local n = (self.linewidth or 4) + 4

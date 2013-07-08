@@ -483,10 +483,10 @@ function shoot(x, y)
 	local diffy = y - psycho.y
 	local Vx = sign(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
 	local Vy = sign(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
-	table.insert(shot.bodies, shot:new {
+	shot:new {
 		position = psycho.position:clone(),
 		speed	 = vector:new {Vx, Vy}
-		})
+		}:register()
 end
 
 function sign(a)
