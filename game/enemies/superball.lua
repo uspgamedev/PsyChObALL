@@ -22,12 +22,13 @@ function superball:__init()
 	}
 
 	function self.shoottimer.funcToCall()
-		local e = state == survival and enemy:new{} or enemies.newsimpleball{}
+		local e = self.shot:new{}
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
 		e.speed = (pos:sub(self.position)):normalize():mult(2 * v, 2 * v)
-		table.insert(state == survival and enemy.bodies or paintables.simpleball,e)
+		if e.start then e:start() end
+		e:register()
 	end
 
 	self.speedtimer = timer:new {
@@ -52,10 +53,11 @@ function superball:__init()
 	}
 end
 
-function superball:start()
+function superball:start( shot )
+	self.shot = shot and enemies[shot] or state == survival and enemy or enemies.simpleball
 	self.shoottimer:start()
 	self.speedtimer:start()
-	table.insert(circleEffect.bodies, self.lifeCircle)
+	self.lifeCircle:register()
 end
 
 function superball:update(dt)

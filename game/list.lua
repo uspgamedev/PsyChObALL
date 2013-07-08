@@ -9,11 +9,11 @@ function list:push(x)
 	self.last = self.last + 1
 end
 
-function list:pop()
+function list:pop(...)
 	if self.first == self.last then print("list empty") return nil end
 	local x = self[self.first]
 	x:freeWarning()
-	if x.start then x:start() end
+	if x.start then x:start(...) end
 	self[self.first] = nil
 	self.first = self.first + 1
 	return x

@@ -72,3 +72,7 @@ end
 function body:clear()
 	cleartable(self.bodies)
 end
+
+function body:register()
+	table.insert(self.bodies, self)
+end

@@ -46,6 +46,7 @@ function paintOn( self, p )
 		require('enemies.' .. name)
 		bodies[name] = {}
 		p[name] = bodies[name]
+		self[name].bodies = bodies[name]
 		self[name .. 'list'] = list:new{}
 		self['new' .. name] = function ( prototype )
 			return self[name]:new(prototype)

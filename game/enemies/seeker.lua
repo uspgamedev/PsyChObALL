@@ -3,10 +3,13 @@ seeker = body:new {
 	__type = 'seeker'
 }
 
-seeker.__init = enemy.__init
+function seeker:__init()
+	enemy.__init(self)
+	self.speedN = math.random(v - 60, v)
+end
 
 function seeker:update( dt )
-	self.speed:set(psycho.position):sub(self.position):normalize():mult(v,v)
+	self.speed:set(psycho.position):sub(self.position):normalize():mult(self.speedN, self.speedN)
 	body.update(self, dt)
 
 	for i,v in pairs(shot.bodies) do
