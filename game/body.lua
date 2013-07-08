@@ -78,6 +78,7 @@ function body:clear()
 end
 
 function body:register(...)
+	self:freeWarning()
 	self:start(...)
 	table.insert(self.bodies, self)
 end

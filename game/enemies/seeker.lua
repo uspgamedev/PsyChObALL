@@ -5,7 +5,7 @@ seeker = body:new {
 
 function seeker:__init()
 	enemy.__init(self)
-	self.speedN = math.random(v - 60, v)
+	self.speedN = math.random(v - 30, v)
 end
 
 function seeker:update( dt )

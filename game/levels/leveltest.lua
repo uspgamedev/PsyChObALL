@@ -7,8 +7,6 @@ function run()
 	wait(1)
 	enemy()
 	wait(3)
-	enemy('grayball', 2)
+	enemy('seeker', 2)
 	wait(3)
-	warnEnemies = false
-	enemy('superball', 1, 'superball', 'superball', 'superball')
 end
