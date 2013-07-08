@@ -4,7 +4,7 @@ function init()
 	playbutton = button:new{
 		size = 100,
 		position = vector:new {width/2 + 200, 410},
-		text = "Survival",
+		text = playText(),
 		alphafollows = alphatimer,
 		fontsize = 40
 	}
@@ -100,8 +100,6 @@ function mousepressed( x, y, btn )
 	if not swypetimer.running then
 		if btn == 'r' and state == mainmenu then
 			toTutorialMenu()
-		--elseif (btn == 'l' or btn == 'r') and (state == tutorialmenu or state == achievmenu) then
-		--	toMainMenu()
 		end
 	end
 end
@@ -116,10 +114,13 @@ function keypressed( key )
 		levels.runLevel()
 	end
 	if gamelost and key == 'r' then
-		if reference[1].restarting then return end
-		reference[1].restarting = true
+		--restarting
+		if gamelostinfo.isrestarting then return end
+		gamelostinfo.isrestarting = true
+		gamelostinfo.timeofrestart = totaltime
+		local m = (totaltime - gamelostinfo.timeofdeath)/gamelostinfo.timetorestart
 		for _, eff in pairs(global.paintables.psychoeffects) do
-			eff.speed:negate():mult(3,3)
+			eff.speed:negate():mult(m, m)
 		end
 	end
 
@@ -137,8 +138,8 @@ function keypressed( key )
 		timefactor = 1.0
 		currentEffect = nil
 
-		playmessage = nil
 		playbutton:setText(playText())
+		storybutton:setText(playText())
 		button.bodies['play'] = playbutton
 		button.bodies['story'] = storybutton
 	end
@@ -171,12 +172,12 @@ function draw()
 		if state == survival then
 			graphics.setFont(getCoolFont(22))
 			graphics.print(string.format("%.0f", score), 68, 20)
-			graphics.print(string.format("%.1fs", totaltime), 68, 42)
+			graphics.print(string.format("%.1fs", gametime), 68, 42)
 			graphics.setFont(getFont(12))
 			graphics.print("Time:", 25, 48)
 			graphics.print("Score:", 25, 24)
 			graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
-			graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  totaltime)), 25, 85)
+			graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  gametime)), 25, 85)
 			graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
 			graphics.setFont(getFont(14))
 			graphics.print("ulTrAbLaST:", 25, 105)
@@ -234,7 +235,7 @@ function draw()
 				graphics.setFont(getCoolFont(20))
 				graphics.print("Your scores didn't count, cheater!", 382, 215)
 			else
-				if besttime == totaltime then
+				if besttime == gametime then
 					graphics.setFont(getFont(35))
 					graphics.print("You beat the best time!", 260, 100)
 				end	
@@ -251,7 +252,7 @@ function draw()
 		graphics.setFont(getCoolFont(40))
 		graphics.print(deathText(), 270, 300)
 		graphics.setFont(getFont(30))
-		graphics.print(string.format("You lasted %.1fsecs", totaltime), 486, 450)
+		graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450)
 		graphics.setFont(getCoolFont(23))
 		graphics.print("Press r to retry", 300, 645)
 		graphics.setFont(getCoolFont(18))
@@ -275,20 +276,22 @@ function draw()
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(colortimer.time * 0.856, alphatimer.var))
 		graphics.print("v" .. version, 513, 687)
-		graphics.print('Write "reset" to delete stats' , 15, 10)
+		graphics.print('Write "reset" to delete stats', 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
 
 		if latest ~= version then
 			graphics.print("Version " .. latest, 422, 700)
 			graphics.print("is available to download!", 510, 700)
 		end
-
 		graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 
 		graphics.setFont(getCoolFont(24))
 		if cheats.konamicode then
 			graphics.print("KONAMI CODE!", 450, 5)
 		end
+		graphics.setFont(getFont(30))
+		graphics.print("Story", width/2 - 240, height/2 + 200)
+		graphics.print("Survival", width/2 + 150, height/2 + 200)
 
 		graphics.setColor(color(colortimer.time * 4.5 + .54, alphatimer.var))
 		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)

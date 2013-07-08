@@ -123,21 +123,8 @@ function psychoball:handleDelete()
 				e.etc = 0
 				
 				table.insert(paintables.psychoeffects, e)
-				if not reference then
-					reference = {e, self.position:clone(), self.size^2}
-				end
 			end
 		end
-	end
-	reference[1].update = function ( self, dt )
-		effect.update(self, dt)
-		local d = self.position:distsqr(reference[2])
-		if self.restarting and (d < reference[3] or (self.prevdist and self.prevdist < d)) then
-			paintables.psychoeffects = nil
-			if state == survival then reloadSurvival()
-			elseif state == story then reloadStory() end
-		end
-		self.prevdist = d
 	end
 end
 

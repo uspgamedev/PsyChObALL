@@ -10,5 +10,5 @@ function run()
 	enemy('grayball', 2)
 	wait(3)
 	warnEnemies = false
-	enemy('superball', 5)
+	enemy('seeker', 3)
 end

@@ -28,6 +28,7 @@ end
 function initBase()
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
+	totaltime = 0
 	mainmenu = 1 -- mainmenu
 	tutorialmenu = 2
 	achievmenu  = 0 -- Tela de achievements
@@ -151,7 +152,6 @@ function initGameVars()
 end
 
 function resetVars()
-	reference = nil
 	if cheats.konamicode then
 		ultracounter = 30
 		cheats.konamicode = false
@@ -178,7 +178,7 @@ function resetVars()
 
 	timefactor = 1.0
 	multiplier = 1
-	totaltime = 0
+	gametime = 0
 	blastime = 0
 	score = 0
 	blastscore = 0 --Variavel que dá ultrablast points por pontos
@@ -259,7 +259,20 @@ function lostgame()
 	timefactor = .05
 	pausemessage = nil
 
-	psycho:handleDelete() --not really deleting but anyway
+	psycho:handleDelete()
+	gamelostinfo =  {
+		timetorestart = 1,
+		timeofdeath = totaltime,
+		isrestarting = false
+	}
+	paintables.psychoeffects[1].update = function ( self, dt )
+		effect.update(self, dt)
+		if gamelostinfo.isrestarting and totaltime - gamelostinfo.timeofrestart > gamelostinfo.timetorestart then
+			if state == survival then reloadSurvival()
+			elseif state == story then reloadStory() end
+			paintables.psychoeffects = nil
+		end
+	end
 end
 
 function love.draw()
@@ -402,13 +415,14 @@ function pauseText()
 end
 
 function playText()
-	playmessage = playmessage or playtexts[math.random(#playtexts)]
+	playmessage = playtexts[math.random(#playtexts)]
 	return playmessage
 end
 
 local todelete = {}
 
 function love.update(dt)
+	totaltime = totaltime + dt
 	mouseX, mouseY = mouse.getPosition()
 	mouseX = mouseX + swypetimer.var
 	isPaused = (paused or onMenu())
@@ -420,7 +434,7 @@ function love.update(dt)
 	
 	if paused then return end
 	if not (gamelost or onMenu()) then
-		totaltime = totaltime + dt
+		gametime = gametime + dt
 		blastime = blastime + dt
 		if blastime >= 30 then
 			blastime = blastime - 30

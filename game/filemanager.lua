@@ -10,8 +10,8 @@ end
 
 function writestats()
 	if cheats.wasdev then return end
-	if besttime >= totaltime and bestmult >= multiplier and bestscore >= score then return end
-	besttime  = math.max(besttime, totaltime)
+	if besttime >= gametime and bestmult >= multiplier and bestscore >= score then return end
+	besttime  = math.max(besttime, gametime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)
 	filemanager.writeTable({
