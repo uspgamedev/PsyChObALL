@@ -11,15 +11,15 @@ function enemy:__init()
 
 	local side = math.random(4)
 	if	side == 1 or side == 2 then -- top or bottom
-		self.x = math.random(self.size, width - self.size - 1)
-		self.y = side == 1 and 1 or height - 1
+		self.x = math.random(self.size, width - self.size)
+		self.y = side == 1 and 0 or height
 		self.Vy = math.random(v, v + 50) * (side == 1 and 1 or -1)
 		local n = -1
 		if self.x < width / 2 then n = 1 end
 		self.Vx = n * math.random(0, v)
 	elseif side == 3 or side == 4 then -- left or right
-		self.x = side == 3 and 1 or width - 1
-		self.y = math.random(self.size, height - self.size - 1)
+		self.x = side == 3 and 0 or width
+		self.y = math.random(self.size, height - self.size)
 		self.Vx = math.random(v, v + 50) * (side == 3 and 1 or -1)
 		local n = -1
 		if self.y < height / 2 then n = 1 end

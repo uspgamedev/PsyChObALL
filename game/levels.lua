@@ -1,18 +1,20 @@
 module('levels', package.seeall)
 
+require 'levels.formations'
+
 current = {
-	fullName = "VIII - The Fall of Psycho"
+	fullName = "VII - The Fall of Psycho"
 }
 
-function pushEnemies( timer, es )
-	for _, e in ipairs(es) do
-		e:getWarning()
+function pushEnemies( timer, enemies )
+	for _, enemy in ipairs(enemies) do
+		enemy:getWarning()
 	end
 end
 
-function registerEnemies( timer, es, ... )
-	for _, e in ipairs(es) do
-		e:register(...)
+function registerEnemies( timer, enemies, ... )
+	for _, enemy in ipairs(enemies) do
+		enemy:register(...)
 	end
 end
 
@@ -20,7 +22,7 @@ end
 local levelEnv = {}
 local enemycreator, enemycreatorwarning = {}, {}
 
-function levelEnv.enemy( name, n, ... )
+function levelEnv.enemy( name, n, formation, ... )
 	name = name or 'simpleball'
 	n = n or 1
 	local enemy = enemies[name]
@@ -28,6 +30,8 @@ function levelEnv.enemy( name, n, ... )
 	for i=1, n do
 		enemylist[i] = enemy:new{}
 	end
+	if formation then formation:applyOn(enemylist) end
+
 	local extraelements = {enemylist, ...}
 
 	if levelEnv.warnEnemies then
@@ -42,6 +46,14 @@ end
 function levelEnv.wait( s )
 	levelEnv.time = levelEnv.time + s
 end
+
+function levelEnv.formation( data )
+	local t = data.type
+	data.type = nil
+	return formations[t]:new(data)
+end
+
+setmetatable(levelEnv, {__index = _G})
 
 function loadLevel( levelname )
 	local lev = assert(filesystem.load('levels/' .. levelname .. '.lua'))
