@@ -122,5 +122,5 @@ function enemy:update(dt)
 		lostgame()
 	end
 
-	self.delete = self.delete or (self.collides or self.x < -self.size or self.y < -self.size or self.x - self.size > width or self.y - self.size > height)
+	self.delete = self.delete or self.collides
 end

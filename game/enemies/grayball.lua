@@ -20,8 +20,6 @@ function grayball:update( dt )
 		psycho.diereason = "shot"
 		lostgame()
 	end
-
-	self.delete = self.delete or (self.x < -self.size or self.y < -self.size or self.x - self.size > width or self.y - self.size > height)
 end
 
 function grayball:handleDelete()

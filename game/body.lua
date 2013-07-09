@@ -33,6 +33,11 @@ end
 
 function body:update( dt )
 	self.position:add(self.speed * dt)
+
+	if (self.x + self.size < 0 and self.Vx <= 0) or (self.x > width + self.size and self.Vx >= 0) or
+		(self.y + self.size < 0 and self.Vy <= 0) or (self.y > height + self.size and self.Vy >= 0) then
+		self.delete = true
+	end 
 end
 
 function body:draw()
