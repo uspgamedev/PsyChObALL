@@ -80,14 +80,14 @@ function horizontal:applyOn( enemies )
 		transl = self.startsat
 	end
 
+	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(x, transl + (i-1) * dist)
 		if self.shootattarget then
-			local speed = self.speed or v
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
 			if self.setspeedto or self.speed then
-				enemies[i].speed:set(self.setspeedto or self.speed)
+				enemies[i].speed:set(self.setspeedto or speed)
 			else
 				local l = enemies[n].speed:length()
 				enemies[i].speed:set(x == 0 and l or -l, 0)

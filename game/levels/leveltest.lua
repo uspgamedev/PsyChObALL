@@ -3,7 +3,7 @@ fullName = "0 - The Test"
 
 function run()
 	warnEnemies = true
-	warnEnemiesTime = 0.8
+	warnEnemiesTime = 2
 
 	wait(2)
 	local topbot = formation {
@@ -101,5 +101,5 @@ function run()
 
 	warnEnemies = false
 	wait(10)
-	enemy('superball', 1, nil, 'superball', 'superball', 'superball')
+	enemy('superball', 1, nil, 'superball')
 end

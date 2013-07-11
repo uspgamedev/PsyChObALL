@@ -9,7 +9,6 @@ vartimer = timer:new {
 }
 
 function vartimer:funcToCall( dt )
-	--print(dt, self.var)
 	if self.backwards then
 		if self.limit < self.var then 
 			self.var = math.max(self.limit, self.var - self.speed*dt)

@@ -17,8 +17,12 @@ end
 function timer:update(dt, timefactor, paused, gamelost)
 	if not self.running or (paused and self.pausable) or (gamelost and not self.works_on_gamelost) then return end
 	if self.timeaffected then dt = dt * timefactor end
-	if not self.timelimit and self.funcToCall then self:funcToCall(dt) return end 
 	self.time = self.time + dt
+	if not self.timelimit and self.funcToCall then 
+		if self.extraelements then self:funcToCall(dt, unpack(self.extraelements))
+		else self:funcToCall(dt) end
+		return
+	end 
 	if self.time >= self.timelimit then
 		self.time = self.time - self.timelimit
 		if self.funcToCall then

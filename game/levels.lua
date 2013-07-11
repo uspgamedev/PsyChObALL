@@ -36,6 +36,23 @@ function levelEnv.enemy( name, n, formation, ... )
 
 	if levelEnv.warnEnemies then
 		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), onceonly = true, funcToCall = pushEnemies, extraelements = extraelements}
+		if formation and formation.shootattarget then
+			table.insert(current.timers, timer:new {
+				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
+				prevtarget = formation.target:clone(),
+				funcToCall = function(self)
+					self.timelimit = nil
+					if not enemylist[1].warning then self.delete = true return end
+					if self.prevtarget == formation.target then return end
+					local speed = formation.speed or v
+					for i = 1, n do
+						enemylist[i].speed:set(formation.target):sub(enemylist[i].position):normalize():mult(speed, speed)
+						enemylist[i].warning:recalc_angle()
+					end
+					self.prevtarget:set(target)
+				end
+			})
+		end
 		table.insert(current.timers, warn)
 	end
 
