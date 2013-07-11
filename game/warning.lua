@@ -11,7 +11,7 @@ function warning:__init()
 	if self.based_on then
 		self.angle = math.atan(self.based_on.Vy/ self.based_on.Vx) + (self.based_on.Vx < 0 and math.pi or 0)
 		self.size = self.based_on.size*2
-		self.position = self.based_on.position
+		self.position = self.based_on.position --change this
 		self.variance = self.based_on.variance
 		self.coloreffect = self.based_on.coloreffect
 		self.alpha = self.based_on.alpha

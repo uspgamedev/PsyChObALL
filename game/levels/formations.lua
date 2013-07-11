@@ -9,6 +9,13 @@ formation = lux.object.new {
 	-- add more stuff in here maybe
 }
 
+function formation:applyOn( enemies )
+	if self.shootatplayer then
+		self.shootattarget = true
+		self.target = psycho.position
+	end
+end
+
 vertical = formation:new {
 	name = 'vertical',
 	from = 'top', --or 'bottom'
@@ -18,13 +25,9 @@ vertical = formation:new {
 }
 
 function vertical:applyOn( enemies )
+	formation.applyOn(self, enemies)
 	local y = self.from == 'top' and 0 or height
 	local n = #enemies
-
-	if self.shootatplayer then
-		self.shootattarget = true
-		self.target = psycho.position
-	end
 
 	local dist, transl = 0, 0
 	if self.movetorwards == 'center' then
@@ -36,11 +39,11 @@ function vertical:applyOn( enemies )
 		transl = self.startsat
 	end
 
+	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(transl + (i-1) * dist, y)
 
 		if self.shootattarget then
-			local speed = self.speed or v
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
 			if self.setspeedto or self.speed then
@@ -62,6 +65,7 @@ horizontal = formation:new {
 }
 
 function horizontal:applyOn( enemies )
+	formation.applyOn(self, enemies)
 	local x = self.from == 'left' and 0 or width
 	local n = #enemies
 
@@ -91,6 +95,36 @@ function horizontal:applyOn( enemies )
 			else
 				local l = enemies[n].speed:length()
 				enemies[i].speed:set(x == 0 and l or -l, 0)
+			end
+		end
+	end
+end
+
+line = formation:new {
+	name = 'line',
+	startpoint = nil, --vector
+	dx = 20, dy = 20,
+	distribute = false,
+	distribute_between = nil --vector
+}
+
+function line:applyOn( enemies )
+	formation.applyOn(self, enemies)
+	local n = #enemies
+
+	local transl = vector:new{self.dx,self.dy}
+	if self.distribute then
+		transl:set(self.distribute_between):sub(self.startpoint):div(n, n)
+	end
+
+	local speed = self.speed or v
+	for i = 1, n do
+		enemies[i].position:set(self.startpoint + (i-1)*transl)
+		if self.shootattarget then
+			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
+		else
+			if self.setspeedto then
+				enemies[i].speed:set(self.setspeedto)
 			end
 		end
 	end

@@ -5,6 +5,15 @@ function run()
 	warnEnemies = true
 	warnEnemiesTime = 2
 
+	wait(3)
+	local ft = formation {
+		type = 'line',
+		setspeedto = vector:new{0,v},
+		startpoint = vector:new{100,0},
+		dx = 80, dy = -40
+	}
+	enemy('simpleball', 8, ft)
+
 	wait(2)
 	local topbot = formation {
 		type = 'vertical',
