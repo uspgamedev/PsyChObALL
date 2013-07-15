@@ -3,16 +3,46 @@ fullName = "0 - The Test"
 
 function run()
 	warnEnemies = true
-	warnEnemiesTime = 2
+	warnEnemiesTime = .5
 
+	local vform = formation {
+		type = 'V',
+		startpoint = vector:new{60, -420},
+		size = width - 60,
+		growth = 400,
+		setspeedto = vector:new{0, v}
+	}
+	wait(2)
+	enemy('simpleball', 13, vform)
+
+
+
+	local sides = {'top', 'bottom', 'left', 'right'}
+	wait(3)
+	local side = math.random(4)
+	enemy('simpleball', 10, {side = sides[side]})
+	table.remove(sides, side)
+	wait(1)
+	side = math.random(3)
+	enemy('simpleball', 10, {side = sides[side]})
+	table.remove(sides, side)
+	wait(1)
+	enemy('simpleball', 10, {side = sides[side]})
+	table.remove(sides, side)
+	wait(1)
+	enemy('simpleball', 10, {side = sides[1]})
+	side, sides = nil, nil
+
+	warnEnemiesTime = 1.6
+	
 	wait(3)
 	local ft = formation {
 		type = 'line',
 		setspeedto = vector:new{0,v},
-		startpoint = vector:new{100,0},
-		dx = 80, dy = -40
+		startpoint = vector:new{60,0},
+		dx = (width-6)/10, dy = -40
 	}
-	enemy('simpleball', 8, ft)
+	enemy('simpleball', 10, ft)
 
 	wait(2)
 	local topbot = formation {

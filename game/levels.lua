@@ -22,40 +22,53 @@ end
 local levelEnv = {}
 local enemycreator, enemycreatorwarning = {}, {}
 
-function levelEnv.enemy( name, n, formation, ... )
+function levelEnv.enemy( name, n, format, ... )
 	name = name or 'simpleball'
 	n = n or 1
 	local enemy = enemies[name]
 	local enemylist = {}
 	for i=1, n do
-		enemylist[i] = enemy:new{}
+		enemylist[i] = enemy:new{ side = format and format.side }
 	end
-	if formation then formation:applyOn(enemylist) end
+	
+	if format then
+		if format.applyOn then
+			format:applyOn(enemylist)
+		else
+			for i = 1, n do
+				if format.speed then enemylist[i].speed:set(format.speed) end
+				if format.position then enemylist[i].position:set(format.position) end
+			end
+		end
+	end
 
 	local extraelements = {enemylist, ...}
 
 	if levelEnv.warnEnemies then
+		-- warns about the enemy
 		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), onceonly = true, funcToCall = pushEnemies, extraelements = extraelements}
-		if formation and formation.shootattarget then
+		table.insert(current.timers, warn)
+		if format and format.shootattarget then
+			-- follows the target with the warnings
 			table.insert(current.timers, timer:new {
 				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
-				prevtarget = formation.target:clone(),
+				prevtarget = format.target:clone(),
 				funcToCall = function(self)
 					self.timelimit = nil
 					if not enemylist[1].warning then self.delete = true return end
-					if self.prevtarget == formation.target then return end
-					local speed = formation.speed or v
+					if self.prevtarget == format.target then return end
+					local speed = format.speed or v
 					for i = 1, n do
-						enemylist[i].speed:set(formation.target):sub(enemylist[i].position):normalize():mult(speed, speed)
+						enemylist[i].speed:set(format.target):sub(enemylist[i].position):normalize():mult(speed, speed)
 						enemylist[i].warning:recalc_angle()
 					end
 					self.prevtarget:set(target)
 				end
 			})
 		end
-		table.insert(current.timers, warn)
 	end
 
+	-- release the enemy onscreen
 	local t = timer:new{timelimit = levelEnv.time, onceonly = true, funcToCall = registerEnemies, extraelements = extraelements}
 	table.insert(current.timers, t)
 end

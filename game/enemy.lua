@@ -6,10 +6,12 @@ enemy = body:new {
 	bodies = {}
 }
 
+local sides = {top = 1, bottom = 2, left = 3, right = 4}
+
 function enemy:__init()
 	self.variance = math.random(colorcycle * 1000) / 1000
 
-	local side = math.random(4)
+	local side = sides[self.side] or math.random(4)
 	if	side == 1 or side == 2 then -- top or bottom
 		self.x = math.random(self.size, width - self.size)
 		self.y = side == 1 and 0 or height

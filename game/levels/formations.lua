@@ -5,7 +5,8 @@ module('levels.formations', package.seeall)
 formation = lux.object.new {
 	name = 'formation_name',
 	shootatplayer = false,
-	shootattarget = false
+	shootattarget = false,
+	__type = 'formation'
 	-- add more stuff in here maybe
 }
 
@@ -119,7 +120,52 @@ function line:applyOn( enemies )
 
 	local speed = self.speed or v
 	for i = 1, n do
-		enemies[i].position:set(self.startpoint + (i-1)*transl)
+		enemies[i].position:set(self.startpoint):add((i-1)*transl)
+		if self.shootattarget then
+			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
+		else
+			if self.setspeedto then
+				enemies[i].speed:set(self.setspeedto)
+			end
+		end
+	end
+end
+
+V = formation:new {
+	name = 'V',
+	size = nil,
+	growth = nil,
+	vertical = false
+}
+
+function V:applyOn( enemies )
+	formation.applyOn(self, enemies)
+	local n = #enemies
+
+	local half = math.ceil(n/2)
+	local even = n % 2 == 0
+	local transl = vector:new{self.size/n, 2*self.growth/n}
+	if self.vertical then transl[1], transl[2] = transl[2], transl[1] end
+	local speed = self.speed or v
+	local prevp = self.startpoint
+	for i = 1, n do
+		enemies[i].position:set(prevp):add(transl)
+		prevp = enemies[i].position
+		if even then 
+			if i == half then
+				if self.vertical then transl.x = 0
+				else transl.y = 0 end
+			elseif i == half + 1 then
+				if self.vertical then transl.x = -2*self.growth/n
+				else transl.y = -2*self.growth/n end
+			end
+		else
+			if i == half then
+				if self.vertical then transl.x = -transl.x
+				else transl.y = -transl.y end
+			end
+		end
+
 		if self.shootattarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else

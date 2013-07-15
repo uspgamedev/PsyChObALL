@@ -35,7 +35,7 @@ function init()
 	--[[End of superball]]
 end
 
-function restart()
+function restartSurvival()
 	superball.addtimer:start(5)
 	superball.releasetimer:start(0)
 end

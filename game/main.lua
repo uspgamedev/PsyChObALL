@@ -195,7 +195,7 @@ function reloadSurvival()
 	timer.closenonessential()
 
 	soundmanager.restart()
-	enemies.restart()
+	enemies.restartSurvival()
 	enemy.addtimer:start(2)
 	enemy.releasetimer:start(1.5)
 
