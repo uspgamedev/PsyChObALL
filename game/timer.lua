@@ -74,3 +74,12 @@ function timer.closenonessential()
 		a = a + 1
 	end
 end
+
+function timer.remove( t )
+	for k, ti in ipairs(timer.timers) do
+		if ti == t then
+			table.remove(timer.timers, k)
+			return
+		end
+	end
+end

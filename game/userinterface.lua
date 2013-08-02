@@ -15,6 +15,7 @@ function init()
 		reloadSurvival()
 		button.bodies['play'] = nil
 		neweffects(self, 100)
+		button.cancelclick = true
 	end
 
 	playbutton:start()
@@ -34,6 +35,7 @@ function init()
 		selectLevel()
 		button.bodies['story'] = nil
 		neweffects(self, 50)
+		button.cancelclick = true
 	end
 
 	storybutton:start()
@@ -89,10 +91,15 @@ function closeMenu()
 end
 
 function restartMenu()
+	alphatimer:setAndGo(0, 255)
 	state = mainmenu
 	resetVars()
 	timer.closenonessential()
 	soundmanager.changeSong(soundmanager.menusong)
+	playbutton:setText(playText())
+	storybutton:setText(playText())
+	button.bodies['play'] = playbutton
+	button.bodies['story'] = storybutton
 end
 
 function mousepressed( x, y, btn )
@@ -141,18 +148,10 @@ function keypressed( key )
 		cheats.image.enabled = false
 		resetted = false
 
-		alphatimer:setAndGo(0, 255)
-
 		soundmanager.reset()
 		timefactor = 1.0
 		currentEffect = nil
-
-		playbutton:setText(playText())
-		storybutton:setText(playText())
-		button.bodies['play'] = playbutton
-		button.bodies['story'] = storybutton
 	end
-
 
 	if state == mainmenu then
 		resetted = resetpass (key)
@@ -168,7 +167,7 @@ end
 
 function update(dt)
 	for _,v in pairs(paintables) do
-		for _,b in pairs(v) do
+		for __,b in pairs(v) do
 			b:update(dt)
 		end
 	end

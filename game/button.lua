@@ -3,14 +3,17 @@ button = body:new {
 	fontsize = 12,
 	onHover = false,
 	__type = 'button',
-	bodies = {}
+	bodies = {},
+	allbuttons = {}
 }
+setmetatable(button.allbuttons, {__mode = 'v'})
 
 function button:__init()
 	if self.menu and self.menu < 10 then
 		self.position:add((self.menu - 1)*width)
 	end
 
+	self.variance = math.random(colorcycle * 1000)/1000
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
 	self.effectsBurst = timer:new {
@@ -32,12 +35,14 @@ function button:__init()
 		alphafollows = self.alphafollows,
 		index = false
 	}
+
+	table.insert(button.allbuttons, self)
 end
 
 function button:draw()
 	if getStateClass(self.menu) ~= getStateClass() then return end
 	--body.draw(self)
-	maincolor[4] = self.alpha or (self.alphafollows and self.alphafollows.var) or maincolor[4]
+	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.setColor(inverteffect(maincolor))
 	graphics.setFont(getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')
@@ -75,10 +80,11 @@ function button:pressed()
 end
 
 function button:close()
-	if self.onHover then 
+	if self.onHover then
 		self.onHover = false
 		self:hover(false)
 	end
+	timer.remove(self.effectsBurst)
 end
 
 function button:hover(hovering)
@@ -94,10 +100,12 @@ function button:hover(hovering)
 end
 
 function button.mousepressed( x, y, btn )
-	for k, b in pairs(button.bodies) do
+	button.cancelclick = false
+	for k, b in ipairs(button.allbuttons) do
 		if b.menu == state and ((x-b.x)^2 + (y-b.y)^2) < b.size^2 then
 			b:pressed()
 		end
+		if button.cancelclick then return end
 	end
 end
 

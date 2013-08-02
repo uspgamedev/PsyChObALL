@@ -213,6 +213,12 @@ function reloadSurvival()
 end
 
 function reloadStory( name )
+	if UI.paintables.levelselect then
+		for _, but in pairs(UI.paintables.levelselect) do
+			but:close()
+		end
+		UI.paintables.levelselect = nil
+	end
 	state = story
 	soundmanager.changeSong(soundmanager.gamesong)
 	resetVars()
@@ -226,6 +232,7 @@ function reloadStory( name )
 end
 
 function selectLevel()
+	local ls = {}
 	levels.loadAll()
 	state = levelselect
 	local pos = vector:new {-100, 120}
@@ -235,7 +242,7 @@ function selectLevel()
 			pos.x = 150
 			pos.y = pos.y + 238
 		end
-		button:new{
+		table.insert(ls, button:new{
 			size = 100,
 			levelname = name,
 			position = pos:clone(),
@@ -245,8 +252,24 @@ function selectLevel()
 			pressed = function(self)
 				reloadStory(self.levelname)
 			end
-		}:register()
+		})
 	end
+
+	table.insert(ls, button:new{
+		size = 50,
+		position = pos:set(920, 580),
+		text = "back",
+		fontsize = 20,
+		menu = levelselect,
+		pressed = function(self)
+			for _, but in pairs(UI.paintables.levelselect) do
+				but:close()
+			end
+			UI.paintables.levelselect = nil
+			UI.restartMenu()
+		end
+	})
+	UI.paintables.levelselect = ls
 end
 
 function onMenu()
@@ -549,7 +572,7 @@ function love.keypressed(key)
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
-	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
+	if (key == 'escape' or key == 'p') and onGame() and not gamelost then
 		pausemessage = nil --resets pauseText()
 		paused = not paused --pauses or unpauses
 		mouse.setGrab(not paused) --releases the mouse if paused
@@ -580,7 +603,7 @@ function love.keyreleased(key)
 end
 
 function love.focus(f)
-	if not (f or gamelost or onMenu()) then paused = true end
+	if onGame() and not (f or gamelost) then paused = true end
 end
 
 function love.quit()
