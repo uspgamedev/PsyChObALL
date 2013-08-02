@@ -102,8 +102,7 @@ local effects = {
 
 function psychoball:handleDelete()
 	self.speed:set(0,0)
-	if not self then return end
-	paintables.psychoeffects = {}
+	local deatheffects = {}
 	self.sizeGrowth = -300
 	local efunc = effects[math.random(#effects)]
 	for i = self.x - self.size, self.x + self.size, effect.size/1.5 do
@@ -122,10 +121,11 @@ function psychoball:handleDelete()
 				e.timetogo = math.huge
 				e.etc = 0
 				
-				table.insert(paintables.psychoeffects, e)
+				table.insert(deatheffects, e)
 			end
 		end
 	end
+	paintables.psychoeffects = deatheffects
 end
 
 function psychoball:keypressed( key )

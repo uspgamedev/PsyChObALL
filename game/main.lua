@@ -40,6 +40,12 @@ function initBase()
 	coolfonts = {}
 	resetted = false
 
+	gamelostinfo =  {
+		timetorestart = 1,
+		timeofdeath = nil,
+		isrestarting = false
+	}
+
 	paintables = {}
 	circleEffect:paintOn(paintables)
 	shot:paintOn(paintables)
@@ -260,19 +266,8 @@ function lostgame()
 	pausemessage = nil
 
 	psycho:handleDelete()
-	gamelostinfo =  {
-		timetorestart = 1,
-		timeofdeath = totaltime,
-		isrestarting = false
-	}
-	paintables.psychoeffects[1].update = function ( self, dt )
-		effect.update(self, dt)
-		if gamelostinfo.isrestarting and totaltime - gamelostinfo.timeofrestart > gamelostinfo.timetorestart then
-			if state == survival then reloadSurvival()
-			elseif state == story then reloadStory() end
-			paintables.psychoeffects = nil
-		end
-	end
+	gamelostinfo.timeofdeath = totaltime
+	gamelostinfo.isrestarting = false
 end
 
 function love.draw()

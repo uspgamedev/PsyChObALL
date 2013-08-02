@@ -125,9 +125,22 @@ function keypressed( key )
 		for _, eff in pairs(global.paintables.psychoeffects) do
 			eff.speed:negate():mult(m, m)
 		end
+		timer:new{
+			running = true,
+			timeaffected = false,
+			onceonly = true,
+			timelimit = gamelostinfo.timetorestart,
+			funcToCall = function()
+				global.paintables.psychoeffects = nil
+				if state == survival then reloadSurvival()
+				elseif state == story then reloadStory() end
+			end
+		}
 	end
 
 	if (gamelost or paused) and key == 'b' then
+		global.paintables.psychoeffects = nil
+
 		paused = false
 		restartMenu()
 
