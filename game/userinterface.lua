@@ -11,7 +11,6 @@ function init()
 
 	function playbutton:pressed()
 		closeMenu()
-		state = survival
 		alphatimer:setAndGo(255, 0)
 		reloadSurvival()
 		button.bodies['play'] = nil
@@ -31,9 +30,8 @@ function init()
 
 	function storybutton:pressed()
 		closeMenu()
-		state = story
 		alphatimer:setAndGo(255, 0)
-		reloadStory()
+		selectLevel()
 		button.bodies['story'] = nil
 		neweffects(self, 50)
 	end
@@ -83,7 +81,6 @@ function toAchievMenu()
 end
 
 function closeMenu()
-	soundmanager.changeSong(soundmanager.gamesong)
 	for _,v in pairs(paintables) do
 		for _,b in pairs(v) do
 			b:close()
@@ -112,10 +109,6 @@ function mousereleased( x, y, btn )
 end
 
 function keypressed( key )
-	if key == 'l' then
-		levels.loadLevel 'leveltest'
-		levels.runLevel()
-	end
 	if gamelost and key == 'r' then
 		--restarting
 		if gamelostinfo.isrestarting then return end
@@ -207,7 +200,7 @@ function draw()
 			graphics.setFont(getCoolFont(30))
 			graphics.print(string.format("%.0f", score), 25, 48)
 			graphics.setFont(getCoolFont(30))
-			graphics.print(levels.current.fullName, 200, 20)
+			graphics.print(levels.currentLevel.fullName, 200, 20)
 			graphics.setFont(getCoolFont(18))
 			graphics.print("Score:", 25, 30)
 			graphics.print("ulTrAbLaST:", 25, 100)
@@ -276,18 +269,20 @@ function draw()
 		graphics.print(pauseText(), 649, 650)
 	end
 	--[[End of Drawing Death Screen]]
+	maincolor[4] = 255
+
+	--drawing menu paintables
+	for _,v in pairs(paintables) do
+		for k, p in pairs(v) do
+			p:draw()
+		end
+	end
 
 	--[[Drawing Menu]]
 	if alphatimer.var > 0 then
 		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
 		graphics.push()
 		
-		--drawing menu paintables
-		for _,v in pairs(paintables) do
-			for k, p in pairs(v) do
-				p:draw()
-			end
-		end
 		--drawing mainmenu
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(colortimer.time * 0.856, alphatimer.var))
@@ -378,4 +373,8 @@ function draw()
 		graphics.setFont(getFont(12))
 	end
 	--[[End of Drawing Pause Menu]]
+
+	if state == levelselect then
+
+	end
 end

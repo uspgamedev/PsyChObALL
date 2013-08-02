@@ -1,4 +1,5 @@
 require "base"
+require "formations"
 require "levels"
 require "userinterface"
 require "body"
@@ -34,6 +35,7 @@ function initBase()
 	achievmenu  = 0 -- Tela de achievements
 	survival = 10 -- modo de jogo survival
 	story = 11
+	levelselect = 20
 	state = mainmenu
 	sqrt2 = math.sqrt(2)
 	fonts = {}
@@ -196,6 +198,8 @@ function resetVars()
 end
 
 function reloadSurvival()
+	soundmanager.changeSong(soundmanager.gamesong)
+	state = survival
 	enemy.addtimer:funcToCall()
 	resetVars()
 	timer.closenonessential()
@@ -208,13 +212,41 @@ function reloadSurvival()
 	mouse.setGrab(true)
 end
 
-function reloadStory()
+function reloadStory( name )
+	state = story
+	soundmanager.changeSong(soundmanager.gamesong)
 	resetVars()
 	timer.closenonessential()
 
 	soundmanager.restart()
 
 	mouse.setGrab(true)
+
+	levels.runLevel(name)
+end
+
+function selectLevel()
+	levels.loadAll()
+	state = levelselect
+	local pos = vector:new {-100, 120}
+	for name, level in pairs(levels.levels) do
+		pos:add(250)
+		if pos.x + 100 >= width then
+			pos.x = 150
+			pos.y = pos.y + 238
+		end
+		button:new{
+			size = 100,
+			levelname = name,
+			position = pos:clone(),
+			text = name,
+			fontsize = 20,
+			menu = levelselect,
+			pressed = function(self)
+				reloadStory(self.levelname)
+			end
+		}:register()
+	end
 end
 
 function onMenu()
@@ -223,6 +255,13 @@ end
 
 function onGame()
 	return state >= 10 and state < 20
+end
+
+function getStateClass(st)
+	st = st or state
+	if st < 10 then return 1
+	elseif st >= 10 and st < 20 then return 2
+	elseif st == levelselect then return 3 end
 end
 
 function getFont(size)
@@ -264,6 +303,12 @@ function lostgame()
 	gamelost   = true
 	timefactor = .05
 	pausemessage = nil
+
+	if levels.currentLevel then
+		for _, t in ipairs(levels.currentLevel.timers_) do
+			t:stop()
+		end
+	end
 
 	psycho:handleDelete()
 	gamelostinfo.timeofdeath = totaltime

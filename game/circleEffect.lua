@@ -41,7 +41,7 @@ function circleEffect.init()
 	}
 
 	function circleEffect.timer:funcToCall() -- releases cirleEffects
-		if not gamelost then
+		if onGame() then
 			circleEffect:new {
 				based_on = psycho
 			}

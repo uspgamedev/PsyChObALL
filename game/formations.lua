@@ -1,6 +1,6 @@
 require 'lux.object'
 
-module('levels.formations', package.seeall)
+module ('formations', package.seeall)
 
 formation = lux.object.new {
 	name = 'formation_name',

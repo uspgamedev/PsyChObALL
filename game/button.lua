@@ -10,6 +10,7 @@ function button:__init()
 	if self.menu and self.menu < 10 then
 		self.position:add((self.menu - 1)*width)
 	end
+
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
 	self.effectsBurst = timer:new {
@@ -17,6 +18,7 @@ function button:__init()
 		pausable = false,
 		persistent = true
 	}
+
 	function self.effectsBurst.funcToCall(timer)
 		neweffects(self, 2)
 	end
@@ -33,6 +35,7 @@ function button:__init()
 end
 
 function button:draw()
+	if getStateClass(self.menu) ~= getStateClass() then return end
 	--body.draw(self)
 	maincolor[4] = self.alpha or (self.alphafollows and self.alphafollows.var) or maincolor[4]
 	graphics.setColor(inverteffect(maincolor))

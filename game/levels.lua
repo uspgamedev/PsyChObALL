@@ -1,21 +1,22 @@
 module('levels', package.seeall)
 
-require 'levels.formations'
+levels = {
 
-current = {
-	fullName = "VII - The Fall of Psycho"
 }
+currentLevel = nil
 
 function pushEnemies( timer, enemies )
 	for _, enemy in ipairs(enemies) do
 		enemy:getWarning()
 	end
+	timer.running = false
 end
 
 function registerEnemies( timer, enemies, ... )
 	for _, enemy in ipairs(enemies) do
 		enemy:register(...)
 	end
+	timer.running = false
 end
 
 
@@ -46,16 +47,17 @@ function levelEnv.enemy( name, n, format, ... )
 
 	if levelEnv.warnEnemies then
 		-- warns about the enemy
-		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), onceonly = true, funcToCall = pushEnemies, extraelements = extraelements}
-		table.insert(current.timers, warn)
+		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), funcToCall = pushEnemies, extraelements = extraelements, persistent = true}
+		table.insert(currentLevel.timers_, warn)
 		if format and format.shootattarget then
 			-- follows the target with the warnings
-			table.insert(current.timers, timer:new {
+			table.insert(currentLevel.timers_, timer:new {
 				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
 				prevtarget = format.target:clone(),
+				persistent = true,
 				funcToCall = function(self)
 					self.timelimit = nil
-					if not enemylist[1].warning then self.delete = true return end
+					if not enemylist[1].warning then self.running = false self.timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1) return end
 					if self.prevtarget == format.target then return end
 					local speed = format.speed or v
 					for i = 1, n do
@@ -69,8 +71,8 @@ function levelEnv.enemy( name, n, format, ... )
 	end
 
 	-- release the enemy onscreen
-	local t = timer:new{timelimit = levelEnv.time, onceonly = true, funcToCall = registerEnemies, extraelements = extraelements}
-	table.insert(current.timers, t)
+	local t = timer:new{timelimit = levelEnv.time, funcToCall = registerEnemies, extraelements = extraelements, persistent = true}
+	table.insert(currentLevel.timers_, t)
 end
 
 function levelEnv.wait( s )
@@ -85,20 +87,35 @@ end
 
 setmetatable(levelEnv, {__index = _G})
 
-function loadLevel( levelname )
-	local lev = assert(filesystem.load('levels/' .. levelname .. '.lua'))
-	current = {}
-	setfenv(lev, current)
-	lev()
-	current.timers = {}
-	levelEnv.time = 0
-	setfenv(current.run, levelEnv)
-	current.run()
-end
-
-function runLevel( l )
-	l = l or current
-	for _, t in ipairs(l.timers) do
+function runLevel( name )
+	currentLevel = name and levels[name] or currentLevel
+	currentLevel.reload()
+	for _, t in ipairs(currentLevel.timers_) do
 		t:start()
 	end
+end
+
+function loadLevel( lev )
+	return function ()
+		currentLevel = { reload = currentLevel.reload }
+		setfenv(lev, currentLevel)
+		lev()
+		currentLevel.timers_ = {}
+		levelEnv.time = 0
+		setfenv(currentLevel.run, levelEnv)
+		currentLevel.run()
+	end
+end
+
+function loadAll()
+	cleartable(levels)
+	local files = filesystem.enumerate('levels')
+	for _, file in ipairs(files) do
+		local lev = assert(filesystem.load('levels/' .. file))
+		currentLevel = {}
+		currentLevel.reload = loadLevel(lev)
+		currentLevel.reload()
+		levels[currentLevel.name] = currentLevel
+	end
+	currentLevel = nil
 end
