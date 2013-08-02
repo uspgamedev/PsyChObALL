@@ -140,5 +140,5 @@ function run()
 
 	warnEnemies = false
 	wait(10)
-	enemy('superball', 1, nil, 'superball')
+	enemy('superball', 2, nil, 'grayball')
 end

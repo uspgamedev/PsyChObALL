@@ -26,7 +26,7 @@ function superball:__init()
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-		e.speed = (pos:sub(self.position)):normalize():mult(2 * v, 2 * v)
+		e.speed = (pos:sub(self.position)):normalize():add(math.random()/3, math.random()/3):normalize():mult(2 * v, 2 * v)
 		e:register(self.extra and unpack(self.extra) or nil)
 	end
 
