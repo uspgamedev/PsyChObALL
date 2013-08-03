@@ -16,12 +16,13 @@ function superball:__init()
 	self.speed	  = vector:new {vx, vy}
 
 	self.shoottimer = timer:new {
-		timelimit = 1.7,
+		timelimit = 1.5 + math.random(),
 		works_on_gamelost = false,
 		time = math.random()*1.6
 	}
 
-	function self.shoottimer.funcToCall()
+	function self.shoottimer.funcToCall( timer )
+		timer.timelimit = 1 + math.random()
 		local e = self.shot:new{}
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()

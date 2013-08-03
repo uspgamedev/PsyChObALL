@@ -40,13 +40,18 @@ function restartSurvival()
 	superball.releasetimer:start(0)
 end
 
+function restartStory()
+	superball.addtimer:stop()
+	superball.releasetimer:stop()
+end
+
 function paintOn( self, p )
 	for k, v in ipairs(filesystem.enumerate 'enemies') do
 		local name = v:sub(0,v:len() - 4)
 		require('enemies.' .. name)
-		bodies[name] = {}
-		p[name] = bodies[name]
+		bodies[name] = {name = name}
 		self[name].bodies = bodies[name]
+		self[name]:paintOn(p)
 		self[name].list = list:new{}
 		self['new' .. name] = function ( prototype )
 			return self[name]:new(prototype)

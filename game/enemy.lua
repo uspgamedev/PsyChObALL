@@ -51,7 +51,9 @@ function enemy.init()
 
 	function enemy.releasetimer:funcToCall() --actually releases the enemies on screen
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		enemylist:pop():register()
+		local e = enemylist:pop()
+		if e then e:register()
+		else print 'enemy missing' end
 	end
 
 	function enemy.releasetimer:handlereset()

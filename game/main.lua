@@ -49,12 +49,20 @@ function initBase()
 	}
 
 	paintables = {}
-	circleEffect:paintOn(paintables)
+	setmetatable(paintables, {
+		__index = function ( self, index )
+			for _, p in pairs(self) do
+				if p.name == index then return p end
+			end
+		end
+		})
 	shot:paintOn(paintables)
 	enemy:paintOn(paintables)
 	effect:paintOn(paintables)
 	enemies:paintOn(paintables)
 	warning:paintOn(paintables)
+	circleEffect:paintOn(paintables)
+	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
 	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
@@ -225,6 +233,7 @@ function reloadStory( name )
 	timer.closenonessential()
 
 	soundmanager.restart()
+	enemies.restartStory()
 
 	mouse.setGrab(true)
 

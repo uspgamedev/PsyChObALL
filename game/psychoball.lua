@@ -34,7 +34,7 @@ end
 
 function psychoball:update(dt)
 	if gamelost then return end
-	self.position:add(self.speed * dt)
+	body.update(self, dt)
 
 	self.position:set(
 		math.max(self.size, math.min(width - self.size, self.position[1])),
@@ -123,6 +123,18 @@ function psychoball:handleDelete()
 				
 				table.insert(deatheffects, e)
 			end
+		end
+	end
+	deatheffects[1].firstpos = deatheffects[1].position:clone()
+	deatheffects[1].update = function ( self, dt )
+		effect.update(self, dt)
+		if gamelostinfo.isrestarting and not self.speed:equals(0, 0) then
+			local curdist = self.position:distsqr(self.firstpos)
+			if curdist > self.prevdist then
+				self.speed:set(0, 0)
+				return
+			end
+			self.prevdist = curdist
 		end
 	end
 	paintables.psychoeffects = deatheffects

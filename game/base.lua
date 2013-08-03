@@ -1,4 +1,4 @@
-width, height = 1080, 720
+width, height = 1280, 720
 
 --mythical stuff
 base = {}
@@ -87,4 +87,9 @@ end
 
 function cleartable( t )
 	for k in pairs(t) do t[k] = nil end
+end
+
+local constrad = math.pi/180
+function torad( degree )
+	return degree*constrad
 end

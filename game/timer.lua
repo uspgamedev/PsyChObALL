@@ -69,7 +69,7 @@ function timer.closenonessential()
 		end
 	end
 	local a = 0
-	for j,k in pairs(todelete) do
+	for j,k in ipairs(todelete) do
 		table.remove(timer.timers, k - a)
 		a = a + 1
 	end

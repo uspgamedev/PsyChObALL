@@ -2,9 +2,9 @@ module('UI', base.globalize)
 
 function init()
 	playbutton = button:new{
-		size = 100,
-		position = vector:new {width/2 + 200, 410},
-		text = playText(),
+		size = 120,
+		position = vector:new {width/2 + 200, 430},
+		text = 'Survival',
 		alphafollows = alphatimer,
 		fontsize = 40
 	}
@@ -22,9 +22,9 @@ function init()
 	button.bodies['play'] = playbutton
 
 	storybutton = button:new {
-		size = 100,
-		position = vector:new {width/2 - 200, 410},
-		text = playText(),
+		size = 120,
+		position = vector:new {width/2 - 200, 430},
+		text = 'Adventure',
 		alphafollows = alphatimer,
 		fontsize = 40
 	}
@@ -96,8 +96,6 @@ function restartMenu()
 	resetVars()
 	timer.closenonessential()
 	soundmanager.changeSong(soundmanager.menusong)
-	playbutton:setText(playText())
-	storybutton:setText(playText())
 	button.bodies['play'] = playbutton
 	button.bodies['story'] = storybutton
 end
@@ -125,6 +123,8 @@ function keypressed( key )
 		for _, eff in pairs(global.paintables.psychoeffects) do
 			eff.speed:negate():mult(m, m)
 		end
+		global.paintables.psychoeffects[1].prevdist = 
+			global.paintables.psychoeffects[1].position:distsqr(global.paintables.psychoeffects[1].firstpos)
 		timer:new{
 			running = true,
 			timeaffected = false,
@@ -149,6 +149,12 @@ function keypressed( key )
 
 	if (gamelost or paused) and key == 'b' then
 		global.paintables.psychoeffects = nil
+		if state == story then
+			for _, t in ipairs(levels.currentLevel.timers_) do
+				t:remove()
+			end
+			levels.currentLevel = nil
+		end
 
 		paused = false
 		restartMenu()
@@ -195,7 +201,7 @@ function draw()
 			graphics.print("Score:", 25, 24)
 			graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
 			graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  gametime)), 25, 85)
-			graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), 965, 83)
+			graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), width - 115, 83)
 			graphics.setFont(getFont(14))
 			graphics.print("ulTrAbLaST:", 25, 105)
 			graphics.setFont(getCoolFont(20))
@@ -203,7 +209,7 @@ function draw()
 			graphics.setFont(getFont(20))
 			graphics.print("___________", 25, 106)
 			graphics.setFont(getCoolFont(40))
-			graphics.print(string.format("x%.1f", multiplier), 950, 35)
+			graphics.print(string.format("x%.1f", multiplier), width - 130, 35)
 		elseif state == story then
 			graphics.setFont(getCoolFont(30))
 			graphics.print(string.format("%.0f", score), 25, 48)
@@ -238,10 +244,10 @@ function draw()
 
 	--[[Drawing Things that show up on every page]]
 	graphics.setColor(color(colortimer.time))
-	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), 1000, 10)
+	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), width - 80, 10)
 	maincolor[4] = 70 --alpha
 	graphics.setColor(maincolor)
-	soundmanager.drawSoundIcon(1030, 675)
+	soundmanager.drawSoundIcon(width - 50, height - 50)
 	--[[End of Drawing Things that show up on every page]]
 
 	--[[Drawing Death Screen]]
@@ -294,7 +300,7 @@ function draw()
 		--drawing mainmenu
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(colortimer.time * 0.856, alphatimer.var))
-		graphics.print("v" .. version, 513, 687)
+		graphics.print("v" .. version, width/2 - 10, 690)
 		graphics.print('Write "reset" to delete stats', 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
 
@@ -309,11 +315,9 @@ function draw()
 			graphics.print("KONAMI CODE!", 450, 5)
 		end
 		graphics.setFont(getFont(30))
-		graphics.print("Story", width/2 - 240, height/2 + 200)
-		graphics.print("Survival", width/2 + 150, height/2 + 200)
 
 		graphics.setColor(color(colortimer.time * 4.5 + .54, alphatimer.var))
-		graphics.draw(logo, 120, 75, nil, 0.25, 0.20)
+		graphics.draw(logo, (width - logo:getWidth()/4)/2, 75, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 		--end of mainmenu
 
