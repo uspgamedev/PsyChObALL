@@ -4,6 +4,7 @@ circleEffect = body:new {
 	mode = 'line',
 	__type = 'circleEffect',
 	changesimage = false,
+	ord = 3,
 	bodies = {}
 }
 

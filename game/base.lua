@@ -1,4 +1,4 @@
-width, height = 1280, 720
+width, height = 1080, 720
 
 --mythical stuff
 base = {}

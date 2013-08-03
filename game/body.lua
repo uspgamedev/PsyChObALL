@@ -75,7 +75,13 @@ function body:freeWarning()
 end
 
 function body:paintOn( p )
-	p[self.__type] = self.bodies
+	local m = {
+		name = self.name,
+		ord = self.ord or 5
+	}
+	m.__index = m
+	setmetatable(self.bodies, m)
+	table.insert(p, self.bodies)
 end
 
 function body:clear()

@@ -119,7 +119,7 @@ function run()
 		distance = 'distribute'
 	}
 	
-	for i = 1, 7 do
+	for i = 1, 5 do
 		wait(.8)
 		f.from = 'left'
 		f.setspeedto.x = 300
@@ -128,7 +128,7 @@ function run()
 		f.setspeedto.x = -300
 		enemy('grayball', i, f)
 	end
-	for i = 7, 1, -1 do
+	for i = 5, 1, -1 do
 		wait(.8)
 		f.from = 'left'
 		f.setspeedto.x = 300
