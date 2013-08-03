@@ -121,7 +121,7 @@ function keypressed( key )
 		if gamelostinfo.isrestarting then return end
 		gamelostinfo.isrestarting = true
 		gamelostinfo.timeofrestart = totaltime
-		local m = (totaltime - gamelostinfo.timeofdeath)/gamelostinfo.timetorestart
+		local m = (totaltime - gamelostinfo.timeofdeath)/(1.1 * gamelostinfo.timetorestart)
 		for _, eff in pairs(global.paintables.psychoeffects) do
 			eff.speed:negate():mult(m, m)
 		end
@@ -130,6 +130,15 @@ function keypressed( key )
 			timeaffected = false,
 			onceonly = true,
 			timelimit = gamelostinfo.timetorestart,
+			funcToCall = function()
+				timefactor = timefactor / 10
+			end
+		}
+		timer:new{
+			running = true,
+			timeaffected = false,
+			onceonly = true,
+			timelimit = gamelostinfo.timetorestart * 2.2,
 			funcToCall = function()
 				global.paintables.psychoeffects = nil
 				if state == survival then reloadSurvival()

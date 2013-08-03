@@ -43,7 +43,7 @@ function initBase()
 	resetted = false
 
 	gamelostinfo =  {
-		timetorestart = 1,
+		timetorestart = .5,
 		timeofdeath = nil,
 		isrestarting = false
 	}
