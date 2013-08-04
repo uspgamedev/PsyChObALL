@@ -47,14 +47,16 @@ function levelEnv.enemy( name, n, format, ... )
 
 	if levelEnv.warnEnemies then
 		-- warns about the enemy
-		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), funcToCall = pushEnemies, extraelements = extraelements, persistent = true}
+		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), funcToCall = pushEnemies, 
+			extraelements = extraelements, onceonly = true, registerSelf = false}
 		table.insert(currentLevel.timers_, warn)
 		if format and format.shootattarget then
 			-- follows the target with the warnings
 			table.insert(currentLevel.timers_, timer:new {
 				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
 				prevtarget = format.target:clone(),
-				persistent = true,
+				registerSelf = false,
+				onceonly = true,
 				funcToCall = function(self)
 					self.timelimit = nil
 					if not enemylist[1].warning then self.running = false self.timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1) return end
@@ -71,7 +73,8 @@ function levelEnv.enemy( name, n, format, ... )
 	end
 
 	-- release the enemy onscreen
-	local t = timer:new{timelimit = levelEnv.time, funcToCall = registerEnemies, extraelements = extraelements, persistent = true}
+	local t = timer:new{timelimit = levelEnv.time, funcToCall = registerEnemies, 
+		extraelements = extraelements, onceonly = true, registerSelf = false}
 	table.insert(currentLevel.timers_, t)
 end
 
@@ -91,8 +94,18 @@ function runLevel( name )
 	currentLevel = name and levels[name] or currentLevel
 	currentLevel.reload()
 	for _, t in ipairs(currentLevel.timers_) do
+		t:register()
 		t:start()
 	end
+end
+
+function closeLevel()
+	for _, t in ipairs(currentLevel.timers_) do
+		t:stop()
+		t:remove()
+	end
+	currentLevel.timers_ = nil
+	currentLevel = nil
 end
 
 function loadLevel( lev )
@@ -107,15 +120,64 @@ function loadLevel( lev )
 	end
 end
 
+local loaded = false
 function loadAll()
+	if loaded then return end
+	loaded = true
 	cleartable(levels)
 	local files = filesystem.enumerate('levels')
 	for _, file in ipairs(files) do
 		local lev = assert(filesystem.load('levels/' .. file))
 		currentLevel = {}
 		currentLevel.reload = loadLevel(lev)
-		currentLevel.reload()
+		setfenv(lev, currentLevel)
+		lev()
 		levels[currentLevel.name] = currentLevel
 	end
 	currentLevel = nil
+
+	local ls = {}
+	local levelselectalpha = vartimer:new{ speed = 300 }
+	local pos = vector:new {-100, 120}
+	for name, level in pairs(levels) do
+		pos:add(250)
+		if pos.x + 100 >= width then
+			pos.x = 150
+			pos.y = pos.y + 238
+		end
+		table.insert(ls, button:new{
+			size = 100,
+			levelname = name,
+			position = pos:clone(),
+			text = name,
+			fontsize = 20,
+			menu = levelselect,
+			alphafollows = levelselectalpha,
+			pressed = function(self)
+				self.alphafollows:setAndGo(255, 0)
+				self.visible = false
+				neweffects(self, 40)
+				reloadStory(self.levelname)
+			end
+		})
+	end
+
+	table.insert(ls, button:new{
+		size = 50,
+		position = pos:set(920, 580),
+		text = "back",
+		fontsize = 20,
+		menu = levelselect,
+		alphafollows = levelselectalpha,
+		pressed = function(self)
+			for _, but in pairs(UI.paintables.levelselect) do
+				but:close()
+			end
+			self.visible = false
+			neweffects(self, 26)
+			self.alphafollows:setAndGo(255, 0)
+			UI.restartMenu()
+		end
+	})
+	UI.paintables.levelselect = ls
 end

@@ -13,13 +13,11 @@ function init()
 		closeMenu()
 		alphatimer:setAndGo(255, 0)
 		reloadSurvival()
-		button.bodies['play'] = nil
+		self.visible = false
 		neweffects(self, 100)
 		button.cancelclick = true
 	end
 
-	playbutton:start()
-	button.bodies['play'] = playbutton
 
 	storybutton = button:new {
 		size = 120,
@@ -33,13 +31,11 @@ function init()
 		closeMenu()
 		alphatimer:setAndGo(255, 0)
 		selectLevel()
-		button.bodies['story'] = nil
+		self.visible = false
 		neweffects(self, 50)
 		button.cancelclick = true
 	end
 
-	storybutton:start()
-	button.bodies['story'] = storybutton
 
 	local controlsbutton = button:new {
 		size = 80,
@@ -59,8 +55,7 @@ function init()
 		pressed = toMainMenu
 	}
 
-	controlsbutton:register()
-	backbutton:register()
+	paintables.menu = {playbutton, storybutton, controlsbutton, backbutton}
 
 	resetpass = cheats.password 'reset'
 
@@ -83,10 +78,8 @@ function toAchievMenu()
 end
 
 function closeMenu()
-	for _,v in pairs(paintables) do
-		for _,b in pairs(v) do
-			b:close()
-		end
+	for _, b in pairs(paintables.menu) do
+		b:close()
 	end
 end
 
@@ -96,8 +89,7 @@ function restartMenu()
 	resetVars()
 	timer.closenonessential()
 	soundmanager.changeSong(soundmanager.menusong)
-	button.bodies['play'] = playbutton
-	button.bodies['story'] = storybutton
+	for _, b in pairs(paintables.menu) do b:start() end
 end
 
 function mousepressed( x, y, btn )
@@ -150,10 +142,7 @@ function keypressed( key )
 	if (gamelost or paused) and key == 'b' then
 		global.paintables.psychoeffects = nil
 		if state == story then
-			for _, t in ipairs(levels.currentLevel.timers_) do
-				t:remove()
-			end
-			levels.currentLevel = nil
+			levels.closeLevel()
 		end
 
 		paused = false

@@ -1,6 +1,6 @@
 bossOne = circleEffect:new {
 	size = 80,
-	maxhealth = 100,
+	maxhealth = 200,
 	basespeed = 2*v,
 	basespeedsqrt = math.sqrt(2*v),
 	index = false,
@@ -73,7 +73,7 @@ function bossOne.behaviors.toTheMiddle( self )
 		self.currentBehavior = bossOne.behaviors.third
 		self.shoottimer.timelimit = 8
 		self.shoottimer.time = 5
-		bossOne.shot = enemies.simpleball
+		bossOne.shot = enemies.grayball
 		function self.shoottimer.funcToCall()
 			self.circleshoot.angle = math.atan((psycho.x - self.x)/(psycho.y - self.y)) + (psycho.y < height/2 and math.pi or 0) - torad(30)
 			self.circleshoot.timescount = 0
@@ -104,7 +104,7 @@ function bossOne.behaviors.toTheMiddle( self )
 end
 
 function bossOne.behaviors.third( self )
-	if self.health/bossOne.maxhealth < .25 then
+	if self.health == 0 then
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.shoottimer = nil
@@ -224,7 +224,7 @@ function bossOne.turret:update( dt )
 		}
 		bossOne.turret.count = bossOne.turret.count + 1
 		if bossOne.turret.count == 4 then
-			for _, tur in pairs(bossOne.bodies) do tur.shoottimer:start() end
+			for _, tur in pairs(bossOne.bodies) do tur.shoottimer:start(1) end
 		end
 	end
 

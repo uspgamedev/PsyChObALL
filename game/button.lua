@@ -3,6 +3,7 @@ button = body:new {
 	fontsize = 12,
 	onHover = false,
 	__type = 'button',
+	visible = true,
 	bodies = {},
 	allbuttons = {}
 }
@@ -17,13 +18,14 @@ function button:__init()
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
 	self.effectsBurst = timer:new {
-		timelimit = .1,
+		timelimit = .07,
 		pausable = false,
+		registerSelf = false,
 		persistent = true
 	}
 
 	function self.effectsBurst.funcToCall(timer)
-		neweffects(self, 2)
+		neweffects(self, 1)
 	end
 
 	self.hoverring = circleEffect:new {
@@ -40,7 +42,7 @@ function button:__init()
 end
 
 function button:draw()
-	if getStateClass(self.menu) ~= getStateClass() then return end
+	if not self.visible or self.alphafollows.var == 0 then return end
 	--body.draw(self)
 	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.setColor(inverteffect(maincolor))
@@ -79,17 +81,22 @@ function button:pressed()
 	print 'pressed'
 end
 
+function button:start()
+	self.visible = nil
+	self.effectsBurst:register()
+end
+
 function button:close()
 	if self.onHover then
 		self.onHover = false
 		self:hover(false)
 	end
-	timer.remove(self.effectsBurst)
+	self.effectsBurst:remove()
 end
 
 function button:hover(hovering)
 	if hovering then
-		self.effectsBurst:start(.2)
+		self.effectsBurst:start()
 		self.hoverring.size = 0
 		self.hoverring.sizeGrowth = 350
 		circleEffect.bodies[self] = self.hoverring

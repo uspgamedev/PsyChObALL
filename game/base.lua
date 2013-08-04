@@ -93,3 +93,7 @@ local constrad = math.pi/180
 function torad( degree )
 	return degree*constrad
 end
+
+function donothing()
+	-- nothing
+end

@@ -179,7 +179,6 @@ function resetVars()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
 	shot:clear()
-	effect:clear()
 	circleEffect:clear()
 	enemy:clear()
 	enemies:clear()
@@ -221,11 +220,8 @@ function reloadSurvival()
 end
 
 function reloadStory( name )
-	if UI.paintables.levelselect then
-		for _, but in pairs(UI.paintables.levelselect) do
-			but:close()
-		end
-		UI.paintables.levelselect = nil
+	for _, but in pairs(UI.paintables.levelselect) do
+		but:close()
 	end
 	state = story
 	soundmanager.changeSong(soundmanager.gamesong)
@@ -241,44 +237,12 @@ function reloadStory( name )
 end
 
 function selectLevel()
-	local ls = {}
 	levels.loadAll()
 	state = levelselect
-	local pos = vector:new {-100, 120}
-	for name, level in pairs(levels.levels) do
-		pos:add(250)
-		if pos.x + 100 >= width then
-			pos.x = 150
-			pos.y = pos.y + 238
-		end
-		table.insert(ls, button:new{
-			size = 100,
-			levelname = name,
-			position = pos:clone(),
-			text = name,
-			fontsize = 20,
-			menu = levelselect,
-			pressed = function(self)
-				reloadStory(self.levelname)
-			end
-		})
+	UI.paintables.levelselect[1].alphafollows:setAndGo(0, 255)
+	for _, but in pairs(UI.paintables.levelselect) do
+		but:start()
 	end
-
-	table.insert(ls, button:new{
-		size = 50,
-		position = pos:set(920, 580),
-		text = "back",
-		fontsize = 20,
-		menu = levelselect,
-		pressed = function(self)
-			for _, but in pairs(UI.paintables.levelselect) do
-				but:close()
-			end
-			UI.paintables.levelselect = nil
-			UI.restartMenu()
-		end
-	})
-	UI.paintables.levelselect = ls
 end
 
 function onMenu()
