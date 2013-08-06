@@ -1,6 +1,6 @@
 bossOne = circleEffect:new {
 	size = 80,
-	maxhealth = 200,
+	maxhealth = 10,
 	basespeed = 2*v,
 	basespeedsqrt = math.sqrt(2*v),
 	index = false,
@@ -107,7 +107,6 @@ function bossOne.behaviors.third( self )
 	if self.health == 0 then
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
-		self.shoottimer = nil
 		self.circleshoot:remove()
 		self.circleshoot.anglechange = torad(15)
 		self.circleshoot.times = 360/15
@@ -141,6 +140,7 @@ function bossOne.behaviors.toExplode( self )
 		bossOne.turret:new { position = c:clone(), speed = vector:new{0,  v/2} }:register()
 		bossOne.turret:new { position =         c, speed = vector:new{0, -v/2} }:register()
 		bossOne.turret.count = 0
+		bossOne.turretnum = 4
 
 		--explode
 		self.delete = true
@@ -204,26 +204,30 @@ bossOne.turret = body:new {
 	size = 50,
 	health = bossOne.maxhealth/4,
 	variance = math.random(colorcycle*1000)/1000,
+	turretnum = 4,
 	__type = 'bossOneTurret'
 }
+
+function bossOne.turret:__init( ... )
+	self.shoottimer = timer:new {
+		timelimit = 1.5,
+		funcToCall = function ()
+			local e = bossOne.shot:new{}
+			e.position = self.position:clone()
+			local pos = psycho.position:clone()
+			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
+			e.speed = (pos:sub(self.position)):normalize():mult(v, v)
+			e:register()
+		end
+	}
+end
 
 function bossOne.turret:update( dt )
 	body.update(self, dt)
 	if not self.speed:equals(0,0) and bossOne.restrictToScreen(self) then
 		self.speed:set(0,0)
-		self.shoottimer = timer:new {
-			timelimit = 1.5,
-			funcToCall = function ()
-				local e = bossOne.shot:new{}
-				e.position = self.position:clone()
-				local pos = psycho.position:clone()
-				if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-				e.speed = (pos:sub(self.position)):normalize():mult(v, v)
-				e:register()
-			end
-		}
 		bossOne.turret.count = bossOne.turret.count + 1
-		if bossOne.turret.count == 4 then
+		if bossOne.turret.count == bossOne.turretnum then
 			for _, tur in pairs(bossOne.bodies) do tur.shoottimer:start(1) end
 		end
 	end
@@ -250,4 +254,5 @@ function bossOne.turret:handleDelete()
 	for _, tur in pairs(bossOne.bodies) do
 		tur.shoottimer.timelimit = tur.shoottimer.timelimit / 1.5
 	end
+	bossOne.turretnum = bossOne.turretnum - 1
 end

@@ -30,7 +30,8 @@ function init()
 	function storybutton:pressed()
 		closeMenu()
 		alphatimer:setAndGo(255, 0)
-		selectLevel()
+		--selectLevel()
+		reloadStory 'Level 2'
 		self.visible = false
 		neweffects(self, 50)
 		button.cancelclick = true

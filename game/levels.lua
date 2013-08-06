@@ -53,13 +53,12 @@ function levelEnv.enemy( name, n, format, ... )
 		if format and format.shootattarget then
 			-- follows the target with the warnings
 			table.insert(currentLevel.timers_, timer:new {
-				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
+				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1) + .01,
 				prevtarget = format.target:clone(),
 				registerSelf = false,
-				onceonly = true,
 				funcToCall = function(self)
 					self.timelimit = nil
-					if not enemylist[1].warning then self.running = false self.timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1) return end
+					if not enemylist[1].warning then self:remove() return end
 					if self.prevtarget == format.target then return end
 					local speed = format.speed or v
 					for i = 1, n do
@@ -83,7 +82,7 @@ function levelEnv.wait( s )
 end
 
 function levelEnv.formation( data )
-	local t = data.type
+	local t = data.type or 'empty'
 	data.type = nil
 	return formations[t]:new(data)
 end
@@ -133,6 +132,7 @@ function loadAll()
 		setfenv(lev, currentLevel)
 		lev()
 		levels[currentLevel.name] = currentLevel
+		currentLevel.run = nil
 	end
 	currentLevel = nil
 

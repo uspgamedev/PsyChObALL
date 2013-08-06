@@ -3,6 +3,7 @@ require "formations"
 require "levels"
 require "userinterface"
 require "body"
+require "text"
 require "circleEffect"
 require "effect"
 require "enemy"
@@ -62,6 +63,7 @@ function initBase()
 	enemies:paintOn(paintables)
 	warning:paintOn(paintables)
 	circleEffect:paintOn(paintables)
+	text:paintOn(paintables)
 	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
 	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
@@ -165,6 +167,8 @@ function initGameVars()
 	auxspeed = vector:new {}
 	keyspressed = {}
 	timefactor = 1.0
+
+	levels.loadAll()
 end
 
 function resetVars()
@@ -183,6 +187,7 @@ function resetVars()
 	enemy:clear()
 	enemies:clear()
 	warning:clear()
+	text:clear()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
 	
@@ -206,6 +211,7 @@ end
 
 function reloadSurvival()
 	soundmanager.changeSong(soundmanager.gamesong)
+	if state == survival then effect:clear() end
 	state = survival
 	enemy.addtimer:funcToCall()
 	resetVars()
@@ -223,6 +229,7 @@ function reloadStory( name )
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:close()
 	end
+	if state == story then effect:clear() end
 	state = story
 	soundmanager.changeSong(soundmanager.gamesong)
 	resetVars()
@@ -237,12 +244,13 @@ function reloadStory( name )
 end
 
 function selectLevel()
-	levels.loadAll()
 	state = levelselect
 	UI.paintables.levelselect[1].alphafollows:setAndGo(0, 255)
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:start()
 	end
+
+	mouse.setGrab(false)
 end
 
 function onMenu()

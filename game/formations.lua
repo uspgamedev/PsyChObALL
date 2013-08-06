@@ -3,7 +3,7 @@ require 'lux.object'
 module ('formations', package.seeall)
 
 formation = lux.object.new {
-	name = 'formation_name',
+	name = 'empty',
 	shootatplayer = false,
 	shootattarget = false,
 	__type = 'formation'
@@ -14,6 +14,18 @@ function formation:applyOn( enemies )
 	if self.shootatplayer then
 		self.shootattarget = true
 		self.target = psycho.position
+	end
+end
+
+empty = formation:new{}
+
+function empty:applyOn( enemies )
+	formation.applyOn(self, enemies)
+	if self.shootattarget then
+		local speed = self.speed or v
+		for i = 1, #enemies do
+			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
+		end
 	end
 end
 

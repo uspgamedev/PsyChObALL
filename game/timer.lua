@@ -67,6 +67,7 @@ end
 
 function timer.remove( t )
 	t.delete = true
+	t.running = false
 end
 
 function timer.register( t )
