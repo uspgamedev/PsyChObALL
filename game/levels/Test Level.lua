@@ -1,5 +1,5 @@
-name = "Test Level"
-fullName = "0 - The Test"
+title = "It was all a test"
+chapter = ""
 
 function run()
 	warnEnemies = true

@@ -4,6 +4,7 @@ superball = body:new {
 	size = 40,
 	variance = 13,
 	life = 60,
+	ord = 6,
 	__type = 'superball'
 }
 

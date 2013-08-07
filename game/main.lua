@@ -4,6 +4,7 @@ require "levels"
 require "userinterface"
 require "body"
 require "text"
+require "imagebody"
 require "circleEffect"
 require "effect"
 require "enemy"
@@ -64,6 +65,7 @@ function initBase()
 	warning:paintOn(paintables)
 	circleEffect:paintOn(paintables)
 	text:paintOn(paintables)
+	imagebody:paintOn(paintables)
 	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
 	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
@@ -188,6 +190,7 @@ function resetVars()
 	enemies:clear()
 	warning:clear()
 	text:clear()
+	imagebody:clear()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
 	
@@ -477,7 +480,7 @@ function love.update(dt)
 	dt = dt * timefactor
 	
 	if paused then return end
-	if not (gamelost or onMenu()) then
+	if onGame() and not gamelost then
 		gametime = gametime + dt
 		blastime = blastime + dt
 		if blastime >= 30 then
@@ -541,7 +544,7 @@ function addscore(x)
 	if not gamelost then
 		score = score + x
 		blastscore = blastscore + x
-		if blastscore >= 500 then
+		if blastscore >= 7000 then
 			blastscore = blastscore - 500
 			ultracounter = ultracounter + 1
 		end

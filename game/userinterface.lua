@@ -31,7 +31,7 @@ function init()
 		closeMenu()
 		alphatimer:setAndGo(255, 0)
 		--selectLevel()
-		reloadStory 'Level 2'
+		reloadStory 'Level 1'
 		self.visible = false
 		neweffects(self, 50)
 		button.cancelclick = true
@@ -203,8 +203,8 @@ function draw()
 		elseif state == story then
 			graphics.setFont(getCoolFont(30))
 			graphics.print(string.format("%.0f", score), 25, 48)
-			graphics.setFont(getCoolFont(30))
-			graphics.print(levels.currentLevel.fullName, 200, 20)
+			graphics.setFont(getCoolFont(20))
+			graphics.print(levels.currentLevel.chapter, 200, 40)
 			graphics.setFont(getCoolFont(18))
 			graphics.print("Score:", 25, 30)
 			graphics.print("ulTrAbLaST:", 25, 100)

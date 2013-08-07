@@ -87,15 +87,53 @@ function levelEnv.formation( data )
 	return formations[t]:new(data)
 end
 
+function levelEnv.registerTimer( data )
+	data.time = -levelEnv.time
+	data.registerSelf = false
+	table.insert(currentLevel.timers_, timer:new(data))
+end
+
+function levelEnv.doNow( func )
+	levelEnv.registerTimer {
+		funcToCall = func,
+		timelimit = 0,
+		onceonly = true
+	}
+end
+
 setmetatable(levelEnv, {__index = _G})
 
 function runLevel( name )
+	local prevtitle = currentLevel and currentLevel.title
 	currentLevel = name and levels[name] or currentLevel
 	currentLevel.reload()
+	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
+	local delay = changetitle and -5 or 0
 	for _, t in ipairs(currentLevel.timers_) do
 		t:register()
-		t:start()
+		t:start(t.time + delay)
 	end
+	if changetitle then
+		local t = text:new {
+			text = currentLevel.title,
+			alphafollows = vartimer:new{ var = 255 },
+			font = getCoolFont(100),
+			position = vector:new{50, 200},
+			limit = width - 100,
+			align = 'center',
+			printmethod = graphics.printf
+		}
+		t:register()
+		timer:new{
+			timelimit = 3,
+			running = true,
+			funcToCall = function ( timer )
+				if timer.first then t.delete = false timer:remove() return end
+				timer.first = true
+				t.alphafollows:setAndGo(255, 0, 100)
+			end
+		}
+	end 
 end
 
 function closeLevel()
@@ -129,9 +167,7 @@ function loadAll()
 		local lev = assert(filesystem.load('levels/' .. file))
 		currentLevel = {}
 		currentLevel.reload = loadLevel(lev)
-		setfenv(lev, currentLevel)
-		lev()
-		levels[currentLevel.name] = currentLevel
+		levels[file:sub(0, file:len() - 4)] = currentLevel
 		currentLevel.run = nil
 	end
 	currentLevel = nil

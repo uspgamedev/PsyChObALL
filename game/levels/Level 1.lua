@@ -1,5 +1,5 @@
-name = 'Level 1'
-fullName = 'I - The Beginning of PsyChO'
+title = 'I - The Beginning of PsyChO'
+chapter = 'Part 1 - The Arrival'
 
 function run()
 	warnEnemies = true
@@ -22,10 +22,8 @@ function run()
 	enemy('simpleball', 10, {side = sides[1]})
 	side, sides = nil, nil
 
-	timer:new {
-		time = -time,
+	registerTimer {
 		timelimit = .5,
-		running = true,
 		funcToCall = function(timer)
 			if not next(enemies.simpleball.bodies) then
 				timer:remove()

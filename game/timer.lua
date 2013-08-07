@@ -35,12 +35,13 @@ function timer:update(dt, timefactor, paused, gamelost)
 end
 
 function timer:start(delay)
-	self.time = delay or 0
+	self.time = delay or self.time
 	self.running = true
 end
 
 function timer:stop()
 	self.running = false
+	self.time = 0
 end
 
 local ts = timer.timers
@@ -68,6 +69,7 @@ end
 function timer.remove( t )
 	t.delete = true
 	t.running = false
+	t.time = 0
 end
 
 function timer.register( t )
