@@ -85,6 +85,14 @@ function base.getLatestVersion()
 	return version
 end
 
+function restrainInScreen( vec )
+	if vec.x > width then vec.x = width 
+	elseif vec.x < 0 then vec.x = 0 end
+	if vec.y > height then vec.y = height
+	elseif vec.y < 0 then vec.y = 0 end
+	return vec
+end
+
 function cleartable( t )
 	for k in pairs(t) do t[k] = nil end
 end

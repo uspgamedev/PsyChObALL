@@ -1,5 +1,6 @@
+local sizediff = 9
 psychoball = circleEffect:new {
-	size	 = 23,
+	size	 = 23 - sizediff,
 	maxsize = width,
 	mode	 = 'fill',
 	variance = 0,
@@ -41,9 +42,9 @@ function psychoball:update(dt)
 		math.max(self.size, math.min(height - self.size, self.position[2]))
 	)
 
-	if self.sizeGrowth < 0 and self.size < 23 then
+	if self.sizeGrowth < 0 and self.size + sizediff < 23 then
 		self.linewidth = 6
-		self.size = 23
+		self.size = 23 - sizediff
 		self.sizeGrowth = 0
 	end
 
@@ -52,7 +53,9 @@ end
 
 function psychoball:draw()
 	if gamelost then return end
+	self.size = self.size + sizediff
 	body.draw(self)
+	self.size = self.size - sizediff
 end
 
 local effects = {
@@ -101,6 +104,7 @@ local effects = {
 }
 
 function psychoball:handleDelete()
+	self.size = self.size + sizediff
 	self.speed:set(0,0)
 	local deatheffects = {}
 	self.sizeGrowth = -300
@@ -130,13 +134,16 @@ function psychoball:handleDelete()
 		effect.update(self, dt)
 		if gamelostinfo.isrestarting and not self.speed:equals(0, 0) then
 			local curdist = self.position:distsqr(self.firstpos)
-			if curdist > self.prevdist then
-				self.speed:set(0, 0)
+			if curdist == 0 or curdist > self.prevdist then
+				if state == story then reloadStory()
+				elseif state == survival then reloadSurvival() end
+				paintables.psychoeffects = nil
 				return
 			end
 			self.prevdist = curdist
 		end
 	end
+	self.size = self.size - sizediff
 	paintables.psychoeffects = deatheffects
 end
 

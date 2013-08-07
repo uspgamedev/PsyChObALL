@@ -21,10 +21,17 @@ empty = formation:new{}
 
 function empty:applyOn( enemies )
 	formation.applyOn(self, enemies)
-	if self.shootattarget then
-		local speed = self.speed or v
-		for i = 1, #enemies do
+	local n = #enemies
+	local speed = self.speed or v
+	for i = 1, n do
+		if self.shootattarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
+		end
+		if self.position then
+			enemies[i].position:set(self.position)
+		end
+		if self.speed then
+			enemies[i].speed:set(self.speed)
 		end
 	end
 end
@@ -52,17 +59,16 @@ function vertical:applyOn( enemies )
 		transl = self.startsat
 	end
 
-	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(transl + (i-1) * dist, y)
 
 		if self.shootattarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto or self.speed then
-				enemies[i].speed:set(self.setspeedto or 0, self.speed)
+			if self.setspeedto then
+				enemies[i].speed:set(self.setspeedto)
 			else
-				local l = enemies[n].speed:length()
+				local l = self.speed or enemies[n].speed:length()
 				enemies[i].speed:set(0, y == 0 and l or -l)
 			end
 		end
@@ -97,16 +103,15 @@ function horizontal:applyOn( enemies )
 		transl = self.startsat
 	end
 
-	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(x, transl + (i-1) * dist)
 		if self.shootattarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto or self.speed then
-				enemies[i].speed:set(self.setspeedto or speed)
+			if self.setspeedto then
+				enemies[i].speed:set(self.setspeedto)
 			else
-				local l = enemies[n].speed:length()
+				local l = self.speed or enemies[n].speed:length()
 				enemies[i].speed:set(x == 0 and l or -l, 0)
 			end
 		end
@@ -177,6 +182,38 @@ function V:applyOn( enemies )
 				else transl.y = -transl.y end
 			end
 		end
+
+		if self.shootattarget then
+			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
+		else
+			if self.setspeedto then
+				enemies[i].speed:set(self.setspeedto)
+			end
+		end
+	end
+end
+
+around = formation:new {
+	name = 'around',
+	angle = 0,
+	anglechange = torad(60),
+	radius = width,
+	center = vector:new{width/2, height/2},
+	adapt = true,
+	distance = 0
+}
+
+function around:applyOn( enemies )
+	formation.applyOn(self, enemies)
+	local n = #enemies
+	local angle = self.angle + math.pi
+	local speed = self.speed or v
+	local d = 1 + self.distance
+	for i = 1, n do
+		enemies[i].position:set(math.sin(angle)*(self.radius + d) + self.center.x, math.cos(angle)*(self.radius + d) + self.center.y)
+		if self.adapt then restrainInScreen(enemies[i].position) end
+		angle = angle - self.anglechange
+		d = d + self.distance
 
 		if self.shootattarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)

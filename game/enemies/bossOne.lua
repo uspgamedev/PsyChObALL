@@ -1,6 +1,6 @@
 bossOne = circleEffect:new {
 	size = 80,
-	maxhealth = 250,
+	maxhealth = 120,
 	basespeed = 2*v,
 	basespeedsqrt = math.sqrt(2*v),
 	index = false,
@@ -15,21 +15,31 @@ bossOne = circleEffect:new {
 	__type = 'bossOne'
 }
 
+function bossOne:__init()
+	self.position:set(-self.size, -self.size)
+	self.speed:set(v, v)
+	self.currentBehavior = bossOne.behaviors.arriving
+	self.health = bossOne.maxhealth
+	self.variance = math.random((colorcycle-3)*1000)/1000 + 3
+	bossOne.shot = enemies.simpleball
+	bossOne.turret.bodies = enemies.bossOne.bodies
+end
+
 bossOne.behaviors = {}
 function bossOne.behaviors.arriving( self )
 	if self.position:distsqr(self.size + 10, self.size + 10) < 5 then
 		self.position:set(self.size + 10, self.size + 10)
 		self.speed:set(bossOne.basespeed, 0)
 		self.speedchange = timer:new {
-			timelimit = 5 + math.random()*4,
+			timelimit = 5 + math.random()*10,
 			running = true,
 			funcToCall = function( timer )
-				timer.timelimit = 5 + math.random()*4
+				timer.timelimit = 5 + math.random()*10
 				self.speed:negate()
 			end
 		}
 		self.shoottimer = timer:new {
-			timelimit = 1,
+			timelimit = .5,
 			works_on_gamelost = false,
 			time = math.random(),
 			running = true
@@ -52,6 +62,7 @@ function bossOne.behaviors.first( self )
 		self.currentBehavior = bossOne.behaviors.second
 		self.speedchange:remove()
 		self.speedchange = nil
+		--self.shot = divide1
 	end
 end
 
@@ -71,18 +82,20 @@ function bossOne.behaviors.toTheMiddle( self )
 		self.position:set(width/2, height/2)
 		self.speed:set(0,0)
 		self.currentBehavior = bossOne.behaviors.third
-		self.shoottimer.timelimit = 8
+		self.shoottimer.timelimit = 7 
 		self.shoottimer.time = 5
-		bossOne.shot = enemies.grayball
+		bossOne.shot = enemies.simpleball
 		function self.shoottimer.funcToCall()
-			self.circleshoot.angle = math.atan((psycho.x - self.x)/(psycho.y - self.y)) + (psycho.y < height/2 and math.pi or 0) - torad(30)
+			local side = math.random() < .5 and -1 or 1
+			self.circleshoot.angle = math.atan2(psycho.x - self.x, psycho.y - self.y)  + side*torad(30)
+			self.circleshoot.anglechange = -math.abs(self.circleshoot.anglechange)*side
 			self.circleshoot.timescount = 0
 			self.circleshoot:start(self.circleshoot.timelimit)
 		end
 		self.circleshoot = timer:new {
-			timelimit = .1,
+			timelimit = .07,
 			anglechange = torad(6),
-			times = math.ceil(360/6),
+			times = 100,
 			angle = 0,
 			works_on_gamelost = false,
 			time = math.random()*2
@@ -165,16 +178,6 @@ function bossOne:restrictToScreen()
 		self.speed:set(self.x > width/2 and -bossOne.basespeed or bossOne.basespeed, 0)
 		return sign(self.Vx), 1
 	end
-end
-
-function bossOne:__init()
-	self.position:set(-self.size, -self.size)
-	self.speed:set(v, v)
-	self.currentBehavior = bossOne.behaviors.arriving
-	self.health = bossOne.maxhealth
-	self.variance = math.random((colorcycle-3)*1000)/1000 + 3
-	bossOne.shot = enemies.grayball
-	bossOne.turret.bodies = enemies.bossOne.bodies
 end
 
 function bossOne:update( dt )

@@ -31,7 +31,7 @@ function init()
 		closeMenu()
 		alphatimer:setAndGo(255, 0)
 		--selectLevel()
-		reloadStory 'Level 1'
+		reloadStory 'Level 1-2'
 		self.visible = false
 		neweffects(self, 50)
 		button.cancelclick = true

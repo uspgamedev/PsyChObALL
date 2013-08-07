@@ -108,6 +108,7 @@ function runLevel( name )
 	currentLevel = name and levels[name] or currentLevel
 	currentLevel.reload()
 	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
+	changetitle = false
 	local delay = changetitle and -5 or 0
 	for _, t in ipairs(currentLevel.timers_) do
 		t:register()
