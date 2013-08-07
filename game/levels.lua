@@ -121,7 +121,8 @@ function runLevel( name )
 			position = vector:new{50, 200},
 			limit = width - 100,
 			align = 'center',
-			printmethod = graphics.printf
+			printmethod = graphics.printf,
+			variance = 0
 		}
 		t:register()
 		timer:new{

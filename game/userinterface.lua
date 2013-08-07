@@ -112,7 +112,7 @@ function keypressed( key )
 		if gamelostinfo.isrestarting then return end
 		gamelostinfo.isrestarting = true
 		gamelostinfo.timeofrestart = totaltime
-		local m = (totaltime - gamelostinfo.timeofdeath)/(1.1 * gamelostinfo.timetorestart)
+		local m = (totaltime - gamelostinfo.timeofdeath - .2)/gamelostinfo.timetorestart
 		for _, eff in pairs(global.paintables.psychoeffects) do
 			eff.speed:negate():mult(m, m)
 		end
@@ -125,17 +125,9 @@ function keypressed( key )
 			timelimit = gamelostinfo.timetorestart,
 			funcToCall = function()
 				timefactor = timefactor / 10
-			end
-		}
-		timer:new{
-			running = true,
-			timeaffected = false,
-			onceonly = true,
-			timelimit = gamelostinfo.timetorestart * 2.2,
-			funcToCall = function()
-				global.paintables.psychoeffects = nil
-				if state == survival then reloadSurvival()
-				elseif state == story then reloadStory() end
+				for _, eff in pairs(global.paintables.psychoeffects) do
+					eff.speed:div(m / 3, m / 3)
+				end
 			end
 		}
 	end
@@ -330,8 +322,6 @@ function draw()
 		graphics.print("Use WASD or arrows to move", 152, 170)
 		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
 		graphics.print("Hold space to charge", 70, 252)
-		--graphics.setFont(getCoolFont(18))
-		--graphics.print("Click or press the left arrow key to go back", 670, 645)
 		graphics.setFont(getCoolFont(35))
 		graphics.setColor(color(colortimer.time * 0.856))
 		graphics.print("ulTrAbLaST", 290, 242)
