@@ -22,12 +22,16 @@ function bossOne:__init()
 	self.health = bossOne.maxhealth
 	self.variance = math.random((colorcycle-3)*1000)/1000 + 3
 	bossOne.shot = enemies.simpleball
+	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
+	self.colors = {vartimer:new{var = 0xFF}, vartimer:new{var = 0xFF}, vartimer:new{var = 0xFF}}
+	self.coloreffect = getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	--bossOne.turret.bodies = enemies.bossOne.bodies
 end
 
 bossOne.behaviors = {}
 function bossOne.behaviors.arriving( self )
-	if self.position:distsqr(self.size + 10, self.size + 10) < 5 then
+	local curdist = self.position:distsqr(self.size + 10, self.size + 10)
+	if curdist < 1 or curdist > self.prevdist then
 		self.position:set(self.size + 10, self.size + 10)
 		self.speed:set(bossOne.basespeed, 0)
 		self.speedchange = timer:new {
@@ -55,19 +59,26 @@ function bossOne.behaviors.arriving( self )
 		end
 		self.currentBehavior = bossOne.behaviors.first
 	end
+	self.prevdist = curdist
 end
+
 function bossOne.behaviors.first( self )
 	self:restrictToScreen()
 	if self.health/bossOne.maxhealth < .75 then 
 		self.currentBehavior = bossOne.behaviors.second
 		self.speedchange:remove()
 		self.speedchange = nil
+<<<<<<< HEAD
 		--self.shot = divide1
 	end
 end
 
 function bossOne.behaviors.second( self )
 	function self.shoottimer.funcToCall()
+=======
+		self.speed:set(1.2*v, 1.2*v)
+		function self.shoottimer.funcToCall()
+>>>>>>> 38dd106456e8710e585cd9b6dc9c8a80ac489cd7
 			local e = (enemies.multiball):new{}
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
@@ -75,6 +86,10 @@ function bossOne.behaviors.second( self )
 			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
 			e:register()
 		end
+	end
+end
+
+function bossOne.behaviors.second( self )
 	local mx, my = self:restrictToScreen()
 	if mx and math.random() < .43 then 
 		self.speed:set(mx * (width - 2*self.size - 20), my * (height - 2*self.size - 20)):normalize():mult(bossOne.basespeed)
@@ -82,15 +97,17 @@ function bossOne.behaviors.second( self )
 	if self.health/bossOne.maxhealth < .5 then
 		self.speed:set(vector:new{width/2, height/2}:sub(self.position)):normalize():mult(bossOne.basespeed)
 		self.currentBehavior = bossOne.behaviors.toTheMiddle
+		self.prevdist = self.position:distsqr(width/2, height/2)
 	end
 end
 
 function bossOne.behaviors.toTheMiddle( self )
-	if self.position:distsqr(width/2, height/2) < 5 then
+	local curdist = self.position:distsqr(width/2, height/2)
+	if curdist < 1 or curdist > self.prevdist then
 		self.position:set(width/2, height/2)
 		self.speed:set(0,0)
 		self.currentBehavior = bossOne.behaviors.third
-		self.shoottimer.timelimit = 7 
+		self.shoottimer.timelimit = 8
 		self.shoottimer.time = 5
 		bossOne.shot = enemies.simpleball
 		function self.shoottimer.funcToCall()
@@ -110,7 +127,7 @@ function bossOne.behaviors.toTheMiddle( self )
 		}
 		function self.circleshoot.funcToCall(timer)
 			local e = enemies.multiball:new{}
-			e.position = self.position:clone()
+			e.position = self.position + {math.sin(timer.angle)*(bossOne.size-e.size), math.cos(timer.angle)*(bossOne.size-e.size)}
 			e.speed:set(
 				bossOne.basespeed * math.sin(timer.angle),
 				bossOne.basespeed * math.cos(timer.angle))
@@ -122,10 +139,11 @@ function bossOne.behaviors.toTheMiddle( self )
 			end
 		end
 	end
+	self.prevdist = curdist
 end
 
 function bossOne.behaviors.third( self )
-	if self.health == 0 then
+	if self.health/bossOne.maxhealth <= .075 then
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.circleshoot:remove()
@@ -145,7 +163,7 @@ function bossOne.behaviors.third( self )
 end
 
 function bossOne.behaviors.toExplode( self )
-	if self.size >= width/2 - 50 then
+	if self.size > width/2 + 100 or self.health <= 0 then
 		self.sizeGrowth = -1300
 		--[[local old = bossOne.basespeed
 		bossOne.basespeed = bossOne.basespeed / 1.3

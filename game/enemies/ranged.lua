@@ -11,8 +11,6 @@ function ranged:__init()
 	if not self.target then enemy.__init(self) end
 	self.target = self.target or vector:new{math.random(width), math.random(height)}
 	self.speed:set(self.target):sub(self.position):normalize():mult(1.3*v, 1.3*v)
-	self.colorvars = {vartimer:new{var = 0}, vartimer:new{var = 255}, vartimer:new{var = 0}}
-	self.coloreffect = getColorEffect(unpack(self.colorvars))
 	self.prevdist = self.position:distsqr(self.target)
 	self.onLocation = false
 	self.anglechange = self.anglechange or torad(360/self.divideN)
@@ -27,7 +25,11 @@ function ranged:__init()
 	}
 end
 
-function ranged:onInit( num, target, shot )
+function ranged:onInit( num, target, shot, initialcolor, angle )
+	self.angle = angle or 0
+	self.basecolor = initialcolor or {0, 255, 0}
+	self.colorvars = {vartimer:new{var = self.basecolor[1]}, vartimer:new{var = self.basecolor[2]}, vartimer:new{var = self.basecolor[3]}}
+	self.coloreffect = getColorEffect(unpack(self.colorvars))
 	self.divideN = num or self.divideN
 	self.shot = shot and enemies[shot] or enemies.simpleball
 	if target then
@@ -62,8 +64,9 @@ function ranged:update( dt )
 	for i,v in pairs(shot.bodies) do
 		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
 			self.life = self.life - 1
-			self.colorvars[1].var = 255 - (self.life / ranged.life) * 255
-			self.colorvars[2].var = (self.life / ranged.life) * 255
+			self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
+			self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
+			self.colorvars[3].var = self.basecolor[3] - ((ranged.life - self.life) / ranged.life) * self.basecolor[3]
 			v.collides = true
 			v.explosionEffects = false
 			self.diereason = "shot"
