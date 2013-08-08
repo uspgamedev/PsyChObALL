@@ -1,13 +1,13 @@
 title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
-function run()
+function run()	
 	local f1 = formation {
-			type = 'around',
-			angle = 0,
-			target = vector:new{width/2, height/2},
-			anglechange = torad(180),
-			shootattarget = true
+		type = 'around',
+		angle = 0,
+		target = vector:new{width/2, height/2},
+		anglechange = torad(180),
+		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
