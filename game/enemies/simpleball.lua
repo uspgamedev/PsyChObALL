@@ -1,5 +1,6 @@
 simpleball = body:new {
 	size = 20,
+	coloreffect = getColorEffect(0, 0, 255),
 	__type = "simpleball"
 }
 

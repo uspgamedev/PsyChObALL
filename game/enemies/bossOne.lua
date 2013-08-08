@@ -46,7 +46,7 @@ function bossOne.behaviors.arriving( self )
 		}
 
 		function self.shoottimer.funcToCall()
-			local e = bossOne.shot:new{}
+			local e = (math.random() > .5 and enemies.simpleball or enemies.multiball):new{}
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
@@ -101,7 +101,7 @@ function bossOne.behaviors.toTheMiddle( self )
 			time = math.random()*2
 		}
 		function self.circleshoot.funcToCall(timer)
-			local e = bossOne.shot:new{}
+			local e = enemies.multiball:new{}
 			e.position = self.position:clone()
 			e.speed:set(
 				bossOne.basespeed * math.sin(timer.angle),

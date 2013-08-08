@@ -164,7 +164,7 @@ function V:applyOn( enemies )
 	local transl = vector:new{self.size/n, 2*self.growth/n}
 	if self.vertical then transl[1], transl[2] = transl[2], transl[1] end
 	local speed = self.speed or v
-	local prevp = self.startpoint
+	local prevp = self.startpoint - transl
 	for i = 1, n do
 		enemies[i].position:set(prevp):add(transl)
 		prevp = enemies[i].position

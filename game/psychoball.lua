@@ -38,8 +38,8 @@ function psychoball:update(dt)
 	body.update(self, dt)
 
 	self.position:set(
-		math.max(self.size, math.min(width - self.size, self.position[1])),
-		math.max(self.size, math.min(height - self.size, self.position[2]))
+		math.max(self.size + sizediff, math.min(width - self.size - sizediff, self.position[1])),
+		math.max(self.size + sizediff, math.min(height - self.size - sizediff, self.position[2]))
 	)
 
 	if self.sizeGrowth < 0 and self.size + sizediff < 23 then

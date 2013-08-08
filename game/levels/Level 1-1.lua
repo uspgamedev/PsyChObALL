@@ -41,7 +41,7 @@ function run()
 	warnEnemies = true
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
-	local divide1 = 'simpleball'
+	local divide1 = 'multiball'
 
 
 	wait(1)

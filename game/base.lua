@@ -105,3 +105,5 @@ end
 function donothing()
 	-- nothing
 end
+
+math.atan = error --use math.atan2

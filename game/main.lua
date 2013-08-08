@@ -97,7 +97,7 @@ end
 function initGameVars()
 	-- [[Creating Persistent Timers]]
 	colortimer = timer:new{
-		timelimit  = 100,
+		timelimit  = 300,
 		pausable   = false,
 		persistent = true,
 		running = true
@@ -164,6 +164,10 @@ function initGameVars()
 		speed = 1
 	}
 	-- [[End of Creating Persistent Timers]]
+
+	psycho = psychoball:new{
+		position = vector:new{width/2,height/2}
+	}
 	
 	enemylist = list:new{}
 	auxspeed = vector:new {}
@@ -185,7 +189,8 @@ function resetVars()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
 	shot:clear()
-	circleEffect:clear()
+	if notclearcircleeffect then notclearcircleeffect = false
+	else circleEffect:clear() end
 	enemy:clear()
 	enemies:clear()
 	warning:clear()
@@ -193,11 +198,6 @@ function resetVars()
 	imagebody:clear()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
-	
-
-	psycho = psychoball:new{
-		position = psycho and psycho.position or vector:new{width/2,height/2}
-	}
 
 	timefactor = 1.0
 	multiplier = 1
@@ -235,6 +235,7 @@ function reloadStory( name )
 	if state == story then effect:clear() end
 	state = story
 	soundmanager.changeSong(soundmanager.gamesong)
+	notclearcircleeffect = true
 	resetVars()
 	timer.closenonessential()
 
@@ -387,6 +388,30 @@ function sincityeffect( color )
 	local gray = (color[1] + color[2] + color[3]) / 3
 	color[1], color[2], color[3] =  gray + (255 - gray)/5, 0, 0
 	return color
+end
+
+local consteffect = 70/255
+function getColorEffect( r, g, b )
+	if type(r) == 'table' then --consider all vartimers
+		return function ( color )
+			color[1], color[2], color[3] = 
+					color[1]*consteffect + math.min(math.max(r.var - 35, 0), 185),
+					color[2]*consteffect + math.min(math.max(g.var - 35, 0), 185),
+					color[3]*consteffect + math.min(math.max(b.var - 35, 0), 185)
+			return color
+		end
+	else --conside all numbers
+		r = math.min(math.max(r - 35, 0), 185)
+		g = math.min(math.max(g - 35, 0), 185)
+		b = math.min(math.max(b - 35, 0), 185)
+		return function ( color )
+			color[1], color[2], color[3] = 
+					color[1]*consteffect + r,
+					color[2]*consteffect + g,
+					color[3]*consteffect + b
+			return color
+		end
+	end
 end
 
 function applyeffect( effect, color )

@@ -9,7 +9,7 @@ warning = body:new {
 
 function warning:__init()
 	if self.based_on then
-		self.angle = math.atan(self.based_on.Vy/ self.based_on.Vx) + (self.based_on.Vx < 0 and math.pi or 0)
+		self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
 		self.size = self.based_on.size*2
 		self.position = restrainInScreen(self.based_on.position:clone())
 		self.variance = self.based_on.variance
@@ -20,7 +20,7 @@ function warning:__init()
 end
 
 function warning:recalc_angle()
-	self.angle = math.atan(self.based_on.Vy/ self.based_on.Vx) + (self.based_on.Vx < 0 and math.pi or 0)
+	self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
 end
 
 function warning:draw()

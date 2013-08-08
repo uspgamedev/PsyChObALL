@@ -2,7 +2,7 @@ title = 'I - The Beginning of PsyChO'
 chapter = 'Part 2 - The Betrayal'
 
 function run()
-	--[[local vform = formation {
+	local vform = formation {
 		type = 'V',
 		startpoint = vector:new{60, -420},
 		size = width - 60,
@@ -11,11 +11,11 @@ function run()
 	}
 
 	local f1 = formation {
-			type = 'around',
-			angle = 0,
-			target = vector:new{width/2, height/2},
-			anglechange = torad(180),
-			shootattarget = true
+		type = 'around',
+		angle = 0,
+		target = vector:new{width/2, height/2},
+		anglechange = torad(180),
+		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
@@ -25,32 +25,19 @@ function run()
 		shootattarget = true
 	}
 
-	local verticalt = formation {
-		type = 'vertical',
-		from = 'top'
-	}
-
-	local verticalb = formation {
-		type = 'vertical',
-		from = 'bottom'
-	}
-
-	local horizontall = formation {
-		type = 'horizontal',
-		from = 'left'
-	}
-
 	local horizontalr = formation {
 		type = 'horizontal',
 		from = 'right'
 	}
+
+	local simple = 'simpleball'
+	local divide1 = 'multiball'
 
 	warnEnemies = true
 	warnEnemiesTime = 4
 	wait(5)
 	enemy('simpleball', 20, formation { type = 'around', anglechange = torad(360/20), adapt = false, radius = 600, shootatplayer = true})
 	warnEnemiesTime = 0.7
-	wait(5)
 
 	wait(4)
 	horizontalr.speed = v
@@ -70,6 +57,10 @@ function run()
 	enemy(simple, 21, vform)
 	warnEnemiesTime = 0.7
 	wait(4.0)
+	f1.anglechange = torad(360/15)
+	f1.adapt = false
+	f1.speed = 1.4*v
+	f1.radius = 600
 	f1.distance = 40
 	f1.angle = 0
 	f1.anglechange = f1.anglechange*(math.random() < .5 and -1 or 1)
@@ -80,6 +71,7 @@ function run()
 	f1.anglechange = -f1.anglechange
 	f1.speed = 1.6*v
 	enemy(simple, 20, f1)
+	wait(5)
 
 
 	doNow ( function( timer )
@@ -90,9 +82,9 @@ function run()
 		end
 		text:new { text = "BOSS INCOMING", font = getFont(40), position = vector:new{ -100, -30 }, speed = vector:new{v,v} }:register()
 	end )
-	wait(5)]]
+	wait(5)
 	enemy 'bossOne'
-	wait(10)
+	wait(15)
 
 	registerTimer {
 		timelimit = .5,
@@ -109,6 +101,4 @@ function run()
 			end
 		end
 	}
-	
-
 end
