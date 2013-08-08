@@ -21,7 +21,7 @@ function simpleball:update( dt )
 
 	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
 		psycho.diereason = "shot"
-		lostgame()
+		if not respawn then lostgame() end
 	end
 
 	self.delete = self.delete or self.collides

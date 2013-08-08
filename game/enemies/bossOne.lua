@@ -1,6 +1,6 @@
 bossOne = circleEffect:new {
 	size = 80,
-	maxhealth = 120,
+	maxhealth = 160,
 	basespeed = 2*v,
 	basespeedsqrt = math.sqrt(2*v),
 	index = false,

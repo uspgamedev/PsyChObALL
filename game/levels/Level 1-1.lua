@@ -2,7 +2,6 @@ title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
-	
 	local f1 = formation {
 			type = 'around',
 			angle = 0,
@@ -42,8 +41,6 @@ function run()
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
-
-
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 	wait(3)

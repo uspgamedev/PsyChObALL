@@ -234,6 +234,7 @@ function reloadStory( name )
 	end
 	if state == story then effect:clear() end
 	state = story
+	lives = 3
 	soundmanager.changeSong(soundmanager.gamesong)
 	notclearcircleeffect = true
 	resetVars()
@@ -290,6 +291,7 @@ local moarLSDchance = 3
 
 function lostgame()
 	if gamelost then return end
+	if respawn then return end
 	mouse.setGrab(false)
 	soundmanager.fadeout()
 	filemanager.writestats()

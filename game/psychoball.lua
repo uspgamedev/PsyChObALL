@@ -104,6 +104,7 @@ local effects = {
 }
 
 function psychoball:handleDelete()
+	lives = lives - 1
 	self.size = self.size + sizediff
 	self.speed:set(0,0)
 	local deatheffects = {}
@@ -144,7 +145,7 @@ function psychoball:handleDelete()
 		end
 	end
 	self.size = self.size - sizediff
-	paintables.psychoeffects = deatheffects
+	paintables.psychoeffects = deatheffects	
 end
 
 function psychoball:keypressed( key )

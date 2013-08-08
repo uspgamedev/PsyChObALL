@@ -1,4 +1,4 @@
-title = "It was all a test"
+fvtitle = "It was all a test"
 chapter = ""
 
 function run()
