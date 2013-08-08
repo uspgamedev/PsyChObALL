@@ -25,7 +25,8 @@ function ranged:__init()
 	}
 end
 
-function ranged:onInit( num, target, shot, initialcolor )
+function ranged:onInit( num, target, shot, initialcolor, angle )
+	self.angle = angle or 0
 	self.basecolor = initialcolor or {0, 255, 0}
 	self.colorvars = {vartimer:new{var = self.basecolor[1]}, vartimer:new{var = self.basecolor[2]}, vartimer:new{var = self.basecolor[3]}}
 	self.coloreffect = getColorEffect(unpack(self.colorvars))
