@@ -112,7 +112,7 @@ function keypressed( key )
 		if gamelostinfo.isrestarting then return end
 		gamelostinfo.isrestarting = true
 		gamelostinfo.timeofrestart = totaltime
-		local m = (totaltime - gamelostinfo.timeofdeath - .2)/gamelostinfo.timetorestart
+		local m = (totaltime - gamelostinfo.timeofdeath - .07)/gamelostinfo.timetorestart
 		for _, eff in pairs(global.paintables.psychoeffects) do
 			eff.speed:negate():mult(m, m)
 		end
@@ -124,9 +124,11 @@ function keypressed( key )
 			onceonly = true,
 			timelimit = gamelostinfo.timetorestart,
 			funcToCall = function()
-				timefactor = timefactor / 10
+				--timefactor = timefactor / 5
+				local s = math.sqrt(global.paintables.psychoeffects[1].prevdist)/.025
+				s = s / global.paintables.psychoeffects[1].speed:length()
 				for _, eff in pairs(global.paintables.psychoeffects) do
-					eff.speed:div(m / 3, m / 3)
+					eff.speed:mult(s, s)
 				end
 			end
 		}

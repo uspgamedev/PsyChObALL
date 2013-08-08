@@ -70,7 +70,7 @@ function enemy:handleDelete()
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
 
-		if  not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
+		if not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
 			if not inverttimer.running then
 				inverttimer:start()
 				soundmanager.setPitch(1.03)
@@ -82,8 +82,8 @@ function enemy:handleDelete()
 		if self.size >= 15 then 
 			circleEffect:new{
 				based_on = self,
-				linewidth = 10,
-				alpha = 100,
+				linewidth = 7,
+				alpha = 80,
 				sizeGrowth = 600, 
 				maxsize = width
 			} 

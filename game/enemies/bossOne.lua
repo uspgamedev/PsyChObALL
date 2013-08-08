@@ -22,7 +22,7 @@ function bossOne:__init()
 	self.health = bossOne.maxhealth
 	self.variance = math.random((colorcycle-3)*1000)/1000 + 3
 	bossOne.shot = enemies.simpleball
-	bossOne.turret.bodies = enemies.bossOne.bodies
+	--bossOne.turret.bodies = enemies.bossOne.bodies
 end
 
 bossOne.behaviors = {}
@@ -130,16 +130,16 @@ function bossOne.behaviors.third( self )
 			running = true,
 			onceonly = true,
 			timelimit = 1,
-			funcToCall = function() self.sizeGrowth = -15 end
+			funcToCall = function() self.sizeGrowth = 230 end
 		}
 		self.currentBehavior = bossOne.behaviors.toExplode
 	end
 end
 
 function bossOne.behaviors.toExplode( self )
-	if self.size < bossOne.size/3 then
-		self.sizeGrowth = 0
-		local old = bossOne.basespeed
+	if self.size >= width/2 - 50 then
+		self.sizeGrowth = -1300
+		--[[local old = bossOne.basespeed
 		bossOne.basespeed = bossOne.basespeed / 1.3
 		for i = 1, self.circleshoot.times do
 			self.circleshoot:funcToCall()
@@ -153,10 +153,10 @@ function bossOne.behaviors.toExplode( self )
 		bossOne.turret:new { position = c:clone(), speed = vector:new{0,  v/2} }:register()
 		bossOne.turret:new { position =         c, speed = vector:new{0, -v/2} }:register()
 		bossOne.turret.count = 0
-		bossOne.turretnum = 4
+		bossOne.turretnum = 4]]
 
 		--explode
-		self.delete = true
+		--self.delete = true
 	end
 end
 
@@ -200,9 +200,12 @@ function bossOne:update( dt )
 end
 
 function bossOne:handleDelete()
+	self.size = 1
 	neweffects(self, 300)
+	self.size = 0
 end
 
+--[[
 bossOne.turret = body:new {
 	size = 50,
 	health = bossOne.maxhealth/4,
@@ -258,4 +261,4 @@ function bossOne.turret:handleDelete()
 		tur.shoottimer.timelimit = tur.shoottimer.timelimit / 1.5
 	end
 	bossOne.turretnum = bossOne.turretnum - 1
-end
+end]]
