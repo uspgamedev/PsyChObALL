@@ -67,7 +67,6 @@ function bossOne.behaviors.first( self )
 end
 
 function bossOne.behaviors.second( self )
-	self.speed:set(1.2*v, 1.2*v)
 	function self.shoottimer.funcToCall()
 			local e = (enemies.multiball):new{}
 			e.position = self.position:clone()

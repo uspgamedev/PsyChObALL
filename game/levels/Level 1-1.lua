@@ -43,7 +43,7 @@ function run()
 	local divide1 = 'multiball'
 
 	doNow( function(timer)
-		reloadStory 'Level 1-3'
+		reloadStory 'Level 1-2'
 	end)
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
