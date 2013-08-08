@@ -12,9 +12,9 @@ function pushEnemies( timer, enemies )
 	timer.running = false
 end
 
-function registerEnemies( timer, enemies, ... )
+function registerEnemies( timer, enemies)
 	for _, enemy in ipairs(enemies) do
-		enemy:register(...)
+		enemy:register()
 	end
 	timer.running = false
 end
@@ -26,10 +26,20 @@ local enemycreator, enemycreatorwarning = {}, {}
 function levelEnv.enemy( name, n, format, ... )
 	name = name or 'simpleball'
 	n = n or 1
-	local enemy = enemies[name]
+	local initInfo = select('#', ...) > 0  and {...} or nil
 	local enemylist = {}
-	for i=1, n do
-		enemylist[i] = enemy:new{ side = format and format.side }
+	if type(name) == 'string' then
+		local enemy = enemies[name]
+		for i = 1, n do
+			enemylist[i] = enemy:new{ side = format and format.side, onInitInfo = initInfo }
+		end
+	else
+		local k, s = 1, #name
+		for i = 1, n do
+			enemylist[i] = enemies[name[k]]:new{ side = format and format.side, onInitInfo = initInfo }
+			k = k + 1
+			if k > s then k = 1 end
+		end
 	end
 	
 	if format then
@@ -43,7 +53,7 @@ function levelEnv.enemy( name, n, format, ... )
 		end
 	end
 
-	local extraelements = {enemylist, ...}
+	local extraelements = {enemylist}
 
 	if levelEnv.warnEnemies then
 		-- warns about the enemy

@@ -1,0 +1,86 @@
+ranged = body:new {
+	size =  30,
+	divideN = 3,
+	angle = 0,
+	anglechange = nil,
+	life = 5,
+	__type = 'ranged'
+}
+
+function ranged:__init()
+	if not self.target then enemy.__init(self) end
+	self.target = self.target or vector:new{math.random(width), math.random(height)}
+	self.speed:set(self.target):sub(self.position):normalize():mult(1.3*v, 1.3*v)
+	self.colorvars = {vartimer:new{var = 0}, vartimer:new{var = 255}, vartimer:new{var = 0}}
+	self.coloreffect = getColorEffect(unpack(self.colorvars))
+	self.prevdist = self.position:distsqr(self.target)
+	self.onLocation = false
+	self.anglechange = self.anglechange or torad(360/self.divideN)
+end
+
+function ranged:onInit( target, shot )
+	self.divideType = shot and enemies[shot] or enemies.simpleball
+	if target then
+		enemy.__init(self)
+		self.target = target:clone()
+	end
+end
+
+function ranged:update( dt )
+	body.update(self, dt)
+
+	if not self.onLocation then
+		local curdist = self.position:distsqr(self.target)
+		if curdist < 1  or curdist > self.prevdist then
+			self.speed:reset()
+			self.onLocation = true
+			self.prevdist = nil
+			self.shoottimer = timer:new {
+				timelimit  = 1,
+				running = true,
+				funcToCall = function() self:shoot() end
+			}
+		else
+			self.prevdist = curdist
+		end
+	end
+
+	for i,v in pairs(shot.bodies) do
+		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
+			self.life = self.life - 1
+			self.colorvars[1].var = 255 - (self.life / ranged.life) * 255
+			self.colorvars[2].var = (self.life / ranged.life) * 255
+			v.collides = true
+			v.explosionEffects = false
+			self.diereason = "shot"
+		end
+	end
+
+	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
+		psycho.diereason = "shot"
+		lostgame()
+	end
+
+	self.delete = self.delete or self.life == 0
+end
+
+function ranged:shoot()
+	local ang = self.angle + torad(180)
+	local speed = self.setspeed or 1.5*v
+	for i = 1, self.divideN do
+		local e = self.divideType:new{}
+		e.position:set(self.position)
+		e.speed:set(math.sin(ang)*speed, math.cos(ang)*speed)
+		ang = ang + self.anglechange
+		e:register()
+	end
+	print(' ')
+end
+
+function ranged:handleDelete()
+	neweffects(self, 30)
+	self.divideN = self.divideN + 3	
+	self.anglechange = torad(360/self.divideN)
+	self:shoot()
+	if self.shoottimer then self.shoottimer:remove() end
+end

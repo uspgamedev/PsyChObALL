@@ -54,9 +54,12 @@ function superball:__init()
 	}
 end
 
-function superball:start( shot, ... )
+function superball:onInit( shot, ... )
 	self.shot = shot and enemies[shot] or state == survival and enemy or enemies.simpleball
 	self.extra = select('#', ...) > 0 and {...} or nil
+end
+
+function superball:start( shot )
 	self.shoottimer:start()
 	self.speedtimer:start()
 	self.lifeCircle.position = self.position
@@ -96,9 +99,9 @@ end
 
 function superball:handleDelete()
 	neweffects(self,100)
-	self.lifeCircle.size = -1
-	self.shoottimer:stop()
+	self.lifeCircle.sizeGrowth = -300
+	self.shoottimer:remove()
 	self.shoottimer.delete = true
-	self.speedtimer:stop()
+	self.speedtimer:remove()
 	self.speedtimer.delete = true
 end

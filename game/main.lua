@@ -392,20 +392,21 @@ function sincityeffect( color )
 	return color
 end
 
-local consteffect = 70/255
-function getColorEffect( r, g, b )
+function getColorEffect( r, g, b, change )
+	change = change or 60
+	local consteffect = change/255
 	if type(r) == 'table' then --consider all vartimers
 		return function ( color )
 			color[1], color[2], color[3] = 
-					color[1]*consteffect + math.min(math.max(r.var - 35, 0), 185),
-					color[2]*consteffect + math.min(math.max(g.var - 35, 0), 185),
-					color[3]*consteffect + math.min(math.max(b.var - 35, 0), 185)
+					color[1]*consteffect + math.min(math.max(r.var - change/2, 0), 255 - change),
+					color[2]*consteffect + math.min(math.max(g.var - change/2, 0), 255 - change),
+					color[3]*consteffect + math.min(math.max(b.var - change/2, 0), 255 - change)
 			return color
 		end
 	else --conside all numbers
-		r = math.min(math.max(r - 35, 0), 185)
-		g = math.min(math.max(g - 35, 0), 185)
-		b = math.min(math.max(b - 35, 0), 185)
+		r = math.min(math.max(r - change/2, 0), 255 - change)
+		g = math.min(math.max(g - change/2, 0), 255 - change)
+		b = math.min(math.max(b - change/2, 0), 255 - change)
 		return function ( color )
 			color[1], color[2], color[3] = 
 					color[1]*consteffect + r,
