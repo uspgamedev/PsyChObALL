@@ -67,6 +67,15 @@ function bossOne.behaviors.first( self )
 end
 
 function bossOne.behaviors.second( self )
+	self.speed:set(1.2*v, 1.2*v)
+	function self.shoottimer.funcToCall()
+			local e = (enemies.multiball):new{}
+			e.position = self.position:clone()
+			local pos = psycho.position:clone()
+			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
+			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
+			e:register()
+		end
 	local mx, my = self:restrictToScreen()
 	if mx and math.random() < .43 then 
 		self.speed:set(mx * (width - 2*self.size - 20), my * (height - 2*self.size - 20)):normalize():mult(bossOne.basespeed)

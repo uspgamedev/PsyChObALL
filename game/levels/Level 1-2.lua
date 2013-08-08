@@ -55,6 +55,8 @@ function run()
 	f2.speed = 1.2*v
 	f2.angle = torad (0)
 	enemy(divide1, 4, f2)
+	f2.angle = torad (45/2)
+	enemy(divide1, 4, f2)
 	wait(4.0)
 	horizontall.speed = 1.5*v
 	horizontalr.speed = 1.5*v
