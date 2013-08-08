@@ -43,6 +43,7 @@ function initBase()
 	fonts = {}
 	coolfonts = {}
 	resetted = false
+	godmode = false
 
 	gamelostinfo =  {
 		timetorestart = .5,
@@ -290,6 +291,7 @@ end
 local moarLSDchance = 3
 
 function lostgame()
+	if godmode then return end
 	if gamelost then return end
 	if respawn then return end
 	mouse.setGrab(false)

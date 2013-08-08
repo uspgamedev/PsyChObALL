@@ -98,6 +98,7 @@ function keypressed( key )
 			elseif key == '3' then timefactor = timefactor * 0.9
 			elseif key == 'l' and not gamelost then deathText(1) lostgame()
 			elseif key == 'u' then love.update(10) --skips 10 seconds
+			elseif key == 'g' then godmode = not godmode
 			end
 		end
 		
