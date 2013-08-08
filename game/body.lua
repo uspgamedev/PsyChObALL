@@ -4,35 +4,39 @@ require 'vector'
 body = lux.object.new {
 	size = 0,
 	mode = 'fill',
-	dead = false,
 	variance = 0,
 	changesimage = true,
 	__type = 'unnamed body'
 }
 
-
 function body:__init()
-	self.position = self.position or vector:new{}
-	self.speed = self.speed or vector:new{}
-	function self:__index( key )
-		if key == 'x' then return self.position[1]
-		elseif key == 'y' then return self.position[2]
-		elseif key == 'Vx' then return self.speed[1]
-		elseif key == 'Vy' then return self.speed[2]
-		else return getmetatable(self)[key] end
-	end
-
-	function self:__newindex( key, v )
-		if		 key == 'x' then  self.position[1] = v
-		elseif key == 'y' then  self.position[2] = v
-		elseif key == 'Vx' then self.speed[1] 	 = v
-		elseif key == 'Vy' then self.speed[2] 	 = v
-		else rawset(self, key, v) end
-	end
-	self:onInit(self.onInitInfo and unpack(self.onInitInfo))
+	self.position = rawget(self, 'position') or vector:new{}
+	self.speed = rawget(self, 'speed') or vector:new{}
+	self.__index = index
+	self.__newindex = newindex
+	
 	if self.onInitInfo then
+		self:onInit(unpack(self.onInitInfo))
 		self.onInitInfo = nil
+	else
+		self:onInit()
 	end
+end
+
+function index( self, key )
+	if key == 'x' then return self.position[1]
+	elseif key == 'y' then return self.position[2]
+	elseif key == 'Vx' then return self.speed[1]
+	elseif key == 'Vy' then return self.speed[2]
+	else return getmetatable(self)[key] end
+end
+
+function newindex( self, key, v )
+	if		 key == 'x' then  self.position[1] = v
+	elseif key == 'y' then  self.position[2] = v
+	elseif key == 'Vx' then self.speed[1] 	 = v
+	elseif key == 'Vy' then self.speed[2] 	 = v
+	else rawset(self, key, v) end
 end
 
 function body:update( dt )
