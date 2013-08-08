@@ -24,8 +24,8 @@ function body:__init()
 end
 
 function index( self, key )
-	if key == 'x' then return self.position[1]
-	elseif key == 'y' then return self.position[2]
+	if key == 'x'      then return self.position[1]
+	elseif key == 'y'  then return self.position[2]
 	elseif key == 'Vx' then return self.speed[1]
 	elseif key == 'Vy' then return self.speed[2]
 	else return getmetatable(self)[key] end
@@ -34,8 +34,8 @@ end
 function newindex( self, key, v )
 	if		 key == 'x' then  self.position[1] = v
 	elseif key == 'y' then  self.position[2] = v
-	elseif key == 'Vx' then self.speed[1] 	 = v
-	elseif key == 'Vy' then self.speed[2] 	 = v
+	elseif key == 'Vx' then self.speed[1] 	  = v
+	elseif key == 'Vy' then self.speed[2] 	  = v
 	else rawset(self, key, v) end
 end
 
