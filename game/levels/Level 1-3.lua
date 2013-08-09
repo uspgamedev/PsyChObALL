@@ -23,7 +23,7 @@ function run()
 					speed = vector:new{v, v},
 					size = 40,
 					position = vector:new{0,0},
-					handleDelete = function () reloadStory 'Test Level' end
+					handleDelete = function () lives = lives + 1 reloadStory 'Test Level' end
 				}:register()
 				timer:remove()
 			end

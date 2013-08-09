@@ -8,6 +8,8 @@ psychoball = circleEffect:new {
 	alpha = 255,
 	index = false,
 	changesimage = true,
+	canbehit = true,
+	pseudoDied = false,
 	__index = circleEffect.__index,
 	__newindex = circleEffect.__newindex
 }
@@ -34,7 +36,7 @@ function psychoball.init()
 end
 
 function psychoball:update(dt)
-	if gamelost then return end
+	if self.pseudoDied or gamelost then return end
 	body.update(self, dt)
 
 	self.position:set(
@@ -52,7 +54,7 @@ function psychoball:update(dt)
 end
 
 function psychoball:draw()
-	if gamelost then return end
+	if self.pseudoDied or gamelost then return end
 	self.size = self.size + sizediff
 	body.draw(self)
 	self.size = self.size - sizediff
@@ -104,7 +106,6 @@ local effects = {
 }
 
 function psychoball:handleDelete()
-	lives = lives - 1
 	self.size = self.size + sizediff
 	self.speed:set(0,0)
 	local deatheffects = {}
@@ -136,7 +137,9 @@ function psychoball:handleDelete()
 		if gamelostinfo.isrestarting and not self.speed:equals(0, 0) then
 			local curdist = self.position:distsqr(self.firstpos)
 			if curdist == 0 or curdist > self.prevdist then
-				if state == story then reloadStory()
+				if state == story then 
+					if not psycho.pseudoDied then levels.closeLevel() reloadStory 'Level 1-1'
+					else psycho:recreate() end
 				elseif state == survival then reloadSurvival() end
 				paintables.psychoeffects = nil
 				return
@@ -146,6 +149,45 @@ function psychoball:handleDelete()
 	end
 	self.size = self.size - sizediff
 	paintables.psychoeffects = deatheffects	
+	if lives == 0 then
+		--handle stuff
+	else
+		lives = lives - 1
+		self.canbehit = false
+		self.pseudoDied = true
+		timer:new{ timelimit = 1, running = true, timeaffected = false, onceonly = true, funcToCall = function()
+			UI.keypressed 'restartstory'
+		end
+		}
+	end
+end
+
+function psychoball:recreate()
+	timefactor = 1
+	self.pseudoDied = false
+	local blink = timer:new {
+		timelimit = .6,
+		running = true,
+		funcToCall = function ( timer )
+			if timer.timelimit == .6 then
+				timer.timelimit = .1
+				self.alpha = 0
+			else
+				timer.timelimit = .6
+				self.alpha = 255
+			end
+		end
+	}
+	--[[stopblinking]]timer:new {
+		timelimit = 3,
+		running = true,
+		onceonly = true,
+		funcToCall = function()
+			blink:remove()
+			self.canbehit = true
+			self.alpha = 255
+		end
+	}
 end
 
 function psychoball:keypressed( key )

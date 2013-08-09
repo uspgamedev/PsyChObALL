@@ -107,7 +107,7 @@ function mousereleased( x, y, btn )
 end
 
 function keypressed( key )
-	if gamelost and key == 'r' then
+	if key == 'restartstory' or (gamelost and key == 'r') then
 		--restarting
 		if gamelostinfo.isrestarting then return end
 		gamelostinfo.isrestarting = true
@@ -138,6 +138,7 @@ function keypressed( key )
 		global.paintables.psychoeffects = nil
 		if state == story then
 			levels.closeLevel()
+			lives = 3
 		end
 
 		paused = false
@@ -260,11 +261,11 @@ function draw()
 		end
 		graphics.setFont(getCoolFont(40))
 		graphics.print(deathText(), 270, 300)
-		graphics.setFont(getFont(30))
-		graphics.print("_____________", 300, 645)
 		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
 		graphics.setFont(getCoolFont(23))
 		graphics.print("Press R to retry", 300, 640)
+		graphics.setFont(getFont(30))
+		graphics.print("_____________", 300, 645)
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Press B", 580, 650)
 		graphics.print(pauseText(), 649, 650)

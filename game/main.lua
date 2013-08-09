@@ -233,19 +233,21 @@ function reloadStory( name )
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:close()
 	end
-	if state == story then effect:clear() end
-	state = story
-	lives = 3
-	soundmanager.changeSong(soundmanager.gamesong)
-	notclearcircleeffect = true
-	resetVars()
-	timer.closenonessential()
+	effect:clear()
+	if state == story and name ~= 'Level 1-1' then
+		timer.closenonessential()
+	else
+		state = story
+		lives = 3
+		soundmanager.changeSong(soundmanager.gamesong)
+		resetVars()
+		timer.closenonessential()
 
-	soundmanager.restart()
-	enemies.restartStory()
+		soundmanager.restart()
+		enemies.restartStory()
 
-	mouse.setGrab(true)
-
+		mouse.setGrab(true)
+	end
 	levels.runLevel(name)
 end
 
@@ -291,36 +293,32 @@ end
 local moarLSDchance = 3
 
 function lostgame()
-	if godmode then return end
-	if gamelost then return end
-	if respawn then return end
-	mouse.setGrab(false)
-	soundmanager.fadeout()
-	filemanager.writestats()
+	if gamelost or godmode then return end
+	local autorestart = state == story and lives > 0
+	if not autorestart then
+		mouse.setGrab(false)
+		soundmanager.fadeout()
+		filemanager.writestats()
 
-	if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
+		if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
 
-	if deathText() == "The LSD wears off" then
-		soundmanager.setPitch(.8)
-		deathtexts[1] = "MOAR LSD"
-		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
-		currentEffect = noLSDeffect
-	elseif deathText() == "MOAR LSD" then
-		soundmanager.setPitch(1)
-		deathtexts[1] = "The LSD wears off"
-		for i = 1, moarLSDchance do table.remove(deathtexts) end
-		currentEffect = nil
-	end
-
-	gamelost   = true
-	timefactor = .05
-	pausemessage = nil
-
-	if levels.currentLevel then
-		for _, t in ipairs(levels.currentLevel.timers_) do
-			t:stop()
+		if deathText() == "The LSD wears off" then
+			soundmanager.setPitch(.8)
+			deathtexts[1] = "MOAR LSD"
+			for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
+			currentEffect = noLSDeffect
+		elseif deathText() == "MOAR LSD" then
+			soundmanager.setPitch(1)
+			deathtexts[1] = "The LSD wears off"
+			for i = 1, moarLSDchance do table.remove(deathtexts) end
+			currentEffect = nil
 		end
+
+		gamelost   = true
+		pausemessage = nil
 	end
+	
+	timefactor = .05
 
 	psycho:handleDelete()
 	gamelostinfo.timeofdeath = totaltime

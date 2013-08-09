@@ -115,7 +115,8 @@ setmetatable(levelEnv, {__index = _G})
 
 function runLevel( name )
 	local prevtitle = currentLevel and currentLevel.title
-	currentLevel = name and levels[name] or currentLevel
+	closeLevel()
+	currentLevel = name and levels[name]
 	currentLevel.reload()
 	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
 	changetitle = false
@@ -149,8 +150,8 @@ function runLevel( name )
 end
 
 function closeLevel()
+	if not currentLevel then return end
 	for _, t in ipairs(currentLevel.timers_) do
-		t:stop()
 		t:remove()
 	end
 	currentLevel.timers_ = nil

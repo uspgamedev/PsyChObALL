@@ -10,7 +10,7 @@ function simpleball:update( dt )
 	body.update(self, dt)
 
 	for i,v in pairs(shot.bodies) do
-		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
+		if (v.size + self.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
 			self.collides = true
 			v.collides = true
 			v.explosionEffects = false
@@ -19,9 +19,9 @@ function simpleball:update( dt )
 		end
 	end
 
-	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
+	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
 		psycho.diereason = "shot"
-		if not respawn then lostgame() end
+		lostgame()
 	end
 
 	self.delete = self.delete or self.collides
