@@ -35,6 +35,17 @@ function run()
 		from = 'left'
 	}
 
+	local verticalt = formation {
+		type = 'vertical',
+		from = 'top'
+	}
+
+	local verticalb = formation {
+		type = 'vertical',
+		from = 'bottom'
+	}
+
+
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 
@@ -55,11 +66,14 @@ function run()
 	f2.speed = 1.2*v
 	f2.angle = torad (0)
 	enemy(divide1, 4, f2)
-	f2.angle = torad (45/2)
+	f2.angle = torad (135/2)
 	enemy(divide1, 4, f2)
 	wait(.5)
-	f2.angle = torad (360/6)
-	enemy(divide1, 6, f2)
+	f2.angle = torad (360/12)
+	f2.anglechange = torad (360/12)
+	enemy(divide1, 12, f2)
+	enemy(divide1, 8, verticalt)
+	enemy(divide1, 8, verticalb)
 	wait(4.0)
 	horizontall.speed = 1.5*v
 	horizontalr.speed = 1.5*v

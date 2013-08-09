@@ -475,8 +475,8 @@ pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff
 deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
 "You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
-"There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END",
-"YOU WIN!!! \n                       nope, chuck testa","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
+"There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END", 
+"Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
 "Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace", "Valar Morghulis", "What is dead may never die","Mission Failed"}
 
 function deathText( n )

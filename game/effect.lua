@@ -18,6 +18,12 @@ end
 
 function neweffects( based_on, times)
 	--local speedinfluence = based_on.speed * .6
+	if #effect.bodies > 1000 then 
+		local n = #effect.bodies
+		for i = 0, 200 do
+			effect.bodies[math.random(n)] = nil
+		end
+	end
 	for i = 1,times do
 		local e = effect:new{
 			position = based_on.position + {based_on.size * (2 * math.random() - 1),based_on.size * (2 * math.random() - 1)},

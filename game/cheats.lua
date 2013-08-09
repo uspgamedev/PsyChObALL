@@ -99,6 +99,7 @@ function keypressed( key )
 			elseif key == 'l' and not gamelost then deathText(1) lostgame()
 			elseif key == 'u' then love.update(10) --skips 10 seconds
 			elseif key == 'g' then godmode = not godmode
+			elseif key == 'e' then print(#effect.bodies)
 			end
 		end
 		

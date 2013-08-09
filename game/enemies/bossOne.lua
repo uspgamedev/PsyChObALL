@@ -245,6 +245,11 @@ function bossOne:update( dt )
 				end
 			end
 		end
+		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
+			if self.health > 0 then self.health = self.health - 1 end
+			v.collides = true
+			v.explosionEffects = true
+		end
 	end
 
 	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
