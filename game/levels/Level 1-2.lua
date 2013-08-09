@@ -65,7 +65,7 @@ function run()
 	horizontalr.speed = 1.5*v
 	enemy(divide1, 8, horizontall)
 	enemy(divide1, 9, horizontalr)
-	warnEnemiesTime = 2
+	warnEnemiesTime = 1.2
 	wait(4.0)
 	enemy('simpleball', 21, vform)
 	warnEnemiesTime = 0.7

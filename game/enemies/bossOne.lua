@@ -24,6 +24,7 @@ function bossOne:__init()
 	bossOne.shot = enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0, speed = 200}}
+	self.colors = {vartimer:new{var = 0xFF}, vartimer:new{var = 0xFF}, vartimer:new{var = 0xFF}}
 	self.coloreffect = getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	--bossOne.turret.bodies = enemies.bossOne.bodies
 end
@@ -68,18 +69,17 @@ function bossOne.behaviors.first( self )
 		self.currentBehavior = bossOne.behaviors.second
 		self.speedchange:remove()
 		self.speedchange = nil
-		self.speed:set(1.2*v, 1.2*v)
-		function self.shoottimer.funcToCall()
-			local e = (enemies.multiball):new{}
-			e.position = self.position:clone()
-			local pos = psycho.position:clone()
-			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
-			e:register()
-		end
-		self.colors[1]:setAndGo(nil, 0, 200)
-		self.colors[2]:setAndGo(nil, 255, 200)
-		self.colors[3]:setAndGo(nil, 0, 200)
+	end
+end
+
+function bossOne.behaviors.second( self )
+	function self.shoottimer.funcToCall()
+		local e = (enemies.multiball):new{}
+		e.position = self.position:clone()
+		local pos = psycho.position:clone()
+		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
+		e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
+		e:register()
 	end
 end
 
@@ -92,9 +92,6 @@ function bossOne.behaviors.second( self )
 		self.speed:set(vector:new{width/2, height/2}:sub(self.position)):normalize():mult(bossOne.basespeed)
 		self.currentBehavior = bossOne.behaviors.toTheMiddle
 		self.prevdist = self.position:distsqr(width/2, height/2)
-		self.colors[1]:setAndGo(nil, 0, 200)
-		self.colors[2]:setAndGo(nil, 255, 200)
-		self.colors[3]:setAndGo(nil, 255, 200)
 	end
 end
 
@@ -140,7 +137,7 @@ function bossOne.behaviors.toTheMiddle( self )
 end
 
 function bossOne.behaviors.third( self )
-	if self.health/bossOne.maxhealth < .075 then
+	if self.health/bossOne.maxhealth <= .075 then
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.circleshoot:remove()
@@ -148,9 +145,7 @@ function bossOne.behaviors.third( self )
 		self.circleshoot.times = 360/15
 		bossOne.shot = enemies.simpleball
 		--change color or whatever
-		self.colors[1]:setAndGo(nil, 70, 200)
-		self.colors[2]:setAndGo(nil, 0, 200)
-		self.colors[3]:setAndGo(nil, 0, 200)
+		self.coloreffect = sincityeffect
 		timer:new {
 			running = true,
 			onceonly = true,
@@ -247,12 +242,14 @@ function bossOne:update( dt )
 					}
 				end
 			end
+		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
+			if self.health > 0 then self.health = self.health - 1 end
 			v.collides = true
 			v.explosionEffects = true
 		end
 	end
 
-	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
+	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
 		psycho.diereason = "shot"
 		lostgame()
 	end
