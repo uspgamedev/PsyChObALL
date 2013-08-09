@@ -207,6 +207,8 @@ function bossOne:update( dt )
 
 	for i,v in pairs(shot.bodies) do
 		if (v.size + self.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
+			v.collides = true
+			v.explosionEffects = true
 			if self.health > 0 then 
 				self.health = self.health - 1
 				local d = self.health/bossOne.maxhealth
@@ -242,14 +244,10 @@ function bossOne:update( dt )
 					}
 				end
 			end
-		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
-			if self.health > 0 then self.health = self.health - 1 end
-			v.collides = true
-			v.explosionEffects = true
 		end
 	end
 
-	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
+	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
 		psycho.diereason = "shot"
 		lostgame()
 	end
@@ -260,61 +258,3 @@ function bossOne:handleDelete()
 	neweffects(self, 300)
 	self.size = 0
 end
-
---[[
-bossOne.turret = body:new {
-	size = 50,
-	health = bossOne.maxhealth/4,
-	variance = math.random(colorcycle*1000)/1000,
-	turretnum = 4,
-	__type = 'bossOneTurret'
-}
-
-function bossOne.turret:__init( ... )
-	self.shoottimer = timer:new {
-		timelimit = 1.5,
-		funcToCall = function ()
-			local e = bossOne.shot:new{}
-			e.position = self.position:clone()
-			local pos = psycho.position:clone()
-			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = (pos:sub(self.position)):normalize():mult(v, v)
-			e:register()
-		end
-	}
-end
-
-function bossOne.turret:update( dt )
-	body.update(self, dt)
-	if not self.speed:equals(0,0) and bossOne.restrictToScreen(self) then
-		self.speed:set(0,0)
-		bossOne.turret.count = bossOne.turret.count + 1
-		if bossOne.turret.count == bossOne.turretnum then
-			for _, tur in pairs(bossOne.bodies) do tur.shoottimer:start(1) end
-		end
-	end
-
-	for i,v in pairs(shot.bodies) do
-		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
-			if self.health > 0 then self.health = self.health - 1 end
-			v.collides = true
-			v.explosionEffects = true
-		end
-	end
-
-	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
-		psycho.diereason = "shot"
-		lostgame()
-	end
-
-	self.delete = self.delete or self.health <= 0
-end
-
-function bossOne.turret:handleDelete()
-	self.shoottimer:remove()
-	neweffects(self, 50)
-	for _, tur in pairs(bossOne.bodies) do
-		tur.shoottimer.timelimit = tur.shoottimer.timelimit / 1.5
-	end
-	bossOne.turretnum = bossOne.turretnum - 1
-end]]

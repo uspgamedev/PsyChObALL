@@ -4,6 +4,7 @@ ranged = body:new {
 	angle = 0,
 	anglechange = nil,
 	life = 5,
+	timeout = 10,
 	__type = 'ranged'
 }
 
@@ -23,19 +24,26 @@ function ranged:__init()
 		alpha = 255,
 		linewidth = 10
 	}
+	self.timeout = timer:new {
+		timelimit = self.timeout,
+		funcToCall = function(timer)
+			self.speed:set((math.random() > .5 and -1 or 1)* v, (math.random() > .5 and -1 or 1)*v)
+			timer:stop()
+		end
+	}
 end
 
-function ranged:onInit( num, target, shot, initialcolor, angle )
+function ranged:onInit( num, target, pos, shot, initialcolor, angle, timeout)
+	self.timeout = timeout
 	self.angle = angle or 0
 	self.basecolor = initialcolor or {0, 255, 0}
 	self.colorvars = {vartimer:new{var = self.basecolor[1]}, vartimer:new{var = self.basecolor[2]}, vartimer:new{var = self.basecolor[3]}}
 	self.coloreffect = getColorEffect(unpack(self.colorvars))
 	self.divideN = num or self.divideN
 	self.shot = shot and enemies[shot] or enemies.simpleball
-	if target then
-		enemy.__init(self)
-		self.target = target:clone()
-	end
+	if not pos then enemy.__init(self)
+	else self.position = pos:clone() end
+	if target then	self.target = target:clone() end
 end
 
 function ranged:start()
@@ -48,6 +56,7 @@ function ranged:update( dt )
 	if not self.onLocation then
 		local curdist = self.position:distsqr(self.target)
 		if curdist < 1  or curdist > self.prevdist then
+			self.timeout:start()
 			self.speed:reset()
 			self.onLocation = true
 			self.prevdist = nil
@@ -95,6 +104,7 @@ end
 
 function ranged:handleDelete()
 	neweffects(self, 30)
+	self.timeout:remove()
 	self.shotcircle.size = -1
 	self.divideN = self.divideN + 3	
 	self.anglechange = torad(360/self.divideN)
