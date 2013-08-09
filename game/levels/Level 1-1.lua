@@ -1,7 +1,7 @@
 title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
-function run()	
+function run()
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
@@ -70,6 +70,6 @@ function run()
 	enemy(simple, 15, f1)
 	wait(4)
 	doNow( function(timer)
-		reloadStory 'Level 1-2'
+		if not gamelost then reloadStory 'Level 1-2' end
 	end)
 end

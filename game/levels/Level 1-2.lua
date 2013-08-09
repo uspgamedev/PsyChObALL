@@ -88,6 +88,6 @@ function run()
 	enemy(simple, 20, f1)
 	wait(5)
 	doNow( function(timer)
-		reloadStory 'Level 1-3'
+		if not gamelost then reloadStory 'Level 1-3' end
 	end)
 end

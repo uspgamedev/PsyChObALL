@@ -23,7 +23,7 @@ function bossOne:__init()
 	self.variance = math.random((colorcycle-3)*1000)/1000 + 3
 	bossOne.shot = enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
-	self.colors = {vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}}
+	self.colors = {vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0, speed = 200}}
 	self.coloreffect = getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	--bossOne.turret.bodies = enemies.bossOne.bodies
 end
@@ -219,10 +219,9 @@ function bossOne:update( dt )
 					d = (d-.75)*4
 					--self.colors[1] is already correct
 					self.colors[2]:setAndGo(0, 700)
-					self.colors[3]:setAndGo(0, 700)
+					--self.colors[3] is already correct
 					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function() 
 						self.colors[2]:setAndGo(nil, d*255, 300)
-						self.colors[3]:setAndGo(nil, d*255, 300)
 					end
 					}
 				elseif d >= .5 then

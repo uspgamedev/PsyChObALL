@@ -166,20 +166,21 @@ function psychoball:recreate()
 	timefactor = 1
 	self.pseudoDied = false
 	local blink = timer:new {
-		timelimit = .6,
+		timelimit = .4,
+		time = .37,
 		running = true,
 		funcToCall = function ( timer )
-			if timer.timelimit == .6 then
-				timer.timelimit = .1
+			if timer.timelimit == .4 then
+				timer.timelimit = .07
 				self.alpha = 0
 			else
-				timer.timelimit = .6
+				timer.timelimit = .4
 				self.alpha = 255
 			end
 		end
 	}
 	--[[stopblinking]]timer:new {
-		timelimit = 3,
+		timelimit = 1,
 		running = true,
 		onceonly = true,
 		funcToCall = function()
