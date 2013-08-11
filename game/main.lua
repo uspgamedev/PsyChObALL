@@ -239,7 +239,7 @@ function reloadStory( name )
 	else
 		state = story
 		lives = 3
-		soundmanager.changeSong(soundmanager.gamesong)
+		soundmanager.changeSong(soundmanager.vectorsong)
 		resetVars()
 		timer.closenonessential()
 

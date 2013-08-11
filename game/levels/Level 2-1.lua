@@ -62,34 +62,34 @@ function run()
 
 	warnEnemiesTime = 1.4
 	wait(4)
---	enemy({simple,divide1}, 16, vform)
---	vform.growth = 650
---	vform.startpoint = vc{width+320, 23}
---	vform.setspeedto = vc{-1.6*v, 0}
---	enemy({simple,divide1}, 16, vform)
---	wait(4)
---	enemy({simple,divide1}, 40, f1)
---	f1.angle = 180
---	enemy({simple,divide1}, 40, f1)
---	warnEnemiesTime = 0.7
---	wait (15)
---	enemy(range, 1, nil, 4, vc{width/2, 70}, vc{width/2, -30}, --[[{nil},]] simple, {50,205,50}, 0, 26)
---	enemy(range, 1, nil, 4, vc{width/2, height - 70}, vc{width/2, height + 30}, --[[{nil},]] simple, {50,205,50}, 0, 26)
---	enemy(range, 1, nil, 4, vc{70, height/2}, vc{-30, height/2}, --[[{nil},]] simple, {50,205,50}, 0, 26)
---	enemy(range, 1, nil, 4, vc{width -70, height/2}, vc{width + 30, height/2}, --[[{nil},]] simple, {50,205,50}, 0, 26)
---	wait(8)
---	enemy(range, 1, nil, 4, vc{70, 70}, vc{-30, -30}, --[[{nil},]] simple, {255,0,0}, torad(45), 18)
---	enemy(range, 1, nil, 4, vc{70, height - 70}, vc{-30, height + 30}, --[[{nil},]] simple, {255,0,0}, torad(45), 18)
---	enemy(range, 1, nil, 4, vc{width -70, height - 70}, vc{width +30, height + 30}, --[[{nil},]] simple, {255,0,0}, torad(45), 18)
---	enemy(range, 1, nil, 4, vc{width -70, 70}, vc{width +30, -30}, --[[{nil},]] simple, {255,0,0}, torad(45), 18)
---	wait(10)
---	enemy(range, 1, nil, 8, vc{width/2, height/3}, vc{2*width/3, -30}, --[[{width/3, height + 30},]] divide1, {148,0,211}, 0, 8)
---	enemy(range, 1, nil, 8, vc{width/2, 2*height/3}, vc{width/3 ,height + 30}, --[[{2*width/3, -30},]] divide1, {148,0,211}, 0, 8)
---	wait(10)
---	enemy(range, 1, nil, 4, vc{70, 70}, vc{-30, -30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
---	enemy(range, 1, nil, 4, vc{70, height - 70}, vc{-30, height + 30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
---	enemy(range, 1, nil, 4, vc{width -70, height - 70}, vc{width +30, height + 30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
---	enemy(range, 1, nil, 4, vc{width -70, 70}, vc{width +30, -30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
+	enemy({simple,divide1}, 16, vform)
+	vform.growth = 650
+	vform.startpoint = vc{width+320, 23}
+	vform.setspeedto = vc{-1.6*v, 0}
+	enemy({simple,divide1}, 16, vform)
+	wait(4)
+	enemy({simple,divide1}, 40, f1)
+	f1.angle = 180
+	enemy({simple,divide1}, 40, f1)
+	warnEnemiesTime = 1
+	wait (15)
+	enemy(range, 1, nil, 4, vc{width/2, 70}, vc{width/2, -30}, --[[{nil},]] simple, {50,205,50}, 0, 26)
+	enemy(range, 1, nil, 4, vc{width/2, height - 70}, vc{width/2, height + 30}, --[[{nil},]] simple, {50,205,50}, 0, 26)
+	enemy(range, 1, nil, 4, vc{70, height/2}, vc{-30, height/2}, --[[{nil},]] simple, {50,205,50}, 0, 26)
+	enemy(range, 1, nil, 4, vc{width -70, height/2}, vc{width + 30, height/2}, --[[{nil},]] simple, {50,205,50}, 0, 26)
+	wait(8)
+	enemy(range, 1, nil, 4, vc{70, 70}, vc{-30, -30}, --[[{nil},]] simple, {255,255,0}, torad(45), 18)
+	enemy(range, 1, nil, 4, vc{70, height - 70}, vc{-30, height + 30}, --[[{nil},]] simple, {255,255,0}, torad(45), 18)
+	enemy(range, 1, nil, 4, vc{width -70, height - 70}, vc{width +30, height + 30}, --[[{nil},]] simple, {255,255,0}, torad(45), 18)
+	enemy(range, 1, nil, 4, vc{width -70, 70}, vc{width +30, -30}, --[[{nil},]] simple, {255,255,0}, torad(45), 18)
+	wait(10)
+	enemy(range, 1, nil, 8, vc{width/2, height/3}, vc{2*width/3, -30}, --[[{width/3, height + 30},]] divide1, {148,0,211}, 0, 8)
+	enemy(range, 1, nil, 8, vc{width/2, 2*height/3}, vc{width/3 ,height + 30}, --[[{2*width/3, -30},]] divide1, {148,0,211}, 0, 8)
+	wait(10)
+	enemy(range, 1, nil, 4, vc{70, 70}, vc{-30, -30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
+	enemy(range, 1, nil, 4, vc{70, height - 70}, vc{-30, height + 30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
+	enemy(range, 1, nil, 4, vc{width -70, height - 70}, vc{width +30, height + 30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
+	enemy(range, 1, nil, 4, vc{width -70, 70}, vc{width +30, -30}, --[[{nil},]] simple, {50,205,50}, 0, 14)
 	f1.anglechange = 0
 	f1.angle = torad(0)
 	f1.center = vector:new{width/2, height/2}
