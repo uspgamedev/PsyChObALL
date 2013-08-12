@@ -42,10 +42,6 @@ function run()
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 
-	doNow( function(timer)
-		reloadStory 'Level 2-1'
-	end)
-
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 	wait(3)

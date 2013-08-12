@@ -9,8 +9,8 @@ simpleball.__init = enemy.__init
 function simpleball:update( dt )
 	body.update(self, dt)
 
-	for i,v in pairs(shot.bodies) do
-		if (v.size + self.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
+	for _, v in pairs(shot.bodies) do
+		if self:collidesWith(v) then
 			self.collides = true
 			v.collides = true
 			v.explosionEffects = false
@@ -19,7 +19,7 @@ function simpleball:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
+	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
 	end

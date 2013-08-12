@@ -73,6 +73,8 @@ function body:start()
 	-- abstract
 end
 
+body.collidesWith = collides
+
 function body:getWarning()
 	self.warning = warning:new {
 		based_on = self

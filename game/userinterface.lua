@@ -124,7 +124,7 @@ function keypressed( key )
 			onceonly = true,
 			timelimit = gamelostinfo.timetorestart,
 			funcToCall = function()
-				--timefactor = timefactor / 5
+				if not global.paintables.psychoeffects then return end
 				local s = math.sqrt(global.paintables.psychoeffects[1].prevdist)/.025
 				s = s / global.paintables.psychoeffects[1].speed:length()
 				for _, eff in pairs(global.paintables.psychoeffects) do
@@ -140,6 +140,8 @@ function keypressed( key )
 			levels.closeLevel()
 			lives = 3
 		end
+		psycho.pseudoDied = false
+		psycho.canbehit = true
 
 		paused = false
 		restartMenu()

@@ -106,4 +106,13 @@ function donothing()
 	-- nothing
 end
 
+function collides( p1, r1, p2, r2 )
+	if p2 == nil then
+		if not (p1 and r1) then return nil end
+		p2, r2 = r1.position, r1.size
+		p1, r1 = p1.position, p1.size
+	end
+	return (r1 + r2)^2 >= (p1[1] - p2[1])^2 + (p1[2] - p2[2])^2
+end
+
 math.atan = error --use math.atan2

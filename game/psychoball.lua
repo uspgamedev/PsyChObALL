@@ -148,7 +148,8 @@ function psychoball:handleDelete()
 		end
 	end
 	self.size = self.size - sizediff
-	paintables.psychoeffects = deatheffects	
+	paintables.psychoeffects = deatheffects
+	if state ~= story then return end
 	if lives == 0 then
 		--handle stuff
 	else

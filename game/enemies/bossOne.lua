@@ -24,8 +24,9 @@ function bossOne:__init()
 	bossOne.shot = enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0, speed = 200}}
-	self.colors = {vartimer:new{var = 0xFF}, vartimer:new{var = 0xFF}, vartimer:new{var = 0xFF}}
 	self.coloreffect = getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
+	restrictToScreenThreshold = 10
+	restrictToScreenSpeed = nil
 	--bossOne.turret.bodies = enemies.bossOne.bodies
 end
 
@@ -69,17 +70,18 @@ function bossOne.behaviors.first( self )
 		self.currentBehavior = bossOne.behaviors.second
 		self.speedchange:remove()
 		self.speedchange = nil
-	end
-end
-
-function bossOne.behaviors.second( self )
-	function self.shoottimer.funcToCall()
-		local e = (enemies.multiball):new{}
-		e.position = self.position:clone()
-		local pos = psycho.position:clone()
-		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-		e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
-		e:register()
+		self.health = bossOne.maxhealth * .75
+		function self.shoottimer.funcToCall()
+			local e = (enemies.multiball):new{}
+			e.position = self.position:clone()
+			local pos = psycho.position:clone()
+			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
+			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
+			e:register()
+		end
+		self.colors[1]:setAndGo(nil, 0)
+		self.colors[2]:setAndGo(nil, 255)
+		self.colors[3]:setAndGo(nil, 0)
 	end
 end
 
@@ -89,9 +91,10 @@ function bossOne.behaviors.second( self )
 		self.speed:set(mx * (width - 2*self.size - 20), my * (height - 2*self.size - 20)):normalize():mult(bossOne.basespeed)
 	end
 	if self.health/bossOne.maxhealth < .5 then
-		self.speed:set(vector:new{width/2, height/2}:sub(self.position)):normalize():mult(bossOne.basespeed)
+		self.speed:set(width/2, height/2):sub(self.position):normalize():mult(bossOne.basespeed)
 		self.currentBehavior = bossOne.behaviors.toTheMiddle
 		self.prevdist = self.position:distsqr(width/2, height/2)
+		self.health = bossOne.maxhealth * .5
 	end
 end
 
@@ -132,12 +135,16 @@ function bossOne.behaviors.toTheMiddle( self )
 				timer:stop()
 			end
 		end
+		self.colors[1]:setAndGo(nil, 0)
+		self.colors[2]:setAndGo(nil, 255)
+		self.colors[3]:setAndGo(nil, 255)
 	end
 	self.prevdist = curdist
 end
 
 function bossOne.behaviors.third( self )
 	if self.health/bossOne.maxhealth <= .075 then
+		self.health = bossOne.maxhealth * .075
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.circleshoot:remove()
@@ -159,43 +166,29 @@ end
 function bossOne.behaviors.toExplode( self )
 	if self.size > width/2 + 100 or self.health <= 0 then
 		self.sizeGrowth = -1300
-		--[[local old = bossOne.basespeed
-		bossOne.basespeed = bossOne.basespeed / 1.3
-		for i = 1, self.circleshoot.times do
-			self.circleshoot:funcToCall()
-		end
-		bossOne.basespeed = old
-		self.circleshoot = nil
-		--create turrets
-		local c = vector:new{width/2, height/2} --screen center
-		bossOne.turret:new { position = c:clone(), speed = vector:new{v/2,  0} }:register()
-		bossOne.turret:new { position = c:clone(), speed = vector:new{-v/2, 0} }:register()
-		bossOne.turret:new { position = c:clone(), speed = vector:new{0,  v/2} }:register()
-		bossOne.turret:new { position =         c, speed = vector:new{0, -v/2} }:register()
-		bossOne.turret.count = 0
-		bossOne.turretnum = 4]]
-
-		--explode
-		--self.delete = true
 	end
 end
 
+restrictToScreenThreshold = 10
+restrictToScreenSpeed = nil
 function bossOne:restrictToScreen()
-	if self.x > width - 10 - self.size then
-		self.x = width - 10 - self.size
-		self.speed:set(0, self.y > height/2 and -bossOne.basespeed or bossOne.basespeed)
+	local th = restrictToScreenThreshold
+	local sp = restrictToScreenSpeed or bossOne.basespeed
+	if self.x > width - th - self.size then
+		self.x = width - th - self.size
+		self.speed:set(0, self.y > height/2 and -sp or sp)
 		return -1, sign(self.Vy)
-	elseif self.x < self.size + 10 then
-		self.x = self.size + 10
-		self.speed:set(0, self.y > height/2 and -bossOne.basespeed or bossOne.basespeed)
+	elseif self.x < self.size + th then
+		self.x = self.size + th
+		self.speed:set(0, self.y > height/2 and -sp or sp)
 		return 1, sign(self.Vy)
-	elseif self.y > height - 10 - self.size then
-		self.y = height - 10 - self.size
-		self.speed:set(self.x > width/2 and -bossOne.basespeed or bossOne.basespeed, 0)
+	elseif self.y > height - th - self.size then
+		self.y = height - th - self.size
+		self.speed:set(self.x > width/2 and -sp or sp, 0)
 		return sign(self.Vx), -1
-	elseif self.y < self.size + 10 then
-		self.y = self.size + 10
-		self.speed:set(self.x > width/2 and -bossOne.basespeed or bossOne.basespeed, 0)
+	elseif self.y < self.size + th then
+		self.y = self.size + th
+		self.speed:set(self.x > width/2 and -sp or sp, 0)
 		return sign(self.Vx), 1
 	end
 end
@@ -205,15 +198,15 @@ function bossOne:update( dt )
 	body.update(self, dt)
 	self:currentBehavior()
 
-	for i,v in pairs(shot.bodies) do
-		if (v.size + self.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
+	for _, v in pairs(shot.bodies) do
+		if self:collidesWith(v) then
 			v.collides = true
 			v.explosionEffects = true
 			if self.health > 0 then 
 				self.health = self.health - 1
 				local d = self.health/bossOne.maxhealth
-				if d >= .75 then
-					d = (d-.75)*4
+				if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
+					d = (math.max(d,.75)-.75)*4
 					--self.colors[1] is already correct
 					self.colors[2]:setAndGo(0, 700)
 					--self.colors[3] is already correct
@@ -221,8 +214,8 @@ function bossOne:update( dt )
 						self.colors[2]:setAndGo(nil, d*255, 300)
 					end
 					}
-				elseif d >= .5 then
-					d = (d-.5)*4
+				elseif self.currentBehavior == bossOne.behaviors.second then
+					d = (math.max(d,.5)-.5)*4
 					self.colors[1]:setAndGo(255, 700)
 					self.colors[2]:setAndGo(0, 700)
 					--self.colors[3] is already correct
@@ -231,8 +224,8 @@ function bossOne:update( dt )
 						self.colors[2]:setAndGo(nil, d*255, 300)
 					end
 					}
-				elseif d >= .075 then
-					d = (d-.075)/(.5 - .075)
+				elseif self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
+					d = (math.max(d,.075)-.075)/(.5 - .075)
 					self.colors[1]:setAndGo(255, 700)
 					self.colors[2]:setAndGo(0, 700)
 					self.colors[3]:setAndGo(0, 700)
@@ -245,14 +238,9 @@ function bossOne:update( dt )
 				end
 			end
 		end
-		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
-			if self.health > 0 then self.health = self.health - 1 end
-			v.collides = true
-			v.explosionEffects = true
-		end
 	end
 
-	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
+	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
 	end

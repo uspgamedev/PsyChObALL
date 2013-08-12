@@ -70,8 +70,8 @@ function ranged:update( dt )
 		end
 	end
 
-	for i,v in pairs(shot.bodies) do
-		if (v.size + self.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
+	for _, v in pairs(shot.bodies) do
+		if self:collidesWith(v) then
 			self.life = self.life - 1
 			self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
 			self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
@@ -82,7 +82,7 @@ function ranged:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and (psycho.size + self.size)^2 >= (psycho.x - self.x)^2 + (psycho.y - self.y)^2 then
+	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
 	end
