@@ -4,15 +4,15 @@ require 'lux.functional'
 function init()
 	menusong = audio.newSource("resources/The Synergy vs NVR - Re-Control.ogg")
 	gamesong = audio.newSource("resources/Phantom - Psychodelic.ogg")
-	vectorsong = audio.newSource("resources/Integrity of Vector.mp3")
+	limitlesssong = audio.newSource("resources/Limitless.mp3")
 	currentsong = menusong
 	songsetpoints = {}
 	songsetpoints[gamesong] = {70,149,185,230,280,340}
 	gamesong:setLooping(true)
 	gamesong:setVolume(muted and 0 or volume/100)
-	vectorsong:setLooping(true)
-	vectorsong:setVolume(muted and 0 or volume/100)
-	songsetpoints[vectorsong] = {0}
+	limitlesssong:setLooping(true)
+	limitlesssong:setVolume(muted and 0 or volume/100)
+	songsetpoints[limitlesssong] = {0,49,95}
 	menusong:play(muted and 0 or volume/100)
 	songfadeout = timer:new{
 		timelimit	 = .01,

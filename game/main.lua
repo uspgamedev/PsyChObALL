@@ -214,7 +214,7 @@ function resetVars()
 end
 
 function reloadSurvival()
-	soundmanager.changeSong(soundmanager.gamesong)
+	soundmanager.changeSong(soundmanager.limitlesssong)
 	if state == survival then effect:clear() end
 	state = survival
 	enemy.addtimer:funcToCall()
@@ -239,7 +239,7 @@ function reloadStory( name )
 	else
 		state = story
 		lives = 3
-		soundmanager.changeSong(soundmanager.vectorsong)
+		soundmanager.changeSong(soundmanager.limitlesssong)
 		resetVars()
 		timer.closenonessential()
 
