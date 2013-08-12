@@ -65,7 +65,7 @@ function superball:__init()
 		onceonly = true,
 		funcToCall = function()
 			self.collides = false
-			self.speed:set(self.exitpos):sub(self.position):normalize():mult(1.3*v, 1,3*v)
+			self.speed:set(self.exitposition):sub(self.position):normalize():mult(1.1*v, 1.1*v)
 		end
 	}
 end
