@@ -81,7 +81,7 @@ end}
 
 function base.getLatestVersion()
 	local version = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
-	version = version:sub(1,version:len()-1) --cutting the '\n' at the end
+	if version then version = version:sub(1,version:len()-1) end --cutting the '\n' at the end
 	return version
 end
 
