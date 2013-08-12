@@ -26,14 +26,14 @@ function ranged:__init()
 	}
 	self.timeout = timer:new {
 		timelimit = self.timeout,
-		funcToCall = function(timer)
-			self.speed:set((math.random() > .5 and -1 or 1)* v, (math.random() > .5 and -1 or 1)*v)
-			timer:stop()
+		onceonly = true,
+		funcToCall = function()
+			self.speed:set(self.exitpos):sub(self.position):normalize():mult(1.3*v, 1,3*v)
 		end
 	}
 end
 
-function ranged:onInit( num, target, pos, shot, initialcolor, angle, timeout)
+function ranged:onInit( num, target, pos, exitpos, shot, initialcolor, angle, timeout)
 	self.timeout = timeout
 	self.angle = angle or 0
 	self.basecolor = initialcolor or {0, 255, 0}
@@ -42,8 +42,9 @@ function ranged:onInit( num, target, pos, shot, initialcolor, angle, timeout)
 	self.divideN = num or self.divideN
 	self.shot = shot and enemies[shot] or enemies.simpleball
 	if not pos then enemy.__init(self)
-	else self.position = pos:clone() end
-	if target then	self.target = target:clone() end
+	else self.position = clone(pos) end
+	self.exitposition = clone(exitpos) or self.position:clone()
+	self.target = clone(target)
 end
 
 function ranged:start()
@@ -104,10 +105,10 @@ end
 
 function ranged:handleDelete()
 	neweffects(self, 30)
-	self.timeout:remove()
 	self.shotcircle.size = -1
 	self.divideN = self.divideN + 3	
 	self.anglechange = torad(360/self.divideN)
+	self.timeout:remove()
 	self:shoot()
 	if self.shoottimer then self.shoottimer:remove() end
 end

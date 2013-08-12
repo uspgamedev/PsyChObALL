@@ -1,4 +1,6 @@
 width, height = 1080, 720
+require 'lux.object'
+require 'vector'
 
 --mythical stuff
 base = {}
@@ -105,6 +107,8 @@ end
 function donothing()
 	-- nothing
 end
+
+clone = lux.object.clone
 
 function collides( p1, r1, p2, r2 )
 	if p2 == nil then
