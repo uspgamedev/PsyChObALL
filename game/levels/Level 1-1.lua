@@ -2,9 +2,6 @@ title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
-	wait(4)
-	enemy('snake', 1, nil, 100, v, {0, 100}, {300, 100}, {300, 500}, {700, 500})
-	wait(1000)
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
@@ -44,11 +41,7 @@ function run()
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
-
-	doNow( function(timer)
-		reloadStory 'Level 2-3'
-	end)
-
+	
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 	wait(3)

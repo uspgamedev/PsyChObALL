@@ -1,0 +1,3 @@
+cage = circleEffect:new {
+	
+}

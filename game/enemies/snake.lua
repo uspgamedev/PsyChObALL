@@ -31,8 +31,10 @@ function snake:update( dt )
 					if self.first == self.last then self.delete = true
 					else 
 						self.position = self.segments[self.first].position
-						self.leadchange:setAndGo(2, 130, 65)
-						self.vulnerable = false
+						if self.vulnerable then
+							self.leadchange:setAndGo(2, 130, 65)
+							self.vulnerable = false
+						end
 					end
 				end
 			end
@@ -90,5 +92,11 @@ function snake:onInit( n, spd, p1, p2, ... )
 		s.prevdist = s.position:distsqr(p2)
 		s.target = 1
 		self.segments[i] = s
+	end
+end
+
+function snake:start()
+	if not self.vulnerable then
+		self.coloreffect = noLSDeffect
 	end
 end
