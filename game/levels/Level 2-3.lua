@@ -10,5 +10,8 @@ function run()
 	local grey = 'grayball'
 	local super = 'superball'
 
+	wait(3)
+	enemy(super, 1, { position = {width/2, -30}, speed = {v, v}}, simple, {width/2, -30}, 10)
+
 
 end
