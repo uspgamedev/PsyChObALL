@@ -568,10 +568,6 @@ function shoot(x, y)
 		}:register()
 end
 
-function sign(a)
-	return a == 0 and 0 or a > 0 and 1 or -1 
-end
-
 function addscore(x)
 	if not gamelost then
 		score = score + x

@@ -107,6 +107,10 @@ function cleartable( t )
 	for k in pairs(t) do t[k] = nil end
 end
 
+function sign(a)
+	return a == 0 and 0 or a > 0 and 1 or -1 
+end
+
 local constrad = math.pi/180
 function torad( degree )
 	return degree*constrad
