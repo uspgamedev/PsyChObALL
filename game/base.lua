@@ -24,7 +24,15 @@ love.graphics.getWidth  = nil
 
 graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
-	circle = function ( mode, x, y, r ) love.graphics.circle(mode, x*ratio, y*ratio, r*ratio)	end,
+	circle = function ( mode, x, y, r )
+		if cheats.image.enabled and (cheats.dkmode or mode == 'fill') then
+			if not cheats.image.painted then graphics.setColor(255, 255, 255) end
+			graphics.draw(cheats.image.image, x - r, y - r, 
+				0, 2*r / cheats.image.image:getWidth(), 2*r / cheats.image.image:getHeight())
+		else
+			love.graphics.circle(mode, x*ratio, y*ratio, r*ratio)
+		end
+	end,
 	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
 	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.drawq(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
 	point = fixPosIgnoreNone(love.graphics.point),

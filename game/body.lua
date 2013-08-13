@@ -46,14 +46,6 @@ function body:update( dt )
 end
 
 function body:draw()
-	if self.changesimage and cheats.image.enabled then
-		if cheats.image.painted then graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
-		else graphics.setColor(255,255,255) end
-		if self.stencil then graphics.setStencil(self.stencil) end
-		graphics.draw(cheats.image.image, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size / cheats.image.image:getWidth(), 2*self.size / cheats.image.image:getHeight())
-		if self.stencil then graphics.setStencil() end
-		return
-	end
 	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end

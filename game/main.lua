@@ -397,16 +397,17 @@ end
 
 function getColorEffect( r, g, b, change )
 	change = change or 60
-	local consteffect = change/255
 	if type(r) == 'table' then --consider all vartimers
+		if type(change) ~= 'table' then change = {var = change} end
 		return function ( color )
 			color[1], color[2], color[3] = 
-					color[1]*consteffect + math.min(math.max(r.var - change/2, 0), 255 - change),
-					color[2]*consteffect + math.min(math.max(g.var - change/2, 0), 255 - change),
-					color[3]*consteffect + math.min(math.max(b.var - change/2, 0), 255 - change)
+					color[1]*change.var/255 + math.min(math.max(r.var - change.var/2, 0), 255 - change.var),
+					color[2]*change.var/255 + math.min(math.max(g.var - change.var/2, 0), 255 - change.var),
+					color[3]*change.var/255 + math.min(math.max(b.var - change.var/2, 0), 255 - change.var)
 			return color
 		end
 	else --conside all numbers
+		local consteffect = change/255
 		r = math.min(math.max(r - change/2, 0), 255 - change)
 		g = math.min(math.max(g - change/2, 0), 255 - change)
 		b = math.min(math.max(b - change/2, 0), 255 - change)
