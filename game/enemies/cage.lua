@@ -1,7 +1,7 @@
 cage = circleEffect:new {
-	size = width*.7,
-	speedN = v*.4,
-	maxsize = width*.8,
+	size = width,
+	speedN = v*.2,
+	maxsize = width*2,
 	onLocation = true,
 	lastexecuted = 0,
 	alpha = 255,
@@ -34,8 +34,8 @@ function cage:update( dt )
 		end
 	end
 	
-	if (self.size - psycho.size - psycho.sizediff - self.linewidth)^2 < self.position:distsqr(psycho.position) then
-		psycho.position:sub(self.position):normalize():mult(self.size - psycho.size - psycho.sizediff - self.linewidth):add(self.position)
+	if (self.size - psycho.size - psycho.sizediff - self.linewidth + 3)^2 < self.position:distsqr(psycho.position) then
+		psycho.position:sub(self.position):normalize():mult(self.size - psycho.size - psycho.sizediff - self.linewidth + 3):add(self.position)
 	end
 end
 

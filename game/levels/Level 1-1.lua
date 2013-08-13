@@ -2,10 +2,6 @@ title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
-	wait(2)
-	enemy ('cage', 1, nil, {300,300}, {size = 130, sizeGrowth = -100, wait = 5}, {moveto = {600, 600}, size = 80, wait = 3}, 
-		{moveto = {width/2, height/2}, size = 28})
-	wait(1000)
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
