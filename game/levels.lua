@@ -47,8 +47,10 @@ function levelEnv.enemy( name, n, format, ... )
 			format:applyOn(enemylist)
 		else
 			for i = 1, n do
-				if format.speed then enemylist[i].speed:set(format.speed) end
-				if format.position then enemylist[i].position:set(format.position) end
+				local e = enemylist[i]
+				for k, v in pairs(format) do
+					e[k] = clone(v)
+				end
 			end
 		end
 	end
