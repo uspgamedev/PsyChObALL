@@ -28,6 +28,7 @@ function ranged:__init()
 		timelimit = self.timeout,
 		onceonly = true,
 		funcToCall = function()
+			if self.shoottimer then self.shoottimer:stop() end
 			self.speed:set(self.exitposition):sub(self.position):normalize():mult(1.3*v, 1.3*v)
 		end
 	}
@@ -106,9 +107,11 @@ end
 function ranged:handleDelete()
 	neweffects(self, 30)
 	self.shotcircle.size = -1
-	self.divideN = self.divideN + 3	
-	self.anglechange = torad(360/self.divideN)
 	self.timeout:remove()
-	self:shoot()
+	if self.diereason == "shot" then
+		self.divideN = self.divideN + 3	
+		self.anglechange = torad(360/self.divideN)
+		self:shoot()
+	end
 	if self.shoottimer then self.shoottimer:remove() end
 end

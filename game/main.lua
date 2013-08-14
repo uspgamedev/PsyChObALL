@@ -44,6 +44,7 @@ function initBase()
 	coolfonts = {}
 	resetted = false
 	godmode = false
+	usingjoystick = joystick.isOpen(1)
 
 	gamelostinfo =  {
 		timetorestart = .5,
@@ -463,13 +464,22 @@ end
 
 function line()
 	if gamelost then return end
-	local mx, my = mouse.getPosition()
 	graphics.setColor(color(colortimer.time + 2))
-	graphics.circle("line", mx, my, 5)
-	maincolor[4] = 60 -- alpha
-	graphics.setColor(maincolor)
-	local x = mx > psycho.x and width or 0
-	graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
+	if usingjoystick then
+		maincolor[4] = 60 -- alpha
+		graphics.setColor(maincolor)
+		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
+		if a1 == 0 and a2 == 0 then return end
+		local x = a2 > 0 and width or 0
+		graphics.line(psycho.x, psycho.y, a2*1200 + psycho.x, a1*1200 + psycho.y)
+	else
+		local mx, my = mouse.getPosition()
+		graphics.circle("line", mx, my, 5)
+		maincolor[4] = 60 -- alpha
+		graphics.setColor(maincolor)
+		local x = mx > psycho.x and width or 0
+		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
+	end
 end
 
 playtexts = {"Start", "START", "Start Mission", "game.\nplay()", "Don't Click Me", "Give me  BALLS"}
@@ -557,17 +567,6 @@ function love.mousereleased(x, y, btn)
 	end
 end
 
-function shoot(x, y)
-	local diffx = x - psycho.x
-	local diffy = y - psycho.y
-	local Vx = sign(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
-	local Vy = sign(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
-	shot:new {
-		position = psycho.position:clone(),
-		speed	 = vector:new {Vx, Vy}
-		}:register()
-end
-
 function addscore(x)
 	if not gamelost then
 		score = score + x
@@ -577,6 +576,16 @@ function addscore(x)
 			ultracounter = ultracounter + 1
 		end
 	end
+end
+
+function love.joystickpressed( joynum, button )
+	if not usingjoystick then return end
+	psycho:joystickpressed(joynum, button)
+end
+
+function love.joystickreleased( joynum, button )
+	if not usingjoystick then return end
+	psycho:joystickreleased(joynum, button)
 end
 
 function love.keypressed(key)

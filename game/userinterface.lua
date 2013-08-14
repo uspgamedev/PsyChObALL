@@ -107,6 +107,10 @@ function mousereleased( x, y, btn )
 end
 
 function keypressed( key )
+	if key == 'r' and paused then
+		reloadStory 'Level 1-1'
+	end
+
 	if key == 'restartstory' or (gamelost and key == 'r') then
 		--restarting
 		if gamelostinfo.isrestarting then return end

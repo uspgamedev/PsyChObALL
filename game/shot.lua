@@ -15,7 +15,17 @@ function shot.init()
 	}
 
 	function shot.timer:funcToCall() -- continues shooting when you hold the mouse
-		shoot(mouse.getPosition()) 
+		if usingjoystick then
+			shot:new {
+				position = psycho.position:clone(),
+				speed	 = vector:new{joystick.getAxis(1, 5), joystick.getAxis(1, 4)}:normalize():mult(3*v, 3*v)
+				}:register()
+		else
+			shot:new {
+				position = psycho.position:clone(),
+				speed	 = vector:new {mouse.getPosition()}:sub(psycho.position):normalize():mult(3*v, 3*v)
+				}:register()
+		end
 	end
 
 	function shot.timer:handlereset()

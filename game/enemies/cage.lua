@@ -19,6 +19,7 @@ function cage:update( dt )
 		self.size = self.desiredsize
 		self.sizeGrowth = 0
 		self.desiredsize = nil
+		if self.destroy then self.delete = true end
 	end
 
 	if not self.onLocation then
@@ -52,6 +53,11 @@ function cage:doaction( actN )
 			self.target = clone(act.moveto)
 			self.prevdist = self.position:distsqr(self.target)
 			self.speed:set(self.target):sub(self.position):normalize():mult(self.speedN, self.speedN)
+		end
+		if act.destroy then
+			self.desiredsize = width
+			self.sizeGrowth = act.sizeGrowth or cage.sizeGrowth
+			self.destroy = true
 		end
 		if act.wait then
 			timer:new{

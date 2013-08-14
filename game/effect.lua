@@ -18,6 +18,7 @@ end
 
 function neweffects( based_on, times)
 	--local speedinfluence = based_on.speed * .6
+	if #effect.bodies > 200 then times = times / 2 end
 	if #effect.bodies > 1000 then 
 		local n = #effect.bodies
 		for i = 0, 200 do

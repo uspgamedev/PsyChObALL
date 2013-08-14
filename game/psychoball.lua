@@ -36,13 +36,20 @@ function psychoball.init()
 	end
 end
 
+psychoball.min, psychoball.max = math.min, math.max
 function psychoball:update(dt)
 	if self.pseudoDied or gamelost then return end
+	if usingjoystick then
+		self.speed:set(joystick.getAxis(1, 1), joystick.getAxis(1, 2)):mult(v*1.3, v*1.3)
+		if not shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then shot.timer:start(shot.timer.timelimit) end
+		if shot.timer.running and joystick.getAxis(1, 3) == 0 and joystick.getAxis(1, 4) == 0 then shot.timer:stop() end
+	end
+
 	body.update(self, dt)
 
 	self.position:set(
-		math.max(self.size + psychosizediff, math.min(width - self.size - psychosizediff, self.position[1])),
-		math.max(self.size + psychosizediff, math.min(height - self.size - psychosizediff, self.position[2]))
+		psychoball.max(self.size + psychosizediff, psychoball.min(width - self.size - psychosizediff, self.position[1])),
+		psychoball.max(self.size + psychosizediff, psychoball.min(height - self.size - psychosizediff, self.position[2]))
 	)
 
 	if self.sizeGrowth < 0 and self.size + psychosizediff < 23 then
@@ -215,6 +222,24 @@ function psychoball:keypressed( key )
 	end
 end
 
+function psychoball:joystickpressed( joynum, button )
+	if not isPaused and onGame() and ultracounter > 0 then
+		ultracounter = ultracounter - 1
+		ultrablast = 10
+		self.sizeGrowth = 17
+		self.linewidth = 6
+		ultratimer:start()
+	end
+end
+
+function psychoball:joystickreleased( joynum, button )
+	if ultratimer.running then
+		ultratimer:stop()
+		self.sizeGrowth = -300
+		if not isPaused then do_ultrablast() end
+	end
+end
+
 function psychoball:keyreleased( key )
 	auxspeed:sub(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
@@ -239,6 +264,9 @@ end
 
 function do_ultrablast()
 	for i=1, ultrablast do
-		shoot(psycho.x + (math.cos(math.pi * 2 * i / ultrablast) * 100), psycho.y + (math.sin(math.pi * 2 * i / ultrablast) * 100))
+		shot:new{
+			position = psycho.position:clone(),
+			speed = vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v)
+		}:register()
 	end
 end
