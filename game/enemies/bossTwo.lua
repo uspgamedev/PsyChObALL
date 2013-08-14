@@ -373,7 +373,7 @@ function bossTwo.behaviors.turretprotection( self )
 	timer:new{ timelimit = 4, onceonly = true, running = true, funcToCall = function ()
 		a:setAndGo(255, 0, 100)
 	end}
-	timer:new{ timelimit = 5.5, onceonly = true, running = true, funcToCall = function ()
+	timer:new{ timelimit = 1, onceonly = true, running = true, funcToCall = function ()
 		self.plead = nil
 		self.ballscolors[4][1]:setAndGo(nil, 0, 100)
 		self.ballscolors[4][2]:setAndGo(nil, 255, 100)

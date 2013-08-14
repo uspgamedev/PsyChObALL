@@ -79,9 +79,9 @@ function bossOne.behaviors.first( self )
 			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
 			e:register()
 		end
-		self.colors[1]:setAndGo(nil, 0)
-		self.colors[2]:setAndGo(nil, 255)
-		self.colors[3]:setAndGo(nil, 0)
+		self.colors[1]:setAndGo(nil, 0, 122)
+		self.colors[2]:setAndGo(nil, 255, 122)
+		self.colors[3]:setAndGo(nil, 0, 122)
 	end
 end
 
@@ -135,9 +135,9 @@ function bossOne.behaviors.toTheMiddle( self )
 				timer:stop()
 			end
 		end
-		self.colors[1]:setAndGo(nil, 0)
-		self.colors[2]:setAndGo(nil, 255)
-		self.colors[3]:setAndGo(nil, 255)
+		self.colors[1]:setAndGo(nil, 0, 122)
+		self.colors[2]:setAndGo(nil, 255, 122)
+		self.colors[3]:setAndGo(nil, 255, 122)
 	end
 	self.prevdist = curdist
 end
@@ -208,31 +208,37 @@ function bossOne:update( dt )
 				if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
 					d = (math.max(d,.75)-.75)*4
 					--self.colors[1] is already correct
-					self.colors[2]:setAndGo(0, 700)
+					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function() 
-						self.colors[2]:setAndGo(nil, d*255, 300)
+					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
+							self.colors[2]:setAndGo(nil, d*255, 400)
+						end
 					end
 					}
 				elseif self.currentBehavior == bossOne.behaviors.second then
 					d = (math.max(d,.5)-.5)*4
-					self.colors[1]:setAndGo(255, 700)
-					self.colors[2]:setAndGo(0, 700)
+					self.colors[1]:setAndGo(nil, 255, 1200)
+					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
 					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
-						self.colors[1]:setAndGo(nil, (1-d)*255, 300)
-						self.colors[2]:setAndGo(nil, d*255, 300)
+						if self.currentBehavior == bossOne.behaviors.second then
+							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
+							self.colors[2]:setAndGo(nil, d*255, 400)
+						end
 					end
 					}
 				elseif self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
 					d = (math.max(d,.075)-.075)/(.5 - .075)
-					self.colors[1]:setAndGo(255, 700)
-					self.colors[2]:setAndGo(0, 700)
-					self.colors[3]:setAndGo(0, 700)
+					self.colors[1]:setAndGo(nil, 255, 1200)
+					self.colors[2]:setAndGo(nil, 0, 1200)
+					self.colors[3]:setAndGo(nil, 0, 1200)
 					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
-						self.colors[1]:setAndGo(nil, (1-d)*255, 300)
-						self.colors[2]:setAndGo(nil, d*255, 300)
-						self.colors[3]:setAndGo(nil, d*255, 300)
+						if self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
+							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
+							self.colors[2]:setAndGo(nil, d*255, 400)
+							self.colors[3]:setAndGo(nil, d*255, 400)
+						end
 					end
 					}
 				end
