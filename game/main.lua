@@ -239,7 +239,7 @@ function reloadStory( name )
 		timer.closenonessential()
 	else
 		state = story
-		lives = 3
+		lives = 6
 		soundmanager.changeSong(soundmanager.limitlesssong)
 		resetVars()
 		timer.closenonessential()
@@ -525,7 +525,7 @@ function love.update(dt)
 	if onGame() and not gamelost then
 		gametime = gametime + dt
 		blastime = blastime + dt
-		if blastime >= 30 then
+		if blastime >= 30 and state == survival then
 			blastime = blastime - 30
 			ultracounter = ultracounter + 1
 		end

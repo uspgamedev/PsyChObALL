@@ -1,5 +1,5 @@
 title = 'I - The Beginning of PsyChO'
-chapter = 'Part 3 - The Ball'
+chapter = 'Part 3 - The Big One'
 
 function run()
 	doNow ( function( timer )
