@@ -6,7 +6,7 @@ snake = body:new {
 }
 
 function snake:draw()
-	if self.first ~= self.last then
+	if self.first <= self.last then
 		graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 		graphics.circle(self.mode, self.segments[self.first].position[1], self.segments[self.first].position[2], self.size)
 	end
@@ -28,11 +28,11 @@ function snake:update( dt )
 					self.first = self.first + 1
 					s.size = self.size
 					neweffects(s, 20)
-					if self.first == self.last then self.delete = true
+					if self.first > self.last then self.delete = true
 					else 
 						self.position = self.segments[self.first].position
 						if self.vulnerable then
-							self.leadchange:setAndGo(2, 130, 65)
+							self.leadchange:setAndGo(0, 130, 130/self.timeout)
 							self.vulnerable = false
 						end
 					end
@@ -50,7 +50,7 @@ function snake:update( dt )
 			self.first = self.first + 1
 			s.size = self.size
 			neweffects(s, 20)
-			if self.first == self.last then self.delete = true
+			if self.first > self.last then self.delete = true
 			else self.position = self.segments[self.first].position end
 		elseif s.target then
 			local curdist = s.position:distsqr(self.path[s.target])
@@ -69,14 +69,15 @@ function snake:update( dt )
 	end
 end
 
-function snake:onInit( n, spd, p1, p2, ... )
+function snake:onInit( n, spd, timeout, p1, p2, ... )
 	if not n then return end
 	n = n or snake.segmentsN
+	self.timeout = timeout or 1.5
 	self.segmentsN = n
 	self.segments = {}
 	self.path = clone {p2, ...}
 	self.position = vector:new(clone(p1))
-	self.speedvalue = spd
+	self.speedvalue = spd or v
 	self.leadchange = vartimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
 	self.coloreffect = getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
 	local speed = vector:new(clone(p2)):sub(self.position):normalize()

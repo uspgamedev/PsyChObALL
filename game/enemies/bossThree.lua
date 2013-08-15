@@ -108,7 +108,7 @@ function bossThree.behaviors.second( self )
 			}
 			self.invertedstencil = function() graphics.arc('fill', self.x, self.y, self.size, self.guyangle.var - ang, self.guyangle.var + ang) end
 		end
-		local cs = {{255, 0, 0},{0,255,255},{230, 143, 172}, {205, 140, 0}}
+		local cs = {{255, 0, 0},{255,255,255},{230, 143, 172}, {205, 140, 0}}
 		for _, color in ipairs(cs) do
 			local g = bossThree.ghost:new{}
 			enemy.__init(g)
