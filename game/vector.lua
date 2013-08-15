@@ -159,25 +159,15 @@ function vector:sub(x, y)
 end
 
 function vector:mult( x, y )
-	if x==nil or type(x)=='number' then
-		self[1] = self[1] * (x or 1)
-		self[2] = self[2] * (y or x or 1)
-	else
-		self[1] = self[1] * x[1]
-		self[2] = self[2] * x[2]
-	end
+	self[1] = self[1] * (x or 1)
+	self[2] = self[2] * (y or x or 1)
 	
 	return self
 end
 
 function vector:div( x, y )
-	if x==nil or type(x)=='number' then
-		self[1] = self[1] / (x or 1)
-		self[2] = self[2] / (y or x or 1)
-	else
-		self[1] = self[1] / x[1]
-		self[2] = self[2] / x[2]
-	end
+	self[1] = self[1] / (x or 1)
+	self[2] = self[2] / (y or x or 1)
 	
 	return self
 end
@@ -227,4 +217,16 @@ end
 function vector:reset()
 	self[1], self[2] = nil, nil
 	return self
+end
+
+function vector:rotate( rad )
+	local sin, cos = math.sin(rad), math.cos(rad)
+	self[1], self[2] = 
+		cos*self[1] - sin*self[2],
+		sin*self[1] + cos*self[2]
+	return self
+end
+
+function vector:rotated( rad )
+	return vector:new{self[1], self[2]}:rotate()
 end

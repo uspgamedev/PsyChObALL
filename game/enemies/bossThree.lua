@@ -1,10 +1,10 @@
 bossThree = body:new{
 	size = 50,
-	pacmansize = 80,
+	yellowguysize = 80,
 	sizeGrowth = 0,
 	basespeed = 1.4*v,
 	maxhealth = 10,
-	pacmanhealth = 60,
+	yellowguyhealth = 60,
 	vulnerable = true,
 	segmentsN = 9,
 	maxsize = width,
@@ -70,7 +70,7 @@ function bossThree.behaviors.second( self )
 	if self.first == self.last then
 		self.shoottimer:remove()
 		self.shoottimer = nil
-		self.health =  bossThree.pacmanhealth
+		self.health =  bossThree.yellowguyhealth
 		self.sizeGrowth = 10
 		self.colors[1]:setAndGo(nil, 255, 80)
 		self.colors[2]:setAndGo(nil, 255, 80)
@@ -78,17 +78,17 @@ function bossThree.behaviors.second( self )
 		self.path = nil
 		self.segments = {self.segments[self.first]}
 		self.first, self.last = 1, 1
-		self.pac = self.segments[1]
-		self.position = self.pac.position
-		self.speed = self.pac.speed
-		self.trytofollow = self.pacmantrytofollow
-		self.handleHealthLoss = bossThree.pacmanHealthLoss
+		self.guy = self.segments[1]
+		self.position = self.guy.position
+		self.speed = self.guy.speed
+		self.trytofollow = self.yellowguytrytofollow
+		self.handleHealthLoss = bossThree.yellowguyHealthLoss
 		cleartable(bossThree.food.bodies)
 		do
-			self.pacangle = vartimer:new{var = self.Vx > 0 and 0 or self.Vx < 0 and math.pi or self.Vy > 0 and math.pi/2 or 3*math.pi/2}
-			self.pacangle.pausable = true
+			self.guyangle = vartimer:new{var = self.Vx > 0 and 0 or self.Vx < 0 and math.pi or self.Vy > 0 and math.pi/2 or 3*math.pi/2}
+			self.guyangle.pausable = true
 			local ang = 0
-			self.pacmantimer = timer:new{
+			self.yellowguytimer = timer:new{
 				running = true,
 				timelimit = nil,
 				timecount = 0,
@@ -106,7 +106,7 @@ function bossThree.behaviors.second( self )
 					ang = (t.increasing and t.timecount or t.limit - t.timecount)*t.change/t.limit
 				end
 			}
-			self.invertedstencil = function() graphics.arc('fill', self.x, self.y, self.size, self.pacangle.var - ang, self.pacangle.var + ang) end
+			self.invertedstencil = function() graphics.arc('fill', self.x, self.y, self.size, self.guyangle.var - ang, self.guyangle.var + ang) end
 		end
 		local cs = {{255, 0, 0},{0,255,255},{230, 143, 172}, {205, 140, 0}}
 		for _, color in ipairs(cs) do
@@ -173,16 +173,16 @@ function bossThree:defaulttrytofollow( pos )
 	end
 end
 
-function  bossThree:pacmantrytofollow( pos )
+function  bossThree:yellowguytrytofollow( pos )
 	if self.Vx ~= 0 then
 		if math.abs(pos.x - self.x) < 9 then
 			local dist = pos.y - self.y
 			if (dist > 0 and dist < height/2) or (dist < 0 and dist < -height/2) then
 				self.speed:set(0, bossThree.basespeed)
-				self.pacangle:setAndGo(nil, torad(90), torad(100))
+				self.guyangle:setAndGo(nil, torad(90), torad(100))
 			else
-				self.pacangle.var = self.Vx > 0 and torad(360) or torad(180)
-				self.pacangle:setAndGo(nil, torad(270), torad(100))
+				self.guyangle.var = self.Vx > 0 and torad(360) or torad(180)
+				self.guyangle:setAndGo(nil, torad(270), torad(100))
 				self.speed:set(0, -bossThree.basespeed)
 			end
 		end
@@ -190,12 +190,12 @@ function  bossThree:pacmantrytofollow( pos )
 		if math.abs(pos.y - self.y) < 9 then
 			local dist = pos.x - self.x
 			if (dist > 0 and dist < width/2) or (dist < 0 and dist < -width/2) then
-					self.pacangle.var = self.Vy > 0 and torad(90) or torad(-90)
-					self.pacangle:setAndGo(nil, torad(0), torad(100))
+					self.guyangle.var = self.Vy > 0 and torad(90) or torad(-90)
+					self.guyangle:setAndGo(nil, torad(0), torad(100))
 					self.speed:set(bossThree.basespeed, 0)
 				else
 					self.speed:set(-bossThree.basespeed, 0)
-					self.pacangle:setAndGo(nil, torad(180), torad(100))
+					self.guyangle:setAndGo(nil, torad(180), torad(100))
 			end
 		end
 	end
@@ -221,15 +221,15 @@ function bossThree:draw()
 	if self.first <= self.last then
 		local s = self.segments[self.first]
 		graphics.setColor(color(colortimer.time + self.variance, nil, self.coloreffect))
-		if self.pac then 
+		if self.guy then 
 			graphics.setInvertedStencil(self.invertedstencil)
 		end
 		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
 		graphics.translate(unpack(s.extraposition))
-		if self.pac then graphics.setInvertedStencil(self.invertedstencil) end
+		if self.guy then graphics.setInvertedStencil(self.invertedstencil) end
 		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
 		graphics.translate(-s.extraposition[1], -s.extraposition[2])
-		if self.pac then 
+		if self.guy then 
 			graphics.setInvertedStencil()
 		end
 	end
@@ -245,8 +245,8 @@ function bossThree:update( dt )
 	self:currentBehavior()
 	circleEffect.update(self, dt)
 
-	if self.size > self.pacmansize then
-		self.size = self.pacmansize
+	if self.size > self.yellowguysize then
+		self.size = self.yellowguysize
 		self.sizeGrowth = 0
 	end
 
@@ -365,28 +365,27 @@ function bossThree:defaultHealthLoss()
 	end
 end
 
-function bossThree:pacmanHealthLoss()
+function bossThree:yellowguyHealthLoss()
 	self.health = self.health - 1
 	if self.health == 0 then
 		self.speed:reset()
 		timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
-				local t = self.pacmantimer
+				local t = self.yellowguytimer
 				t.increasing = true
 				t.limit = 1
 				t.change = math.pi
 				t.stop = true
 				t.timecount = 0
 				t.alsoCall = function()
-					self.delete = true
-					for i = 2, 4 do
-						local g = bossThree.bossThree[i]
+					self.speed:reset()
+					for _, g in pairs(bossThree.bodies) do
 						g.delete = true --maybe do something else with them
 					end
 				end
 			end
 		}
 	else
-		local d = self.health/bossThree.pacmanhealth
+		local d = self.health/bossThree.yellowguyhealth
 		--self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
@@ -459,6 +458,7 @@ end
 function bossThree:handleDelete()
 	cleartable(bossThree.food.bodies)
 	paintables.food = nil
+	self.spawnfood:remove()
 	neweffects(self, 200)
 end
 
@@ -472,7 +472,7 @@ bossThree.food = circleEffect:new{
 }
 
 function bossThree.food:__init()
-	if bossThree.bodies[1].pac then
+	if bossThree.bodies[1].guy then
 		self.mode = 'fill'
 		self.coloreffect = getColorEffect(255, 255, 255, 40)
 	end
@@ -540,7 +540,7 @@ function bossThree.food:update( dt )
 			self.update = circleEffect.update
 		end
 	elseif b3.position:distsqr(self.position) < 10 then
-		if not b3.pac then
+		if not b3.guy then
 			self.normalsize = b3.size
 			self.sizeGrowth = 100
 			self.eaten = true

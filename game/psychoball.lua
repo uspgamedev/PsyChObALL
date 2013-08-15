@@ -1,4 +1,4 @@
-local psychosizediff = 9
+local psychosizediff = 0
 psychoball = circleEffect:new {
 	size	 = 23 - psychosizediff,
 	sizediff = psychosizediff,
