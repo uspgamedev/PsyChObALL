@@ -2,11 +2,11 @@ bossThree = body:new{
 	size = 50,
 	pacmansize = 80,
 	sizeGrowth = 0,
-	basespeed = 1.5*v,
-	maxhealth = 1,
+	basespeed = 1.4*v,
+	maxhealth = 10,
 	pacmanhealth = 60,
 	vulnerable = true,
-	segmentsN = 5,
+	segmentsN = 9,
 	maxsize = width,
 	ord = 6,
 	__type = 'bossThree'
@@ -68,8 +68,6 @@ function bossThree.behaviors.second( self )
 	end
 
 	if self.first == self.last then
-		self.spawnfood:remove()
-		self.spawnfood = nil
 		self.shoottimer:remove()
 		self.shoottimer = nil
 		self.health =  bossThree.pacmanhealth
@@ -85,20 +83,50 @@ function bossThree.behaviors.second( self )
 		self.speed = self.pac.speed
 		self.trytofollow = self.pacmantrytofollow
 		self.handleHealthLoss = bossThree.pacmanHealthLoss
+		cleartable(bossThree.food.bodies)
 		do
-			self.pacangle = vartimer:new{var = math.atan2(self.Vx, self.Vy) - torad(10)}
-			local r20 = torad(20)
-			self.invertedstencil = function() graphics.arc('fill', self.x, self.y, self.size, self.pacangle.var, self.pacangle.var + r20) end
+			self.pacangle = vartimer:new{var = self.Vx > 0 and 0 or self.Vx < 0 and math.pi or self.Vy > 0 and math.pi/2 or 3*math.pi/2}
+			self.pacangle.pausable = true
+			local ang = 0
+			self.pacmantimer = timer:new{
+				running = true,
+				timelimit = nil,
+				timecount = 0,
+				increasing = true,
+				limit = .1,
+				change = torad(20),
+				stop = false,
+				funcToCall = function(t, dt)
+					t.timecount = t.timecount + dt
+					if t.timecount > t.limit then 
+						if t.stop then t.alsoCall() t:remove() return end
+						t.timecount = 0 
+						t.increasing = not t.increasing 
+					end
+					ang = (t.increasing and t.timecount or t.limit - t.timecount)*t.change/t.limit
+				end
+			}
+			self.invertedstencil = function() graphics.arc('fill', self.x, self.y, self.size, self.pacangle.var - ang, self.pacangle.var + ang) end
 		end
-
-
+		local cs = {{255, 0, 0},{0,255,255},{230, 143, 172}, {205, 140, 0}}
+		for _, color in ipairs(cs) do
+			local g = bossThree.ghost:new{}
+			enemy.__init(g)
+			g.speed:set(sign(math.random()-.5)*math.random(v*.7, v), sign(math.random()-.5)*math.random(v*.7, v))
+			g.coloreffect = getColorEffect(unpack(color))
+			table.insert(bossThree.bodies, g)
+		end
 		
 		self.currentBehavior = bossThree.behaviors.third
 	end
 end
 
 function bossThree.behaviors.third( self )
-	if psycho.canbehit then self:trytofollow(psycho.position) end
+	if paintables.food[1] and not paintables.food[1].eaten then
+		self:trytofollow(paintables.food[1])
+	else
+		if psycho.canbehit then self:trytofollow(psycho) end
+	end
 end
 
 function bossThree:defaulttrytofollow( pos )
@@ -151,10 +179,10 @@ function  bossThree:pacmantrytofollow( pos )
 			local dist = pos.y - self.y
 			if (dist > 0 and dist < height/2) or (dist < 0 and dist < -height/2) then
 				self.speed:set(0, bossThree.basespeed)
-				self.pacangle:setAndGo(nil, torad(80), torad(100))
+				self.pacangle:setAndGo(nil, torad(90), torad(100))
 			else
-				self.pacangle.var = self.Vx > 0 and torad(350) or torad(170)
-				self.pacangle:setAndGo(nil, torad(260), torad(100))
+				self.pacangle.var = self.Vx > 0 and torad(360) or torad(180)
+				self.pacangle:setAndGo(nil, torad(270), torad(100))
 				self.speed:set(0, -bossThree.basespeed)
 			end
 		end
@@ -162,12 +190,12 @@ function  bossThree:pacmantrytofollow( pos )
 		if math.abs(pos.y - self.y) < 9 then
 			local dist = pos.x - self.x
 			if (dist > 0 and dist < width/2) or (dist < 0 and dist < -width/2) then
-					self.pacangle.var = self.Vy > 0 and torad(80) or torad(-100)
-					self.pacangle:setAndGo(nil, torad(-10), torad(100))
+					self.pacangle.var = self.Vy > 0 and torad(90) or torad(-90)
+					self.pacangle:setAndGo(nil, torad(0), torad(100))
 					self.speed:set(bossThree.basespeed, 0)
 				else
 					self.speed:set(-bossThree.basespeed, 0)
-					self.pacangle:setAndGo(nil, torad(170), torad(100))
+					self.pacangle:setAndGo(nil, torad(180), torad(100))
 			end
 		end
 	end
@@ -340,7 +368,23 @@ end
 function bossThree:pacmanHealthLoss()
 	self.health = self.health - 1
 	if self.health == 0 then
-
+		self.speed:reset()
+		timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
+				local t = self.pacmantimer
+				t.increasing = true
+				t.limit = 1
+				t.change = math.pi
+				t.stop = true
+				t.timecount = 0
+				t.alsoCall = function()
+					self.delete = true
+					for i = 2, 4 do
+						local g = bossThree.bossThree[i]
+						g.delete = true --maybe do something else with them
+					end
+				end
+			end
+		}
 	else
 		local d = self.health/bossThree.pacmanhealth
 		--self.colors[1]:setAndGo(nil, 255, 1200)
@@ -413,8 +457,9 @@ function bossThree:__init()
 end
 
 function bossThree:handleDelete()
-	clear(bossThree.food.bodies)
+	cleartable(bossThree.food.bodies)
 	paintables.food = nil
+	neweffects(self, 200)
 end
 
 bossThree.food = circleEffect:new{
@@ -507,6 +552,7 @@ function bossThree.food:update( dt )
 			self.sizeGrowth = -100
 			self.update = circleEffect.update
 			self.explode = true
+			self.eaten = true
 		end
 	end
 end
@@ -514,12 +560,49 @@ end
 function bossThree.food:handleDelete()
 	if self.explode then
 		local ang = math.random() * math.pi * 2
-		local n = 8
+		local n = 16
 		for i = 1, n do
-			enemies.multiball:new{
-				position = self.position:clone(),
-				speed = vector:new{math.cos(ang)*1.5*v, math.sin(ang)*1.5*v}
-			}:register()
+			local e = enemies.multiball:new{}
+			e.position:set(self.position)
+			e.speed:set(math.cos(ang)*v*1.5, math.sin(ang)*v*1.5)
+			e:register()
+			ang = ang + math.pi*2/n
 		end
 	end
+end
+
+bossThree.ghost = body:new {
+	size = 40,
+	__type = 'bossThreeghost'
+}
+
+function bossThree.ghost:draw()
+	body.draw(self)
+	graphics.setColor(color(colortimer.time + self.variance, nil, noLSDeffect))
+	graphics.circle('line', self.x, self.y, self.size)
+end
+
+function bossThree.ghost:update( dt )
+	body.update(self, dt)
+	if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
+	elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
+
+	if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
+	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
+
+	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+		psycho.diereason = "shot"
+		lostgame()
+	end
+
+	for _, s in pairs(shot.bodies) do
+		if self:collidesWith(s) then
+			s.collides = true
+			s.explosionEffect = true
+		end
+	end
+end
+
+function bossThree.ghost:handleDelete()
+	neweffects(self, 30)
 end

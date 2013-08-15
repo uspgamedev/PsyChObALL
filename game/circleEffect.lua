@@ -65,5 +65,5 @@ end
 
 function circleEffect:update(dt)
 	self.size = self.size + self.sizeGrowth * dt
-	self.delete = self.size < 0 or self.size > self.maxsize
+	self.delete = self.delete or self.size < 0 or self.size > self.maxsize
 end
