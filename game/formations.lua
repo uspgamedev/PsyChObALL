@@ -246,7 +246,7 @@ function func:applyOn( enemies )
 		elseif self.side == 'top' or self.side == 'up' then
 			e.x, e.y = e.y, -e.x  - e.size
 		else
-			e.x, e.y = e.y, e.x + e.width + e.size
+			e.x, e.y = e.y, e.x + width + e.size
 		end
 		x = x + self.distance
 
