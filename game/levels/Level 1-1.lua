@@ -2,9 +2,6 @@ title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
-	wait(2)
-	enemy 'bossThree'
-	wait(10000)
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
@@ -46,7 +43,7 @@ function run()
 	local divide1 = 'multiball'
 	
 	doNow( function(timer)
-		reloadStory 'Level 2-4'
+		reloadStory 'Level 3-1'
 	end)
 
 	wait(1)
