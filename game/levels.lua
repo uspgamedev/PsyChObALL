@@ -28,15 +28,21 @@ function levelEnv.enemy( name, n, format, ... )
 	n = n or 1
 	local initInfo = select('#', ...) > 0  and {...} or nil
 	local enemylist = {}
+	local cp
+	if format and format.applyOn then cp = format.copy or {}
+	else cp = format or {} end
+	cp.side = format and format.side
+	cp.onInitInfo = initInfo
+
 	if type(name) == 'string' then
 		local enemy = enemies[name]
 		for i = 1, n do
-			enemylist[i] = enemy:new{ side = format and format.side, onInitInfo = initInfo }
+			enemylist[i] = enemy:new(clone(cp))
 		end
 	else
 		local k, s = 1, #name
 		for i = 1, n do
-			enemylist[i] = enemies[name[k]]:new{ side = format and format.side, onInitInfo = initInfo }
+			enemylist[i] = enemies[name[k]]:new(clone(cp))
 			k = k + 1
 			if k > s then k = 1 end
 		end
@@ -45,13 +51,6 @@ function levelEnv.enemy( name, n, format, ... )
 	if format then
 		if format.applyOn then
 			format:applyOn(enemylist)
-		else
-			for i = 1, n do
-				local e = enemylist[i]
-				for k, v in pairs(format) do
-					e[k] = clone(v)
-				end
-			end
 		end
 	end
 
