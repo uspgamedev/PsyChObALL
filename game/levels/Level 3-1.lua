@@ -94,7 +94,7 @@ function run()
 	for i = 1, 12 do
 		table.insert(t, {x, y})
 		table.insert(t, {x, y})
-		table.insert(t, {x, y})]
+		table.insert(t, {x, y})
 		enemy(snake, 1, {size = 5}, 40, 600, 0.5, {30, -30}, unpack(t))
 		y = height - 10
 	end

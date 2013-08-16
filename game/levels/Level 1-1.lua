@@ -3,7 +3,7 @@ chapter = 'Part 1 - The Arrival'
 
 function run()
 	wait(2)
-	enemy 'bossThree'
+	enemy 'bossLast'
 	wait(10000)
 	local f1 = formation {
 		type = 'around',

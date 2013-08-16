@@ -51,6 +51,7 @@ function bossThree.behaviors.first( self )
 			running = true,
 			funcToCall = function(timer)
 				timer.timelimit = math.random()*7 + 9
+				if #self.segments >= 7 then return end
 				local pos = self.position + {math.random(width/4, 3*width/4), math.random(height/4, 3*height/4)}
 				pos.x = math.max(math.min(pos.x % width, width-100), 100)
 				pos.y = math.max(math.min(pos.y % height, height-100), 100)
