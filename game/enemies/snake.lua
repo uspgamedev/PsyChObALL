@@ -57,6 +57,8 @@ function snake:update( dt )
 			if curdist < 1 or curdist > s.prevdist then
 				s.position:set(self.path[s.target])
 				s.target = s.target + 1
+				local prev = self.segments[i - 1]
+				if prev and prev.target == s.target then s.position:set(prev.position):sub(prev.speed:normalized():mult(self.size*2)) end
 				if s.target > #self.path then s.prevdist = nil s.target = nil
 				else 
 					s.prevdist = s.position:distsqr(self.path[s.target])
@@ -97,6 +99,7 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 end
 
 function snake:start()
+	body.start(self)
 	if not self.vulnerable then
 		self.coloreffect = noLSDeffect
 	end

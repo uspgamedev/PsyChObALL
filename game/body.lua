@@ -3,6 +3,7 @@ body = lux.object.new {
 	mode = 'fill',
 	variance = 0,
 	changesimage = true,
+	positionfollows = nil, --function
 	__type = 'unnamed body'
 }
 
@@ -37,7 +38,11 @@ function newindex( self, key, v )
 end
 
 function body:update( dt )
-	self.position:add(self.speed * dt)
+	if self.positionfollows then
+		self.position:set(self.positionfollows(gametime - self.initialtime)):add(self.initialpos)
+	else
+		self.position:add(self.speed * dt)
+	end
 
 	if (self.x + self.size < 0 and self.Vx <= 0) or (self.x > width + self.size and self.Vx >= 0) or
 		(self.y + self.size < 0 and self.Vy <= 0) or (self.y > height + self.size and self.Vy >= 0) then
@@ -95,4 +100,8 @@ function body:register(...)
 	self:freeWarning()
 	self:start(...)
 	table.insert(self.bodies, self)
+	if self.positionfollows then
+		self.initialtime = gametime
+		self.initialpos  = self.position:clone()
+	end
 end
