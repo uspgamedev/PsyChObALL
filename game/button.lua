@@ -99,6 +99,7 @@ function button:hover(hovering)
 		self.effectsBurst:start()
 		self.hoverring.size = 0
 		self.hoverring.sizeGrowth = 350
+		self.hoverring.delete = false
 		circleEffect.bodies[self] = self.hoverring
 	else
 		self.effectsBurst:stop()
