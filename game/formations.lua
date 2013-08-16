@@ -224,3 +224,39 @@ function around:applyOn( enemies )
 		end
 	end
 end
+
+func = formation:new {
+	name = 'func',
+	side = 'right',
+	distance = 30,
+	func = nil
+}
+
+function func:applyOn( enemies )
+	formation.applyOn(self, enemies)
+	local n = #enemies
+	local x = 0
+	for i = 1, n do
+		local e = enemies[i]
+		e.position:set(x, self.func(x))
+		if self.side == 'right' then
+			e.x = e.x + width + e.size
+		elseif self.side == 'left' then
+			e.x = -e.x - e.size
+		elseif self.side == 'top' or self.side == 'up' then
+			e.x, e.y = e.y, -e.x  - e.size
+		else
+			e.x, e.y = e.y, e.x + e.width + e.size
+		end
+		x = x + self.distance
+
+		if self.shootattarget then
+			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
+		else
+			if self.setspeedto then
+				enemies[i].speed:set(self.setspeedto)
+			end
+		end
+	end
+
+end
