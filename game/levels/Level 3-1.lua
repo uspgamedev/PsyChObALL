@@ -55,21 +55,9 @@ function run()
 	local snake = 'snake'
 
 	wait(4)
-	--enemy(snake, 1, nil, 4, 150, nil, {width/2, height+30}, {width/2, height/2}, {width + 30, height/2})
-	--wait(7)
+	enemy(snake, 1, nil, 4, 150, nil, {width/2, height+30}, {width/2, height/2}, {width + 30, height/2})
+	wait(7)
 	local t = {}
-	local x = 30
-	local y = height - 10
-	for i = 1, 12 do
-		table.insert(t, {x, y})
-		x = x + 50
-		table.insert(t, {x, y})
-		y = height - y
-		table.insert(t, {x, y})
-		x = x + 50
-		table.insert(t, {x, y})
-		y = height - 10
-	end
 	enemy(snake, 1, {vulnerable=false}, 80, 200, nil, {width/2, height+41}, {width/2, height/2+41}, {width + 41, height/2+41})
 	enemy(snake, 1, {vulnerable=false}, 80, 200, nil, {width/2, -41}, {width/2, height/2-41}, {-41, height/2-41})
 	enemy(snake, 1, {vulnerable=false}, 80, 200, nil, {width+41, height/2}, {width/2+41, height/2}, {width/2 + 41, -41})
@@ -87,19 +75,47 @@ function run()
 	enemy(simple, 10, horizontall)
 	wait(4)
 	t = {}
-	
-
 	local x = 30
-	local y = -30
+	local y = height - 10
 	for i = 1, 12 do
 		table.insert(t, {x, y})
+		x = x + 50
 		table.insert(t, {x, y})
-		table.insert(t, {x, y})]
-		enemy(snake, 1, {size = 5}, 40, 600, 0.5, {30, -30}, unpack(t))
+		y = height - y
+		table.insert(t, {x, y})
+		x = x + 50
+		table.insert(t, {x, y})
 		y = height - 10
 	end
+	enemy(snake, 1, {size = 20}, 20, 1200, 0, {30, -30}, unpack(t))
+	wait(15)
+	t = {}
+	local x = width+30
+	local y = 10
+	for i = 1, 10 do
+		table.insert(t, {x, y})
+		table.insert(t, {width/2+40, y})
+		table.insert(t, {width/2+40, y+30})
+		table.insert(t, {-30, y + 30})
+		enemy(snake, 2, {size = 20}, 20, 400, 0.5, unpack(t))
+		y = y + 90
+		t = {}
+	end
 	
-	wait(10)
+	wait(5)
+	t = {}
+	local x = 30
+	local y = height - 10
+	for i = 1, 12 do
+		table.insert(t, {x, y})
+		x = x + 50
+		table.insert(t, {x, y})
+		y = height - y
+		table.insert(t, {x, y})
+		x = x + 50
+		table.insert(t, {x, y})
+		y = height - 10
+	end
 	enemy(snake, 1, {size = 5}, 40, 600, 0.5, {30, -30}, unpack(t))
 	wait(40)
 	--doNow( function(timer)
