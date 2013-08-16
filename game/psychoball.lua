@@ -213,6 +213,10 @@ function psychoball:keypressed( key )
 		self.speed:div(sqrt2)
 	end
 
+	if keyspressed['lshift'] then
+		self.speed:div(2)
+	end
+
 	if key == ' ' and not isPaused and onGame() and ultracounter > 0 then
 		ultracounter = ultracounter - 1
 		ultrablast = 10
@@ -251,6 +255,10 @@ function psychoball:keyreleased( key )
 
 	if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
 		self.speed:div(sqrt2)
+	end
+
+	if keyspressed['lshift'] then
+		self.speed:div(2)
 	end
 
 	if key == ' ' then

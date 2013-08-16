@@ -153,17 +153,20 @@ function initGameVars()
 
 	swypetimer = vartimer:new { -- swypes the screen on menu change
 		var = 0,
-		speed = 3000
+		speed = 3000,
+		pausable = false
 	}
 
 	alphatimer = vartimer:new { --fades out and in the logo
 		var = 255,
-		speed = 300
+		speed = 300,
+		pausable = false
 	}
 
 	angle = vartimer:new {
 		var = 0,
-		speed = 1
+		speed = 1,
+		pausable = false
 	}
 	-- [[End of Creating Persistent Timers]]
 

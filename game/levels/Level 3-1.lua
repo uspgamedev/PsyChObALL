@@ -85,6 +85,11 @@ function run()
 		table.insert(t, {x, y})
 		x = x + 50
 		table.insert(t, {x, y})
+<<<<<<< HEAD
+=======
+		table.insert(t, {x, y})
+		enemy(snake, 1, {size = 5}, 40, 600, 0.5, {30, -30}, unpack(t))
+>>>>>>> 419a104c51443b9956d697bd4b7873d01f727f60
 		y = height - 10
 	end
 	enemy(snake, 1, {size = 20}, 20, 1200, 0, {30, -30}, unpack(t))
