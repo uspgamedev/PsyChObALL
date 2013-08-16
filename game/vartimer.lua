@@ -5,7 +5,7 @@ vartimer = timer:new {
 	limit = 100,
 	backwards = false,
 	speed = 100,
-	pausable = false
+	pausable = true
 }
 
 function vartimer:funcToCall( dt )

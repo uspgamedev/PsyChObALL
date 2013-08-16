@@ -3,13 +3,15 @@ bossLast = body:new{
 	width = 200,
 	height = 200,
 	variance = 5,
+	visible = true,
 	angle = nil, --vartimer
 	__type = 'bossLast'
 }
 
 function bossLast:draw()
+	if not self.visible then return end
 	graphics.push()
-	graphics.setColor(color(colortimer.time + self.variance, 255, self.coloreffect))
+	graphics.setColor(color(colortimer.time + self.variance, self.alphafollows.var, self.coloreffect))
 	graphics.translate(self.x, self.y)
 	graphics.rotate(self.angle.var)
 	graphics.rectangle(self.mode, -self.size, -self.size, self.width, self.height)
@@ -18,6 +20,7 @@ end
 
 function bossLast:update( dt )
 	body.update(self, dt)
+	if not self.visible then return end
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
@@ -26,8 +29,70 @@ end
 
 function bossLast:__init()
 	self.position:set(width/2, height/2)
-	self.angle = vartimer:new{var = 0, pausable = true}
-	self.angle:setAndGo(0, 100, math.pi/4)
+	self.angle = vartimer:new{var = 0}
+	self.visible = false
+	self.alphafollows = vartimer:new{var = 0}
+
+	local components = {{},{},{},{}}
+	local updateFunc =  function (e, dt)
+			enemies.grayball.update(e, dt)
+			if not e.inBox and collides(e, self) then e.inBox = true end
+			if not e.inBox then return end
+			if e.x  + e.size > width/2 + 120 then e.speed:set(-math.abs(e.Vx))
+			elseif e.x - e.size < width/2 - 120 then e.speed:set( math.abs(e.Vx)) end
+
+			if e.y + e.size > height/2 + 120 then e.speed:set(nil, -math.abs(e.Vy))
+			elseif e.y - e.size < height/2 - 120 then e.speed:set(nil,  math.abs(e.Vy)) end
+		end
+	local ballsalpha = vartimer:new{var = 255}
+	for i = 1, 160 do
+		local e = enemies.grayball:new{}
+		e.coloreffect = donothing
+		e.variance = 5
+		e.alphafollows = ballsalpha
+		e.update = updateFunc
+		e:register()
+		components[math.floor((i-1)/40) + 1][((i-1) % 40) + 1] = e
+	end
+	local f = formations.around:new{
+		angle = 0,
+		target = vector:new{width/2, height/2},
+		anglechange = torad(20),
+		distance = 80,
+		adapt = false,
+		speed = 1.1*v,
+		shootattarget = true
+	}
+	f:applyOn(components[1])
+	f.angle = 3*math.pi/2
+	f:applyOn(components[2])
+	f.anglechange = - f.anglechange
+	f.angle = math.pi
+	f:applyOn(components[3])
+	f.angle = math.pi/2
+	f:applyOn(components[4])
+
+	timer:new{
+		timelimit = .2,
+		running = true,
+		funcToCall = function(timer)
+			if components[1][40].inBox then
+				timer:remove()
+				self.visible = true
+				self.alphafollows:setAndGo(0, 255, 30)
+				ballsalpha:setAndGo(255, 0, 30)
+				ballsalpha.alsoCall = function(timer)
+					timer.alsoCall = nil
+					for i = 1, 4 do
+						for _, b in ipairs(components[i]) do
+							b.delete = true
+						end
+					end
+					-- do something else
+				end
+			end
+		end
+	}
 end
 
 local collideRects = function(x, y, w, h, x2, y2, w2, h2)
