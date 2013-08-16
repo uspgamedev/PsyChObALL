@@ -1,5 +1,5 @@
 title = 'III - Madness All Around'
-chapter = 'Part 1 - '
+chapter = 'Part 1 - They Arrived and then Left...'
 
 function run()
 	warnEnemies = true
@@ -85,11 +85,6 @@ function run()
 		table.insert(t, {x, y})
 		x = x + 50
 		table.insert(t, {x, y})
-<<<<<<< HEAD
-=======
-		table.insert(t, {x, y})
-		enemy(snake, 1, {size = 5}, 40, 600, 0.5, {30, -30}, unpack(t))
->>>>>>> 419a104c51443b9956d697bd4b7873d01f727f60
 		y = height - 10
 	end
 	enemy(snake, 1, {size = 20}, 20, 1200, 0, {30, -30}, unpack(t))
@@ -97,7 +92,7 @@ function run()
 	t = {}
 	local x = width+30
 	local y = 10
-	for i = 1, 10 do
+	for i = 1, 9 do
 		table.insert(t, {x, y})
 		table.insert(t, {width/2+40, y})
 		table.insert(t, {width/2+40, y+30})
@@ -123,7 +118,7 @@ function run()
 	end
 	enemy(snake, 1, {size = 5}, 40, 600, 0.5, {30, -30}, unpack(t))
 	wait(40)
-	--doNow( function(timer)
-		--if not gamelost then reloadStory 'Level 2-4' end
-	--end)
+	doNow( function(timer)
+		if not gamelost then reloadStory 'Level 3-2' end
+	end)
 end
