@@ -87,4 +87,8 @@ function run()
 
 	wait(3)
 	enemy(mono, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
+	wait(4)
+
+	wait(3)
+	
 end
