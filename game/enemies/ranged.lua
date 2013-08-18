@@ -5,6 +5,7 @@ ranged = body:new {
 	anglechange = nil,
 	life = 5,
 	timeout = 10,
+	timeToShoot = 1,
 	ord = 6,
 	__type = 'ranged'
 }
@@ -64,7 +65,7 @@ function ranged:update( dt )
 			self.onLocation = true
 			self.prevdist = nil
 			self.shoottimer = timer:new {
-				timelimit  = 1,
+				timelimit  = self.timeToShoot,
 				running = true,
 				funcToCall = function() self:shoot() end
 			}
