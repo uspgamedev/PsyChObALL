@@ -31,7 +31,7 @@ function levelEnv.enemy( name, n, format, ... )
 	local cp
 	if format and format.applyOn then cp = format.copy or {}
 	else cp = format or {} end
-	cp.side = format and format.side
+	cp.side = cp.side or format and format.side
 	cp.onInitInfo = initInfo
 
 	if type(name) == 'string' then
@@ -187,47 +187,143 @@ function loadAll()
 	currentLevel = nil
 
 	local ls = {}
-	local levelselectalpha = vartimer:new{ speed = 300 }
-	local pos = vector:new {-100, 120}
-	for name, level in pairs(levels) do
-		pos:add(250)
-		if pos.x + 100 >= width then
-			pos.x = 150
-			pos.y = pos.y + 238
-		end
-		table.insert(ls, button:new{
-			size = 100,
-			levelname = name,
-			position = pos:clone(),
-			text = name,
-			fontsize = 20,
-			menu = levelselect,
-			alphafollows = levelselectalpha,
-			pressed = function(self)
+	local levelselectalpha = vartimer:new{ speed = 300, pausable = false }
+	local translate = vartimer:new{ var = 0, speed = width*2, pausable = false }
+
+	local b = {}
+	b[1] = button:new {size = 100, position = vector:new{156, height/2 - 100}, fontsize = 20,
+		menu = levelselect, pressed = function(self)
 				self.alphafollows:setAndGo(255, 0)
-				self.visible = false
+				self.visible = falsen
 				neweffects(self, 40)
 				reloadStory(self.levelname)
+			end,
+		draw = function(self)
+			if not self.visible or self.alphafollows.var == 0 then return end
+			graphics.translate(-translate.var, 0)
+			button.draw(self)
+			if self.hoverring and self.hoverring.size > 2 then circleEffect.draw(self.hoverring) end
+			graphics.translate(translate.var, 0)
+		end,
+		isClicked = function ( self, x, y )
+			return button.isClicked(self, x + translate.var, y )
+		end,
+		update = function(self, dt)
+			if self.hoverring.size > self.size then
+				self.hoverring.size = self.size
+				self.hoverring.sizeGrowth = 0
 			end
-		})
-	end
+			if self.menu ~= state then
+				if self.onHover then 
+					self.onHover = false
+					self:hover(false)
+				end
+				return
+			end
+			if self.onHover ~= ((mouseX + translate.var - self.x)^2 + (mouseY - self.y)^2 < self.size^2) then
+				self.onHover = not self.onHover
+				self:hover(self.onHover)
+			end
+		end} 
+	b[2] = b[1]:clone()
+	b[2].position:set(412, nil)
+	b[3] = b[1]:clone()
+	b[3].position:set(668, nil)
+	b[4] = b[1]:clone()
+	b[4].position:set(924, nil)
 
-	table.insert(ls, button:new{
+	local back = button:new{
 		size = 50,
-		position = pos:set(920, 580),
+		position = vector:new{width - 160, 580},
 		text = "back",
 		fontsize = 20,
 		menu = levelselect,
 		alphafollows = levelselectalpha,
+		draw = function(self)
+			button.draw(self)
+			graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+			graphics.setFont(getCoolFont(70))
+			graphics.printf("Practice", 0, 30, width, 'center')
+		end,
 		pressed = function(self)
 			for _, but in pairs(UI.paintables.levelselect) do
 				but:close()
 			end
 			self.visible = false
 			neweffects(self, 26)
-			self.alphafollows:setAndGo(255, 0)
+			self.alphafollows:setAndGo(255, 0, 300)
 			UI.restartMenu()
 		end
-	})
+	}
+	table.insert(ls, back)
+
+	local nextB = button:new{
+		size = 50,
+		position = vector:new{width/2 + 100, 400},
+		text = ">",
+		fontsize = 55,
+		draw = b[1].draw,
+		isClicked = b[1].isClicked,
+		update = b[1].update,
+		menu = levelselect,
+		pressed = function(self)
+			translate:setAndGo(nil, translate.var + width)
+		end
+	}
+	local prevB = button:new{
+		size = 50,
+		position = vector:new{width/2 - 100, 400},
+		text = "<",
+		fontsize = 55,
+		draw = b[1].draw,
+		isClicked = b[1].isClicked,
+		update = b[1].update,
+		menu = levelselect,
+		pressed = function(self)
+			translate:setAndGo(nil, translate.var - width)
+		end
+	}
+	local fixeff  = function(self)
+		self.effectsBurst.funcToCall = function()
+			self.x = self.x - translate.var
+			neweffects(self, 2)
+			self.x = self.x + translate.var
+		end
+	end
+
+	local transl = vector:new{0, 0}
+	local levelN = 3
+	for i = 1, levelN do
+		for j = 1, 4 do
+			if j ~= 4 or i ~= 1 then
+				local but = b[j]:clone()
+				but.levelname = 'Level ' .. i .. '-' .. j
+				but.position:add(transl)
+				but:setText(but.levelname)
+				but.alphafollows = levelselectalpha
+				fixeff(but)
+				table.insert(ls, but)
+			end
+		end
+		if i > 1 then
+			but = prevB:clone()
+			but.position:add(transl)
+			but:setText()
+			but.alphafollows = levelselectalpha
+			fixeff(but)
+			table.insert(ls, but)
+		end
+		if i < levelN then
+			but = nextB:clone()
+			but.position:add(transl)
+			but:setText()
+			but.alphafollows = levelselectalpha
+			fixeff(but)
+			table.insert(ls, but)
+		end
+
+		transl:add(width, 0)
+	end
+
 	UI.paintables.levelselect = ls
 end

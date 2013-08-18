@@ -56,11 +56,32 @@ function init()
 		pressed = toMainMenu
 	}
 
-	paintables.menu = {playbutton, storybutton, controlsbutton, backbutton}
+	local testingbutton = button:new {
+		size = 50,
+		position = vector:new{width/2, height - 100},
+		text = "Practice",
+		fontsize = 15,
+		alphafollows = alphatimer,
+		pressed = selectLevel
+	}
+
+	paintables.menu = {playbutton, testingbutton, storybutton, controlsbutton, backbutton}
 
 	resetpass = cheats.password 'reset'
 
 	restartMenu()
+end
+
+function selectLevel()
+	state = levelselect
+	closeMenu()
+	alphatimer:setAndGo(255, 0)
+	UI.paintables.levelselect[1].alphafollows:setAndGo(0, 255)
+	for _, but in pairs(UI.paintables.levelselect) do
+		but:start()
+	end
+
+	mouse.setGrab(false)
 end
 
 function toTutorialMenu()

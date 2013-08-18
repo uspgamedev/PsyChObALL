@@ -69,7 +69,7 @@ function button:update( dt )
 end
 
 function button:setText( t )
-	self.text = t
+	self.text = t or self.text
 	local font = getFont(self.fontsize/ratio)
 	local dx, dy = font:getWrap(self.text, self.size*2)
 	self.ox, self.oy = 
@@ -107,13 +107,16 @@ function button:hover(hovering)
 	end
 end
 
+function button:isClicked(x, y)
+	return self.menu == state and ((x-self.x)^2 + (y-self.y)^2) < self.size^2
+end
+
 function button.mousepressed( x, y, btn )
-	button.cancelclick = false
-	for k, b in ipairs(button.allbuttons) do
-		if b.menu == state and ((x-b.x)^2 + (y-b.y)^2) < b.size^2 then
+	for k, b in pairs(button.allbuttons) do
+		if b:isClicked(x, y) then
 			b:pressed()
+			return
 		end
-		if button.cancelclick then return end
 	end
 end
 

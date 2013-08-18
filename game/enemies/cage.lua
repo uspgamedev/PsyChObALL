@@ -48,6 +48,9 @@ function cage:doaction( actN )
 			self.desiredsize = act.size
 			self.sizeGrowth = math.abs(act.sizeGrowth or cage.sizeGrowth) * sign(act.size - self.size)
 		end
+		if act.speed then
+			self.speedN = act.speed
+		end
 		if act.moveto then
 			self.onLocation = false
 			self.target = clone(act.moveto)

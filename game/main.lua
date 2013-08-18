@@ -255,15 +255,6 @@ function reloadStory( name )
 	levels.runLevel(name)
 end
 
-function selectLevel()
-	state = levelselect
-	UI.paintables.levelselect[1].alphafollows:setAndGo(0, 255)
-	for _, but in pairs(UI.paintables.levelselect) do
-		but:start()
-	end
-
-	mouse.setGrab(false)
-end
 
 function onMenu()
 	return state < 10

@@ -96,10 +96,13 @@ function keypressed( key )
 			elseif key == '5' then v = v - 10
 			elseif key == '4' then timefactor = timefactor * 1.1
 			elseif key == '3' then timefactor = timefactor * 0.9
+			elseif key == '2' then lives = lives + 1
+			elseif key == '1' then lives = lives - 1
 			elseif key == 'l' and not gamelost then deathText(1) lostgame()
 			elseif key == 'u' then love.update(10) --skips 10 seconds
 			elseif key == 'g' then godmode = not godmode
 			elseif key == 'e' then print(#effect.bodies)
+			elseif key == 'r' then timefactor = 1
 			end
 		end
 		
