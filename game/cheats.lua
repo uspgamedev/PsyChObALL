@@ -103,6 +103,7 @@ function keypressed( key )
 			elseif key == 'g' then godmode = not godmode
 			elseif key == 'e' then print(#effect.bodies)
 			elseif key == 'r' then timefactor = 1
+			elseif key == 'j' then shot.shotnum = shot.shotnum == 1 and 10 or 1
 			end
 		end
 		

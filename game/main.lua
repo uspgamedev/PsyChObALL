@@ -457,7 +457,7 @@ end
 
 
 function line()
-	if gamelost then return end
+	if gamelost or psycho.pseudoDied then return end
 	graphics.setColor(color(colortimer.time + 2))
 	if usingjoystick then
 		maincolor[4] = 60 -- alpha

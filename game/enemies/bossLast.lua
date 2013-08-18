@@ -4,6 +4,9 @@ bossLast = body:new{
 	height = 200,
 	variance = 5,
 	visible = true,
+	maxhealth = 10,
+	collides = true,
+	ord = 8,
 	angle = nil, --vartimer
 	__type = 'bossLast'
 }
@@ -21,10 +24,36 @@ end
 function bossLast:update( dt )
 	body.update(self, dt)
 	if not self.visible then return end
+
+	if self.collides then
+		if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
+		elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
+
+		if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
+		elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
+	end
+
+	for _, s in pairs(shot.bodies) do
+		if self:collidesWith(s) then
+			s.collides = true
+			s.explosionEffects = true
+			if self.health > 0 then
+				self.health = self.health - 1
+				local d = self.health/bossLast.maxhealth
+				self.colorchange.var = 255*d
+				--stuff
+			end
+		end
+	end
+
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
 	end
+end
+
+function bossLast.getShot()
+	return enemies.multiball:new{}
 end
 
 function bossLast:__init()
@@ -32,6 +61,9 @@ function bossLast:__init()
 	self.angle = vartimer:new{var = 0}
 	self.visible = false
 	self.alphafollows = vartimer:new{var = 0}
+	self.health = bossLast.maxhealth
+	self.colorchange = vartimer:new{var = 255}
+	self.coloreffect = getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
 
 	local components = {{},{},{},{}}
 	local updateFunc =  function (e, dt)
@@ -72,6 +104,19 @@ function bossLast:__init()
 	f.angle = math.pi/2
 	f:applyOn(components[4])
 
+	self.shoottimer = timer:new {
+		timelimit = .5,
+		works_on_gamelost = false,
+		funcToCall = function()
+			local e = self.getShot()
+			e.position = self.position:clone()
+			local pos = psycho.position:clone()
+			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
+			e.speed = (pos:sub(self.position)):normalize():add(math.random()/3, math.random()/3):normalize():mult(2 * v, 2 * v)
+			e:register()
+		end
+	}
+
 	timer:new{
 		timelimit = .2,
 		running = true,
@@ -79,7 +124,7 @@ function bossLast:__init()
 			if components[1][40].inBox then
 				timer:remove()
 				self.visible = true
-				self.alphafollows:setAndGo(0, 255, 30)
+				self.alphafollows:setAndGo(0, 255, 60)
 				ballsalpha:setAndGo(255, 0, 30)
 				ballsalpha.alsoCall = function(timer)
 					timer.alsoCall = nil
@@ -88,7 +133,10 @@ function bossLast:__init()
 							b.delete = true
 						end
 					end
-					-- do something else
+					timer:new{timelimit = 1.2, onceonly = true, running = true, funcToCall = function() 
+						self.speed:set(v/7, 3*v)
+						self.shoottimer:start()
+					end}
 				end
 			end
 		end

@@ -4,6 +4,7 @@ shot = body:new {
 	variance = 0,
 	explosionEffects = true,
 	__type   = 'shot',
+	shotnum = 1,
 	bodies = {}
 }
 
@@ -15,16 +16,18 @@ function shot.init()
 	}
 
 	function shot.timer:funcToCall() -- continues shooting when you hold the mouse
-		if usingjoystick then
-			shot:new {
-				position = psycho.position:clone(),
-				speed	 = vector:new{joystick.getAxis(1, 5), joystick.getAxis(1, 4)}:normalize():mult(3*v, 3*v)
-				}:register()
-		else
-			shot:new {
-				position = psycho.position:clone(),
-				speed	 = vector:new {mouse.getPosition()}:sub(psycho.position):normalize():mult(3*v, 3*v)
-				}:register()
+		for i = 1, shot.shotnum do
+			if usingjoystick then
+				shot:new {
+					position = psycho.position:clone(),
+					speed	 = vector:new{joystick.getAxis(1, 5), joystick.getAxis(1, 4)}:normalize():mult(3*v, 3*v)
+					}:register()
+			else
+				shot:new {
+					position = psycho.position:clone(),
+					speed	 = vector:new {mouse.getPosition()}:sub(psycho.position):normalize():mult(3*v, 3*v)
+					}:register()
+			end
 		end
 	end
 

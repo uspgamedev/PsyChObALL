@@ -3,11 +3,12 @@ bossThree = body:new{
 	yellowguysize = 80,
 	sizeGrowth = 0,
 	basespeed = 1.4*v,
-	maxhealth = 10,
+	maxhealth = 13,
 	yellowguyhealth = 60,
 	vulnerable = true,
 	segmentsN = 9,
 	maxsize = width,
+	visible = true,
 	ord = 6,
 	__type = 'bossThree'
 }
@@ -24,46 +25,67 @@ function bossThree.behaviors.first( self )
 			bossThree.goright(s)
 		end
 	end
-	if self.last - self.first < bossThree.segmentsN - 3 and math.abs(self.x - width/2) < width / 4 then
-		local s1 = self.segments[self.first]
-		local t = s1.target
+	if self.last - self.first < bossThree.segmentsN - 3 and ((self.y > height/2 and self.x < width/4) or (self.y <= height/2 and self.x > 3*width/4))  then
+		local t = self.segments[self.first].target
 		for i = self.first + 1, self.last, 1 do
 			if self.segments[i].target ~= t then return end
 		end
-		local foodpos = s1.speed:normalized():mult(width/8, width/8):add(s1.position):set(nil, height/2)
-		bossThree.food:new{ position = foodpos }:register()
-		self.path = {{foodpos.x, self.y}, {foodpos.x, foodpos.y}}
-		self.path[2].onArrival = function ( s )
-			if s == self.segments[self.last] then 
-				self.currentBehavior = bossThree.behaviors.second
-			end
-		end
+		self.shoottimer.timelimit = self.shoottimer.timelimit/1.4
 		self.currentBehavior = donothing
-
-		self.snakemode = true
+		local s = sign(self.segments[self.first].speed.x)
+		local x = self.x + s*2
+		local t = self.segments[self.first].target
+		for i = t, 4, 1 do self.path[i] = nil end
+		table.insert(self.path, {x, self.y})
 		for i = self.first, self.last, 1 do
 			local s = self.segments[i]
-			s.target = 1
-			s.prevdist = math.abs(foodpos.x - s.position.x)
+			s.prevdist = math.abs(x - s.position.x)
 		end
-		self.spawnfood = timer:new{
-			timelimit = math.random()*7 + 9,
-			running = true,
-			funcToCall = function(timer)
-				timer.timelimit = math.random()*7 + 9
-				if #self.segments >= 7 then return end
-				local pos = self.position + {math.random(width/4, 3*width/4), math.random(height/4, 3*height/4)}
-				pos.x = math.max(math.min(pos.x % width, width-100), 100)
-				pos.y = math.max(math.min(pos.y % height, height-100), 100)
-				bossThree.food:new{position = pos}:register()
+		local y = self.y
+		local dir = x > self.x and bossThree.goright or bossThree.goleft
+		for i = 1, 10 do
+			y = y - 144
+			if y < 0 then y = y + height end
+			table.insert(self.path, {x, y, onDeparture = bossThree.goup})
+			x = x + s*216
+			if x >= width then x = x - width end
+			if x < 0 then x = x + width end
+			table.insert(self.path, {x, y, onDeparture = dir})
+		end
+		self.path[#self.path].onArrival = function(s)
+			if s ~= self.segments[self.first] then return end
+			local s1 = s
+			local foodpos = s1.speed:normalized():mult(width/8, width/8):add(s1.position):set(nil, height/2)
+			bossThree.food:new{ position = foodpos }:register()
+			table.insert(self.path, {foodpos.x, self.y})
+			table.insert(self.path, {foodpos.x, foodpos.y})
+			self.path[#self.path].onArrival = function ( s )
+				self.currentBehavior = bossThree.behaviors.second
 			end
-		}
+			self.currentBehavior = donothing
+			self.spawnfood = timer:new{
+				timelimit = math.random()*7 + 9,
+				running = true,
+				funcToCall = function(timer)
+					timer.timelimit = math.random()*7 + 9
+					if #self.segments >= 7 then return end
+					local pos = self.position + {math.random(width/4, 3*width/4), math.random(height/4, 3*height/4)}
+					pos.x = math.max(math.min(pos.x % width, width-100), 100)
+					pos.y = math.max(math.min(pos.y % height, height-100), 100)
+					bossThree.food:new{position = pos}:register()
+				end
+			}
+		end
+		self.snakemode = true
 	end
 end
 
 function bossThree.behaviors.second( self )
-	if paintables.food[1] and not paintables.food[1].eaten then
-		self:trytofollow(paintables.food[1])
+	if next(paintables.food) then
+		local i, v = next(paintables.food)
+		if not v.eaten then
+			self:trytofollow(v)
+		elseif psycho.canbehit then self:trytofollow(psycho) end
 	else
 		if psycho.canbehit then self:trytofollow(psycho) end
 	end
@@ -96,11 +118,11 @@ function bossThree.behaviors.second( self )
 				increasing = true,
 				limit = .1,
 				change = torad(20),
-				stop = false,
+				pause = false,
 				funcToCall = function(t, dt)
 					t.timecount = t.timecount + dt
 					if t.timecount > t.limit then 
-						if t.stop then t.alsoCall() t:remove() return end
+						if t.pause then t:stop() t.alsoCall() return end
 						t.timecount = 0 
 						t.increasing = not t.increasing 
 					end
@@ -123,10 +145,107 @@ function bossThree.behaviors.second( self )
 end
 
 function bossThree.behaviors.third( self )
-	if paintables.food[1] and not paintables.food[1].eaten then
-		self:trytofollow(paintables.food[1])
+	if next(paintables.food) then
+		local i, v = next(paintables.food)
+		if not v.eaten then
+			self:trytofollow(v)
+		elseif psycho.canbehit then self:trytofollow(psycho) end
 	else
 		if psycho.canbehit then self:trytofollow(psycho) end
+	end
+	if self.health/bossThree.yellowguyhealth < .5 then
+		self.speedbak = self.speed:clone()
+		self.speed:reset()
+		self.currentBehavior = donothing
+		self.vulnerable = false
+		timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
+				cleartable(bossThree.food.bodies)
+				local t = self.yellowguytimer
+				t.increasing = true
+				t.limit = 1
+				t.change = 3*math.pi/4
+				t.pause = true
+				t.timecount = 0
+				t.alsoCall = function()
+					t:start()
+					t.timecount = 0
+					t.pause = true
+					t.increasing = false
+					self.colors[1]:setAndGo(nil, .94*255, 40)
+					self.colors[2]:setAndGo(nil, .86*255, 40)
+					self.colors[3]:setAndGo(nil, .51*255, 40)
+					t.alsoCall = function()
+						t:start()
+						t.timecount = 0
+						t.pause = false
+						t.increasing = true
+						t.limit = .1
+						t.change = torad(20)
+						t.alsoCall = nil
+						self.currentBehavior = bossThree.behaviors.fourth
+						self.vulnerable = true
+						self.guy.onRage = true
+						self.speed:set(self.speedbak)
+						self.speedbak = nil
+						self.health = bossThree.yellowguyhealth*.5
+						self.spawnfood.time = self.spawnfood.timelimit
+					end
+				end
+			end
+		}
+	end
+end
+
+function bossThree.behaviors.fourth( self )
+	if next(paintables.food) then
+		local i, v = next(paintables.food)
+		if not v.eaten then
+			self:trytofollow(v)
+		elseif psycho.canbehit then self:trytofollow(psycho) end
+	else
+		if psycho.canbehit then self:trytofollow(psycho) end
+	end
+
+	if self.health == 0 then
+		self.speed:reset()
+		self.currentBehavior = donothing
+		self.vulnerable = false
+		timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
+				cleartable(bossThree.food.bodies)
+				local t = self.yellowguytimer
+				t.increasing = true
+				t.limit = 1
+				t.change = math.pi
+				t.pause = true
+				t.timecount = 0
+				t.alsoCall = function() 
+					self.delete = true
+					for _, g in pairs(bossThree.bodies) do
+						if g.__type == 'bossThreeghost' then
+							g.ring.sizeGrowth = 30
+							g.ring.desiredsize = g.size*3
+						end
+					end
+					timer:new{
+						running = true,
+						onceonly = true,
+						timelimit = 2,
+						funcToCall = function()
+							local change = vartimer:new{var = 0}
+							local c = getColorEffect({var = 122}, {var = 122}, {var = 122}, change)
+							change:setAndGo(0, 255, 80)
+							for _, g in pairs(bossThree.bodies) do
+								if g.__type == 'bossThreeghost' then
+									g.ring.coloreffect = c
+									g.vulnerable = true
+									g.shoottimer:start()
+								end
+							end
+						end
+					}
+				end
+			end
+		}
 	end
 end
 
@@ -219,6 +338,7 @@ function bossThree:draw()
 		psycho.position:sub(psycho.extraposition)
 		psycho.size = psycho.size - psycho.sizediff
 	end]]
+	if not self.visible then return end
 	if self.first <= self.last then
 		local s = self.segments[self.first]
 		graphics.setColor(color(colortimer.time + self.variance, nil, self.coloreffect))
@@ -243,6 +363,7 @@ function bossThree:draw()
 end
 
 function bossThree:update( dt )
+	if not self.visible then return end
 	self:currentBehavior()
 	circleEffect.update(self, dt)
 
@@ -271,7 +392,7 @@ function bossThree:update( dt )
 
 		if self.snakemode then
 			if s.position[1] < self.size or s.position[1] > width - self.size then
-				if s.position[1] < 0 or s.position[1] > width then
+				if s.position[1] < -3 or s.position[1] > width + 3 then
 					s.position[1] = s.position[1] + (s.position[1] < width/2 and width or -width)
 					s.extraposition:set(s.position[1] < width/2 and width or -width, nil)
 				else
@@ -281,7 +402,7 @@ function bossThree:update( dt )
 				s.extraposition:set(0, nil)
 			end
 			if s.position[2] < self.size or s.position[2] > height - self.size then
-				if s.position[2] < 0 or s.position[2] > height then
+				if s.position[2] < -3 or s.position[2] > height + 3 then
 					s.position[2] = s.position[2] + (s.position[2] < height/2 and height or -height)
 					s.extraposition:set(nil, s.position[2] < height/2 and height or -height)
 				else
@@ -368,32 +489,27 @@ end
 
 function bossThree:yellowguyHealthLoss()
 	self.health = self.health - 1
-	if self.health == 0 then
-		self.speed:reset()
-		timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
-				local t = self.yellowguytimer
-				t.increasing = true
-				t.limit = 1
-				t.change = math.pi
-				t.stop = true
-				t.timecount = 0
-				t.alsoCall = function()
-					self.speed:reset()
-					for _, g in pairs(bossThree.bodies) do
-						g.delete = true --maybe do something else with them
-					end
-				end
-			end
-		}
-	else
-		local d = self.health/bossThree.yellowguyhealth
+	local d = self.health/bossThree.yellowguyhealth
+	if self.currentBehavior == bossThree.behaviors.third then
+		d = (math.max(d, .5) - .5)*2
 		--self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
 		timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 			self.colors[2]:setAndGo(nil, d*255, 300)
 		end
-		}
+		}	
+	elseif self.currentBehavior == bossThree.behaviors.fourth then
+		d = d*2
+		self.colors[1]:setAndGo(nil, 255, 1200)
+		self.colors[2]:setAndGo(nil, 0, 1200)
+		self.colors[3]:setAndGo(nil, 0, 1200)
+		timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+			self.colors[1]:setAndGo(nil, .94*255 + (1-d)*.06*255, 300)
+			self.colors[2]:setAndGo(nil, d*.86*255, 300)
+			self.colors[3]:setAndGo(nil, d*.51*255, 300)
+		end
+		}	
 	end
 end
 
@@ -407,7 +523,7 @@ function bossThree:__init()
 	self.path = {{width - 60, 60}, {width - 60, height - 60}, {60, height - 60}, {60, 60}}
 	self.segments = {}
 	self.speedvalue = spd
-	self.colors = {vartimer:new{var = 0}, vartimer:new{var = 255}, vartimer:new{var = 0}, vartimer:new{var = 70}}
+	self.colors = {vartimer:new{var = 0}, vartimer:new{var = 255}, vartimer:new{var = 0}, vartimer:new{var = 70}, vartimer:new{var = 50}}
 	self.coloreffect = getColorEffect(unpack(self.colors))
 	local speed = vector:new(clone(self.path[1])):sub(self.position):normalize()
 	local diff = speed * (self.size*2)
@@ -460,6 +576,7 @@ function bossThree:handleDelete()
 	cleartable(bossThree.food.bodies)
 	paintables.food = nil
 	self.spawnfood:remove()
+	self.yellowguytimer:remove()
 	neweffects(self, 200)
 end
 
@@ -475,12 +592,14 @@ bossThree.food = circleEffect:new{
 function bossThree.food:__init()
 	if bossThree.bodies[1].guy then
 		self.mode = 'fill'
-		self.coloreffect = getColorEffect(255, 255, 255, 40)
+		self.coloreffect = bossThree.bodies[1].guy.onRage and
+			getColorEffect(240, 0, 120, 40) or getColorEffect(255, 255, 255, 40)
 	end
 
 	self.normalsize = 25
 	self.creationsize = vartimer:new{var = 0}
 	self.alphafollows = vartimer:new{var = 255}
+	restrainInScreen(self.position)
 end
 
 function bossThree.food:draw()
@@ -518,7 +637,7 @@ function bossThree.food:update( dt )
 
 	local b3 = bossThree.bodies[1]
 	if self.eaten then
-		if b3.segments[b3.last].position:distsqr(self.position) < 10 then
+		if not b3.guy and b3.segments[b3.last].position:distsqr(self.position) < 10 then
 			local t = 100/bossThree.basespeed
 			self.creationsize:setAndGo(0, b3.size, b3.size/t)
 			timer:new{
@@ -553,6 +672,28 @@ function bossThree.food:update( dt )
 			self.sizeGrowth = -100
 			self.update = circleEffect.update
 			self.explode = true
+			self.explodeShot = b3.guy.onRage and enemies.grayball or enemies.multiball
+			if b3.guy.onRage then
+				b3.vulnerable = false
+				b3.colors[1]:setAndGo(nil, 122, 100)
+				b3.colors[2]:setAndGo(nil, 122, 100)
+				b3.colors[3]:setAndGo(nil, 122, 100)
+				b3.colors[4]:setAndGo(nil, 0, 100)
+				timer:new{
+					timelimit = 2,
+					onceonly = true,
+					running = true,
+					funcToCall = function ()
+						local d = b3.health/bossThree.yellowguyhealth
+						d = d*2
+						b3.colors[1]:setAndGo(nil, .94*255 + (1-d)*.06*255, 300)
+						b3.colors[2]:setAndGo(nil, d*.86*255, 300)
+						b3.colors[3]:setAndGo(nil, d*.51*255, 300)
+						b3.colors[4]:setAndGo(nil, 50, 100)
+						b3.colors[1].alsoCall = function() b3.colors[1].alsoCall = nil b3.vulnerable = true end
+					end
+				}
+			end
 			self.eaten = true
 		end
 	end
@@ -563,7 +704,7 @@ function bossThree.food:handleDelete()
 		local ang = math.random() * math.pi * 2
 		local n = 16
 		for i = 1, n do
-			local e = enemies.multiball:new{}
+			local e = self.explodeShot:new{}
 			e.position:set(self.position)
 			e.speed:set(math.cos(ang)*v*1.5, math.sin(ang)*v*1.5)
 			e:register()
@@ -574,13 +715,36 @@ end
 
 bossThree.ghost = body:new {
 	size = 40,
+	health = 24,
+	vulnerable = false,
 	__type = 'bossThreeghost'
 }
 
+function bossThree.ghost:__init()
+	self.ring = circleEffect:new{
+		size = self.size,
+		alpha = 255,
+		coloreffect = noLSDeffect,
+		sizeGrowth = 0,
+		variance = self.variance,
+		position = self.position,
+		linewidth = 7
+	}
+	self.shoottimer = timer:new {
+		timelimit = 2
+	}
+	function self.shoottimer.funcToCall()
+		local e = enemies.grayball:new{}
+		e.position = self.position:clone()
+		local pos = psycho.position:clone()
+		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
+		e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(1.5 * v, 1.5 * v)
+		e:register()
+	end
+end
+
 function bossThree.ghost:draw()
 	body.draw(self)
-	graphics.setColor(color(colortimer.time + self.variance, nil, noLSDeffect))
-	graphics.circle('line', self.x, self.y, self.size)
 end
 
 function bossThree.ghost:update( dt )
@@ -597,13 +761,23 @@ function bossThree.ghost:update( dt )
 	end
 
 	for _, s in pairs(shot.bodies) do
-		if self:collidesWith(s) then
+		if self.ring:collidesWith(s) then
 			s.collides = true
 			s.explosionEffect = true
+			if self.vulnerable and self.health > 0 then
+				self.health = self.health - 1
+				self.ring.size = (self.health/bossThree.ghost.health)*self.size*2 + self.size
+				if self.health == 0 then self.delete = true end
+			end
 		end
 	end
 end
 
 function bossThree.ghost:handleDelete()
 	neweffects(self, 30)
+	self.ring.delete = true
+	self.shoottimer:remove()
+	for _, g in pairs(bossThree.bodies) do
+		g.shoottimer.timelimit = g.shoottimer.timelimit/1.5
+	end
 end
