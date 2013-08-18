@@ -236,8 +236,6 @@ function draw()
 			graphics.print(string.format("%d", ultracounter), 140, 125)
 			graphics.setFont(getFont(24))
 			graphics.print("___________", 25, 136)
-			graphics.setFont(getCoolFont(40))
-			graphics.print(string.format("x%.1f", multiplier), 950, 35)
 		end
 		
 		graphics.setFont(getFont(12))

@@ -1,4 +1,4 @@
-title = 'I - The Beginning of PsyChO'
+title = 'I - The Fall of PsyChO'
 chapter = 'Part 2 - The Betrayal'
 
 function run()

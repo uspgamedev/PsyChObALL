@@ -19,11 +19,11 @@ function run()
 		funcToCall = function ( timer )
 			if not next(enemies.bossThree.bodies) then
 				text:new {
-					text = 'No turning back',
+					text = 'There can be only one',
 					speed = vector:new{v, v},
 					size = 40,
 					position = vector:new{0,0},
-					handleDelete = function () lives = lives + 1 reloadStory 'Test Level' end
+					handleDelete = function () lives = lives + 2 reloadStory 'Level 4-1' end
 				}:register()
 				timer:remove()
 			end

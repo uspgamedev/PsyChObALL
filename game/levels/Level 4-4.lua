@@ -1,5 +1,5 @@
-title = 'I - The Fall of PsyChO'
-chapter = 'Part 3 - The Big One'
+title = 'IV - The Only One'
+chapter = 'Part 4 - '
 
 function run()
 	doNow ( function( timer )
@@ -11,19 +11,19 @@ function run()
 		text:new { text = "BOSS INCOMING", font = getFont(40), position = vector:new{ -100, -30 }, speed = vector:new{v,v} }:register()
 	end )
 	wait(5)
-	enemy 'bossOne'
+	enemy 'bossThree'
 	wait(15)
 
 	registerTimer {
 		timelimit = .5,
 		funcToCall = function ( timer )
-			if not next(enemies.bossOne.bodies) then
+			if not next(enemies.bossThree.bodies) then
 				text:new {
-					text = 'The start of the end',
+					text = 'There can be only one',
 					speed = vector:new{v, v},
 					size = 40,
 					position = vector:new{0,0},
-					handleDelete = function () lives = lives + 2 reloadStory 'Level 2-1' end
+					handleDelete = function () lives = lives + 2 reloadStory 'Level 4-1' end
 				}:register()
 				timer:remove()
 			end
