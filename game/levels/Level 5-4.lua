@@ -1,5 +1,5 @@
 title = 'V - Renato please add level'
-chapter = 'Part 1 - Think of clever name renato'
+chapter = 'Part 1 - The boss is here. Just write all of him up until tomorrow. Thanks'
 
 function run()
 	local f1 = formation {

@@ -44,6 +44,6 @@ function run()
 	
 	wait(3)
 	doNow( function(timer)
-		reloadStory 'Level 5-3'
+		reloadStory 'Level 5-4'
 	end)
 end
