@@ -3,9 +3,12 @@ multiball = body:new {
 	divideN = 2,
 	args = {},
 	coloreffect = getColorEffect(255, 0, 0),
-	__init = enemy.__init,
 	__type = 'multiball'
 }
+
+function multiball:__init()
+	if not rawget(self.position, 1) then enemy.__init(self) end
+end
 
 function multiball:update( dt )
 	body.update(self, dt)

@@ -4,8 +4,8 @@ seeker = body:new {
 }
 
 function seeker:__init()
-	enemy.__init(self)
-	self.speedN = math.random(v - 30, v)
+	if not rawget(self.position, 1) then enemy.__init(self) end
+	self.speedN = self.speedN or math.random(v - 30, v)
 end
 
 function seeker:update( dt )

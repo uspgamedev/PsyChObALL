@@ -4,7 +4,9 @@ grayball = body:new {
 	__type = "grayball"
 }
 
-grayball.__init = enemy.__init
+function grayball:__init()
+	if not rawget(self.position, 1) then enemy.__init(self) end
+end
 
 function grayball:update( dt )
 	body.update(self, dt)
