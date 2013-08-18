@@ -73,7 +73,7 @@ end
 function superball:onInit( shot, exitpos, timeout, ... )
 	self.shot = shot and enemies[shot] or state == survival and enemy or enemies.simpleball
 	self.timeout = timeout
-	self.exitposition = clone(exitpos) or vector:new{math.random(width), math.random(height)}
+	self.exitposition = self.exitposition or clone(exitpos) or clone(self.position)
 	self.extra = select('#', ...) > 0 and {...} or nil
 end
 

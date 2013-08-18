@@ -1,5 +1,5 @@
 title = 'IV - The Only One'
-chapter = 'Part 2 - '
+chapter = 'Part 2 - There is Stil Others'
 
 function run()
 	warnEnemies = true
@@ -82,5 +82,9 @@ function run()
 	local grey = 'grayball'
 	local snake = 'snake'
 	local nic = 'cage'
+	local mono = 'monoguiaball'
 	local vc = function(data) return vector:new(data) end
+
+	wait(3)
+	enemy(mono, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 end

@@ -1,8 +1,8 @@
 monoguiaball = body:new {
-	size =  20,
-	divideN = 2,
+	size =  25,
+	divideN = 3,
 	args = {},
-	coloreffect = getColorEffect(255, 0, 0),
+	coloreffect = getColorEffect(20, 140, 0),
 	__type = 'monoguiaball'
 }
 
