@@ -5,6 +5,7 @@ ranged = body:new {
 	anglechange = nil,
 	life = 5,
 	timeout = 10,
+	ord = 6,
 	__type = 'ranged'
 }
 

@@ -54,7 +54,6 @@ function run()
 	wait(5)
 	enemy('simpleball', 20, formation { type = 'around', anglechange = torad(360/20), adapt = false, radius = 600, shootatplayer = true})
 	warnEnemiesTime = 0.7
-
 	wait(4)
 	horizontalr.speed = v
 	enemy(divide1, 2, horizontalr)

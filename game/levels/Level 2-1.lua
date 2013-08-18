@@ -91,6 +91,8 @@ function run()
 	enemy(range, 1, nil, 4, vc{width -70, height - 70}, vc{width +30, height + 30}, nil, simple, {50,205,50}, 0, 12)
 	enemy(range, 1, nil, 4, vc{width -70, 70}, vc{width +30, -30}, nil, simple, {50,205,50}, 0, 12)
 	f1.anglechange = 0
+	f1.shootattarget = true
+	f1.target = vector:new{width/2,height/2}
 	f1.angle = torad(0)
 	f1.center = vector:new{width/2, height/2}
 	enemy({simple,divide1}, 20, f1)
@@ -132,7 +134,7 @@ function run()
 	enemy({simple,divide1}, 20, f1)
 	f1.angle = torad(-135)
 	enemy({simple,divide1}, 20, f1)
-	f1.target = vector:new{width/2, 3*height/4}
+	f1.target = vector:new{width/2, height/2}
 	f1.angle = torad(0)
 	enemy({simple,divide1}, 20, f1)
 	f1.angle = torad(45)
