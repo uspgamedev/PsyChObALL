@@ -2,7 +2,7 @@ seeker = body:new {
 	size = 20,
 	timeout = 10,
 	seek = true,
-	coloreffect = getColorEffect(255, 255, 51),
+	health = 10,
 	__type = 'seeker'
 }
 
@@ -10,6 +10,8 @@ function seeker:__init()
 	if not rawget(self.position, 1) then enemy.__init(self) end
 	self.speedN = self.speedN or math.random(v - 30, v)
 	self.exitposition = self.exitposition or self.position
+	self.colors = {vartimer:new{var = .88*255}, vartimer:new{var = .66*255}, vartimer:new{var = .37*255}}
+	self.coloreffect = getColorEffect(unpack(self.colors))
 end
 
 function seeker:start()
@@ -32,10 +34,17 @@ function seeker:update( dt )
 
 	for _, v in pairs(shot.bodies) do
 		if not v.collides and self:collidesWith(v) then
-			self.collides = true
 			v.collides = true
 			v.explosionEffects = false
-			self.diereason = "shot"
+			self.health = self.health - 1
+			if self.health == 0 then
+				self.collides = true
+				self.diereason = "shot"
+			end
+			local d = self.health/seeker.health
+			self.colors[1]:setAndGo(nil, .88*255 + (1-d)*.22*255, 30)
+			self.colors[2]:setAndGo(nil, .66*255*d, 30)
+			self.colors[3]:setAndGo(nil, .37*255*d, 30)
 			break
 		end
 	end
