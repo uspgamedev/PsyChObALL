@@ -10,20 +10,21 @@ function run()
 		end
 		text:new { text = "BOSS INCOMING", font = getFont(40), position = vector:new{ -100, -30 }, speed = vector:new{v,v} }:register()
 	end )
+
 	wait(5)
-	enemy 'bossThree'
+	enemy 'bossFour'
 	wait(15)
 
 	registerTimer {
 		timelimit = .5,
 		funcToCall = function ( timer )
-			if not next(enemies.bossThree.bodies) then
+			if not next(enemies.bossfour.bodies) then
 				text:new {
 					text = 'There can be only one',
 					speed = vector:new{v, v},
 					size = 40,
 					position = vector:new{0,0},
-					handleDelete = function () lives = lives + 2 reloadStory 'Level 4-1' end
+					handleDelete = function () lives = lives + 2 reloadStory 'Level 5-1' end
 				}:register()
 				timer:remove()
 			end

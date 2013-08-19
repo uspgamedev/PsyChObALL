@@ -83,4 +83,8 @@ function run()
 	local snake = 'snake'
 	local nic = 'cage'
 	local vc = function(data) return vector:new(data) end
+
+	doNow( function(timer)
+		if not gamelost then reloadStory 'Level 4-3' end
+	end)
 end
