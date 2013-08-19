@@ -1,5 +1,5 @@
 title = 'IV - The Only One'
-chapter = 'Part 2 - There is Stil Others'
+chapter = 'Part 2 - There are Still Others'
 
 function run()
 	warnEnemies = true
@@ -89,8 +89,8 @@ function run()
 	wait(3)
 	enemy(mono, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 	wait(4)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.3*v, 0.3*v}, life = 80, size = 40}, mono, {width/2, -30}, 22)
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.3*v, 0.3*v}, life = 80, size = 40}, mono, {width/2, height+30}, 22)
+	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.3*v, 0.3*v}, life = 90, size = 40}, mono, {width/2, -30}, 22)
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.3*v, 0.3*v}, life = 90, size = 40}, mono, {width/2, height+30}, 22)
 	wait(8)
 	enemy(range, 1, {timeToShoot = 2}, 4, vc{width/2, 70}, vc{width/2, -30}, nil, mono, {50,205,50}, 0, 26)
 	enemy(range, 1, {timeToShoot = 2}, 4, vc{width/2, height - 70}, vc{width/2, height + 30}, nil, mono, {50,205,50}, 0, 26)
@@ -120,7 +120,7 @@ function run()
 	local t = {}
 	local x = 30
 	local y = height - 10
-	for i = 1, 12 do
+	for i = 1, 5 do
 		table.insert(t, {x, y})
 		x = x + 50
 		table.insert(t, {x, y})
@@ -130,11 +130,11 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
-	enemy(snake, 1, {size = 30}, 20, 400, 0, {30, -30}, unpack(t))
+	enemy(snake, 1, {size = 33}, 20, 400, 1, {30, -30}, unpack(t))
 	t = {}
 	local x = width -30
 	local y = height - 10
-	for i = 1, 6 do
+	for i = 1, 5 do
 		table.insert(t, {x, y})
 		x = x - 50
 		table.insert(t, {x, y})
@@ -144,7 +144,7 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
-	enemy(snake, 1, {size = 30}, 20, 400, 0, {width-30, -30}, unpack(t))
+	enemy(snake, 1, {size = 33}, 20, 400, 1, {width-30, -30}, unpack(t))
 	for i = 1,40 do
 		enemy({mono}, 1, {position = vc{0,0}, positionfollows =
 		function(time)
@@ -153,7 +153,7 @@ function run()
 		})
 		wait(0.25)
 	end
-	wait(5)
+	wait(9)
 	doNow( function(timer)
 		if not gamelost then reloadStory 'Level 4-3' end
 	end)
