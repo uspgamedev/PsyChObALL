@@ -112,7 +112,9 @@ function restartMenu()
 	state = mainmenu
 	resetVars()
 	timer.closenonessential()
-	soundmanager.changeSong(soundmanager.menusong)
+	if soundmanager.currentsong ~= soundmanager.menusong then
+		soundmanager.changeSong(soundmanager.menusong)
+	end
 	for _, b in pairs(paintables.menu) do b:start() end
 end
 
@@ -132,7 +134,13 @@ end
 function keypressed( key )
 	if key == 'r' and paused then
 		if state == story then
-			reloadStory 'Level 1-1'
+			if levelselected then
+				local n = levels.currentLevelname
+				reloadStory 'Level 1-1' -- gambiarra?
+				reloadStory(levels.currentLevelname)
+			else
+				reloadStory 'Level 1-1'
+			end
 		elseif state == survival then
 			reloadSurvival()
 		end

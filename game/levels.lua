@@ -118,6 +118,7 @@ function runLevel( name )
 	local prevtitle = currentLevel and currentLevel.title
 	closeLevel()
 	currentLevel = name and levels[name]
+	currentLevelname = name
 	currentLevel.reload()
 	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
 	local delay = changetitle and -5 or 0

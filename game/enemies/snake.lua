@@ -58,7 +58,7 @@ function snake:update( dt )
 				s.position:set(self.path[s.target])
 				s.target = s.target + 1
 				local prev = self.segments[i - 1]
-				if prev and prev.target == s.target then s.position:set(prev.position):sub(prev.speed:normalized():mult(self.size*2)) end
+				if prev and prev.target == s.target then s.position:set(prev.position):sub(prev.speed:normalized():mult(self.considersize*2)) end
 				if s.target > #self.path then s.prevdist = nil s.target = nil
 				else 
 					s.prevdist = s.position:distsqr(self.path[s.target])
@@ -83,7 +83,8 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 	self.leadchange = vartimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
 	self.coloreffect = getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
 	local speed = vector:new(clone(p2)):sub(self.position):normalize()
-	local diff = speed * (self.size*2)
+	self.considersize = self.considersize or self.size
+	local diff = speed * (self.considersize*2)
 	speed:mult(spd or v*.8, spd or v*.8)
 	self.speed = speed:clone()
 	self.first, self.last = 1, n

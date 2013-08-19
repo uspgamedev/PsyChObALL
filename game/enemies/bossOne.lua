@@ -56,7 +56,7 @@ function bossOne.behaviors.arriving( self )
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*torad(15))
 			e:register()
 		end
 		self.currentBehavior = bossOne.behaviors.first
@@ -67,6 +67,10 @@ end
 function bossOne.behaviors.first( self )
 	self:restrictToScreen()
 	if self.health/bossOne.maxhealth < .75 then 
+		local t = imagebody:new{ coloreffect = sincityeffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
+		enemy.__init(t)
+		t.speed:mult(2.2)
+		t:register()
 		self.currentBehavior = bossOne.behaviors.second
 		self.speedchange:remove()
 		self.speedchange = nil
@@ -76,7 +80,7 @@ function bossOne.behaviors.first( self )
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*torad(15))
 			e:register()
 		end
 		self.colors[1]:setAndGo(nil, 0, 122)
