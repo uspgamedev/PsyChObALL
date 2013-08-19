@@ -86,7 +86,7 @@ function initBase()
 	-- [[Loading Resources]]
 	logo = graphics.newImage 'resources/LogoBeta.png'
 	splash = graphics.newImage 'resources/Marvellous Soft.png'
-	splashtimer = timer:new{timelimit = 1.6, running = true, persistent = true, pausable = false, funcToCall = function(t) t:remove() end}
+	splashtimer = timer:new{timelimit = 1.75, running = true, persistent = true, pausable = false, funcToCall = function(t) t:remove() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '1.0.0'
@@ -119,24 +119,22 @@ function initGameVars()
 	psychoball.init()
 
 	multtimer = timer:new {
-		timelimit  = 2.2, 
-		onceonly	  = true,
+		timelimit  = 2.2,
 		persistent = true,
 		works_on_gamelost = false
 	}
 
 	function multtimer:funcToCall() -- resets multiplier
 		multiplier = 1
+		self:stop()
 	end
 
 	function multtimer:handlereset()
-		self:stop() 
 		self:funcToCall()
 	end
 
 	inverttimer = timer:new {
 		timelimit  = 2.2,
-		onceonly   = true,
 		persistent = true,
 		works_on_gamelost = false
 	}
@@ -147,10 +145,10 @@ function initGameVars()
 			timefactor = 1.0
 			currentEffect = nil
 		end
+		self:stop()
 	end
 
 	function inverttimer:handlereset()
-		self:stop()
 		self:funcToCall()
 	end
 
@@ -189,6 +187,7 @@ end
 function resetVars()
 	if cheats.konamicode then
 		ultracounter = 30
+		if lives then lives = 30 end
 		cheats.konamicode = false
 	else
 		ultracounter = 3

@@ -27,8 +27,8 @@ THE HISTORY OF PSYCHOBALL
 -Added SplashScreen for Marvellous Soft
 -Added new death messages
 -Changes on the balance of the game
--Some minors bugs fixed
--Removed previosuly soundtrack
+-Some bug fixes
+-Removed previous soundtrack
 -Removed menu random messages
 *************************************************
 (16/06/2013) Version 0.9.1    -  Long way to go
@@ -107,17 +107,17 @@ THE HISTORY OF PSYCHOBALL
 -Added the logo
 -Added slow-motion effect on death
 -Added version checker
--Added devmode
--Added hidden easter-egg: "ghost mode"
 	-Lets you know if there is a newer version available at the site
 	-Timeouts if it doesn't get any info from the site after a set time
+-Added devmode
+-Added hidden easter-egg: "ghost mode"
 -You can't leave the screen anymore
 -Explosion particles have the colour of their "origin"
 -Changes on text placement
 -More death messages
 	-Getting "LSD worn out" effect is more difficult
 	-Leaving "LSD worn out" effect is more common
--Changed 10x multiplier colour effect
+-Changed 10x multiplier color effect
 
 *************************************************
 (25/04/2013) Version 0.7.9   -  Everyday Patch

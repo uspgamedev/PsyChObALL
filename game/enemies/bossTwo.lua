@@ -438,7 +438,7 @@ function bossTwo.behaviors.final( self )
 	if self.healths[1] < 100 then
 		self.size = self.healths[1]/2
 	end
-	if self.size < 5 then
+	if self.size < 10 then
 		addscore(2000)
 		self.delete = true
 		neweffects(self, 100)

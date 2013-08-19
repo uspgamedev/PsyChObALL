@@ -30,7 +30,7 @@ function timer:update(dt, timefactor, paused, gamelost)
 			if self.extraelements then self:funcToCall(unpack(self.extraelements))
 			else self:funcToCall() end
 		end
-		if self.onceonly then self:stop() end
+		if self.onceonly then self:remove() end
 	end
 end
 

@@ -142,7 +142,7 @@ function runLevel( name )
 			timelimit = 3,
 			running = true,
 			funcToCall = function ( timer )
-				if timer.first then t.delete = false timer:remove() return end
+				if timer.first then t.delete = true timer:remove() return end
 				timer.first = true
 				t.alphafollows:setAndGo(255, 0, 100)
 			end

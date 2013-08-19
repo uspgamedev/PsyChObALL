@@ -5,7 +5,7 @@ function love.conf(t)
     t.identity = "PsyChObALL"
     t.version = "0.8.0"
     t.console = false
-    t.release = false
+    t.release = true
     t.screen.width = 1080
     t.screen.height = 720
     t.screen.fullscreen = false

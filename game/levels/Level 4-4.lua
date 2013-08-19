@@ -16,31 +16,32 @@ function run()
 	wait(15)
 
 	registerTimer {
-	timelimit = .5,
-	funcToCall = function ( timer )
-   if not next(enemies.bossOne.bodies) then
-   text:new {
-   text = 'The Journey wont last forever',
-   speed = vector:new{v, v},
-   size = 40,
-   position = vector:new{0,0},
-   handleDelete = function ()
-   if not levelselected then
-   lives = lives + 2 reloadStory 'Test Level' 
-   else
-      text:new{
-      	text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
-      	font = getCoolFont(50),
-      	printmethod = graphics.printf,
-      	position = vector:new{width/2 - 400, height/2 - 50},
-      	limit = 800,
-      	align = 'center'
-      }:register()
-   end
-   end
-   }:register()
-   timer:remove()
-   end
-  end
- }
+		timelimit = .5,
+		funcToCall = function ( timer )
+			if not next(enemies.bossFour.bodies) then
+				text:new {
+					text = 'The Journey wont last forever',
+					speed = vector:new{v, v},
+					size = 40,
+					position = vector:new{0,0},
+					handleDelete = function ()
+						if not levelselected then
+							lives = lives + 2
+							reloadStory 'Level 5-1' 
+						else
+							text:new{
+								text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
+								font = getCoolFont(50),
+								printmethod = graphics.printf,
+								position = vector:new{width/2 - 400, height/2 - 50},
+								limit = 800,
+								align = 'center'
+							}:register()
+						end
+					end
+				}:register()
+				timer:remove()
+			end
+		end
+	}
 end

@@ -42,7 +42,7 @@ function run()
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 	
-	wait(3)
+	wait(1)
 	doNow( function(timer)
 		reloadStory 'Level 5-4'
 	end)

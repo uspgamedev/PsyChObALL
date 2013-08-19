@@ -42,9 +42,20 @@ function run()
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 
-	wait(3)
+	wait(1)
 	
 	doNow( function(timer)
-		reloadStory 'Test Level'
+		local a = vartimer:new{var = 0}
+		a:setAndGo(0, 255, 70)
+		text:new{
+			text = "Congratulation, you've reached the end. But not really, more is coming!\nThe next update of PsyChObALL will"
+			.. " include two whole new levels, including The End.",
+			font = getCoolFont(55),
+			printmethod = graphics.printf,
+			position = vector:new{width/2 - 450, height/2 - 200},
+			limit = 900,
+			alphafollows = a,
+			align = 'center'
+		}:register()
 	end)
 end
