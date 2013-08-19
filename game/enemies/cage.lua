@@ -7,6 +7,7 @@ cage = circleEffect:new {
 	alpha = 255,
 	sizeGrowth = 20,
 	linewidth = 8,
+	index = false,
 	__type = 'cage'
 }
 
@@ -81,6 +82,9 @@ function cage:onInit( pos1, ...)
 	self.variance = math.random()*6 + 2
 	self.position = vector:new(clone(pos1))
 	self.actions = {...}
+end
+
+function cage:start()
 	self:doaction(1)
 end
 

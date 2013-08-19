@@ -136,8 +136,8 @@ function keypressed( key )
 		if state == story then
 			if levelselected then
 				local n = levels.currentLevelname
-				reloadStory 'Level 1-1' -- gambiarra?
-				reloadStory(levels.currentLevelname)
+				resetVars()
+				reloadStory(n)
 			else
 				reloadStory 'Level 1-1'
 			end
