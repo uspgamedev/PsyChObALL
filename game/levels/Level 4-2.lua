@@ -155,6 +155,18 @@ function run()
 	end
 	wait(9)
 	doNow( function(timer)
-		if not gamelost then reloadStory 'Level 4-3' end
+		print(levelselected)
+		if not levelselected then
+			if not gamelost then reloadStory 'Level 4-3' end
+		else
+			text:new{
+				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
+				font = getCoolFont(50),
+				printmethod = graphics.printf,
+				position = vector:new{width/2 - 400, height/2 - 50},
+				limit = 800,
+				align = 'center'
+			}:register()
+		end
 	end)
 end

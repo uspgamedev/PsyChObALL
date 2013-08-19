@@ -1,4 +1,4 @@
-title = 'I - The Fall of PsyChO'
+title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
@@ -41,6 +41,10 @@ function run()
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
+	
+	doNow( function(timer)
+		reloadStory 'Level 4-3'
+	end)
 
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
@@ -75,7 +79,7 @@ function run()
 			if not gamelost then reloadStory 'Level 1-2' end
 		else
 			text:new{
-				text = "You've practiced in this level. If you want to progress in the story do not use Practice.", --ou algum outro texto
+				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
 				position = vector:new{width/2 - 400, height/2 - 50},

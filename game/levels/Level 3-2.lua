@@ -125,7 +125,19 @@ function run()
 	enemy({simple,divide1}, 100, f)
 	enemy(simple, 100, f)
 	wait(40)
-	doNow( function()
-		if not gamelost then reloadStory 'Level 3-3' end
+	doNow( function(timer)
+		print(levelselected)
+		if not levelselected then
+			if not gamelost then reloadStory 'Level 3-3' end
+		else
+			text:new{
+				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
+				font = getCoolFont(50),
+				printmethod = graphics.printf,
+				position = vector:new{width/2 - 400, height/2 - 50},
+				limit = 800,
+				align = 'center'
+			}:register()
+		end
 	end)
 end

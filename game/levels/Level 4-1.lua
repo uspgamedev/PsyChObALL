@@ -195,6 +195,18 @@ function run()
 	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.5*v, 0.5*v}, life = 80, size = 70}, simple, nil, 5)
 	wait(10)
 	doNow( function(timer)
-		if not gamelost then reloadStory 'Level 4-2' end
+		print(levelselected)
+		if not levelselected then
+			if not gamelost then reloadStory 'Level 4-2' end
+		else
+			text:new{
+				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
+				font = getCoolFont(50),
+				printmethod = graphics.printf,
+				position = vector:new{width/2 - 400, height/2 - 50},
+				limit = 800,
+				align = 'center'
+			}:register()
+		end
 	end)
 end

@@ -119,41 +119,52 @@ function run()
 	wait(8)
 	f1.anglechange = torad(360/20)
 	f1.angle = torad(0)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(45)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(90)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(135)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(180)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-45)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-90)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-135)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.target = vector:new{width/2, height/2}
 	f1.angle = torad(0)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(45)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(90)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(135)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-45)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-90)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-135)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	f1.angle = torad(-180)
-	enemy({simple,divide1}, 20, f1)
+	enemy({simple,divide1}, 16, f1)
 	wait(10)
-	doNow( function()
-		reloadStory 'Level 2-2'
+	doNow( function(timer)
+		print(levelselected)
+		if not levelselected then
+			if not gamelost then reloadStory 'Level 2-2' end
+		else
+			text:new{
+				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
+				font = getCoolFont(50),
+				printmethod = graphics.printf,
+				position = vector:new{width/2 - 400, height/2 - 50},
+				limit = 800,
+				align = 'center'
+			}:register()
+		end
 	end)
-
 end

@@ -83,12 +83,71 @@ function run()
 	local snake = 'snake'
 	local nic = 'cage'
 	local sek = 'seeker'
+	local mono = 'monoguiaball'
 	local vc = function(data) return vector:new(data) end
 
 	wait(3)
-	enemy(sek, 1, nil, 8, vector:new{width/2, -30})
+	enemy(sek, 1, nil, 7, vector:new{width/2, -30})
+	wait(3)
+	enemy(sek, 1, nil, 15, vector:new{width/2, -30})
+	enemy(sek, 1, nil, 15, vector:new{width/2, height-30})
+	enemy(sek, 1, nil, 15, vector:new{width + 30, height/2})
+	wait(4)
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{v, v}, life = 120, size = 90}, divide1, {width/2, height+30}, 12)
+	wait(3)
+	local t = {}
+	local x = width+30
+	local y = 10
+	for i = 1, 9 do
+		table.insert(t, {x, y})
+		table.insert(t, {width/2+40, y})
+		table.insert(t, {width/2+40, y+45})
+		table.insert(t, {width+30, y + 45})
+		enemy(snake, 2, {size = 19}, 10, 200, 0.3, unpack(t))
+		t = {}
+		table.insert(t, {width-x, y})
+		table.insert(t, {width/2-40, y})
+		table.insert(t, {width/2-40, y+45})
+		table.insert(t, {-30, y + 45})
+		enemy(snake, 2, {size = 19}, 10, 200, 0.3, unpack(t))
+		y = y + 90
+		t = {}
+	end
 	wait(10)
+	enemy(sek, 1, nil, 25, vector:new{width/2, -30})
+	enemy(sek, 1, nil, 25, vector:new{width/2, height-30})
+	wait(3.5)
+	doNow( function()
+		enemy(nic, 1, nil, {width/2,height/2},
+			{size = 180, wait = 35, sizeGrowth = 150},
+			{size = 98, wait = 5, sizeGrowth = 16},
+			{destroy = true, sizeGrowth = 230}
+		)
+	end)
+	wait(5)
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.5*v, v}, life = 140, size = 60}, mono, {width/2, height+30}, 22)
+	wait(6)
+	for i = 1,5 do
+		enemy(sek, 1, nil, 11-i, vector:new{width/2, height-30})
+		wait(2)
+	end
+	wait(10)
+	enemy(sek, 6, horizontall, 13, vector:new{width/2, -30})
+	enemy(sek, 6, horizontalr, 13, vector:new{width/2, -30})
+	wait(15)
 	doNow( function(timer)
-		if not gamelost then reloadStory 'Level 4-4' end
+		print(levelselected)
+		if not levelselected then
+			if not gamelost then reloadStory 'Level 4-4' end
+		else
+			text:new{
+				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
+				font = getCoolFont(50),
+				printmethod = graphics.printf,
+				position = vector:new{width/2 - 400, height/2 - 50},
+				limit = 800,
+				align = 'center'
+			}:register()
+		end
 	end)
 end
