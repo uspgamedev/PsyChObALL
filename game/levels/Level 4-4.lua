@@ -18,7 +18,7 @@ function run()
 	registerTimer {
 		timelimit = .5,
 		funcToCall = function ( timer )
-			if not next(enemies.bossfour.bodies) then
+			if not next(enemies.bossFour.bodies) then
 				text:new {
 					text = 'There can be only one',
 					speed = vector:new{v, v},

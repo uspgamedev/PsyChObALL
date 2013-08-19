@@ -1,5 +1,5 @@
 title = 'IV - The Only One'
-chapter = 'Part 3 - '
+chapter = 'Part 3 - Followers'
 
 function run()
 	warnEnemies = true
@@ -87,7 +87,7 @@ function run()
 
 	wait(3)
 	enemy(sek, 1, nil, 8, vector:new{width/2, -30})
-	wait(20)
+	wait(10)
 	doNow( function(timer)
 		if not gamelost then reloadStory 'Level 4-4' end
 	end)

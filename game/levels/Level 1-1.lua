@@ -2,9 +2,9 @@ title = 'I - The Beginning of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
-	wait(3)
-	enemy 'bossFour'
-	wait(10000)
+	--wait(3)
+	--enemy 'bossFour'
+	--wait(10000)
 	local f1 = formation {
 		type = 'around',
 		angle = 0,

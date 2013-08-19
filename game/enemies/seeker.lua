@@ -2,6 +2,7 @@ seeker = body:new {
 	size = 20,
 	timeout = 10,
 	seek = true,
+	coloreffect = getColorEffect(255, 255, 51),
 	__type = 'seeker'
 }
 

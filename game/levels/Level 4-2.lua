@@ -1,5 +1,5 @@
 title = 'IV - The Only One'
-chapter = 'Part 2 - There are Still Others'
+chapter = 'Part 2 - There Are Still Others'
 
 function run()
 	warnEnemies = true
