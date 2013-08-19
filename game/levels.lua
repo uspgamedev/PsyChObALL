@@ -292,7 +292,7 @@ function loadAll()
 	end
 
 	local transl = vector:new{0, 0}
-	local levelN = 3
+	local levelN = 5
 	for i = 1, levelN do
 		for j = 1, 4 do
 			if j ~= 4 or i ~= 1 then

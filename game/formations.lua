@@ -59,6 +59,7 @@ function vertical:applyOn( enemies )
 		transl = self.startsat
 	end
 
+	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(transl + (i-1) * dist, y)
 
@@ -103,6 +104,7 @@ function horizontal:applyOn( enemies )
 		transl = self.startsat
 	end
 
+	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(x, transl + (i-1) * dist)
 		if self.shootattarget then

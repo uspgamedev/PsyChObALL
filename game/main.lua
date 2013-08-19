@@ -86,7 +86,7 @@ function initBase()
 	logo = graphics.newImage('resources/LogoBeta.png')
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
-	version = '0.9.0'
+	version = '1.0.0'
 	latest = base.getLatestVersion() or version
 	soundmanager.init()
 	cheats.init()
@@ -236,6 +236,11 @@ end
 function reloadStory( name )
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:close()
+	end
+	if psycho.pseudoDied then
+		psycho.canbehit = true
+		psycho.pseudoDied = false
+		paintables.psychoeffects = nil
 	end
 	effect:clear()
 	if state == story and name ~= 'Level 1-1' then

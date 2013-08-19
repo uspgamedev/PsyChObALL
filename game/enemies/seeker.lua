@@ -1,15 +1,32 @@
 seeker = body:new {
 	size = 20,
+	timeout = 10,
+	seek = true,
 	__type = 'seeker'
 }
 
 function seeker:__init()
 	if not rawget(self.position, 1) then enemy.__init(self) end
 	self.speedN = self.speedN or math.random(v - 30, v)
+	self.exitposition = self.exitposition or self.position
+end
+
+function seeker:start()
+	self.timeout = timer:new{
+		timelimit = self.timeout,
+		onceonly = true,
+		running = true,
+		funcToCall = function()
+			self.seek = false
+			self.speed:set(self.exitposition):sub(self.position):normalize():mult(self.speedN)
+		end
+	}
 end
 
 function seeker:update( dt )
-	self.speed:set(psycho.position):sub(self.position):normalize():mult(self.speedN, self.speedN)
+	if self.seek then
+		self.speed:set(psycho.position):sub(self.position):normalize():mult(self.speedN, self.speedN)
+	end
 	body.update(self, dt)
 
 	for _, v in pairs(shot.bodies) do
@@ -28,6 +45,11 @@ function seeker:update( dt )
 	end
 
 	self.delete = self.delete or self.collides
+end
+
+function seeker:onInit( timeout, exitpos )
+	self.timeout = timeout
+	self.exitposition = clone(exitpos)
 end
 
 function seeker:handleDelete()

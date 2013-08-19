@@ -114,6 +114,7 @@ local effects = {
 }
 
 function psychoball:handleDelete()
+	shot.timer:stop()
 	self.size = self.size + psychosizediff
 	self.speed:set(0,0)
 	local deatheffects = {}
@@ -174,6 +175,7 @@ end
 function psychoball:recreate()
 	timefactor = 1
 	self.pseudoDied = false
+	if mouse.isDown('l') then shot.timer:start() end
 	local blink = timer:new {
 		timelimit = .4,
 		time = .37,

@@ -41,7 +41,7 @@ function monoguiaball:handleDelete()
 		e.size = self.size - 6
 		e.position:set(self.position):add(math.random(self.size), math.random(self.size))
 		e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
-		if e.Vy + e.Vx < 40 then e.Vy = sign(self.Vy) * math.random(3 * v / 4, v) end
+		if math.abs(e.Vy) + math.abs(e.Vx) < 40 then e.Vy = sign(self.Vy) * math.random(3 * v / 4, v) end
 		e:register()
 		--[[e.size = self.size - 10
 		e.position:set(self.position)

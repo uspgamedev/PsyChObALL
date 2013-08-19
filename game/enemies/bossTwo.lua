@@ -47,6 +47,9 @@ function bossTwo:__init()
 	self.speed:set(width/2, height/2):sub(self.position):normalize():mult(1.5*self.basespeed, 1.5*self.basespeed)
 	self.prevdist = self.position:distsqr(width/2, height/2)
 	bossTwo.shot = enemies.simpleball
+	function bossTwo:getTurretShot()
+		return enemies.simpleball:new{}
+	end
 end
 
 function bossTwo.behaviors.arriving( self )
@@ -62,7 +65,7 @@ function bossTwo.behaviors.arriving( self )
 		}
 
 		function self.shoottimer.funcToCall()
-			local e = (math.random() > .5 and enemies.simpleball or enemies.multiball):new{}
+			local e = self:getShot()
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
@@ -111,6 +114,8 @@ function bossTwo.behaviors.first( self )
 		restrictToScreenThreshold = 20
 		restrictToScreenSpeed = v
 		self.currentBehavior = bossTwo.behaviors.second
+		self.getShot = function () return enemies.multiball:new{} end
+		bossTwo.getTurretShot = self.getShot
 		for i = 1, 4 do
 			self.healths[i] = bossTwo.maxhealth * .75
 			local c = self.ballscolors[i]
@@ -141,6 +146,8 @@ function bossTwo.behaviors.second( self )
 		end
 		self.vulnerable = false
 		self.currentBehavior = bossTwo.behaviors.gathering
+		self.getShot = function() return enemies.grayball:new{} end
+		bossTwo.getTurretShot = self.getShot
 		self.sizeGrowth = 30
 		self.ballspeed = 10
 	end
@@ -273,7 +280,6 @@ function bossTwo.behaviors.caging( self )
 		end
 		--dostuff
 		self.currentBehavior = bossTwo.behaviors.fourth
-		bossTwo.shot = enemies.grayball
 		for i = 1, 4 do
 			local c = self.ballscolors[i]
 			c[1]:setAndGo(nil, 0, 100)
@@ -464,6 +470,10 @@ function bossTwo:collides( v, n )
 	return (v.size + self.size)^2 >= (v.x - self.x - (n%2==0 and 1 or -1)*self.ballspos)^2 + (v.y - self.y - (n>2 and 1 or -1)*self.ballspos)^2
 end
 
+function bossTwo:getShot()
+	return (math.random() < .5 and enemies.simpleball or enemies.multiball):new{}
+end
+
 function bossTwo:update( dt )
 	circleEffect.update(self, dt)
 	body.update(self, dt)
@@ -590,7 +600,7 @@ function bossTwo.turret:__init()
 	self.shoottimer = timer:new {
 		timelimit = 1.5,
 		funcToCall = function ()
-			local e = bossTwo.shot:new{}
+			local e = bossTwo:getTurretShot()
 			e.position = (self.attached and self.position + self.bossTwopos or self.position:clone())
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end

@@ -1,5 +1,5 @@
 bossLast = body:new{
-	size = 100, -- almost unused
+	size = 100,
 	width = 200,
 	height = 200,
 	variance = 5,

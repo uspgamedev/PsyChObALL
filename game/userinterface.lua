@@ -313,7 +313,7 @@ function draw()
 		--drawing mainmenu
 		graphics.setFont(getFont(12))
 		graphics.setColor(color(colortimer.time * 0.856, alphatimer.var))
-		graphics.print("v" .. version, width/2 - 10, 690)
+		graphics.print("v" .. version, width/2 - 10, 685)
 		graphics.print('Write "reset" to delete stats', 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
 

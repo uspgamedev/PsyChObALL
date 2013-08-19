@@ -91,6 +91,18 @@ function bossThree.behaviors.second( self )
 	end
 
 	if self.first == self.last then
+		self.speedbak = self.speed:clone()
+		self.speed:reset()
+		timer:new{
+			timelimit = 1.5,
+			onceonly = true,
+			running = true,
+			funcToCall = function()
+				self.speed:set(self.speedbak)
+				self.speedbak = nil
+				self.health = bossThree.yellowguyhealth
+			end
+		}
 		self.shoottimer:remove()
 		self.shoottimer = nil
 		self.health =  bossThree.yellowguyhealth
@@ -778,6 +790,6 @@ function bossThree.ghost:handleDelete()
 	self.ring.delete = true
 	self.shoottimer:remove()
 	for _, g in pairs(bossThree.bodies) do
-		g.shoottimer.timelimit = g.shoottimer.timelimit/1.5
+		g.shoottimer.timelimit = g.shoottimer.timelimit/1.9
 	end
 end
