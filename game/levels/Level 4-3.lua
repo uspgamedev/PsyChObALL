@@ -87,4 +87,8 @@ function run()
 
 	wait(3)
 	enemy(sek, 1, nil, 8, vector:new{width/2, -30})
+	wait(20)
+	doNow( function(timer)
+		if not gamelost then reloadStory 'Level 4-4' end
+	end)
 end
