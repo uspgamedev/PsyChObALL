@@ -141,7 +141,7 @@ function run()
 		y = height - y
 		table.insert(t, {x, y})
 		x = x - 50
-		table.insert(t, {x, y})
+		table.insert(t, {x, y})	
 		y = height - 10
 	end
 	enemy(snake, 1, {size = 33}, 20, 400, 1, {width-30, -30}, unpack(t))

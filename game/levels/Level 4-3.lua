@@ -82,5 +82,9 @@ function run()
 	local grey = 'grayball'
 	local snake = 'snake'
 	local nic = 'cage'
+	local sek = 'seeker'
 	local vc = function(data) return vector:new(data) end
+
+	wait(3)
+	enemy(sek, 1, nil, 8, vector:new{width/2, -30})
 end
