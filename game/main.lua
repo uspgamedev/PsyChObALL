@@ -84,7 +84,9 @@ function initBase()
 	-- [[end of Reading Files]]
 	
 	-- [[Loading Resources]]
-	logo = graphics.newImage('resources/LogoBeta.png')
+	logo = graphics.newImage 'resources/LogoBeta.png'
+	splash = graphics.newImage 'resources/Marvellous Soft.png'
+	splashtimer = timer:new{timelimit = 1.6, running = true, persistent = true, pausable = false, funcToCall = function(t) t:remove() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '1.0.0'
@@ -212,6 +214,7 @@ function resetVars()
 	blastime = 0
 	score = 0
 	blastscore = 0 --Variavel que dá ultrablast points por pontos
+	lifescore = 0
 
 	gamelost = false
 	paused = false
@@ -250,7 +253,7 @@ function reloadStory( name )
 		timer.closenonessential()
 	else
 		state = story
-		lives = 6
+		lives = 10
 		soundmanager.changeSong(soundmanager.limitlesssong)
 		resetVars()
 		timer.closenonessential()
@@ -348,6 +351,12 @@ function love.draw()
 	maincolor[2] = maincolor[2] / 4
 	maincolor[3] = maincolor[3] / 4
 	graphics.setColor(maincolor)
+	if splashtimer.running then
+		graphics.setColor(255,255,255,255)
+		graphics.rectangle("fill", 0, 0, width, height) --background color
+		graphics.draw(splash, 100, 80, 0, .55, .55)
+		return
+	end
 	graphics.rectangle("fill", 0, 0, width, height) --background color
 	graphics.translate(math.floor(-swypetimer.var), 0)
 	--[[End of setting camera]]
@@ -573,9 +582,14 @@ function addscore(x)
 	if not gamelost then
 		score = score + x
 		blastscore = blastscore + x
-		if blastscore >= 7000 then
-			blastscore = blastscore - 500
+		lifescore = lifescore + x
+		if blastscore >= (state == survival and 7000 or 2000) then
+			blastscore = blastscore - (state == survival and 7000 or 2000)
 			ultracounter = ultracounter + 1
+		end
+		if state == story and lifescore >= 10000 then
+			lifescore = lifescore - 10000
+			lives = lives + 1
 		end
 	end
 end

@@ -1,11 +1,11 @@
 cage = circleEffect:new {
 	size = width,
-	speedN = v*.2,
+	speedN = v*.4,
 	maxsize = width*2,
 	onLocation = true,
 	lastexecuted = 0,
 	alpha = 255,
-	sizeGrowth = 20,
+	sizeGrowth = 40,
 	linewidth = 8,
 	index = false,
 	__type = 'cage'

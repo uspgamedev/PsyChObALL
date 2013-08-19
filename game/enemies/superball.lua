@@ -78,6 +78,7 @@ function superball:onInit( shot, exitpos, timeout, ... )
 end
 
 function superball:start( shot )
+	self.healthbak = self.life
 	self.lifeCircle.size = self.size + self.life
 	self.shoottimer:start()
 	self.timeout:start()
@@ -106,7 +107,8 @@ function superball:update(dt)
 			v.variance = bakvariance
 			self.life = self.life - 4
 			self.lifeCircle.size = self.size + self.life
-			if self.life <= 0 then 
+			if self.life <= 0 then
+				self.diereason = "shot"
 				self.delete = true
 				break
 			end
@@ -120,6 +122,7 @@ function superball:update(dt)
 end
 
 function superball:handleDelete()
+	if self.diereason == "shot" then addscore(4*self.healthbak + 2*self.size) end
 	neweffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
 	self.shoottimer:remove()

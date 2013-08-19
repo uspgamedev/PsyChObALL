@@ -117,13 +117,11 @@ function run()
 	enemy(sek, 1, nil, 25, vector:new{width/2, -30})
 	enemy(sek, 1, nil, 25, vector:new{width/2, height-30})
 	wait(3.5)
-	doNow( function()
-		enemy(nic, 1, nil, {width/2,height/2},
-			{size = 180, wait = 35, sizeGrowth = 150},
-			{size = 98, wait = 5, sizeGrowth = 16},
-			{destroy = true, sizeGrowth = 230}
-		)
-	end)
+	enemy(nic, 1, nil, {width/2,height/2},
+		{size = 180, wait = 35, sizeGrowth = 300},
+		{size = 100, wait = 5, sizeGrowth = 32},
+		{destroy = true, sizeGrowth = 460}
+	)
 	wait(5)
 	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.5*v, v}, life = 140, size = 60}, mono, {width/2, height+30}, 22)
 	wait(6)

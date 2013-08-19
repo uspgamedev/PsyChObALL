@@ -106,6 +106,7 @@ function bossTwo.behaviors.first( self )
 	if self.size < 60 then self.sizeGrowth = 0 self.size = 60 end
 	if self.ballspos < 35 then self.ballspeed = 0 self.ballspos = 35 end
 	if self.sizeGrowth == 0 and self.size == 60 and self.ballspeed == 0 and self.ballspos == 35 and self.health/bossTwo.maxhealth <= .75 then
+		addscore(500)
 		for i = 1, 4 do if not bossTwo.turrets[i].onLocation then return end end
 		bossTwo.turrets[1].speed:set(v,  0)
 		bossTwo.turrets[2].speed:set(0,  v)
@@ -129,6 +130,7 @@ end
 function bossTwo.behaviors.second( self )
 	for i = 1, 4 do bossOne.restrictToScreen(bossTwo.turrets[i]) end
 	if self.health/bossTwo.maxhealth <= .5 then
+		addscore(750)
 		for i = 1, 4 do
 			local t = bossTwo.turrets[i]
 			local targ = self.turretsoldpos[i]
@@ -214,6 +216,7 @@ end
 
 function bossTwo.behaviors.third( self )
 	if self.health/bossTwo.maxhealth <= .25 then
+		addscore(750)
 		self.rotatetimer:remove()
 		self.rotatetimer = nil
 		local tpos = {{0, -150}, {150, 0}, {0, 150}, {-150, 0}}
@@ -323,7 +326,6 @@ function bossTwo.behaviors.fourth( self )
 			c2.position:add(t.position):add(t.bossTwopos)
 			if c2.size > 50 then c2.sizeGrowth = 0 c2.size = 50 end
 		end
-		-- there is some collision error here
 		if c1 or c2 then
 			for _, s in pairs(shot.bodies) do
 				local c1c, c2c = s:collidesWith(c1), s:collidesWith(c2)
@@ -342,6 +344,7 @@ function bossTwo.behaviors.fourth( self )
 		if c2 then c2.position:sub(t.position):sub(t.bossTwopos) end
 	end
 	if self.health <= 0 then
+		addscore(750)
 		self.redhealths = nil
 		for i = 1, 4 do
 			local t = bossTwo.turrets[i]
@@ -436,6 +439,7 @@ function bossTwo.behaviors.final( self )
 		self.size = self.healths[1]/2
 	end
 	if self.size < 5 then
+		addscore(2000)
 		self.delete = true
 		neweffects(self, 100)
 	end

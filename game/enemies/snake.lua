@@ -25,6 +25,7 @@ function snake:update( dt )
 				v.collides = true
 				v.explosionEffect = i ~= self.first
 				if i == self.first and self.vulnerable then
+					addscore(20)
 					self.first = self.first + 1
 					s.size = self.size
 					neweffects(s, 20)

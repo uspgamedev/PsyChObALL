@@ -141,16 +141,13 @@ function run()
 		})
 		wait(0.45)
 		if i == 20 then
-			doNow( function()
-				wait(30)
-				enemy(nic, 1, nil, {width/2,height/2},
-				{size = 100, wait = 10, sizeGrowth = 150},
-				{moveto = {7*width/8,height/2}, wait = 5}, 
-				{moveto = {width/8,height/2}, wait = 8},
-				{moveto = {width/2,height/2}, wait = 4.5}, 
-				{destroy = true, sizeGrowth = 230}
-				)
-			end)
+			enemy(nic, 1, nil, {width/2,height/2},
+			{size = 100, wait = 10, sizeGrowth = 300},
+			{moveto = {7*width/8,height/2}, wait = 5}, 
+			{moveto = {width/8,height/2}, wait = 8},
+			{moveto = {width/2,height/2}, wait = 4.5}, 
+			{destroy = true, sizeGrowth = 460}
+			)
 		end
 		if i == 25 or i == 35 then
 			enemy({grey,divide1},12,vform)

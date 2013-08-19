@@ -63,5 +63,6 @@ function seeker:onInit( timeout, exitpos )
 end
 
 function seeker:handleDelete()
+	if self.diereason == 'shot'then addscore(100) end
 	neweffects(self, 40)
 end

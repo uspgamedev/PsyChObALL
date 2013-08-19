@@ -84,31 +84,31 @@ function run()
 	local nic = 'cage'
 	local vc = function(data) return vector:new(data) end
 
-	wait(3)
+	wait(2)
 	enemy(nic, 1, nil, {width/2,height/2},
-		{size = 200, wait = 20, sizeGrowth = 150},
+		{size = 200, wait = 20, sizeGrowth = 300},
 		{moveto = {2*width/3,height/2}, wait = 5}, 
 		{moveto = {width/3,height/2}, wait = 5}, 
-		{moveto = {210,210}, wait = 1, speed = v*0.35}, 
+		{moveto = {210,210}, wait = 1, speed = v*0.7}, 
 		{moveto = {width -210,210}, wait = 3},
 		{moveto = {width -210, height -210}, wait = 1},
 		{moveto = {210, height -210}, wait = 3},
 		{moveto = {width/2, height/2}, wait = 5},
-		{size = 150, wait = 9, speed = v/5},
+		{size = 150, wait = 9, speed = v/2.5},
 		{moveto = {width/2,160}, wait = 3/2}, 
 		{moveto = {width/2,height - 160}, wait = 3},
 		{moveto = {width/2,160}, wait = 3}, 
 		{moveto = {width/2,height - 160}, wait = 3/2},
 		{moveto = {width/2,height/2}, wait = 4},
-		{moveto = {width-160,height/2}, wait = 6/2, speed = v/5}, 
-		{moveto = {160,height/2}, wait = 6*2/5+1, speed = v/2},
-		{moveto = {width-160,height/2}, wait = 7, speed = v/5},
-		{moveto = {160,height/2}, wait = 6*2/5+1, speed = v/2},
-		{moveto = {width-160,height/2}, wait = 7/2, speed = v/5}, 
+		{moveto = {width-160,height/2}, wait = 6/2, speed = v/2.5}, 
+		{moveto = {160,height/2}, wait = 6*2/5+1, speed = v},
+		{moveto = {width-160,height/2}, wait = 7, speed = v/2.5},
+		{moveto = {160,height/2}, wait = 6*2/5+1, speed = v},
+		{moveto = {width-160,height/2}, wait = 7/2, speed = v/2.5}, 
 		{moveto = {width/2,height/2}, wait = 3},
-		{destroy = true, sizeGrowth = 230}
+		{destroy = true, sizeGrowth = 460}
 	)
-	wait(3)
+	wait(5)
 	enemy(simple, 1, { position = vector:new{width+20, height/2}, speed = vector:new{-1.2*v, 0} })
 	wait(5)
 	enemy(divide1, 4, f1)

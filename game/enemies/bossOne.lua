@@ -66,7 +66,8 @@ end
 
 function bossOne.behaviors.first( self )
 	self:restrictToScreen()
-	if self.health/bossOne.maxhealth < .75 then 
+	if self.health/bossOne.maxhealth < .75 then
+		addscore(500)
 		local t = imagebody:new{ coloreffect = sincityeffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
 		enemy.__init(t)
 		t.speed:mult(2.2)
@@ -95,6 +96,7 @@ function bossOne.behaviors.second( self )
 		self.speed:set(mx * (width - 2*self.size - 20), my * (height - 2*self.size - 20)):normalize():mult(bossOne.basespeed)
 	end
 	if self.health/bossOne.maxhealth < .5 then
+		addscore(500)
 		self.speed:set(width/2, height/2):sub(self.position):normalize():mult(bossOne.basespeed)
 		self.currentBehavior = bossOne.behaviors.toTheMiddle
 		self.prevdist = self.position:distsqr(width/2, height/2)
@@ -148,6 +150,7 @@ end
 
 function bossOne.behaviors.third( self )
 	if self.health/bossOne.maxhealth <= .075 then
+		addscore(500)
 		self.health = bossOne.maxhealth * .075
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
@@ -169,6 +172,7 @@ end
 
 function bossOne.behaviors.toExplode( self )
 	if self.size > width/2 + 100 or self.health <= 0 then
+		addscore(500)
 		self.sizeGrowth = -1300
 	end
 end

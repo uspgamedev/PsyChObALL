@@ -34,6 +34,7 @@ end
 function multiball:handleDelete()
 	neweffects(self, 20)
 	if self.diereason ~= "shot" then return end
+	addscore(50)
 	--local ang = math.atan2(self.Vx, self.Vy)
 	local speed = self.speed:length()
 	for i = 1, self.divideN do

@@ -30,5 +30,6 @@ function simpleball:update( dt )
 end
 
 function simpleball:handleDelete()
+	if self.diereason == 'shot' then addscore(25) end
 	neweffects(self, 40)
 end
