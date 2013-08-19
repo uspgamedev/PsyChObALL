@@ -74,15 +74,16 @@ function keypressed( key )
 		end
 
 		invisible = invisiblepass(key)
-		tiltmode = tiltpass(key)
 		dkmode = allimagespass(key)
 		circleEffect.changesimage = dkmode
 		image.processCheats(key)
 
 		if tiltmode then
-			angle:setAndGo(nil, math.pi/25, 1)
+			tiltmode = tiltpass(key)
+			if not tiltmode then angle:setAndGo(nil, 0, 1) end
 		else
-			angle:setAndGo(nil, 0, 1)
+			tiltmode = tiltpass(key)
+			if tiltmode then angle:setAndGo(nil, math.pi/25, 1) end
 		end
 
 		if devmode then
@@ -95,8 +96,14 @@ function keypressed( key )
 			elseif key == '5' then v = v - 10
 			elseif key == '4' then timefactor = timefactor * 1.1
 			elseif key == '3' then timefactor = timefactor * 0.9
+			elseif key == '2' then lives = lives + 1
+			elseif key == '1' then lives = lives - 1
 			elseif key == 'l' and not gamelost then deathText(1) lostgame()
 			elseif key == 'u' then love.update(10) --skips 10 seconds
+			elseif key == 'g' then godmode = not godmode
+			elseif key == 'e' then print(#effect.bodies)
+			elseif key == 'r' then timefactor = 1
+			elseif key == 'j' then shot.shotnum = shot.shotnum == 1 and 10 or 1
 			end
 		end
 		

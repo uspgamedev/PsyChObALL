@@ -7,63 +7,72 @@ timer = lux.object.new {
 	persistent	 = false, -- continues on death
 	delete		 = false,
 	works_on_gamelost = true,
+	registerSelf = true,
 	timers = {}
 }
 
 function timer:__init()
-	table.insert(timer.timers, self)
+	if self.registerSelf then timer.register(self) end
 end
 
 function timer:update(dt, timefactor, paused, gamelost)
 	if not self.running or (paused and self.pausable) or (gamelost and not self.works_on_gamelost) then return end
 	if self.timeaffected then dt = dt * timefactor end
-	if not self.timelimit and self.funcToCall then self:funcToCall(dt) return end 
 	self.time = self.time + dt
+	if not self.timelimit and self.funcToCall then 
+		if self.extraelements then self:funcToCall(dt, unpack(self.extraelements))
+		else self:funcToCall(dt) end
+		return
+	end 
 	if self.time >= self.timelimit then
 		self.time = self.time - self.timelimit
-		if self.funcToCall then self:funcToCall() end
+		if self.funcToCall then
+			if self.extraelements then self:funcToCall(unpack(self.extraelements))
+			else self:funcToCall() end
+		end
 		if self.onceonly then self:stop() end
 	end
 end
 
 function timer:start(delay)
-	self.time = delay or 0
+	self.time = delay or self.time
 	self.running = true
 end
 
 function timer:stop()
 	self.running = false
+	self.time = 0
 end
 
-
+local ts = timer.timers
 function timer.updatetimers(dt, timefactor, paused, gamelost)
-	local todelete
-	for i,v in pairs(timer.timers) do
+	for i = #ts, 1, -1 do
+		local v = ts[i]
 		if v.delete then
-			if not todelete then todelete = {i}
-			else table.insert(todelete,i) end
+			table.remove(ts, i)
 		else
 			v:update(dt, timefactor, paused, gamelost)
-		end
-	end
-	if todelete then
-		for i,v in ipairs(todelete) do
-			table.remove(todelete, v)
 		end
 	end
 end
 
 function timer.closenonessential()
-	local todelete = {}
-	for i,v in pairs(timer.timers) do
-		if not v.persistent then table.insert(todelete, i)
+	for i = #ts, 1, -1 do
+		local v = ts[i]
+		if not v.persistent then v.delete = true
 		else 
 			if v.handlereset then v:handlereset() end 
 		end
 	end
-	local a = 0
-	for j,k in pairs(todelete) do
-		table.remove(timer.timers, k - a)
-		a = a + 1
-	end
+end
+
+function timer.remove( t )
+	t.delete = true
+	t.running = false
+	t.time = 0
+end
+
+function timer.register( t )
+	if t.delete then t.delete = false end
+	table.insert(ts, t)
 end

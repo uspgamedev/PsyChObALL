@@ -13,16 +13,12 @@ end
 function vector:__index(n)
 	if n=='x' then return self[1]
 	elseif n=='y' then return self[2]
-	elseif n=='w' then return self[3]
-	elseif n=='z' then return self[4]
 	else return getmetatable(self)[n] end
 end
 
 function vector:__newindex(i, v)
 	if i=='x' then self[1] = v
 	elseif i=='y' then self[2] = v
-	elseif i=='w' then self[3] = v
-	elseif i=='z' then self[4] = v
 	else rawset(self,i,v) end
 end
 
@@ -119,6 +115,13 @@ function vector.__eq( first, second )
 	return (first[1] == second[1]) and (first[2] == second[2])
 end
 
+function vector:negate()
+	self[1] = -self[1]
+	self[2] = -self[2]
+
+	return self
+end
+
 function vector:set(x, y)
 	if x == nil or type(x) == 'number' then
 		self[1] = x or self[1]
@@ -156,25 +159,15 @@ function vector:sub(x, y)
 end
 
 function vector:mult( x, y )
-	if x==nil or type(x)=='number' then
-		self[1] = self[1] * (x or 1)
-		self[2] = self[2] * (y or x or 1)
-	else
-		self[1] = self[1] * x[1]
-		self[2] = self[2] * x[2]
-	end
+	self[1] = self[1] * (x or 1)
+	self[2] = self[2] * (y or x or 1)
 	
 	return self
 end
 
 function vector:div( x, y )
-	if x==nil or type(x)=='number' then
-		self[1] = self[1] / (x or 1)
-		self[2] = self[2] / (y or x or 1)
-	else
-		self[1] = self[1] / x[1]
-		self[2] = self[2] / x[2]
-	end
+	self[1] = self[1] / (x or 1)
+	self[2] = self[2] / (y or x or 1)
 	
 	return self
 end
@@ -201,7 +194,7 @@ function vector:dist(x, y)
 end
 
 function vector:unpack()
-	return self[1], self[2], self[3], self[4]
+	return self[1], self[2]
 end
 
 function vector:lengthsqr()
@@ -222,6 +215,18 @@ function vector:normalize()
 end
 
 function vector:reset()
-	self[1], self[2] = 0, 0
+	self[1], self[2] = nil, nil
 	return self
+end
+
+function vector:rotate( rad )
+	local sin, cos = math.sin(rad), math.cos(rad)
+	self[1], self[2] = 
+		cos*self[1] - sin*self[2],
+		sin*self[1] + cos*self[2]
+	return self
+end
+
+function vector:rotated( rad )
+	return vector:new{self[1], self[2]}:rotate()
 end

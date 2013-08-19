@@ -6,25 +6,27 @@ enemy = body:new {
 	bodies = {}
 }
 
+local sides = {top = 1, up = 1, bottom = 2, down = 2, left = 3, right = 4}
+
 function enemy:__init()
-	local side = math.random(4)
+	self.variance = math.random(colorcycle * 1000) / 1000
+
+	local side = self.side and sides[self.side] or math.random(4)
 	if	side == 1 or side == 2 then -- top or bottom
-		self.x = math.random(15, width - self.size - 1)
-		self.y = side == 1 and 1 or height - 1
+		self.x = math.random(self.size, width - self.size)
+		self.y = side == 1 and 0 or height
 		self.Vy = math.random(v, v + 50) * (side == 1 and 1 or -1)
 		local n = -1
 		if self.x < width / 2 then n = 1 end
 		self.Vx = n * math.random(0, v)
 	elseif side == 3 or side == 4 then -- left or right
-		self.x = side == 3 and 1 or width - 1
-		self.y = math.random(15, height - self.size - 1)
+		self.x = side == 3 and 0 or width
+		self.y = math.random(self.size, height - self.size)
 		self.Vx = math.random(v, v + 50) * (side == 3 and 1 or -1)
 		local n = -1
 		if self.y < height / 2 then n = 1 end
 		self.Vy = n * math.random(0, v)
 	end
-
-	self.variance = math.random(colortimer.timelimit * 1000) / 1000
 end
 
 function enemy.init()
@@ -35,9 +37,7 @@ function enemy.init()
 
 	function enemy.addtimer:funcToCall() --adds the enemies to a list
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		local e = enemy:new{}
-		e.arctan = math.atan(e.Vy/ e.Vx) + (e.Vx < 0 and math.pi or 0)
-		enemylist:push(e)
+		enemylist:push(enemy:new{})
 	end
 
 	function enemy.addtimer:handlereset()
@@ -51,7 +51,9 @@ function enemy.init()
 
 	function enemy.releasetimer:funcToCall() --actually releases the enemies on screen
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		table.insert(enemy.bodies,enemylist:pop())
+		local e = enemylist:pop()
+		if e then e:register()
+		else print 'enemy missing' end
 	end
 
 	function enemy.releasetimer:handlereset()
@@ -68,10 +70,10 @@ function enemy:handleDelete()
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
 
-		if  not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
+		if not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
 			if not inverttimer.running then
 				inverttimer:start()
-				soundmanager.setPitch(1.03)
+				soundmanager.setPitch(1.0)
 				timefactor = 1.1
 				currentEffect = inverteffect
 			else inverttimer.time = 0 end
@@ -80,8 +82,8 @@ function enemy:handleDelete()
 		if self.size >= 15 then 
 			circleEffect:new{
 				based_on = self,
-				linewidth = 10,
-				alpha = 100,
+				linewidth = 7,
+				alpha = 80,
 				sizeGrowth = 600, 
 				maxsize = width
 			} 
@@ -101,13 +103,13 @@ function enemy:handleDelete()
 			e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
 			if e.Vy + e.Vx < 10 then e.Vy = sign(self.Vy) * math.random(3 * v / 4, v) end
 			e.variance = self.variance
-			table.insert(enemy.bodies, e)
+			e:register()
 		end
 	end
 end
 
 function enemy:update(dt)
-	self.position:add(self.speed * dt)
+	body.update(self, dt)
 
 	for i,v in pairs(shot.bodies) do
 		if (v.size + self.size) * (v.size + self.size) >= (v.x - self.x) * (v.x - self.x) + (v.y - self.y) * (v.y - self.y) then
@@ -119,5 +121,10 @@ function enemy:update(dt)
 		end
 	end
 
-	self.delete = self.delete or (self.collides or self.x < -self.size or self.y < -self.size or self.x - self.size > width or self.y - self.size > height)
+	if not gamelost and (psycho.size + self.size) * (psycho.size + self.size) >= (psycho.x - self.x) * (psycho.x - self.x) + (psycho.y - self.y) * (psycho.y - self.y) then
+		psycho.diereason = "shot"
+		lostgame()
+	end
+
+	self.delete = self.delete or self.collides
 end

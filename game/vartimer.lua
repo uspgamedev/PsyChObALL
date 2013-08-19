@@ -5,22 +5,25 @@ vartimer = timer:new {
 	limit = 100,
 	backwards = false,
 	speed = 100,
-	pausable = false
+	pausable = true
 }
 
 function vartimer:funcToCall( dt )
-	--print(dt, self.var)
 	if self.backwards then
-		if self.limit < self.var then 
-			self.var = math.max(self.limit, self.var - self.speed*dt)
+		if self.var > self.limit then 
+			self.var = self.var - self.speed*dt
 		else
+			self.var = self.limit
 			self:stop()
+			if self.alsoCall then self:alsoCall() end
 		end
 	else
-		if self.limit > self.var then 
-			self.var = math.min(self.limit, self.var + self.speed*dt)
+		if self.var < self.limit then 
+			self.var = self.var + self.speed*dt
 		else
+			self.var = self.limit
 			self:stop()
+			if self.alsoCall then self:alsoCall() end
 		end
 	end
 end

@@ -3,7 +3,16 @@ THE HISTORY OF PSYCHOBALL
 =========================
 
 *************************************************
-(16/06/2013) Patch 0.9.0    -  Patch Madness
+(16/06/2013) Version 0.9.1    -  Long way to go
+*************************************************
+
+-Changes on Changelog
+-Changes on suPerbALLs
+	- They are spawned every 30 seconds
+	- For every 90 seconds on survivor mode, their on-screen limit increases by 1
+
+*************************************************
+(16/06/2013) Version 0.9.0    -  PsyChO Reborn
 *************************************************
 
 -Change on the script
@@ -56,7 +65,7 @@ THE HISTORY OF PSYCHOBALL
 	-Muting when the song is weither fading in or fading out
 
 *************************************************
-(11/05/2013) Patch 0.8.0    -   UltraPatch
+(11/05/2013) Version 0.8.0    -   UltraUpdate
 *************************************************
 
 -Major change on the script
@@ -83,7 +92,7 @@ THE HISTORY OF PSYCHOBALL
 -Changed 10x multiplier colour effect
 
 *************************************************
-(25/04/2013) Patch 0.7.9   -  Everyday Patch
+(25/04/2013) Version 0.7.9   -  Everyday Patch
 *************************************************
 
 -Fixed generic sound bugs
@@ -94,7 +103,7 @@ THE HISTORY OF PSYCHOBALL
     -Multiplier on wining points slightly increased
 
 *************************************************
-(17/04/2013) Patch 0.7.8  - The Rise of the Patch
+(17/04/2013) Version 0.7.8  - The Rise of PsyChO
 *************************************************
 
 -First release of PsyChObALL!

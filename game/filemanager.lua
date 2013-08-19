@@ -1,29 +1,30 @@
 module('filemanager', base.globalize)
 
 function readstats()
-	local stats = filemanager.readtable "stats"
+	local stats = filemanager.readTable "stats"
 
 	besttime  = stats.besttime  or 0
 	bestmult  = stats.bestmult  or 0
 	bestscore = stats.bestscore or 0
+	lastLevel = stats.lastLevel or 'Level 1-1'
 end
 
 function writestats()
 	if cheats.wasdev then return end
-	if besttime > totaltime and bestmult > multiplier and bestscore > score then return end
-	besttime  = math.max(besttime, totaltime)
+	besttime  = math.max(besttime, gametime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)
-	filemanager.writetable({
+	filemanager.writeTable({
 		besttime  = besttime,
 		bestmult  = bestmult,
-		bestscore = bestscore
+		bestscore = bestscore,
+		lastLevel = lastLevel
 	}, "stats")
 end
 
 function resetstats()
 	besttime, bestmult, bestscore  = 0, 0, 0
-	filemanager.writetable({
+	filemanager.writeTable({
 		besttime  = 0,
 		bestmult  = 0,
 		bestscore = 0
@@ -31,54 +32,100 @@ function resetstats()
 end
 
 --[[function readachievements()
-	local achievements = filemanager.readtable "achievements"
+	local achievements = filemanager.readTable "achievements"
 
 	twentymult  = achievements.twentymult or false
 end
 
 function writeachievements()
-	filemanager.writetable({
+	filemanager.writeTable({
 		twentymult  = twentymult
 	}, "achievements")
 end]]
 
 function readconfig()
-	local config = filemanager.readtable "config"
+	local config = readCleanTable "config"
 
-	soundmanager.volume = config.volume or 100
-	soundmanager.muted  = config.muted == true
+	global.ratio = tonumber(config.screenratio) or 1
+	soundmanager.volume = tonumber(config.volume) or 100
+	soundmanager.muted  = config.muted == 'true'
+	config.version = config.version or version
 
 	if version ~= config.version then
 		--handle something maybe
 	end
+	
+	if ratio ~= 1 then love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false, false, 0) end
 end
 
 function writeconfig()
-	filemanager.writetable({
+	writeCleanTable({
+		screenratio = ratio,
 		volume =	 soundmanager.volume,
 		muted =	 soundmanager.muted,
 		version = version
-		}, "config")
+	}, 'config')
 end
 
-
--- writes a table to disk, supports writing numbers, strings and booleans for now
-function writetable( t, filename )
-	--local usedTables = {t} --used to avoid infinite looping --not used yet
-	local file = filesystem.newFile(filename)
-	if not pcall(file.open, file, 'w') then
+function openFile( name, method )
+	local file = filesystem.newFile(name)
+	if not pcall(file.open, file, method) then
 		print "some error ocurred"
-		return
+		return nil
+	end
+	return file
+end
+
+-- considers everything to be strings, output is better
+function writeCleanTable( t, filename )
+	local file = openFile(filename, 'w')
+	if not file then return end
+	local first = true
+
+	for k, v in pairs(t) do
+		if not first then file:write '\r\n' end
+		first = false
+		file:write(tostring(k))
+		file:write ' = '
+		file:write(tostring(v))
+		file:write ';'
 	end
 
-	file:write(filemanager.writestring(t))
+	file:close()
+end
+
+function readCleanTable( filename )
+	local t = {}
+	local file = openFile(filename, 'r')
+	if not file then return t end
+
+	for key, value in file:read():gmatch('(%w+) = ([^;]+);\r?\n?') do
+		t[key] = value
+	end
+
+	file:close()
+
+	return t
+end
+
+-- writes a table to disk, supports writing numbers, strings and booleans for now
+function writeTable( t, filename )
+	--local usedTables = {t} --used to avoid infinite looping --not used yet
+	local file = openFile(filename, 'w')
+	if not file then return end
+
+	file:write(writestring(t))
 
 	file:close()
 end
 
 function writestring(t)
 	local towrite = ''
+	local first = true
 	for k, v in pairs(t) do
+		if not first then towrite = towrite .. '\r\n' end
+		first = false
+
 		if type(k) == 'string' then
 			towrite = towrite .. k .. ' =s'
 		elseif type(k) == 'number' then
@@ -92,22 +139,20 @@ function writestring(t)
 		elseif type(v) == 'string' then
 			local lines, pos = 0, 0
 			repeat lines = lines + 1 pos = v:find('\n',pos + 1) until pos == nil
-			towrite = towrite .. 's ' .. lines .. '\n' .. v
+			towrite = towrite .. 's ' .. lines .. '\r\n' .. v
 		end
-
-		towrite = towrite .. '\n'
 	end
 	return towrite
 end
 
 -- read a table from disk, supports reading numbers, strings and booleans for now
-function readtable( filename )
+function readTable( filename )
 	if not filesystem.exists(filename) then return {} end
 	local file = filesystem.newFile(filename)
 	local t = {}
 	if not pcall(file.open, file, 'r') then
 		print "some error hapenned"
-		return {}
+		return t
 	end
 
 	local key, keyinfo, info, value

@@ -1,8 +1,10 @@
-width, height = 1080, 720
-
 require "base"
-require "userinterface"
 require "body"
+require "formations"
+require "levels"
+require "userinterface"
+require "text"
+require "imagebody"
 require "circleEffect"
 require "effect"
 require "enemy"
@@ -10,8 +12,9 @@ require "shot"
 require "timer"
 require "vartimer"
 require "list"
-require "bosses"
+require "enemies"
 require "psychoball"
+require "warning"
 require "button"
 require "filemanager"
 require "soundmanager"
@@ -28,28 +31,51 @@ end
 function initBase()
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
+	totaltime = 0
 	mainmenu = 1 -- mainmenu
 	tutorialmenu = 2
 	achievmenu  = 0 -- Tela de achievements
-	survivor = 10 -- modo de jogo survivor
+	survival = 10 -- modo de jogo survival
+	story = 11
+	levelselect = 20
 	state = mainmenu
 	sqrt2 = math.sqrt(2)
 	fonts = {}
 	coolfonts = {}
 	resetted = false
+	godmode = false
+	usingjoystick = joystick.isOpen(1)
+
+	gamelostinfo =  {
+		timetorestart = .5,
+		timeofdeath = nil,
+		isrestarting = false
+	}
 
 	paintables = {}
-	paintables[1] = circleEffect.bodies
-	paintables[2] = shot.bodies
-	paintables[3] = enemy.bodies
-	paintables[4] = effect.bodies
-	paintables[5] = bosses.bodies
+	setmetatable(paintables, {
+		__index = function ( self, index )
+			for _, p in pairs(self) do
+				if p.name == index then return p end
+			end
+		end
+		})
+	shot:paintOn(paintables)
+	enemy:paintOn(paintables)
+	effect:paintOn(paintables)
+	enemies:paintOn(paintables)
+	warning:paintOn(paintables)
+	circleEffect:paintOn(paintables)
+	text:paintOn(paintables)
+	imagebody:paintOn(paintables)
+	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
-	rawset(UI, 'paintables', {}) --[[If you just use UI.paintables = {} it actually
+	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
-	UI.paintables[1] = button.bodies
+	button:paintOn(UI.paintables)
 
 	bestscore, besttime, bestmult = 0, 0, 0
+	lastLevel = 'Level 1-1'
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
@@ -58,10 +84,12 @@ function initBase()
 	-- [[end of Reading Files]]
 	
 	-- [[Loading Resources]]
-	logo = graphics.newImage('resources/LogoBeta.png')
+	logo = graphics.newImage 'resources/LogoBeta.png'
+	splash = graphics.newImage 'resources/Marvellous Soft.png'
+	splashtimer = timer:new{timelimit = 1.6, running = true, persistent = true, pausable = false, funcToCall = function(t) t:remove() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
-	version = '0.9.0\n'
+	version = '1.0.0'
 	latest = base.getLatestVersion() or version
 	soundmanager.init()
 	cheats.init()
@@ -74,7 +102,7 @@ end
 function initGameVars()
 	-- [[Creating Persistent Timers]]
 	colortimer = timer:new{
-		timelimit  = 10,
+		timelimit  = 300,
 		pausable   = false,
 		persistent = true,
 		running = true
@@ -84,7 +112,7 @@ function initGameVars()
 
 	enemy.init()
 
-	bosses.init()
+	enemies.init()
 
 	shot.init()
 
@@ -128,24 +156,34 @@ function initGameVars()
 
 	swypetimer = vartimer:new { -- swypes the screen on menu change
 		var = 0,
-		speed = 3000
+		speed = 3000,
+		pausable = false
 	}
 
 	alphatimer = vartimer:new { --fades out and in the logo
 		var = 255,
-		speed = 300
+		speed = 300,
+		pausable = false
 	}
 
 	angle = vartimer:new {
 		var = 0,
-		speed = 1
+		speed = 1,
+		pausable = false
 	}
 	-- [[End of Creating Persistent Timers]]
+
+	psycho = psychoball:new{
+		position = vector:new{width/2,height/2}
+	}
 	
 	enemylist = list:new{}
 	auxspeed = vector:new {}
 	keyspressed = {}
 	timefactor = 1.0
+
+	levels.loadAll()
+	levels.reloadPractice()
 end
 
 function resetVars()
@@ -159,25 +197,24 @@ function resetVars()
 	enemylist:clear()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
-	cleartable(shot.bodies)
-	cleartable(effect.bodies)
-	cleartable(circleEffect.bodies)
-	cleartable(enemy.bodies)
-	cleartable(bosses.bodies)
+	shot:clear()
+	if notclearcircleeffect then notclearcircleeffect = false
+	else circleEffect:clear() end
+	enemy:clear()
+	enemies:clear()
+	warning:clear()
+	text:clear()
+	imagebody:clear()
 	--[[End of Resetting Paintables]]
 	cleartable(keyspressed)
-	
-
-	psycho = psychoball:new{
-		position = psycho and psycho.position or vector:new{513,360}
-	}
 
 	timefactor = 1.0
 	multiplier = 1
-	totaltime = 0
+	gametime = 0
 	blastime = 0
 	score = 0
 	blastscore = 0 --Variavel que dá ultrablast points por pontos
+	lifescore = 0
 
 	gamelost = false
 	paused = false
@@ -185,22 +222,50 @@ function resetVars()
 	deathmessage = nil
 end
 
-function cleartable( t )
-	for k in pairs(t) do t[k] = nil end
-end
-
-function reloadGame()	
+function reloadSurvival()
+	soundmanager.changeSong(soundmanager.survivalsong)
+	if state == survival then effect:clear() end
+	state = survival
 	enemy.addtimer:funcToCall()
 	resetVars()
 	timer.closenonessential()
 
 	soundmanager.restart()
-	bosses.restart()
+	enemies.restartSurvival()
 	enemy.addtimer:start(2)
 	enemy.releasetimer:start(1.5)
 
 	mouse.setGrab(true)
 end
+
+function reloadStory( name )
+	if name and name > lastLevel then lastLevel = name levels.reloadPractice() end
+	for _, but in pairs(UI.paintables.levelselect) do
+		but:close()
+	end
+	if psycho.pseudoDied then
+		psycho.canbehit = true
+		psycho.pseudoDied = false
+		paintables.psychoeffects = nil
+	end
+	effect:clear()
+	if state == story and name ~= 'Level 1-1' then
+		timer.closenonessential()
+	else
+		state = story
+		lives = 10
+		soundmanager.changeSong(soundmanager.limitlesssong)
+		resetVars()
+		timer.closenonessential()
+
+		soundmanager.restart()
+		enemies.restartStory()
+
+		mouse.setGrab(true)
+	end
+	levels.runLevel(name)
+end
+
 
 function onMenu()
 	return state < 10
@@ -210,13 +275,22 @@ function onGame()
 	return state >= 10 and state < 20
 end
 
+function getStateClass(st)
+	st = st or state
+	if st < 10 then return 1
+	elseif st >= 10 and st < 20 then return 2
+	elseif st == levelselect then return 3 end
+end
+
 function getFont(size)
+	size = math.floor(size*ratio)
 	if fonts[size] then return fonts[size] end
 	fonts[size] = graphics.newFont(size)
 	return fonts[size]
 end
 
 function getCoolFont(size)
+	size = math.floor(size*ratio)
 	if coolfonts[size] then return coolfonts[size] end
 	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
 	return coolfonts[size]
@@ -225,30 +299,39 @@ end
 local moarLSDchance = 3
 
 function lostgame()
-	if gamelost then return end
-	mouse.setGrab(false)
-	soundmanager.fadeout()
-	filemanager.writestats()
+	if gamelost or godmode then return end
+	local autorestart = state == story and lives > 0
+	if not autorestart then
+		mouse.setGrab(false)
+		filemanager.writestats()
+		soundmanager.fadeout()
 
-	if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
+		if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
+		if state == story and deathText() == "The LSD wears off" then
+			deathmessage = "Why are you even doing this?" --or something else
+		end
 
-	if deathText() == "The LSD wears off" then
-		soundmanager.setPitch(.8)
-		deathtexts[1] = "MOAR LSD"
-		for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
-		currentEffect = noLSDeffect
-	elseif deathText() == "MOAR LSD" then
-		soundmanager.setPitch(1)
-		deathtexts[1] = "The LSD wears off"
-		for i = 1, moarLSDchance do table.remove(deathtexts) end
-		currentEffect = nil
+		if deathText() == "The LSD wears off" then
+			soundmanager.setPitch(.8)
+			deathtexts[1] = "MOAR LSD"
+			for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
+			currentEffect = noLSDeffect
+		elseif deathText() == "MOAR LSD" then
+			soundmanager.setPitch(1)
+			deathtexts[1] = "The LSD wears off"
+			for i = 1, moarLSDchance do table.remove(deathtexts) end
+			currentEffect = nil
+		end
+
+		gamelost   = true
+		pausemessage = nil
 	end
-
-	gamelost   = true
+	
 	timefactor = .05
-	pausemessage = nil
 
-	psycho:handleDelete() --not really deleting but anyway
+	psycho:handleDelete()
+	gamelostinfo.timeofdeath = totaltime
+	gamelostinfo.isrestarting = false
 end
 
 function love.draw()
@@ -263,12 +346,18 @@ function love.draw()
 	maincolor[1] = maincolor[1] / 3
 	maincolor[2] = maincolor[2] / 3
 	maincolor[3] = maincolor[3] / 3
-	applyeffect(maincolor)
+	applyeffect(nil, maincolor)
 	maincolor[1] = maincolor[1] / 4
 	maincolor[2] = maincolor[2] / 4
 	maincolor[3] = maincolor[3] / 4
 	graphics.setColor(maincolor)
-	graphics.rectangle("fill", 0, 0, graphics.getWidth(), graphics.getHeight()) --background color
+	if splashtimer.running then
+		graphics.setColor(255,255,255,255)
+		graphics.rectangle("fill", 0, 0, width, height) --background color
+		graphics.draw(splash, 100, 80, 0, .55, .55)
+		return
+	end
+	graphics.rectangle("fill", 0, 0, width, height) --background color
 	graphics.translate(math.floor(-swypetimer.var), 0)
 	--[[End of setting camera]]
 	for i, v in pairs(paintables) do
@@ -281,10 +370,6 @@ function love.draw()
 	if onGame() then
 		graphics.setColor(color(colortimer.time * 1.4))
 		graphics.setLine(1)
-		-- drawing enemy arcs
-		for i = enemylist.first, enemylist.last - 1 do
-			graphics.arc("line", enemylist[i].x, enemylist[i].y, 30, enemylist[i].arctan - .15, enemylist[i].arctan + .15)
-		end
 		--drawing mouse line
 		line()
 		--drawing psychoball
@@ -297,8 +382,8 @@ function love.draw()
 	UI.draw()
 end
 
-function color( ... )
-	return applyeffect(colorwheel(...))
+function color( x, alpha, effect )
+	return applyeffect(effect, colorwheel(x, alpha))
 end
 
 function inverteffect( color )
@@ -316,14 +401,47 @@ function noLSDeffect( color )
 	return color
 end
 
-function applyeffect( color )
-	return currentEffect and currentEffect(color) or color
+function sincityeffect( color )
+	local gray = (color[1] + color[2] + color[3]) / 3
+	color[1], color[2], color[3] =  gray + (255 - gray)/5, 0, 0
+	return color
 end
 
-local xt = 10 -- = colortimer.timelimit
+function getColorEffect( r, g, b, change )
+	change = change or 60
+	if type(r) == 'table' then --consider all vartimers
+		if type(change) ~= 'table' then change = {var = change} end
+		return function ( color )
+			color[1], color[2], color[3] = 
+					color[1]*change.var/255 + math.min(math.max(r.var - change.var/2, 0), 255 - change.var),
+					color[2]*change.var/255 + math.min(math.max(g.var - change.var/2, 0), 255 - change.var),
+					color[3]*change.var/255 + math.min(math.max(b.var - change.var/2, 0), 255 - change.var)
+			return color
+		end
+	else --conside all numbers
+		local consteffect = change/255
+		r = math.min(math.max(r - change/2, 0), 255 - change)
+		g = math.min(math.max(g - change/2, 0), 255 - change)
+		b = math.min(math.max(b - change/2, 0), 255 - change)
+		return function ( color )
+			color[1], color[2], color[3] = 
+					color[1]*consteffect + r,
+					color[2]*consteffect + g,
+					color[3]*consteffect + b
+			return color
+		end
+	end
+end
+
+function applyeffect( effect, color )
+	return (effect or currentEffect) and (effect or currentEffect)(color) or color
+end
+
+colorcycle = 10 
+local xt = colorcycle
 maincolor = {0,0,0,0}
 function colorwheel(x, alpha)
-	x = x % colortimer.timelimit
+	x = x % colorcycle
 	local r, g, b
 	if x <= xt / 3 then
 		r = 100					  -- 100%
@@ -356,14 +474,23 @@ end
 
 
 function line()
-	if gamelost then return end
-	local mx, my = mouse.getX(), mouse.getY()
+	if gamelost or psycho.pseudoDied then return end
 	graphics.setColor(color(colortimer.time + 2))
-	graphics.circle("line", mx, my, 5)
-	maincolor[4] = 60 -- alpha
-	graphics.setColor(maincolor)
-	local x = mx > psycho.x and width or 0
-	graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
+	if usingjoystick then
+		maincolor[4] = 60 -- alpha
+		graphics.setColor(maincolor)
+		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
+		if a1 == 0 and a2 == 0 then return end
+		local x = a2 > 0 and width or 0
+		graphics.line(psycho.x, psycho.y, a2*1200 + psycho.x, a1*1200 + psycho.y)
+	else
+		local mx, my = mouse.getPosition()
+		graphics.circle("line", mx, my, 5)
+		maincolor[4] = 60 -- alpha
+		graphics.setColor(maincolor)
+		local x = mx > psycho.x and width or 0
+		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
+	end
 end
 
 playtexts = {"Start", "START", "Start Mission", "game.\nplay()", "Don't Click Me", "Give me  BALLS"}
@@ -388,13 +515,14 @@ function pauseText()
 end
 
 function playText()
-	playmessage = playmessage or playtexts[math.random(#playtexts)]
+	playmessage = playtexts[math.random(#playtexts)]
 	return playmessage
 end
 
 local todelete = {}
 
 function love.update(dt)
+	totaltime = totaltime + dt
 	mouseX, mouseY = mouse.getPosition()
 	mouseX = mouseX + swypetimer.var
 	isPaused = (paused or onMenu())
@@ -405,10 +533,10 @@ function love.update(dt)
 	dt = dt * timefactor
 	
 	if paused then return end
-	if not (gamelost or onMenu()) then
-		totaltime = totaltime + dt
+	if onGame() and not gamelost then
+		gametime = gametime + dt
 		blastime = blastime + dt
-		if blastime >= 30 then
+		if blastime >= 30 and state == survival then
 			blastime = blastime - 30
 			ultracounter = ultracounter + 1
 		end
@@ -435,44 +563,45 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, btn)
-	UI.mousepressed(x + swypetimer.var, y, btn)
-	if paused then return end
-	if btn == 'l' and onGame() and not gamelost then
+	x, y  = x/ratio, y/ratio
+	if btn == 'l' and onGame() and not (gamelost or paused or psycho.pseudoDied) then
 		shot.timer:start(shot.timer.timelimit) --starts shooting already
 	end
+	UI.mousepressed(x + swypetimer.var, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
+	x, y  = x/ratio, y/ratio		
 	UI.mousereleased(x + swypetimer.var,y,button)
 	if btn == 'l' and onGame() then
 		shot.timer:stop()
 	end
 end
 
-function shoot(x, y)
-	local diffx = x - psycho.x
-	local diffy = y - psycho.y
-	local Vx = sign(diffx) * math.sqrt((9 * v^2 * diffx^2) / (diffx^2 + diffy^2))
-	local Vy = sign(diffy) * math.sqrt((9 * v^2 * diffy^2) / (diffx^2 + diffy^2))
-	table.insert(shot.bodies, shot:new {
-		position = psycho.position:clone(),
-		speed	 = vector:new {Vx, Vy}
-		})
-end
-
-function sign(a)
-	return a == 0 and 0 or a > 0 and 1 or -1 
-end
-
 function addscore(x)
 	if not gamelost then
 		score = score + x
 		blastscore = blastscore + x
-		if blastscore >= 500 then
-			blastscore = blastscore - 500
+		lifescore = lifescore + x
+		if blastscore >= (state == survival and 7000 or 2000) then
+			blastscore = blastscore - (state == survival and 7000 or 2000)
 			ultracounter = ultracounter + 1
 		end
+		if state == story and lifescore >= 10000 then
+			lifescore = lifescore - 10000
+			lives = lives + 1
+		end
 	end
+end
+
+function love.joystickpressed( joynum, button )
+	if not usingjoystick then return end
+	psycho:joystickpressed(joynum, button)
+end
+
+function love.joystickreleased( joynum, button )
+	if not usingjoystick then return end
+	psycho:joystickreleased(joynum, button)
 end
 
 function love.keypressed(key)
@@ -480,7 +609,7 @@ function love.keypressed(key)
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
-	if (key == 'escape' or key == 'p') and not (gamelost or onMenu()) then
+	if (key == 'escape' or key == 'p') and onGame() and not gamelost then
 		pausemessage = nil --resets pauseText()
 		paused = not paused --pauses or unpauses
 		mouse.setGrab(not paused) --releases the mouse if paused
@@ -511,9 +640,10 @@ function love.keyreleased(key)
 end
 
 function love.focus(f)
-	if not (f or gamelost or onMenu()) then paused = true end
+	if onGame() and not (f or gamelost) then paused = true end
 end
 
 function love.quit()
 	filemanager.writeconfig()
+	filemanager.writestats()
 end

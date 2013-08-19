@@ -2,8 +2,9 @@ circleEffect = body:new {
 	alpha = 10,
 	maxsize = width / 1.9,
 	mode = 'line',
-	__type = 'circle',
+	__type = 'circleEffect',
 	changesimage = false,
+	ord = 3,
 	bodies = {}
 }
 
@@ -16,15 +17,21 @@ function circleEffect:__init()
 	end
 	
 	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
-	self.variance = self.variance or math.random(0, 100*colortimer.timelimit) / 100
+	self.variance = self.variance or math.random(0, 100*colorcycle) / 100
 	if #circleEffect.bodies > 250 then table.remove(circleEffect.bodies, 1) end
 	if self.index ~= nil then
 		if self.index ~= false then
+			self:start()
 			circleEffect.bodies[self.index] = self
 		end
 	else
-		table.insert(circleEffect.bodies, self)
+		self:register()
 	end
+	--[[self.stencil = graphics.newStencil( function() 
+		local n = (self.linewidth or 4) + 4
+		graphics.setLine(n)
+		graphics.circle(self.mode, self.x, self.y, self.size - n/2) 
+		end)]]
 end
 
 function circleEffect.init()
@@ -35,7 +42,7 @@ function circleEffect.init()
 	}
 
 	function circleEffect.timer:funcToCall() -- releases cirleEffects
-		if not gamelost then
+		if onGame() then
 			circleEffect:new {
 				based_on = psycho
 			}
@@ -51,12 +58,27 @@ function circleEffect.init()
 end
 
 function circleEffect:draw()
-	if self.linewidth then love.graphics.setLine(self.linewidth) end
+	if self.linewidth then graphics.setLine(self.linewidth) end
 	body.draw(self)
-	if self.linewidth then love.graphics.setLine(4) end
+	if self.linewidth then graphics.setLine(4) end
 end
 
 function circleEffect:update(dt)
 	self.size = self.size + self.sizeGrowth * dt
-	self.delete = self.size < 0 or self.size > self.maxsize
+	if self.desiredsize then
+		if self.sizeGrowth > 0 then
+			if self.size > self.desiredsize then
+				self.size = self.desiredsize
+				self.sizeGrowth = 0
+				self.desiredsize = nil
+			end
+		else
+			if self.size < self.desiredsize then
+				self.size = self.desiredsize
+				self.sizeGrowth = 0
+				self.desiredsize = nil
+			end
+		end
+	end
+	self.delete = self.delete or self.size < 0 or self.size > self.maxsize
 end
