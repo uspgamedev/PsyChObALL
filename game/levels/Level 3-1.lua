@@ -87,6 +87,8 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
+	enemy(super, 1, { position = vector:new{width+30, -30}, speed = vector:new{0.25*v, 0.25*v}, life = 120, size = 60}, simple, {width/2, height+30}, 13)
+	enemy(super, 1, { position = vector:new{width+30, height+30}, speed = vector:new{0.25*v, 0.25*v}, life = 60, size = 50}, divide1, {width/2, height+30}, 13)
 	enemy(snake, 1, {size = 20}, 20, 1200, 0, {30, -30}, unpack(t))
 	wait(15)
 	t = {}
@@ -116,6 +118,8 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.25*v, 0.25*v}, life = 120, size = 90}, divide1, {width/2, height+30}, 13)
+	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.25*v, 0.25*v}, life = 120, size = 90}, divide1, {width/2, height+30}, 13)
 	enemy(snake, 1, {size = 5}, 200, 700, 0.5, {30, -30}, unpack(t))
 	wait(23)
 	doNow( function(timer)
