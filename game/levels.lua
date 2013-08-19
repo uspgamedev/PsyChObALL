@@ -120,7 +120,6 @@ function runLevel( name )
 	currentLevel = name and levels[name]
 	currentLevel.reload()
 	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
-	changetitle = false
 	local delay = changetitle and -5 or 0
 	for _, t in ipairs(currentLevel.timers_) do
 		t:register()
@@ -185,7 +184,9 @@ function loadAll()
 		currentLevel.run = nil
 	end
 	currentLevel = nil
+end
 
+function reloadPractice(  )
 	local ls = {}
 	local levelselectalpha = vartimer:new{ speed = 300, pausable = false }
 	local translate = vartimer:new{ var = 0, speed = width*2, pausable = false }
@@ -294,10 +295,13 @@ function loadAll()
 	local transl = vector:new{0, 0}
 	local levelN = 5
 	for i = 1, levelN do
+		if 'Level ' .. i > lastLevel then break end
 		for j = 1, 4 do
 			if j ~= 4 or i ~= 1 then
+				local levelname = 'Level ' .. i .. '-' .. j
+				if lastLevel < levelname then break end
 				local but = b[j]:clone()
-				but.levelname = 'Level ' .. i .. '-' .. j
+				but.levelname = levelname
 				but.position:add(transl)
 				but:setText(but.levelname)
 				but.alphafollows = levelselectalpha
@@ -313,7 +317,7 @@ function loadAll()
 			fixeff(but)
 			table.insert(ls, but)
 		end
-		if i < levelN then
+		if i < levelN and 'Level ' .. (i+1) <= lastLevel then
 			but = nextB:clone()
 			but.position:add(transl)
 			but:setText()

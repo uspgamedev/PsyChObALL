@@ -75,6 +75,7 @@ function initBase()
 	button:paintOn(UI.paintables)
 
 	bestscore, besttime, bestmult = 0, 0, 0
+	lastLevel = 'Level 1-1'
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
@@ -180,6 +181,7 @@ function initGameVars()
 	timefactor = 1.0
 
 	levels.loadAll()
+	levels.reloadPractice()
 end
 
 function resetVars()
@@ -234,6 +236,7 @@ function reloadSurvival()
 end
 
 function reloadStory( name )
+	if name and name > lastLevel then lastLevel = name levels.reloadPractice() end
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:close()
 	end
@@ -297,8 +300,8 @@ function lostgame()
 	local autorestart = state == story and lives > 0
 	if not autorestart then
 		mouse.setGrab(false)
-		soundmanager.fadeout()
 		filemanager.writestats()
+		soundmanager.fadeout()
 
 		if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
 		if state == story and deathText() == "The LSD wears off" then
@@ -628,4 +631,5 @@ end
 
 function love.quit()
 	filemanager.writeconfig()
+	filemanager.writestats()
 end

@@ -1,10 +1,7 @@
-title = 'I - The Beginning of PsyChO'
+title = 'I - The Fall of PsyChO'
 chapter = 'Part 1 - The Arrival'
 
 function run()
-	--wait(3)
-	--enemy 'bossFour'
-	--wait(10000)
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
@@ -44,10 +41,6 @@ function run()
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
-	
-	doNow( function(timer)
-		reloadStory 'Level 4-3'
-	end)
 
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
@@ -77,6 +70,18 @@ function run()
 	enemy(simple, 15, f1)
 	wait(4)
 	doNow( function(timer)
-		if not gamelost then reloadStory 'Level 1-2' end
+		print(levelselected)
+		if not levelselected then
+			if not gamelost then reloadStory 'Level 1-2' end
+		else
+			text:new{
+				text = "You've practiced in this level. If you want to progress in the story do not use Practice.", --ou algum outro texto
+				font = getCoolFont(50),
+				printmethod = graphics.printf,
+				position = vector:new{width/2 - 400, height/2 - 50},
+				limit = 800,
+				align = 'center'
+			}:register()
+		end
 	end)
 end

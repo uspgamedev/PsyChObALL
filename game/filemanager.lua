@@ -6,18 +6,19 @@ function readstats()
 	besttime  = stats.besttime  or 0
 	bestmult  = stats.bestmult  or 0
 	bestscore = stats.bestscore or 0
+	lastLevel = stats.lastLevel or 'Level 1-1'
 end
 
 function writestats()
 	if cheats.wasdev then return end
-	if besttime >= gametime and bestmult >= multiplier and bestscore >= score then return end
 	besttime  = math.max(besttime, gametime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)
 	filemanager.writeTable({
 		besttime  = besttime,
 		bestmult  = bestmult,
-		bestscore = bestscore
+		bestscore = bestscore,
+		lastLevel = lastLevel
 	}, "stats")
 end
 

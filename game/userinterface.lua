@@ -80,6 +80,7 @@ function selectLevel()
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:start()
 	end
+	global.levelselected = true
 
 	mouse.setGrab(false)
 end
@@ -106,6 +107,7 @@ function closeMenu()
 end
 
 function restartMenu()
+	global.levelselected = false
 	alphatimer:setAndGo(0, 255)
 	state = mainmenu
 	resetVars()
@@ -129,7 +131,11 @@ end
 
 function keypressed( key )
 	if key == 'r' and paused then
-		reloadStory 'Level 1-1'
+		if state == story then
+			reloadStory 'Level 1-1'
+		elseif state == survival then
+			reloadSurvival()
+		end
 	end
 
 	if key == 'restartstory' or (gamelost and key == 'r') then
