@@ -41,7 +41,7 @@ function run()
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
-	
+
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 	wait(3)
@@ -70,7 +70,6 @@ function run()
 	enemy(simple, 15, f1)
 	wait(4)
 	doNow( function(timer)
-		print(levelselected)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 1-2' end
 		else

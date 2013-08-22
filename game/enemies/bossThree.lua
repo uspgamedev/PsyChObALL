@@ -347,13 +347,6 @@ bossThree.goright = bossThree.setspeed {bossThree.basespeed, 0}
 bossThree.goup = bossThree.setspeed {0, -bossThree.basespeed}
 
 function bossThree:draw()
-	--[[if not psycho.extraposition:equals(0, 0) then
-		psycho.position:add(psycho.extraposition)
-		psycho.size = psycho.size + psycho.sizediff
-		body.draw(psycho)
-		psycho.position:sub(psycho.extraposition)
-		psycho.size = psycho.size - psycho.sizediff
-	end]]
 	if not self.visible then return end
 	if self.first <= self.last then
 		local s = self.segments[self.first]
@@ -448,29 +441,6 @@ function bossThree:update( dt )
 			end
 		end
 	end
-
-	--[[if self.snakemode then
-		if psycho.x < psycho.size or psycho.x > width - psycho.size then
-			if psycho.x < 0 or psycho.x > width then
-				psycho.x = psycho.x + (psycho.x < width/2 and width or -width)
-				psycho.extraposition:set(psycho.x < width/2 and width or -width, nil)
-			else
-				psycho.extraposition:set(psycho.x < width/2 and width or -width, nil)
-			end
-		else
-			psycho.extraposition:set(0, nil)
-		end
-		if psycho.y < psycho.size or psycho.y > height - psycho.size then
-			if psycho.y < 0 or psycho.y > height then
-				psycho.y = psycho.y + (psycho.y < height/2 and height or -height)
-				psycho.extraposition:set(nil, psycho.y < height/2 and height or -height)
-			else
-				psycho.extraposition:set(nil, psycho.y < height/2 and height or -height)
-			end
-		else
-			psycho.extraposition:set(nil, 0)
-		end
-	end]]
 end
 
 function bossThree:defaultHealthLoss()

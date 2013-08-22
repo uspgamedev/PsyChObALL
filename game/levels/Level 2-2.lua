@@ -215,7 +215,6 @@ function run()
 	end
 	wait(4)
 	doNow( function(timer)
-		print(levelselected)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 2-3' end
 		else

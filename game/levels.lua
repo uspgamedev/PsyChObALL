@@ -187,7 +187,7 @@ function loadAll()
 	currentLevel = nil
 end
 
-function reloadPractice(  )
+function reloadPractice()
 	local ls = {}
 	local levelselectalpha = vartimer:new{ speed = 300, pausable = false }
 	local translate = vartimer:new{ var = 0, speed = width*2, pausable = false }
@@ -195,13 +195,13 @@ function reloadPractice(  )
 	local b = {}
 	b[1] = button:new {size = 100, position = vector:new{156, height/2 - 100}, fontsize = 20,
 		menu = levelselect, pressed = function(self)
-				self.alphafollows:setAndGo(255, 0)
+				levelselectalpha:setAndGo(255, 0)
 				self.visible = falsen
 				neweffects(self, 40)
 				reloadStory(self.levelname)
 			end,
 		draw = function(self)
-			if not self.visible or self.alphafollows.var == 0 then return end
+			if not self.visible or levelselectalpha.var == 0 then return end
 			graphics.translate(-translate.var, 0)
 			button.draw(self)
 			if self.hoverring and self.hoverring.size > 2 then circleEffect.draw(self.hoverring) end
@@ -243,7 +243,7 @@ function reloadPractice(  )
 		alphafollows = levelselectalpha,
 		draw = function(self)
 			button.draw(self)
-			graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+			graphics.setColor(color(colortimer.time + self.variance, self.alphafollows.var, self.coloreffect))
 			graphics.setFont(getCoolFont(70))
 			graphics.printf("Practice", 0, 30, width, 'center')
 		end,

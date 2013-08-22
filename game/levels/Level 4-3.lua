@@ -134,7 +134,6 @@ function run()
 	enemy(sek, 6, horizontalr, 13, vector:new{width/2, -30})
 	wait(15)
 	doNow( function(timer)
-		print(levelselected)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 4-4' end
 		else

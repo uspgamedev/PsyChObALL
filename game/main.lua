@@ -521,6 +521,7 @@ end
 local todelete = {}
 
 function love.update(dt)
+	if dt > 0.03333 then dt = 0.03333 end
 	totaltime = totaltime + dt
 	mouseX, mouseY = mouse.getPosition()
 	mouseX = mouseX + swypetimer.var
@@ -532,17 +533,15 @@ function love.update(dt)
 	dt = dt * timefactor
 	
 	if paused then return end
-	if onGame() and not gamelost then
-		gametime = gametime + dt
-		blastime = blastime + dt
-		if blastime >= 30 and state == survival then
-			blastime = blastime - 30
-			ultracounter = ultracounter + 1
-		end
+	if onGame() then
+		psycho:update(dt)
 	end
 
-	psycho:update(dt)
+	updateotherstuff (dt)
+	
+end
 
+function updateotherstuff (dt)
 	for i, v in pairs(paintables) do
 		for j, m in pairs(v) do
 			m:update(dt)

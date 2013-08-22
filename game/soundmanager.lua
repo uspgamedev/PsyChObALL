@@ -3,8 +3,8 @@ require 'lux.functional'
 
 function init()
 	menusong = audio.newSource("resources/Flying Carrots 2.mp3")
-	survivalsong = audio.newSource("resources/Limitless.mp3")
 	limitlesssong = audio.newSource("resources/Limitless.mp3")
+	survivalsong = limitlesssong
 	currentsong = menusong
 	songsetpoints = {}
 	songsetpoints[survivalsong] = {0,49,95}
@@ -13,7 +13,9 @@ function init()
 	limitlesssong:setLooping(true)
 	limitlesssong:setVolume(muted and 0 or volume/100)
 	songsetpoints[limitlesssong] = {0}
-	menusong:play(muted and 0 or volume/100)
+	menusong:setLooping(true)
+	menusong:setVolume(muted and 0 or volume/100)
+	menusong:play()
 	songfadeout = timer:new{
 		timelimit	 = .01,
 		running		 = false,

@@ -123,7 +123,6 @@ function run()
 	enemy(snake, 1, {size = 5}, 200, 700, 0.5, {30, -30}, unpack(t))
 	wait(23)
 	doNow( function(timer)
-		print(levelselected)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 3-2' end
 		else

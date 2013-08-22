@@ -161,7 +161,6 @@ function run()
 	enemy({divide1,simple,divide1}, 210, f)
 	wait(30)
 	doNow( function(timer)
-		print(levelselected)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 3-4' end
 		else

@@ -45,6 +45,7 @@ function init()
 		alphafollows = alphatimer,
 		pressed = toTutorialMenu
 	}
+
 	local backbutton = button:new {
 		size = 80,
 		position = vector:new {100, height - 100},

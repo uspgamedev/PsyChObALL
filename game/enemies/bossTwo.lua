@@ -148,7 +148,7 @@ function bossTwo.behaviors.second( self )
 		end
 		self.vulnerable = false
 		self.currentBehavior = bossTwo.behaviors.gathering
-		self.getShot = function() return enemies.grayball:new{} end
+		self.getShot = function() return enemies.glitchball:new{} end
 		bossTwo.getTurretShot = self.getShot
 		self.sizeGrowth = 30
 		self.ballspeed = 10

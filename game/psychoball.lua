@@ -1,4 +1,10 @@
 local psychosizediff = 9
+local ultrablastmax
+local ultratimer
+
+local ultrablastcharging
+local ultrablastrelease
+
 psychoball = circleEffect:new {
 	size	 = 23 - psychosizediff,
 	sizediff = psychosizediff,
@@ -37,8 +43,16 @@ function psychoball.init()
 end
 
 psychoball.min, psychoball.max = math.min, math.max
+
 function psychoball:update(dt)
+
 	if self.pseudoDied or gamelost then return end
+	gametime = gametime + dt
+	blastime = blastime + dt
+	if blastime >= 30 and state == survival then
+		blastime = blastime - 30
+		ultracounter = ultracounter + 1
+	end
 	if usingjoystick then
 		self.speed:set(joystick.getAxis(1, 1), joystick.getAxis(1, 2)):mult(v*1.3, v*1.3)
 		if not shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then shot.timer:start(shot.timer.timelimit) end
@@ -52,6 +66,14 @@ function psychoball:update(dt)
 		psychoball.max(self.size + psychosizediff, psychoball.min(height - self.size - psychosizediff, self.position[2]))
 	)
 
+	if keyspressed[' '] and not ultratimer.running and ultracounter > 0 then
+		self:startblast()
+	end
+
+	if not keyspressed[' '] and ultratimer.running then
+		self:releaseblast()
+	end
+
 	if self.sizeGrowth < 0 and self.size + psychosizediff < 23 then
 		self.linewidth = 6
 		self.size = 23 - psychosizediff
@@ -59,6 +81,20 @@ function psychoball:update(dt)
 	end
 
 	circleEffect.update(self, dt)
+end
+
+function psychoball:startblast()
+	ultracounter = ultracounter - 1
+	ultrablast = 10
+	self.sizeGrowth = 17
+	self.linewidth = 6
+	ultratimer:start()
+end
+
+function psychoball:releaseblast()
+	ultratimer:stop()
+	self.sizeGrowth = -300
+	do_ultrablast()
 end
 
 function psychoball:draw()
@@ -218,32 +254,14 @@ function psychoball:keypressed( key )
 	if keyspressed['lshift'] then
 		self.speed:div(2)
 	end
-
-	if key == ' ' and not isPaused and onGame() and ultracounter > 0 then
-		ultracounter = ultracounter - 1
-		ultrablast = 10
-		self.sizeGrowth = 17
-		self.linewidth = 6
-		ultratimer:start()
-	end
 end
 
 function psychoball:joystickpressed( joynum, button )
-	if not isPaused and onGame() and ultracounter > 0 then
-		ultracounter = ultracounter - 1
-		ultrablast = 10
-		self.sizeGrowth = 17
-		self.linewidth = 6
-		ultratimer:start()
-	end
+	
 end
 
 function psychoball:joystickreleased( joynum, button )
-	if ultratimer.running then
-		ultratimer:stop()
-		self.sizeGrowth = -300
-		if not isPaused then do_ultrablast() end
-	end
+
 end
 
 function psychoball:keyreleased( key )
@@ -261,14 +279,6 @@ function psychoball:keyreleased( key )
 
 	if keyspressed['lshift'] then
 		self.speed:div(2)
-	end
-
-	if key == ' ' then
-		if ultratimer.running then
-			ultratimer:stop()
-			self.sizeGrowth = -300
-			if not isPaused then do_ultrablast() end
-		end
 	end
 end
 

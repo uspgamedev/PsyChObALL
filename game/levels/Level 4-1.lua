@@ -192,7 +192,6 @@ function run()
 	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.5*v, 0.5*v}, life = 80, size = 70}, simple, nil, 5)
 	wait(10)
 	doNow( function(timer)
-		print(levelselected)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 4-2' end
 		else

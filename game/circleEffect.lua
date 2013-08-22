@@ -4,6 +4,7 @@ circleEffect = body:new {
 	mode = 'line',
 	__type = 'circleEffect',
 	changesimage = false,
+	linewidth = 4,
 	ord = 3,
 	bodies = {}
 }
@@ -55,12 +56,6 @@ function circleEffect.init()
 			end
 		end
 	end
-end
-
-function circleEffect:draw()
-	if self.linewidth then graphics.setLine(self.linewidth) end
-	body.draw(self)
-	if self.linewidth then graphics.setLine(4) end
 end
 
 function circleEffect:update(dt)
