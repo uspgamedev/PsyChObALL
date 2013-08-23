@@ -585,8 +585,8 @@ function addscore(x)
 			blastscore = blastscore - (state == survival and 7000 or 2000)
 			ultracounter = ultracounter + 1
 		end
-		if state == story and lifescore >= 10000 then
-			lifescore = lifescore - 10000
+		if state == story and lifescore >= 15000 then
+			lifescore = lifescore - 15000
 			lives = lives + 1
 		end
 	end

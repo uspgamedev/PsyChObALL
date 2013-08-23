@@ -108,7 +108,7 @@ function run()
 	t = {}
 	local x = 30
 	local y = height - 10
-	for i = 1, 12 do
+	for i = 1, 20 do
 		table.insert(t, {x, y})
 		x = x + 50
 		table.insert(t, {x, y})
@@ -118,10 +118,10 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.25*v, 0.25*v}, life = 120, size = 90}, divide1, {width/2, height+30}, 13)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.25*v, 0.25*v}, life = 120, size = 90}, divide1, {width/2, height+30}, 13)
-	enemy(snake, 1, {size = 5}, 200, 700, 0.5, {30, -30}, unpack(t))
-	wait(23)
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.2*v, 0.25*v}, life = 150, size = 90}, divide1, {width/2, height+30}, 18)
+	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.2*v, 0.25*v}, life = 150, size = 90}, divide1, {width/2, height+30}, 18)
+	enemy(snake, 1, {size = 5}, 200, 600, 0.5, {30, -30}, unpack(t))
+	wait(30)
 	doNow( function(timer)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 3-2' end
@@ -130,7 +130,7 @@ function run()
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 - 50},
+				position = vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

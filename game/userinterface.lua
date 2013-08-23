@@ -302,9 +302,11 @@ function draw()
 		graphics.print(deathText(), 270, 300)
 		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
 		graphics.setFont(getCoolFont(23))
-		graphics.print("Press R to retry", 300, 640)
+		if state == survival then graphics.print("Press R to retry", 280, 640)
+		else graphics.print("Press R to start over", 280, 640) end
 		graphics.setFont(getFont(30))
-		graphics.print("_____________", 300, 645)
+		if state == survival then graphics.print("_____________", 280, 645)
+		else 	graphics.print("__________________", 280, 645) end
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Press B", 580, 650)
 		graphics.print(pauseText(), 649, 650)
@@ -405,9 +407,11 @@ function draw()
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getCoolFont(23))
-		graphics.print("Press R to start over", 280, 640)
+		if state == survival then graphics.print("Press R to retry", 280, 640)
+		else graphics.print("Press R to start over", 280, 640) end
 		graphics.setFont(getFont(30))
-		graphics.print("__________________", 280, 645)
+		if state == survival then graphics.print("_____________", 280, 645)
+		else 	graphics.print("__________________", 280, 645) end
 		graphics.setFont(getCoolFont(18))
 		graphics.print("Press B", 580, 650)
 		graphics.print(pauseText(), 649, 650)

@@ -42,6 +42,10 @@ function run()
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 
+	--doNow( function(timer)
+		--if not gamelost then reloadStory 'Tutorial' end
+	--end)
+
 	wait(1)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
 	wait(3)
@@ -77,7 +81,7 @@ function run()
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 - 50},
+				position = vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

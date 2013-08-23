@@ -51,20 +51,28 @@ function run()
 	wait(4)
 	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{v, v}, life = 120, size = 80}, simple, {width/2, -30}, 8)
 	wait(9)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{v, v}, life = 60, size = 50}, simple, {width/2, -30}, 12)
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{v, v}, life = 60, size = 50}, simple, {width/2, height+30}, 12)
-	wait(13)
+	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{1.2*v, v}, life = 80, size = 50}, simple, {width/2, -30}, 12)
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{v, 1.2*v}, life = 60, size = 50}, divide1, {width/2, height+30}, 12)
+	wait(11)
 	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{v, v}, life = 120, size = 80}, divide1, {width/2, height+30}, 13)
 	wait(3)
-	enemy(simple, 7, horizontalr)
-	wait(3)
-	enemy(simple, 7, horizontall)
+	enemy(divide1, 7, horizontalr)
+	wait(1)
+	enemy(divide1, 7, horizontall)
 	wait(7)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.5*v, 0.5*v}, life = 20, size = 40}, grey, {width/2, -30}, 9)
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.5*v, 0.5*v}, life = 20, size = 40}, grey, {width/2, height+30}, 9)
-	enemy(super, 1, { position = vector:new{-30, height/2}, speed = vector:new{0.5*v, 0.5*v}, life = 20, size = 40}, grey, {-30, height/2}, 10)
-	enemy(super, 1, { position = vector:new{width+30, height/2}, speed = vector:new{0.5*v, 0.5*v}, life = 20, size = 40}, grey, {width+30, height/2}, 10)
-	wait(12)
+	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.4*v, 0.4*v}, life = 40, size = 30}, grey, {width/2, -30}, 9)
+	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.4*v, 0.4*v}, life = 40, size = 30}, grey, {width/2, height+30}, 9)
+	enemy(super, 1, { position = vector:new{-30, height/2}, speed = vector:new{0.4*v, 0.4*v}, life = 40, size = 30}, grey, {-30, height/2}, 10)
+	enemy(super, 1, { position = vector:new{width+30, height/2}, speed = vector:new{0.4*v, 0.4*v}, life = 40, size = 30}, grey, {width+30, height/2}, 10)
+	wait(2)
+	enemy(grey, 5, horizontalr)
+	wait(4)
+	enemy({divide1,grey}, 7, horizontall)
+	wait(4)
+	enemy(grey, 7, horizontalr)
+	wait(2)
+	enemy(grey, 7, horizontall)
+	wait(4)
 	doNow( function(timer)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 2-4' end
@@ -73,7 +81,7 @@ function run()
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 - 50},
+				position = vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()
