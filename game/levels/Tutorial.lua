@@ -13,39 +13,206 @@ function run()
 	warnEnemies = true
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
+	local welcome = text:new{
+		text = "Welcome to PsyChObALL",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local wasd = text:new{
+		text = "Use WASD or the directional keys to move",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local shift = text:new{
+		text = "Hold shift to move slowly",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local aim = text:new{
+		text = "Use your mouse to aim and left click to shoot",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local hit = text:new{
+		text = "Hit enemies to increase your score\n If you get hit you will die",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local space = text:new{
+		text = "Hold space to charge ultrablast, and release to use it",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local pause = text:new{
+		text = "Press P or ESC to pause the game",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local music = text:new{
+		text = "Press '<' or '>' to change the volume\n and press M to mute",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
+	local remember = text:new{
+		text = "Remember, we all have psycho within ourselves\n Also you can replay this tutorial on the practice screen",
+		font = getCoolFont(50),
+		printmethod = graphics.printf,
+		position = vector:new{width/2 - 400, height/2 - 20},
+		limit = 800,
+		alphafollows = vartimer:new{var = 0},
+		align = 'center'
+	}
 
-	wait(3)
-	--"Welcome to PsyChObALL"
-	wait(6)
-	--"Use WASD or the directional keys to move"
-	wait(6)
-	--"Hold shift to move slowly"
+	wait(2.5)
+	doNow(function()
+		welcome:register()
+		welcome.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 1.5,
+		funcToCall = function()
+			welcome.alphafollows:setAndGo(255, 0, 100)
+			welcome.alphafollows.alsoCall = function() welcome.delete = true end
+		end
+	}
 	wait(4)
-	--"Use your mouse to aim and left click to shoot"
+	doNow(function()
+		wasd:register()
+		wasd.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 2.5,
+		funcToCall = function()
+			wasd.alphafollows:setAndGo(255, 0, 100)
+			wasd.alphafollows.alsoCall = function() wasd.delete = true end
+		end
+	}
 	wait(4)
-	--"Hit enemies to increase your score\n if you get hit you will die"
-	wait(6)
-	-- ^ texto acima nao da fade
-	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
-	wait(3)
-	--texto da fade
-	wait(3)
-	--Hold space to charge ultrablast,\n and release to use it
-	wait(3)
-	--^texto acima nao da fade
+	doNow(function()
+		shift:register()
+		shift.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 2.5,
+		funcToCall = function()
+			shift.alphafollows:setAndGo(255, 0, 100)
+			shift.alphafollows.alsoCall = function() shift.delete = true end
+		end
+	}
+	wait(4)
+	doNow(function()
+		aim:register()
+		aim.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 3.0,
+		funcToCall = function()
+			aim.alphafollows:setAndGo(255, 0, 100)
+			aim.alphafollows.alsoCall = function() aim.delete = true end
+		end
+	}
+	wait(4.5)
+	doNow(function()
+		hit:register()
+		hit.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 3.0,
+		funcToCall = function()
+			hit.alphafollows:setAndGo(255, 0, 100)
+			hit.alphafollows.alsoCall = function() hit.delete = true end
+		end
+	}
+	wait(4.5)
+	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{1.65*v, 0} })
+	wait(3.5)
+	doNow(function()
+		space:register()
+		space.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 3,
+		funcToCall = function()
+			space.alphafollows:setAndGo(255, 0, 100)
+			space.alphafollows.alsoCall = function() space.delete = true end
+		end
+	}
+	wait(5)
 	f1.anglechange = torad(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600
 	enemy(simple, 15, f1)
-	wait(6)
-	--texto da fade
-	--"Remember, we all have psycho within ourselves"
 	wait(4)
+	doNow(function()
+		pause:register()
+		pause.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 2.5,
+		funcToCall = function()
+			pause.alphafollows:setAndGo(255, 0, 100)
+			pause.alphafollows.alsoCall = function() pause.delete = true end
+		end
+	}
+	wait(4)
+	doNow(function()
+		music:register()
+		music.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 2.5,
+		funcToCall = function()
+			music.alphafollows:setAndGo(255, 0, 100)
+			music.alphafollows.alsoCall = function() music.delete = true end
+		end
+	}
+	wait(6)
+	doNow(function()
+		remember:register()
+		remember.alphafollows:setAndGo(0, 255, 100)
+	end)
+	registerTimer {
+		timelimit = 2.5,
+		funcToCall = function()
+			remember.alphafollows:setAndGo(255, 0, 100)
+			remember.alphafollows.alsoCall = function() remember.delete = true end
+		end
+	}
+	wait(6)
 	doNow( function(timer)
-		if not levelselected then
-			if not gamelost then reloadStory 'Level 1-1' end
-		else
 			text:new{
 				text = "Tutorial Completed. Press ESC or P and return to the menu.",
 				font = getCoolFont(50),
@@ -54,6 +221,5 @@ function run()
 				limit = 800,
 				align = 'center'
 			}:register()
-		end
 	end)
 end

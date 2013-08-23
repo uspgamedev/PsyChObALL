@@ -24,7 +24,7 @@ THE HISTORY OF PSYCHOBALL
 	-You can, in game, move Psycho and shoot with the analog sticks
 	-Any other button triggers Ultrablast
 	-However you can't move around the menu or pause...
--Added ConCenTRatE mode
+-Added Concentrate mode
 	-Hold shift to move slowly
 -Added SplashScreen for Marvellous Soft
 -Added new death messages
@@ -32,6 +32,7 @@ THE HISTORY OF PSYCHOBALL
 -Some bug fixes
 -Removed previous soundtrack
 -Removed menu random messages
+
 *************************************************
 (16/06/2013) Version 0.9.1    -  Long way to go
 *************************************************

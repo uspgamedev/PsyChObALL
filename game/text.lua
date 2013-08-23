@@ -12,6 +12,7 @@ function text:__init()
 end
 
 function text:draw()
+	if (self.alpha or self.alphafollows and self.alphafollows.var) == 255 then print 'asdf' end
 	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.setFont(self.font)
  	self.printmethod(self.text, self.position[1], self.position[2], self.limit, self.align)
