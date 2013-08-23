@@ -22,6 +22,16 @@ end
 love.graphics.getHeight = nil
 love.graphics.getWidth  = nil
 
+--base.pixel = love.graphics.newImage 'resources/pixel.png'
+
+base.circleShader = love.graphics.newPixelEffect [[
+	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
+	   number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
+	   if(dist > .25) return vec4(0,0,0,0);
+		return color;
+	}
+]]
+
 graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
 	circle = function ( mode, x, y, r )
@@ -30,6 +40,8 @@ graphics = {
 			graphics.draw(cheats.image.image, x - r, y - r, 
 				0, 2*r / cheats.image.image:getWidth(), 2*r / cheats.image.image:getHeight())
 		else
+			--love.graphics.setPixelEffect(base.circleShader)
+			--love.graphics.draw(base.pixel, (x-r)*ratio, (y-r)*ratio, 0, r*ratio)
 			love.graphics.circle(mode, x*ratio, y*ratio, r*ratio)
 		end
 	end,
@@ -83,7 +95,7 @@ end
 
 local http = require "socket.http"
 
-response = http.request{ url=URL, create=function()
+local response = http.request{ url=URL, create=function()
 	local req_sock = require("socket").tcp()
 	req_sock:settimeout(3)
 	return req_sock
