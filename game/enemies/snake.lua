@@ -16,10 +16,12 @@ function snake:draw()
 	end
 end
 
+local auxVec = vector:new{}
+
 function snake:update( dt )
 	for i = self.first, self.last, 1 do
 		local s = self.segments[i]
-		s.position:add(s.speed*dt)
+		s.position:add(auxVec:set(s.speed):mult(dt))
 		for _, v in pairs(shot.bodies) do
 			if collides(s.position, self.size, v.position, v.size) then
 				v.collides = true

@@ -7,6 +7,8 @@ body = lux.object.new {
 	__type = 'unnamed body'
 }
 
+local auxVec = vector:new{}
+
 function body:__init()
 	self.position = rawget(self, 'position') or vector:new{}
 	self.speed = rawget(self, 'speed') or vector:new{}
@@ -41,7 +43,7 @@ function body:update( dt )
 	if self.positionfollows then
 		self.position:set(self.positionfollows(gametime - self.initialtime)):add(self.initialpos)
 	else
-		self.position:add(self.speed * dt)
+		self.position:add(auxVec:set(self.speed):mult(dt))
 	end
 
 	if (self.x + self.size < 0 and self.Vx <= 0) or (self.x > width + self.size and self.Vx >= 0) or
