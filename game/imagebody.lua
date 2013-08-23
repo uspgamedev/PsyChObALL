@@ -11,6 +11,6 @@ function imagebody:__init()
 end
 
 function imagebody:draw()
-	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.draw(self.image, self.position[1], self.position[2], 0, self.scale, self.scale)
 end

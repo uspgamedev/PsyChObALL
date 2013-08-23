@@ -1,4 +1,6 @@
 require "base"
+require "timer"
+require "ColorManager"
 require "body"
 require "formations"
 require "levels"
@@ -9,7 +11,6 @@ require "circleEffect"
 require "effect"
 require "enemy"
 require "shot"
-require "timer"
 require "vartimer"
 require "list"
 require "enemies"
@@ -32,6 +33,7 @@ function initBase()
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
 	totaltime = 0
+	splashscreen = -1
 	mainmenu = 1 -- mainmenu
 	tutorialmenu = 2
 	achievmenu  = 0 -- Tela de achievements
@@ -86,7 +88,8 @@ function initBase()
 	-- [[Loading Resources]]
 	logo = graphics.newImage 'resources/LogoBeta.png'
 	splash = graphics.newImage 'resources/Marvellous Soft.png'
-	splashtimer = timer:new{timelimit = 1.75, running = true, persistent = true, pausable = false, funcToCall = function(t) t:remove() end}
+	splashtimer = timer:new{timelimit = 1.75, running = true, persistent = true, onceonly = true, pausable = false, 
+		funcToCall = function() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '1.0.0'
@@ -101,12 +104,7 @@ end
 
 function initGameVars()
 	-- [[Creating Persistent Timers]]
-	colortimer = timer:new{
-		timelimit  = 300,
-		pausable   = false,
-		persistent = true,
-		running = true
-	}
+	ColorManager.init()
 
 	circleEffect.init()
 
@@ -140,7 +138,7 @@ function initGameVars()
 	}
 
 	function inverttimer:funcToCall() -- disinverts the screen color
-		if currentEffect ~= noLSDeffect then 
+		if currentEffect ~= ColorManager.noLSDEffect then 
 			soundmanager.setPitch(1)
 			timefactor = 1.0
 			currentEffect = nil
@@ -267,7 +265,7 @@ end
 
 
 function onMenu()
-	return state < 10
+	return state >= 0 and state < 10
 end
 
 function onGame()
@@ -314,7 +312,7 @@ function lostgame()
 			soundmanager.setPitch(.8)
 			deathtexts[1] = "MOAR LSD"
 			for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
-			currentEffect = noLSDeffect
+			currentEffect = ColorManager.noLSDEffect
 		elseif deathText() == "MOAR LSD" then
 			soundmanager.setPitch(1)
 			deathtexts[1] = "The LSD wears off"
@@ -341,22 +339,15 @@ function love.draw()
 	graphics.setLine(3)
 	graphics.setFont(getFont(12))
 
-	colorwheel(colortimer.time*.654)
-	maincolor[1] = maincolor[1] / 3
-	maincolor[2] = maincolor[2] / 3
-	maincolor[3] = maincolor[3] / 3
-	applyeffect(nil, maincolor)
-	maincolor[1] = maincolor[1] / 4
-	maincolor[2] = maincolor[2] / 4
-	maincolor[3] = maincolor[3] / 4
-	graphics.setColor(maincolor)
+	drawBackground()
+	
 	if splashtimer.running then
 		graphics.setColor(255,255,255,255)
 		graphics.rectangle("fill", 0, 0, width, height) --background color
 		graphics.draw(splash, 100, 80, 0, .55, .55)
 		return
 	end
-	graphics.rectangle("fill", 0, 0, width, height) --background color
+
 	graphics.translate(math.floor(-swypetimer.var), 0)
 	--[[End of setting camera]]
 	for i, v in pairs(paintables) do
@@ -367,10 +358,7 @@ function love.draw()
 
 	--[[Drawing Game Objects]]
 	if onGame() then
-		graphics.setColor(color(colortimer.time * 1.4))
-		graphics.setLine(1)
-		--drawing mouse line
-		line()
+		drawShootingDirection()
 		--drawing psychoball
 		if not cheats.invisible then
 			psycho:draw()
@@ -381,103 +369,29 @@ function love.draw()
 	UI.draw()
 end
 
-function color( x, alpha, effect )
-	return applyeffect(effect, colorwheel(x, alpha))
+function drawBackground()
+	local color = ColorManager.getRawColor(ColorManager.timer.time*.654)
+	color[1] = color[1] / 3
+	color[2] = color[2] / 3
+	color[3] = color[3] / 3
+	ColorManager.applyEffect(nil, color)
+	color[1] = color[1] / 4
+	color[2] = color[2] / 4
+	color[3] = color[3] / 4
+	graphics.setColor(color)
+
+	graphics.rectangle("fill", 0, 0, width, height) --background color
 end
 
-function inverteffect( color )
-	color[1], color[2], color[3] =
-		255 - color[1], 255 - color[2], 255 - color[3]
-	return color
-end
-
-function noLSDeffect( color )
-	local gray = (color[1] + color[2] + color[3]) / 3
-	color[1], color[2], color[3] = 
-		color[1] + (gray - color[1])/1.1,
-		color[2] + (gray - color[2])/1.1,
-		color[3] + (gray - color[3])/1.1
-	return color
-end
-
-function sincityeffect( color )
-	local gray = (color[1] + color[2] + color[3]) / 3
-	color[1], color[2], color[3] =  gray + (255 - gray)/5, 0, 0
-	return color
-end
-
-function getColorEffect( r, g, b, change )
-	change = change or 60
-	if type(r) == 'table' then --consider all vartimers
-		if type(change) ~= 'table' then change = {var = change} end
-		return function ( color )
-			color[1], color[2], color[3] = 
-					color[1]*change.var/255 + math.min(math.max(r.var - change.var/2, 0), 255 - change.var),
-					color[2]*change.var/255 + math.min(math.max(g.var - change.var/2, 0), 255 - change.var),
-					color[3]*change.var/255 + math.min(math.max(b.var - change.var/2, 0), 255 - change.var)
-			return color
-		end
-	else --conside all numbers
-		local consteffect = change/255
-		r = math.min(math.max(r - change/2, 0), 255 - change)
-		g = math.min(math.max(g - change/2, 0), 255 - change)
-		b = math.min(math.max(b - change/2, 0), 255 - change)
-		return function ( color )
-			color[1], color[2], color[3] = 
-					color[1]*consteffect + r,
-					color[2]*consteffect + g,
-					color[3]*consteffect + b
-			return color
-		end
-	end
-end
-
-function applyeffect( effect, color )
-	return (effect or currentEffect) and (effect or currentEffect)(color) or color
-end
-
-colorcycle = 10 
-local xt = colorcycle
-maincolor = {0,0,0,0}
-function colorwheel(x, alpha)
-	x = x % colorcycle
-	local r, g, b
-	if x <= xt / 3 then
-		r = 100					  -- 100%
-		g = 100 * x / (xt / 3) -- 0->100%
-		b = 0						  -- 0%
-	elseif x <= xt / 2 then
-		r = 100 * (1 - ((x - xt / 3) / (xt / 2 - xt / 3)))	-- 100->0%
-		g = 100 - 20 * ((x - xt / 3) / (xt / 2 - xt / 3))	-- 100->80%
-		b = 05															-- 0%
-	elseif x <= 7 * xt / 12 then
-		r = 05																-- 0%
-		g = 80 - 20 * ((x - xt / 2) / (7 * xt / 12 - xt / 2))	-- 80->60%
-		b = 60 * ((x - xt / 2) / (7 * xt / 12 - xt / 2))		-- 0->60%
-	elseif x <= 255 * xt / 360 then
-		r = 11 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12))		 -- 0->11%
-		g = 60 - 49 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) -- 60->11%
-		b = 60 + 10 * ((x - 7 * xt / 12) / (255 * xt / 360 - 7 * xt / 12)) -- 60->70%
-	elseif x <= 318 * xt / 360 then
-		r = 11 + 59 * ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))  -- 11->70%
-		g = 11 * (1 - ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))) -- 11->0%
-		b = 70 - 10 * ((x - 255 * xt / 360) / (318 * xt / 360 - 255 * xt / 360))  -- 70->60%
-	else
-		r = 70 + 30 * ((x - 318 * xt / 360) / (xt - 318 * xt / 360))  -- 70->100%
-		g = 0 																		  -- 0%
-		b = 60 * (1 - ((x - 318 * xt / 360) / (xt - 318 * xt / 360))) -- 60->0%
-	end
-	maincolor[1], maincolor[2], maincolor[3], maincolor[4] = r * 2.55, g * 2.55, b * 2.55, alpha or 255
-	return maincolor
-end
-
-
-function line()
+function drawShootingDirection()
 	if gamelost or psycho.pseudoDied then return end
-	graphics.setColor(color(colortimer.time + 2))
+
+	graphics.setLine(1)
+	local color = ColorManager.getComposedColor(ColorManager.timer.time + 2)
+	graphics.setColor(color)
 	if usingjoystick then
-		maincolor[4] = 60 -- alpha
-		graphics.setColor(maincolor)
+		color[4] = 60 -- alpha
+		graphics.setColor(color)
 		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
 		if a1 == 0 and a2 == 0 then return end
 		local x = a2 > 0 and width or 0
@@ -485,8 +399,8 @@ function line()
 	else
 		local mx, my = mouse.getPosition()
 		graphics.circle("line", mx, my, 5)
-		maincolor[4] = 60 -- alpha
-		graphics.setColor(maincolor)
+		color[4] = 60 -- alpha
+		graphics.setColor(color)
 		local x = mx > psycho.x and width or 0
 		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
 	end

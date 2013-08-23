@@ -5,7 +5,7 @@ effect = body:new {
 }
 
 function effect:draw()
-	graphics.setColor(color(self.variance + colortimer.time, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance + ColorManager.timer.time, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.rectangle(self.mode, self.x, self.y, self.size, self.size)
 end
 

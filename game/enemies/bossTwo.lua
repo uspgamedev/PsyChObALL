@@ -30,10 +30,10 @@ function bossTwo:__init()
 		{vartimer:new{var = 0}, vartimer:new{var = 120}, vartimer:new{var = 0}}
 	}
 	self.ballscoloreffects = {
-		getColorEffect(self.ballscolors[1][1], self.ballscolors[1][2], self.ballscolors[1][3], 20),
-		getColorEffect(self.ballscolors[2][1], self.ballscolors[2][2], self.ballscolors[2][3], 20),
-		getColorEffect(self.ballscolors[3][1], self.ballscolors[3][2], self.ballscolors[3][3], 20),
-		getColorEffect(self.ballscolors[4][1], self.ballscolors[4][2], self.ballscolors[4][3], 20)
+		ColorManager.ColorManager.getColorEffect(self.ballscolors[1][1], self.ballscolors[1][2], self.ballscolors[1][3], 20),
+		ColorManager.ColorManager.getColorEffect(self.ballscolors[2][1], self.ballscolors[2][2], self.ballscolors[2][3], 20),
+		ColorManager.ColorManager.getColorEffect(self.ballscolors[3][1], self.ballscolors[3][2], self.ballscolors[3][3], 20),
+		ColorManager.ColorManager.getColorEffect(self.ballscolors[4][1], self.ballscolors[4][2], self.ballscolors[4][3], 20)
 	}
 	bossTwo.turrets = { 
 		bossTwo.turret:new{ position = vector:new{ 0, -50 } }, 
@@ -453,19 +453,19 @@ function bossTwo:draw()
 	end
 	local bp = self.ballspos
 	if self.ballscoloreffects[1] then
-		graphics.setColor(color(colortimer.time + self.variance, 255, self.ballscoloreffects[1]))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[1]))
 		graphics.circle('fill', xt - bp, yt - bp, self.size)
 	end
 	if self.ballscoloreffects[2] then
-		graphics.setColor(color(colortimer.time + self.variance, 255, self.ballscoloreffects[2]))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[2]))
 		graphics.circle('fill', xt + bp, yt - bp, self.size)
 	end
 	if self.ballscoloreffects[3] then
-		graphics.setColor(color(colortimer.time + self.variance, 255, self.ballscoloreffects[3]))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[3]))
 		graphics.circle('fill', xt - bp, yt + bp, self.size)
 	end
 	if self.ballscoloreffects[4] then
-		graphics.setColor(color(colortimer.time + self.variance, 255, self.ballscoloreffects[4]))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[4]))
 		graphics.circle('fill', xt + bp, yt + bp, self.size)
 	end
 end
@@ -592,10 +592,10 @@ end
 bossTwo.turret = body:new {
 	size = 60,
 	health = bossTwo.maxhealth/4,
-	variance = math.random(colorcycle*1000)/1000,
+	variance = math.random(ColorManager.cycleTime*1000)/1000,
 	turretnum = 4,
-	ballscoloreffect = getColorEffect(175, 0, 0, 40),
-	coloreffect = noLSDeffect,
+	ballscoloreffect = ColorManager.ColorManager.getColorEffect(175, 0, 0, 40),
+	coloreffect = ColorManager.noLSDEffect,
 	attached = true,
 	__type = 'bossTwoTurret'
 }
@@ -627,7 +627,7 @@ function bossTwo.turret:draw( xt, yt )
 	local x, y = self.bossTwopos[1] + self.position[1], self.bossTwopos[2] + self.position[2]
 	graphics.translate(x, y)
 	for _, c in pairs(self.circles) do c:draw() end
-	graphics.setColor(color(colortimer.time + self.variance, 255, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
 	graphics.circle('fill', 0, 0, self.size)
 	graphics.translate(-x, -y)
 end

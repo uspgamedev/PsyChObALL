@@ -7,11 +7,11 @@ snake = body:new {
 
 function snake:draw()
 	if self.first <= self.last then
-		graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 		graphics.circle(self.mode, self.segments[self.first].position[1], self.segments[self.first].position[2], self.size)
 	end
 	for i = self.first + 1, self.last, 1 do
-		graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, noLSDeffect))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, ColorManager.noLSDEffect))
 		graphics.circle(self.mode, self.segments[i].position[1], self.segments[i].position[2], self.size)
 	end
 end
@@ -82,7 +82,7 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 	self.position = vector:new(clone(p1))
 	self.speedvalue = spd or v
 	self.leadchange = vartimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
-	self.coloreffect = getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
+	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
 	local speed = vector:new(clone(p2)):sub(self.position):normalize()
 	self.considersize = self.considersize or self.size
 	local diff = speed * (self.considersize*2)
@@ -103,6 +103,6 @@ end
 function snake:start()
 	body.start(self)
 	if not self.vulnerable then
-		self.coloreffect = noLSDeffect
+		self.coloreffect = ColorManager.noLSDEffect
 	end
 end

@@ -9,7 +9,7 @@ enemy = body:new {
 local sides = {top = 1, up = 1, bottom = 2, down = 2, left = 3, right = 4}
 
 function enemy:__init()
-	self.variance = math.random(colorcycle * 1000) / 1000
+	self.variance = math.random(ColorManager.cycleTime * 1000) / 1000
 
 	local side = self.side and sides[self.side] or math.random(4)
 	if	side == 1 or side == 2 then -- top or bottom
@@ -70,12 +70,12 @@ function enemy:handleDelete()
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
 
-		if not gamelost and multiplier >= 10 and currentEffect ~= noLSDeffect then
+		if not gamelost and multiplier >= 10 and currentEffect ~= ColorManager.noLSDEffect then
 			if not inverttimer.running then
 				inverttimer:start()
 				soundmanager.setPitch(1.0)
 				timefactor = 1.1
-				currentEffect = inverteffect
+				currentEffect = ColorManager.invertEffect
 			else inverttimer.time = 0 end
 		end
 

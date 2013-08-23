@@ -1,6 +1,6 @@
 glitchball = body:new {
 	size = 20,
-	coloreffect = noLSDeffect,
+	coloreffect = ColorManager.noLSDEffect,
 	mode = 'line',
 	linewidth = 10,
 	__type = "glitchball"

@@ -243,7 +243,7 @@ function reloadPractice()
 		alphafollows = levelselectalpha,
 		draw = function(self)
 			button.draw(self)
-			graphics.setColor(color(colortimer.time + self.variance, self.alphafollows.var, self.coloreffect))
+			graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows.var, self.coloreffect))
 			graphics.setFont(getCoolFont(70))
 			graphics.printf("Practice", 0, 30, width, 'center')
 		end,
