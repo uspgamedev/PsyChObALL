@@ -4,7 +4,7 @@ chapter = 'Part 4 - Cloud of Despair'
 function run()
 	doNow ( function( timer )
 		for i = 1, 8 do
-			local t = imagebody:new{ coloreffect = sincityeffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
+			local t = imagebody:new{ coloreffect = ColorManager.sinCityEffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
 			_G.enemy.__init(t)
 			t:register()
 		end

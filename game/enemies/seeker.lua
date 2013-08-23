@@ -11,7 +11,7 @@ function seeker:__init()
 	self.speedN = self.speedN or math.random(v - 30, v)
 	self.exitposition = self.exitposition or self.position
 	self.colors = {vartimer:new{var = .88*255}, vartimer:new{var = .66*255}, vartimer:new{var = .37*255}}
-	self.coloreffect = getColorEffect(unpack(self.colors))
+	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
 end
 
 function seeker:start()

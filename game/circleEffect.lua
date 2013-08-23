@@ -18,7 +18,7 @@ function circleEffect:__init()
 	end
 	
 	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
-	self.variance = self.variance or math.random(0, 100*colorcycle) / 100
+	self.variance = self.variance or math.random(0, 100*ColorManager.cycleTime) / 100
 	if #circleEffect.bodies > 250 then table.remove(circleEffect.bodies, 1) end
 	if self.index ~= nil then
 		if self.index ~= false then

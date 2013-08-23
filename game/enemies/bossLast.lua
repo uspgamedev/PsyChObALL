@@ -14,7 +14,7 @@ bossLast = body:new{
 function bossLast:draw()
 	if not self.visible then return end
 	graphics.push()
-	graphics.setColor(color(colortimer.time + self.variance, self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows.var, self.coloreffect))
 	graphics.translate(self.x, self.y)
 	graphics.rotate(self.angle.var)
 	graphics.rectangle(self.mode, -self.size, -self.size, self.width, self.height)
@@ -63,7 +63,7 @@ function bossLast:__init()
 	self.alphafollows = vartimer:new{var = 0}
 	self.health = bossLast.maxhealth
 	self.colorchange = vartimer:new{var = 255}
-	self.coloreffect = getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
+	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
 
 	local components = {{},{},{},{}}
 	local updateFunc =  function (e, dt)

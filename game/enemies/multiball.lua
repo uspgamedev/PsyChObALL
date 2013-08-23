@@ -2,7 +2,7 @@ multiball = body:new {
 	size =  20,
 	divideN = 2,
 	args = {},
-	coloreffect = getColorEffect(255, 0, 0),
+	coloreffect = ColorManager.ColorManager.getColorEffect(255, 0, 0),
 	__type = 'multiball'
 }
 

@@ -1,6 +1,6 @@
 grayball = body:new {
 	size = 20,
-	coloreffect = noLSDeffect,
+	coloreffect = ColorManager.noLSDEffect,
 	__type = "grayball"
 }
 

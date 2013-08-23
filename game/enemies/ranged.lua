@@ -41,7 +41,7 @@ function ranged:onInit( num, target, pos, exitpos, shot, initialcolor, angle, ti
 	self.angle = angle or 0
 	self.basecolor = initialcolor or {0, 255, 0}
 	self.colorvars = {vartimer:new{var = self.basecolor[1]}, vartimer:new{var = self.basecolor[2]}, vartimer:new{var = self.basecolor[3]}}
-	self.coloreffect = getColorEffect(unpack(self.colorvars))
+	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colorvars))
 	self.divideN = num or self.divideN
 	self.shot = shot and enemies[shot] or enemies.simpleball
 	if not pos then enemy.__init(self)

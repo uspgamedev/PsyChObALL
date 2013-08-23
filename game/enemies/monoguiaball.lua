@@ -2,7 +2,7 @@ monoguiaball = body:new {
 	size =  25,
 	divideN = 3,
 	args = {},
-	coloreffect = getColorEffect(20, 140, 0),
+	coloreffect = ColorManager.ColorManager.getColorEffect(20, 140, 0),
 	__type = 'monoguiaball'
 }
 

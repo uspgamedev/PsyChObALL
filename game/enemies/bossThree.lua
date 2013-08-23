@@ -150,7 +150,7 @@ function bossThree.behaviors.second( self )
 			local g = bossThree.ghost:new{}
 			enemy.__init(g)
 			g.speed:set(sign(math.random()-.5)*math.random(v*.7, v), sign(math.random()-.5)*math.random(v*.7, v))
-			g.coloreffect = getColorEffect(unpack(color))
+			g.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(color))
 			table.insert(bossThree.bodies, g)
 		end
 		
@@ -248,7 +248,7 @@ function bossThree.behaviors.fourth( self )
 						timelimit = 2,
 						funcToCall = function()
 							local change = vartimer:new{var = 0}
-							local c = getColorEffect({var = 122}, {var = 122}, {var = 122}, change)
+							local c = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, change)
 							change:setAndGo(0, 255, 80)
 							for _, g in pairs(bossThree.bodies) do
 								if g.__type == 'bossThreeghost' then
@@ -350,7 +350,7 @@ function bossThree:draw()
 	if not self.visible then return end
 	if self.first <= self.last then
 		local s = self.segments[self.first]
-		graphics.setColor(color(colortimer.time + self.variance, nil, self.coloreffect))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, self.coloreffect))
 		if self.guy then 
 			graphics.setInvertedStencil(self.invertedstencil)
 		end
@@ -365,7 +365,7 @@ function bossThree:draw()
 	end
 	for i = self.first + 1, self.last, 1 do
 		local s = self.segments[i]
-		graphics.setColor(color(colortimer.time + self.variance, nil, noLSDeffect))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, ColorManager.noLSDEffect))
 		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
 		graphics.circle(self.mode, s.position[1] + s.extraposition[1], s.position[2] + s.extraposition[2], self.size)
 	end
@@ -447,7 +447,7 @@ function bossThree:defaultHealthLoss()
 	local s = self.segments[self.first]
 	self.health = self.health - 1
 	if self.health == 0 then
-		s.coloreffect = sincityeffect
+		s.coloreffect = ColorManager.sinCityEffect
 		s.size = self.size
 		neweffects(s, 50)
 		self.health = bossThree.maxhealth
@@ -510,7 +510,7 @@ function bossThree:__init()
 	self.segments = {}
 	self.speedvalue = spd
 	self.colors = {vartimer:new{var = 0}, vartimer:new{var = 255}, vartimer:new{var = 0}, vartimer:new{var = 70}, vartimer:new{var = 50}}
-	self.coloreffect = getColorEffect(unpack(self.colors))
+	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
 	local speed = vector:new(clone(self.path[1])):sub(self.position):normalize()
 	local diff = speed * (self.size*2)
 	speed:mult(bossThree.basespeed)
@@ -579,7 +579,7 @@ function bossThree.food:__init()
 	if bossThree.bodies[1].guy then
 		self.mode = 'fill'
 		self.coloreffect = bossThree.bodies[1].guy.onRage and
-			getColorEffect(240, 0, 120, 40) or getColorEffect(255, 255, 255, 40)
+			ColorManager.ColorManager.getColorEffect(240, 0, 120, 40) or ColorManager.ColorManager.getColorEffect(255, 255, 255, 40)
 	end
 
 	self.normalsize = 25
@@ -591,7 +591,7 @@ end
 function bossThree.food:draw()
 	circleEffect.draw(self)
 	if self.creationsize.var > 0 then
-		graphics.setColor(color(colortimer.time + self.variance, nil, noLSDeffect))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, ColorManager.noLSDEffect))
 		graphics.circle('fill', self.x, self.y, self.creationsize.var)
 	end
 end
@@ -710,7 +710,7 @@ function bossThree.ghost:__init()
 	self.ring = circleEffect:new{
 		size = self.size,
 		alpha = 255,
-		coloreffect = noLSDeffect,
+		coloreffect = ColorManager.noLSDEffect,
 		sizeGrowth = 0,
 		variance = self.variance,
 		position = self.position,

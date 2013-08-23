@@ -54,7 +54,7 @@ end
 
 function body:draw()
 	if self.linewidth then graphics.setLine(self.linewidth) end
-	graphics.setColor(color(colortimer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect))
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 

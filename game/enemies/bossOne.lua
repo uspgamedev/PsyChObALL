@@ -20,11 +20,11 @@ function bossOne:__init()
 	self.speed:set(v, v)
 	self.currentBehavior = bossOne.behaviors.arriving
 	self.health = bossOne.maxhealth
-	self.variance = math.random((colorcycle-3)*1000)/1000 + 3
+	self.variance = math.random((ColorManager.cycleTime-3)*1000)/1000 + 3
 	bossOne.shot = enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0, speed = 200}}
-	self.coloreffect = getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
+	self.coloreffect = ColorManager.ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	restrictToScreenThreshold = 10
 	restrictToScreenSpeed = nil
 	--bossOne.turret.bodies = enemies.bossOne.bodies
@@ -68,7 +68,7 @@ function bossOne.behaviors.first( self )
 	self:restrictToScreen()
 	if self.health/bossOne.maxhealth < .75 then
 		addscore(500)
-		local t = imagebody:new{ coloreffect = sincityeffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
+		local t = imagebody:new{ coloreffect = ColorManager.sinCityEffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
 		enemy.__init(t)
 		t.speed:mult(2.2)
 		t:register()
@@ -159,7 +159,7 @@ function bossOne.behaviors.third( self )
 		self.circleshoot.times = 360/15
 		bossOne.shot = enemies.simpleball
 		--change color or whatever
-		self.coloreffect = sincityeffect
+		self.coloreffect = ColorManager.sinCityEffect
 		timer:new {
 			running = true,
 			onceonly = true,

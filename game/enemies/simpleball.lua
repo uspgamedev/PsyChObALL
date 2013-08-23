@@ -1,6 +1,6 @@
 simpleball = body:new {
 	size = 20,
-	coloreffect = getColorEffect(0, 0, 255, 40),
+	coloreffect = ColorManager.ColorManager.getColorEffect(0, 0, 255, 40),
 	__type = "simpleball"
 }
 
