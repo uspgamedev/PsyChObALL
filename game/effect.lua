@@ -1,6 +1,7 @@
 effect = body:new {
 	size	 = 3,
 	__type   = 'effect',
+	noShader = true,
 	bodies = {}
 }
 

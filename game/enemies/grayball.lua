@@ -26,5 +26,6 @@ function grayball:update( dt )
 end
 
 function grayball:handleDelete()
+	body.handleDelete(self)
 	neweffects(self, 40)
 end

@@ -53,13 +53,14 @@ function body:update( dt )
 end
 
 function body:draw()
-	if self.linewidth then graphics.setLine(self.linewidth) end
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect))
+	if self.linewidth then graphics.setLineWidth(self.linewidth) end
+	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect)
+	graphics.setColor(color)
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function body:handleDelete()
-	-- abstract
+
 end
 
 function body:onInit()
@@ -67,7 +68,7 @@ function body:onInit()
 end
 
 function body:start()
-	-- abstract
+	
 end
 
 body.collidesWith = collides
@@ -88,7 +89,8 @@ end
 function body:paintOn( p )
 	local m = {
 		name = self.name,
-		ord = self.ord or 5
+		ord = self.ord or 5,
+		noShader = self.noShader
 	}
 	m.__index = m
 	setmetatable(self.bodies, m)

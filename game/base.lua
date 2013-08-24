@@ -22,15 +22,26 @@ end
 love.graphics.getHeight = nil
 love.graphics.getWidth  = nil
 
---base.pixel = love.graphics.newImage 'resources/pixel.png'
+base.pixel = love.graphics.newImage 'resources/pixel.png'
+base.pixel:setFilter('linear','linear', 0)
 
 base.circleShader = love.graphics.newPixelEffect [[
+	extern number min;
 	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
-	   number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
-	   if(dist > .25) return vec4(0,0,0,0);
+		number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
+		if(min == 0) {
+		   if(dist > .25) return vec4(0,0,0,0);
+			return color;
+		}
+		if(dist > .25	|| dist < min) return vec4(0,0,0,0);
 		return color;
 	}
 ]]
+base.circleShader:send("min", 0)
+
+base.spriteBatch = love.graphics.newSpriteBatch(base.pixel, 500, 'stream')
+
+base.lineWidth = 1
 
 graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
@@ -40,9 +51,18 @@ graphics = {
 			graphics.draw(cheats.image.image, x - r, y - r, 
 				0, 2*r / cheats.image.image:getWidth(), 2*r / cheats.image.image:getHeight())
 		else
-			--love.graphics.setPixelEffect(base.circleShader)
-			--love.graphics.draw(base.pixel, (x-r)*ratio, (y-r)*ratio, 0, r*ratio)
-			love.graphics.circle(mode, x*ratio, y*ratio, r*ratio)
+			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
+			if mode == 'line' then
+				local min = base.lineWidth*ratio + 1
+				min = (((rFixed - min)/(rFixed))^2)/4
+				if love.graphics.getLineWidth() > 1 then print 'asd' end
+				base.circleShader:send('min', min)
+				love.graphics.draw(base.pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
+				base.circleShader:send('min', 0) 
+			else
+				base.spriteBatch:setColor(graphics.getColor())
+				base.spriteBatch:add(xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
+			end
 		end
 	end,
 	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
@@ -50,9 +70,13 @@ graphics = {
 	point = fixPosIgnoreNone(love.graphics.point),
 	print = fixPosIgnoreOne(love.graphics.print),
 	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,
-	translate = fixPosIgnoreNone(love.graphics.translate),
+	translate = function(x, y) 
+		local tx, ty = sign(x)*math.floor(math.abs(x)*ratio), sign(y)*math.floor(math.abs(y)*ratio)
+		love.graphics.translate(tx, ty)
+	end,
 	rectangle = function (mode, x, y, width, height) love.graphics.rectangle(mode, x*ratio, y*ratio, width*ratio, height*ratio) end,
-	line = function(x1,y1,x2,y2) love.graphics.line(x1*ratio, y1*ratio, x2*ratio, y2*ratio) end
+	line = function(x1,y1,x2,y2) love.graphics.line(x1*ratio, y1*ratio, x2*ratio, y2*ratio) end,
+	setLineWidth = function(l) base.lineWidth = l love.graphics.setLineWidth(l) end
 }
 mouse = {
 	getPosition = function()

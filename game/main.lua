@@ -336,7 +336,7 @@ function love.draw()
 	graphics.translate(width/2, height/2)
 	graphics.rotate(angle.var)
 	graphics.translate(-width/2, -height/2)
-	graphics.setLine(3)
+	graphics.setLineWidth(3)
 	graphics.setFont(getFont(12))
 
 	drawBackground()
@@ -348,12 +348,18 @@ function love.draw()
 		return
 	end
 
-	graphics.translate(math.floor(-swypetimer.var), 0)
+	base.spriteBatch:clear()
+	base.spriteBatch:bind()
+
+	graphics.translate(-swypetimer.var, 0)
 	--[[End of setting camera]]
+	love.graphics.setPixelEffect(base.circleShader)
 	for i, v in pairs(paintables) do
+		if v.noShader then love.graphics.setPixelEffect() end
 		for j, m in pairs(v) do
 			m:draw()
 		end
+		if v.noShader then love.graphics.setPixelEffect(base.circleShader) end
 	end
 
 	--[[Drawing Game Objects]]
@@ -365,8 +371,11 @@ function love.draw()
 		end
 	end
 	--[[End of Drawing Game Objects]]
+	base.spriteBatch:unbind()
+	graphics.draw(base.spriteBatch, 0, 0)
 
 	UI.draw()
+
 end
 
 function drawBackground()
@@ -386,7 +395,7 @@ end
 function drawShootingDirection()
 	if gamelost or psycho.pseudoDied then return end
 
-	graphics.setLine(1)
+	graphics.setLineWidth(1)
 	local color = ColorManager.getComposedColor(ColorManager.timer.time + 2)
 	graphics.setColor(color)
 	if usingjoystick then
@@ -395,6 +404,7 @@ function drawShootingDirection()
 		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
 		if a1 == 0 and a2 == 0 then return end
 		local x = a2 > 0 and width or 0
+		graphics.setPixelEffect()
 		graphics.line(psycho.x, psycho.y, a2*1200 + psycho.x, a1*1200 + psycho.y)
 	else
 		local mx, my = mouse.getPosition()
@@ -402,8 +412,10 @@ function drawShootingDirection()
 		color[4] = 60 -- alpha
 		graphics.setColor(color)
 		local x = mx > psycho.x and width or 0
+		graphics.setPixelEffect()
 		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
 	end
+	graphics.setPixelEffect(base.circleShader)
 end
 
 playtexts = {"Start", "START", "Start Mission", "game.\nplay()", "Don't Click Me", "Give me  BALLS"}
@@ -452,7 +464,6 @@ function love.update(dt)
 	end
 
 	updateotherstuff (dt)
-	
 end
 
 function updateotherstuff (dt)

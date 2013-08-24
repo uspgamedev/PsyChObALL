@@ -66,6 +66,9 @@ function init()
 	}
 
 	paintables.menu = {playbutton, testingbutton, storybutton, controlsbutton, backbutton}
+	local m = {noShader = true}
+	m.__index = m
+	setmetatable(paintables.menu, m)
 
 	resetpass = cheats.password 'reset'
 
@@ -215,6 +218,7 @@ function update(dt)
 end
 
 function draw()
+	graphics.setPixelEffect()
 	--[[Drawing On-Game Info]]
 	if onGame() then
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time))
@@ -266,9 +270,9 @@ function draw()
 		if cheats.tiltmode then graphics.print("*TILT*", 446, 80, -angle.var) end
 		graphics.setFont(getFont(12))
 	end
+	--[[Drawing Things that how up on every page]]
 	--[[End of Drawing On-Game Info]]
 
-	--[[Drawing Things that show up on every page]]
 	local color = ColorManager.getComposedColor(ColorManager.timer.time)
 	graphics.setColor(color)
 	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), width - 80, 10)
@@ -315,12 +319,6 @@ function draw()
 	--[[End of Drawing Death Screen]]
 	color[4] = 255
 
-	--drawing menu paintables
-	for _,v in pairs(paintables) do
-		for k, p in pairs(v) do
-			p:draw()
-		end
-	end
 
 	--[[Drawing Menu]]
 	if alphatimer.var > 0 then
@@ -373,6 +371,8 @@ function draw()
 		graphics.setFont(getCoolFont(35))
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 0.856))
 		graphics.print("ulTrAbLaST", 290, 242)
+
+		graphics.setPixelEffect(base.circleShader)
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 6.5 + .54))
 		graphics.circle("fill", 130, 180, 10)
 		graphics.circle("fill", 520, 450, 10)
@@ -383,6 +383,7 @@ function draw()
 		graphics.circle("fill", 520, 180, 10)
 		graphics.circle("fill", 130, 450, 10)
 		graphics.circle("fill", 50, 263, 10)
+		graphics.setPixelEffect()
 		--end of tutorialmenu
 
 		graphics.translate(-2 * width, 0)
@@ -390,10 +391,13 @@ function draw()
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 1.5 + .54))
 		graphics.setFont(getCoolFont(50))
 		graphics.print("ACHIEVEMENTS", 340, 36)
+
+		graphics.setPixelEffect(base.circleShader)
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 6.5 + .54))
 		graphics.circle("fill", 130, 180, 5)
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 7.5 + .54))
 		graphics.circle("fill", 130, 210, 5)
+		graphics.setPixelEffect()
 		graphics.setFont(getCoolFont(30))
 		graphics.print("YOU SHOULDNT BE HERE", 340, 306)
 		--end of achievmentsmenu
@@ -419,6 +423,16 @@ function draw()
 		graphics.setFont(getFont(12))
 	end
 	--[[End of Drawing Pause Menu]]
+	
+	--drawing menu paintables
+	graphics.setPixelEffect(base.circleShader)
+	for _,v in pairs(paintables) do
+		if v.noShader then love.graphics.setPixelEffect() end
+		for k, p in pairs(v) do
+			p:draw()
+		end
+		if v.noShader then love.graphics.setPixelEffect(base.circleShader) end
+	end
 
 	if state == levelselect then
 

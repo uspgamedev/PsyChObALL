@@ -175,7 +175,7 @@ local lineCollidesWithCircle  = function ( x, y, size, p1, p2 )
 	local a, b, c = abc(p1[1], p1[2], p2[1], p2[2])
 	return ((a*x + b*y + c)^2)/math.abs(a^2 - b^2) <= size^2
 end
-function bossLast:collidesWith( pos, size ) --rectangle with circle
+function bossLast:collidesWith( pos, size ) --rectangle with circle CHANGE THIS
 	if not size then
 		size = pos.size
 		pos = pos.position

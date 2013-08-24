@@ -19,12 +19,12 @@ function ranged:__init()
 	self.anglechange = self.anglechange or torad(360/self.divideN)
 	self.shotcircle = circleEffect:new{
 		coloreffect = self.shot.coloreffect,
-		size = self.size,
+		size = self.size + 4,
 		position = self.position,
 		index = false,
 		sizeGrowth = 0,
 		alpha = 255,
-		linewidth = 10
+		linewidth = 5
 	}
 	self.timeout = timer:new {
 		timelimit = self.timeout,
@@ -51,6 +51,7 @@ function ranged:onInit( num, target, pos, exitpos, shot, initialcolor, angle, ti
 end
 
 function ranged:start()
+	body.start(self)
 	circleEffect.bodies[self] = self.shotcircle
 end
 
@@ -107,6 +108,7 @@ function ranged:shoot()
 end
 
 function ranged:handleDelete()
+	body.handleDelete(self)
 	neweffects(self, 30)
 	self.shotcircle.size = -1
 	self.timeout:remove()

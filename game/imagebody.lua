@@ -1,7 +1,9 @@
 imagebody = body:new {
 	image = nil,
+	noShader = true,
 	bodies = {},
 	scale = 1,
+	mode = 'none',
 	__type = 'imagebody'
 }
 

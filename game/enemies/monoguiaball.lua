@@ -32,6 +32,7 @@ function monoguiaball:update( dt )
 end
 
 function monoguiaball:handleDelete()
+	body.handleDelete(self)
 	neweffects(self, 20)
 	if self.diereason ~= "shot" then return end
 	addscore(100)

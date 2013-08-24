@@ -37,6 +37,7 @@ function shot.init()
 end
 
 function shot:handleDelete()
+	body.handleDelete(self)
 	if self.explosionEffects then neweffects(self, 7) end
 	if not self.collides then neweffects(self, 7) end
 end

@@ -9,7 +9,7 @@ function love.conf(t)
     t.screen.width = 1080
     t.screen.height = 720
     t.screen.fullscreen = false
-    t.screen.vsync = true
+    t.screen.vsync = false
     t.screen.fsaa = 0
     t.modules.joystick = true
     t.modules.audio = true

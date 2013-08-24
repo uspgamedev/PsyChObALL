@@ -62,6 +62,7 @@ function enemy.init()
 end
 
 function enemy:handleDelete()
+	body.handleDelete(self)
 	if self.diereason == "shot" then
 		addscore((self.size / 3) * multiplier)
 		neweffects(self, 23)

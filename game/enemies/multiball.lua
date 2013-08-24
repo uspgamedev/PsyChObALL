@@ -33,6 +33,7 @@ function multiball:update( dt )
 end
 
 function multiball:handleDelete()
+	body.handleDelete(self)
 	neweffects(self, 20)
 	if self.diereason ~= "shot" then return end
 	addscore(50)

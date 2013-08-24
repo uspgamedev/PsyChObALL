@@ -452,22 +452,14 @@ function bossTwo:draw()
 		if t then t:draw(xt, yt) end
 	end
 	local bp = self.ballspos
-	if self.ballscoloreffects[1] then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[1]))
-		graphics.circle('fill', xt - bp, yt - bp, self.size)
-	end
-	if self.ballscoloreffects[2] then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[2]))
-		graphics.circle('fill', xt + bp, yt - bp, self.size)
-	end
-	if self.ballscoloreffects[3] then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[3]))
-		graphics.circle('fill', xt - bp, yt + bp, self.size)
-	end
-	if self.ballscoloreffects[4] then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[4]))
-		graphics.circle('fill', xt + bp, yt + bp, self.size)
-	end
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[1]))
+	graphics.circle('fill', xt - bp, yt - bp, self.size)
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[2]))
+	graphics.circle('fill', xt + bp, yt - bp, self.size)
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[3]))
+	graphics.circle('fill', xt - bp, yt + bp, self.size)
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[4]))
+	graphics.circle('fill', xt + bp, yt + bp, self.size)
 end
 
 function bossTwo:collides( v, n )
@@ -625,11 +617,13 @@ function bossTwo.turret:draw( xt, yt )
 	if self.attached then self.bossTwopos:set(xt, yt)
 	else self.bossTwopos:set(0, 0) end
 	local x, y = self.bossTwopos[1] + self.position[1], self.bossTwopos[2] + self.position[2]
-	graphics.translate(x, y)
-	for _, c in pairs(self.circles) do c:draw() end
+	for _, c in pairs(self.circles) do
+		c.position:add(x,y)
+		c:draw()
+		c.position:sub(x,y)
+	end
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
-	graphics.circle('fill', 0, 0, self.size)
-	graphics.translate(-x, -y)
+	graphics.circle('fill', x, y, self.size)
 end
 
 function bossTwo.turret:update( dt )

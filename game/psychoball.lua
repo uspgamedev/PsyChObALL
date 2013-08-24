@@ -193,6 +193,9 @@ function psychoball:handleDelete()
 		end
 	end
 	self.size = self.size - psychosizediff
+	local m = {noShader = true}
+	m.__index = m
+	setmetatable(deatheffects, m)
 	paintables.psychoeffects = deatheffects
 	if state ~= story then return end
 	if lives == 0 then

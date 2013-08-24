@@ -205,7 +205,11 @@ function reloadPractice()
 			if not self.visible or levelselectalpha.var == 0 then return end
 			graphics.translate(-translate.var, 0)
 			button.draw(self)
-			if self.hoverring and self.hoverring.size > 2 then circleEffect.draw(self.hoverring) end
+			if self.hoverring and self.hoverring.size > 2 then
+				graphics.setPixelEffect(base.circleShader)
+				circleEffect.draw(self.hoverring) 
+				graphics.setPixelEffect()
+			end
 			graphics.translate(translate.var, 0)
 		end,
 		isClicked = function ( self, x, y )
@@ -331,5 +335,8 @@ function reloadPractice()
 		transl:add(width, 0)
 	end
 
+	local m = {noShader = true}
+	m.__index = m
+	setmetatable(ls, m)
 	UI.paintables.levelselect = ls
 end

@@ -15,6 +15,7 @@ function seeker:__init()
 end
 
 function seeker:start()
+	body.start(self)
 	self.timeout = timer:new{
 		timelimit = self.timeout,
 		onceonly = true,
@@ -63,6 +64,7 @@ function seeker:onInit( timeout, exitpos )
 end
 
 function seeker:handleDelete()
+	body.handleDelete(self)
 	if self.diereason == 'shot'then addscore(100) end
 	neweffects(self, 40)
 end

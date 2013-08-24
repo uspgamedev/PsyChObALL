@@ -5,6 +5,7 @@ button = body:new {
 	__type = 'button',
 	visible = true,
 	bodies = {},
+	noShader = true,
 	allbuttons = {}
 }
 setmetatable(button.allbuttons, {__mode = 'v'})
@@ -43,9 +44,7 @@ end
 
 function button:draw()
 	if not self.visible or self.alphafollows.var == 0 then return end
-	--body.draw(self)
 	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect)
-	graphics.setColor(color)
 	graphics.setColor(ColorManager.invertEffect(color))
 	graphics.setFont(getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')

@@ -78,6 +78,7 @@ function superball:onInit( shot, exitpos, timeout, ... )
 end
 
 function superball:start( shot )
+	body.start(self)
 	self.healthbak = self.life
 	self.lifeCircle.size = self.size + self.life
 	self.shoottimer:start()
@@ -122,6 +123,7 @@ function superball:update(dt)
 end
 
 function superball:handleDelete()
+	body.handleDelete(self)
 	if self.diereason == "shot" then addscore(4*self.healthbak + 2*self.size) end
 	neweffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
