@@ -60,7 +60,7 @@ end
 
 function seeker:onInit( timeout, exitpos )
 	self.timeout = timeout
-	self.exitposition = clone(exitpos)
+	self.exitposition = base.clone(exitpos)
 end
 
 function seeker:handleDelete()

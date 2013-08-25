@@ -14,14 +14,14 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
-		angle = torad(-45),
+		angle = base.toRadians(-45),
 		target = vector:new{width/2, height/2},
-		anglechange = torad(90),
+		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -52,7 +52,7 @@ function run()
 	warnEnemies = true
 	warnEnemiesTime = 4
 	wait(5)
-	enemy('simpleball', 20, formation { type = 'around', anglechange = torad(360/20), adapt = false, radius = 600, shootatplayer = true})
+	enemy('simpleball', 20, formation { type = 'around', anglechange = base.toRadians(360/20), adapt = false, radius = 600, shootatplayer = true})
 	warnEnemiesTime = 0.7
 	wait(4)
 	horizontalr.speed = v
@@ -63,13 +63,13 @@ function run()
 	wait(3.0)
 	enemy(divide1, 4, f2)
 	f2.speed = 1.2*v
-	f2.angle = torad (0)
+	f2.angle = base.toRadians (0)
 	enemy(divide1, 4, f2)
-	f2.angle = torad (135/2)
+	f2.angle = base.toRadians (135/2)
 	enemy(divide1, 4, f2)
 	wait(.5)
-	f2.angle = torad (360/12)
-	f2.anglechange = torad (360/12)
+	f2.angle = base.toRadians (360/12)
+	f2.anglechange = base.toRadians (360/12)
 	enemy(divide1, 12, f2)
 	enemy(divide1, 8, verticalt)
 	enemy(divide1, 8, verticalb)
@@ -83,9 +83,9 @@ function run()
 	enemy('simpleball', 21, vform)
 	warnEnemiesTime = 0.7
 	wait(4)
-	enemy({'simpleball', 'multiball'}, 20, formation { type = 'around', anglechange = torad(360/20), adapt = false, radius = 600, shootatplayer = true})
+	enemy({'simpleball', 'multiball'}, 20, formation { type = 'around', anglechange = base.toRadians(360/20), adapt = false, radius = 600, shootatplayer = true})
 	wait(4.0)
-	f1.anglechange = torad(360/15)
+	f1.anglechange = base.toRadians(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600

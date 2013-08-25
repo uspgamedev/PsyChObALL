@@ -71,7 +71,7 @@ function body:start()
 	
 end
 
-body.collidesWith = collides
+body.collidesWith = base.collides
 
 function body:getWarning()
 	self.warning = warning:new {
@@ -98,7 +98,7 @@ function body:paintOn( p )
 end
 
 function body:clear()
-	cleartable(self.bodies)
+	base.clearTable(self.bodies)
 end
 
 function body:register(...)

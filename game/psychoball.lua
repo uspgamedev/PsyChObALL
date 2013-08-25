@@ -149,10 +149,16 @@ local effects = {
 	end
 }
 
+local auxVec = vector:new{}
+local updateHelper = function(self, dt)
+	self.position:add(auxVec:set(self.speed):mult(dt))	
+	--never be deleted
+end
 function psychoball:handleDelete()
-	shot.timer:stop()
-	self.size = self.size + psychosizediff
-	self.speed:set(0,0)
+	shot.timer:stop() -- stops shooting
+	self.speed:set(0,0) -- stops moving
+	
+	self.size = psychoball.size + psychosizediff
 	local deatheffects = {}
 	self.sizeGrowth = -300
 	local efunc = effects[math.random(#effects)]
@@ -168,9 +174,8 @@ function psychoball:handleDelete()
 				}
 				local distr = efunc(e.position, self.position, self.size)
 				e.speed = (e.position - self.position):normalize():mult(v * distr, v * distr)
-
-				e.timetogo = math.huge
-				e.etc = 0
+				e.update = updateHelper
+				e:start()
 				
 				table.insert(deatheffects, e)
 			end
@@ -178,21 +183,25 @@ function psychoball:handleDelete()
 	end
 	deatheffects[1].firstpos = deatheffects[1].position:clone()
 	deatheffects[1].update = function ( self, dt )
-		effect.update(self, dt)
+		updateHelper(self, dt)
 		if gamelostinfo.isrestarting and not self.speed:equals(0, 0) then
 			local curdist = self.position:distsqr(self.firstpos)
-			if curdist == 0 or curdist > self.prevdist then
+			if curdist < 1 or curdist > self.prevdist then
 				if state == story then 
 					if not psycho.pseudoDied then levels.closeLevel() reloadStory 'Level 1-1'
 					else psycho:recreate() end
 				elseif state == survival then reloadSurvival() end
+				for k, e in pairs(paintables.psychoeffects) do 
+					e:handleDelete()
+					e.delete = true
+				end
 				paintables.psychoeffects = nil
 				return
 			end
 			self.prevdist = curdist
 		end
 	end
-	self.size = self.size - psychosizediff
+	self.size = psychoball.size
 	local m = {noShader = true}
 	m.__index = m
 	setmetatable(deatheffects, m)

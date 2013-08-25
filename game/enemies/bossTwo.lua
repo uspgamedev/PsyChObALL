@@ -391,7 +391,7 @@ function bossTwo.behaviors.imploding( self )
 				for _, tur in pairs(bossTwo.turrets) do tur.shoottimer.timelimit = tur.shoottimer.timelimit/1.5 end
 			end
 		end
-		t.update = donothing
+		t.update = base.doNothing
 	end
 	self.currentBehavior = bossTwo.behaviors.turretprotection
 end
@@ -431,7 +431,7 @@ function bossTwo.behaviors.turretprotection( self )
 	end}
 	
 	self.healths[1] = 100
-	self.currentBehavior = donothing
+	self.currentBehavior = base.doNothing
 end
 
 function bossTwo.behaviors.final( self )
@@ -617,21 +617,21 @@ function bossTwo.turret:draw( xt, yt )
 	if self.attached then self.bossTwopos:set(xt, yt)
 	else self.bossTwopos:set(0, 0) end
 	local x, y = self.bossTwopos[1] + self.position[1], self.bossTwopos[2] + self.position[2]
-	for _, c in pairs(self.circles) do
-		c.position:add(x,y)
-		c:draw()
-		c.position:sub(x,y)
-	end
+	graphics.translate(x, y)
+	for _, c in pairs(self.circles) do c:draw() end
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
-	graphics.circle('fill', x, y, self.size)
+	graphics.circle('fill', 0, 0, self.size)
+	graphics.translate(-x,-y)
 end
+
+local auxVec = vector:new{}
 
 function bossTwo.turret:update( dt )
 	body.update(self, dt)
 
 	for _, c in pairs(self.circles) do
 		c:update(dt)
-		c.position:add(c.speed * dt)
+		c.position:add(auxVec:set(c.speed):mult(dt))
 	end
 
 	if not self.onLocation and self.target then

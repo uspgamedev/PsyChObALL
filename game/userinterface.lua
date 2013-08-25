@@ -14,7 +14,7 @@ function init()
 		alphatimer:setAndGo(255, 0)
 		reloadSurvival()
 		self.visible = false
-		neweffects(self, 100)
+		neweffects(self, 50)
 		button.cancelclick = true
 	end
 
@@ -158,6 +158,7 @@ function keypressed( key )
 		for _, eff in pairs(global.paintables.psychoeffects) do
 			eff.speed:negate():mult(m, m)
 		end
+		if global.paintables.psychoeffects[1] == nil then table.foreach(global.paintables.psychoeffects, print) end
 		global.paintables.psychoeffects[1].prevdist = 
 			global.paintables.psychoeffects[1].position:distsqr(global.paintables.psychoeffects[1].firstpos)
 		timer:new{
@@ -177,7 +178,11 @@ function keypressed( key )
 	end
 
 	if (gamelost or paused) and key == 'b' then
-		global.paintables.psychoeffects = nil
+		if global.paintables.psychoeffects then
+			for _, e in pairs(global.paintables.psychoeffects) do e:handleDelete() end
+			global.paintables.psychoeffects = nil
+		end
+
 		if state == story then
 			levels.closeLevel()
 			lives = 3

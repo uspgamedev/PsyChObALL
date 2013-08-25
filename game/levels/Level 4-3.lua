@@ -14,7 +14,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(90),
+		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -61,7 +61,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true,
 		adapt = false
 	}
@@ -70,7 +70,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/4},
-		anglechange = torad(360/20),
+		anglechange = base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
 		distance = 40

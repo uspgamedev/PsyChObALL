@@ -56,7 +56,7 @@ function bossOne.behaviors.arriving( self )
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*torad(15))
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*base.toRadians(15))
 			e:register()
 		end
 		self.currentBehavior = bossOne.behaviors.first
@@ -81,7 +81,7 @@ function bossOne.behaviors.first( self )
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*torad(15))
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*base.toRadians(15))
 			e:register()
 		end
 		self.colors[1]:setAndGo(nil, 0, 122)
@@ -115,14 +115,14 @@ function bossOne.behaviors.toTheMiddle( self )
 		bossOne.shot = enemies.simpleball
 		function self.shoottimer.funcToCall()
 			local side = math.random() < .5 and -1 or 1
-			self.circleshoot.angle = math.atan2(psycho.x - self.x, psycho.y - self.y)  + side*torad(30)
+			self.circleshoot.angle = math.atan2(psycho.x - self.x, psycho.y - self.y)  + side*base.toRadians(30)
 			self.circleshoot.anglechange = -math.abs(self.circleshoot.anglechange)*side
 			self.circleshoot.timescount = 0
 			self.circleshoot:start(self.circleshoot.timelimit)
 		end
 		self.circleshoot = timer:new {
 			timelimit = .07,
-			anglechange = torad(6),
+			anglechange = base.toRadians(6),
 			times = 100,
 			angle = 0,
 			works_on_gamelost = false,
@@ -155,7 +155,7 @@ function bossOne.behaviors.third( self )
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.circleshoot:remove()
-		self.circleshoot.anglechange = torad(15)
+		self.circleshoot.anglechange = base.toRadians(15)
 		self.circleshoot.times = 360/15
 		bossOne.shot = enemies.simpleball
 		--change color or whatever
@@ -185,19 +185,19 @@ function bossOne:restrictToScreen()
 	if self.x > width - th - self.size then
 		self.x = width - th - self.size
 		self.speed:set(0, self.y > height/2 and -sp or sp)
-		return -1, sign(self.Vy)
+		return -1, base.sign(self.Vy)
 	elseif self.x < self.size + th then
 		self.x = self.size + th
 		self.speed:set(0, self.y > height/2 and -sp or sp)
-		return 1, sign(self.Vy)
+		return 1, base.sign(self.Vy)
 	elseif self.y > height - th - self.size then
 		self.y = height - th - self.size
 		self.speed:set(self.x > width/2 and -sp or sp, 0)
-		return sign(self.Vx), -1
+		return base.sign(self.Vx), -1
 	elseif self.y < self.size + th then
 		self.y = self.size + th
 		self.speed:set(self.x > width/2 and -sp or sp, 0)
-		return sign(self.Vx), 1
+		return base.sign(self.Vx), 1
 	end
 end
 

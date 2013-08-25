@@ -48,7 +48,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true,
 		adapt = false
 	}
@@ -63,9 +63,9 @@ function run()
 
 	local f3 = formation {
 		type = 'around',
-		angle = torad(-45),
+		angle = base.toRadians(-45),
 		target = vector:new{width/2, height/2},
-		anglechange = torad(45),
+		anglechange = base.toRadians(45),
 		shootattarget = true
 	}
 	local simple = 'simpleball'

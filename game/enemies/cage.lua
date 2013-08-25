@@ -47,14 +47,14 @@ function cage:doaction( actN )
 		self.lastexecuted = actN
 		if act.size then
 			self.desiredsize = act.size
-			self.sizeGrowth = math.abs(act.sizeGrowth or cage.sizeGrowth) * sign(act.size - self.size)
+			self.sizeGrowth = math.abs(act.sizeGrowth or cage.sizeGrowth) * base.sign(act.size - self.size)
 		end
 		if act.speed then
 			self.speedN = act.speed
 		end
 		if act.moveto then
 			self.onLocation = false
-			self.target = clone(act.moveto)
+			self.target = base.clone(act.moveto)
 			self.prevdist = self.position:distsqr(self.target)
 			self.speed:set(self.target):sub(self.position):normalize():mult(self.speedN, self.speedN)
 		end
@@ -80,7 +80,7 @@ end
 
 function cage:onInit( pos1, ...)
 	self.variance = math.random()*6 + 2
-	self.position = vector:new(clone(pos1))
+	self.position = vector:new(base.clone(pos1))
 	self.actions = {...}
 end
 
@@ -88,5 +88,5 @@ function cage:start()
 	self:doaction(1)
 end
 
-cage.getWarning = donothing
-cage.freeWarning = donothing
+cage.getWarning = base.doNothing
+cage.freeWarning = base.doNothing

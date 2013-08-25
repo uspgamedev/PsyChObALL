@@ -6,7 +6,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true
 	}
 
@@ -170,7 +170,7 @@ function run()
 		end
 	}
 	wait(5)
-	f1.anglechange = torad(360/15)
+	f1.anglechange = base.toRadians(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600

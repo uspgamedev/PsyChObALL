@@ -14,7 +14,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(90),
+		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -61,7 +61,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true,
 		adapt = false
 	}
@@ -70,7 +70,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/4},
-		anglechange = torad(360/20),
+		anglechange = base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
 		distance = 40
@@ -113,7 +113,7 @@ function run()
 	wait(5)
 	enemy(divide1, 4, f1)
 	wait(4)
-	f1.anglechange = torad(45)
+	f1.anglechange = base.toRadians(45)
 	enemy(divide1, 8, f1)
 	wait(4)
 	enemy(divide1, 20, vform)
@@ -130,22 +130,22 @@ function run()
 	f3.anglechange = 0
 	f3.shootattarget = true
 	f3.target = vector:new{width/2,height/2}
-	f3.angle = torad(0)
+	f3.angle = base.toRadians(0)
 	f3.center = vector:new{width/2, height/2}
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(45)
+	f3.angle = base.toRadians(45)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(90)
+	f3.angle = base.toRadians(90)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(135)
+	f3.angle = base.toRadians(135)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(180)
+	f3.angle = base.toRadians(180)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(-45)
+	f3.angle = base.toRadians(-45)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(-90)
+	f3.angle = base.toRadians(-90)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = torad(-135)
+	f3.angle = base.toRadians(-135)
 	enemy({simple,divide1}, 20, f3)
 	wait(9)
 	enemy({simple,divide1,simple}, 180, f)

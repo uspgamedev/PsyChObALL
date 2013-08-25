@@ -27,20 +27,20 @@ function bossFour.behaviors.arriving( self )
 		local f = formations.around:new{
 			angle = 0,
 			target = vector:new{width/2, height/2},
-			anglechange = torad(30),
+			anglechange = base.toRadians(30),
 			distance = 0,
 			adapt = false,
 			speed = 1.1*v,
 			shootattarget = true
 		}
 		f:applyOn(components[1])
-		f.angle = torad(7)
+		f.angle = base.toRadians(7)
 		f.radius = f.radius + width/3
 		f:applyOn(components[2])
-		f.angle = torad(14)
+		f.angle = base.toRadians(14)
 		f.radius = f.radius + width/3
 		f:applyOn(components[3])
-		f.angle = torad(21)
+		f.angle = base.toRadians(21)
 		f.radius = f.radius + width/3
 		f:applyOn(components[4])
 
@@ -102,7 +102,7 @@ function bossFour.behaviors.tocenter( self )
 	local curdist = self.position:distsqr(width/2, height/2)
 	if curdist < 1 or curdist > self.prevdist then
 		self.speed:reset()
-		self.currentBehavior = donothing
+		self.currentBehavior = base.doNothing
 		
 		self.dontattack = true
 		timer:new{
@@ -111,7 +111,7 @@ function bossFour.behaviors.tocenter( self )
 			running = true,
 			funcToCall = function()
 				self.cage = {}
-				local angchange = torad(360/30)
+				local angchange = base.toRadians(360/30)
 				local pos = vector:new{0, 200}
 				local possible = {}
 				for _, b in ipairs(self.pool) do if b.inBox then table.insert(possible, b) end end
@@ -251,7 +251,7 @@ function bossFour.behaviors.gathering ( self )
 			funcToCall = function ()
 				self.form.angle = math.random()*math.pi
 				local n = math.random(14, 22)
-				self.form.anglechange = torad(360/n)
+				self.form.anglechange = base.toRadians(360/n)
 				local es = {}
 				for i = 1, n do
 					local e = self:getShot()
@@ -416,9 +416,9 @@ function bossFour:__init()
 			end
 			e:__super().update(e, dt)
 			if e.ignoreBox then return end
-			if not e.inBox and collides(e, self) then 
+			if not e.inBox and base.collides(e, self) then 
 				e.inBox = true
-				e.speed:set((math.random()*v*.3 + v*1.4)*sign(math.random()-.5), (math.random()*v*.3 + v*1.4)*sign(math.random()-.5))
+				e.speed:set((math.random()*v*.3 + v*1.4)*base.sign(math.random()-.5), (math.random()*v*.3 + v*1.4)*base.sign(math.random()-.5))
 				e.positionfollows = nil
 			end
 			if not e.inBox then return end

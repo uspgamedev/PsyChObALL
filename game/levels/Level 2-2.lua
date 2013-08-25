@@ -44,7 +44,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true,
 		shootatplayer = false
 	}
@@ -177,11 +177,11 @@ function run()
 		end
 		if i == 120 then
 				warnEnemiesTime = 4
-				enemy(simple, 14, formation { type = 'around', anglechange = torad(360/14), adapt = false, radius = 600, shootatplayer = true, speed = 1.8*v})
+				enemy(simple, 14, formation { type = 'around', anglechange = base.toRadians(360/14), adapt = false, radius = 600, shootatplayer = true, speed = 1.8*v})
 				warnEnemiesTime = 1.3
 		end
 		if i == 140 then
-			f4.anglechange = torad(360/18)
+			f4.anglechange = base.toRadians(360/18)
 			f4.adapt = false
 			f4.speed = 1*v
 			f4.radius = 600

@@ -23,7 +23,7 @@ function snake:update( dt )
 		local s = self.segments[i]
 		s.position:add(auxVec:set(s.speed):mult(dt))
 		for _, v in pairs(shot.bodies) do
-			if collides(s.position, self.size, v.position, v.size) then
+			if base.collides(s.position, self.size, v.position, v.size) then
 				v.collides = true
 				v.explosionEffect = i ~= self.first
 				if i == self.first and self.vulnerable then
@@ -43,7 +43,7 @@ function snake:update( dt )
 			end
 		end
 
-		if psycho.canbehit and not gamelost and collides(s.position, self.size, psycho.position, psycho.size) then
+		if psycho.canbehit and not gamelost and base.collides(s.position, self.size, psycho.position, psycho.size) then
 			psycho.diereason = "shot"
 			lostgame()
 		end
@@ -81,11 +81,11 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 	self.segmentsN = n
 	self.segments = {}
 	self.path = clone {p2, ...}
-	self.position = vector:new(clone(p1))
+	self.position = vector:new(base.clone(p1))
 	self.speedvalue = spd or v
 	self.leadchange = vartimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
-	local speed = vector:new(clone(p2)):sub(self.position):normalize()
+	local speed = vector:new(base.clone(p2)):sub(self.position):normalize()
 	self.considersize = self.considersize or self.size
 	local diff = speed * (self.considersize*2)
 	speed:mult(spd or v*.8, spd or v*.8)

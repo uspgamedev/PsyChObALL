@@ -6,14 +6,14 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = vector:new{width/2, height/2},
-		anglechange = torad(180),
+		anglechange = base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
-		angle = torad(-45),
+		angle = base.toRadians(-45),
 		target = vector:new{width/2, height/2},
-		anglechange = torad(90),
+		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
 

@@ -37,12 +37,12 @@ function levelEnv.enemy( name, n, format, ... )
 	if type(name) == 'string' then
 		local enemy = enemies[name]
 		for i = 1, n do
-			enemylist[i] = enemy:new(clone(cp))
+			enemylist[i] = enemy:new(base.clone(cp))
 		end
 	else
 		local k, s = 1, #name
 		for i = 1, n do
-			enemylist[i] = enemies[name[k]]:new(clone(cp))
+			enemylist[i] = enemies[name[k]]:new(base.clone(cp))
 			k = k + 1
 			if k > s then k = 1 end
 		end
@@ -176,7 +176,7 @@ local loaded = false
 function loadAll()
 	if loaded then return end
 	loaded = true
-	cleartable(levels)
+	base.clearTable(levels)
 	local files = filesystem.enumerate('levels')
 	for _, file in ipairs(files) do
 		local lev = assert(filesystem.load('levels/' .. file))

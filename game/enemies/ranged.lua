@@ -16,7 +16,7 @@ function ranged:__init()
 	self.speed:set(self.target):sub(self.position):normalize():mult(1.3*v, 1.3*v)
 	self.prevdist = self.position:distsqr(self.target)
 	self.onLocation = false
-	self.anglechange = self.anglechange or torad(360/self.divideN)
+	self.anglechange = self.anglechange or base.toRadians(360/self.divideN)
 	self.shotcircle = circleEffect:new{
 		coloreffect = self.shot.coloreffect,
 		size = self.size + 4,
@@ -45,9 +45,9 @@ function ranged:onInit( num, target, pos, exitpos, shot, initialcolor, angle, ti
 	self.divideN = num or self.divideN
 	self.shot = shot and enemies[shot] or enemies.simpleball
 	if not pos then enemy.__init(self)
-	else self.position = clone(pos) end
-	self.exitposition = clone(exitpos) or self.position:clone()
-	self.target = clone(target)
+	else self.position = base.clone(pos) end
+	self.exitposition = base.clone(exitpos) or self.position:clone()
+	self.target = base.clone(target)
 end
 
 function ranged:start()
@@ -96,7 +96,7 @@ function ranged:update( dt )
 end
 
 function ranged:shoot()
-	local ang = self.angle + torad(180)
+	local ang = self.angle + base.toRadians(180)
 	local speed = self.setspeed or 1.5*v
 	for i = 1, self.divideN do
 		local e = self.shot:new{}
@@ -115,7 +115,7 @@ function ranged:handleDelete()
 	if self.diereason == "shot" then
 		addscore(25*self.divideN)
 		self.divideN = self.divideN + 3	
-		self.anglechange = torad(360/self.divideN)
+		self.anglechange = base.toRadians(360/self.divideN)
 		self:shoot()
 	end
 	if self.shoottimer then self.shoottimer:remove() end

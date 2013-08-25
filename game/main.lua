@@ -12,7 +12,6 @@ require "effect"
 require "enemy"
 require "shot"
 require "vartimer"
-require "list"
 require "enemies"
 require "psychoball"
 require "warning"
@@ -203,7 +202,7 @@ function resetVars()
 	text:clear()
 	imagebody:clear()
 	--[[End of Resetting Paintables]]
-	cleartable(keyspressed)
+	base.clearTable(keyspressed)
 
 	timefactor = 1.0
 	multiplier = 1
@@ -348,8 +347,10 @@ function love.draw()
 		return
 	end
 
-	base.spriteBatch:clear()
-	base.spriteBatch:bind()
+	base.circleSpriteBatch:clear()
+	base.circleSpriteBatch:bind()
+
+	effect.spriteBatch:bind()
 
 	graphics.translate(-swypetimer.var, 0)
 	--[[End of setting camera]]
@@ -371,11 +372,17 @@ function love.draw()
 		end
 	end
 	--[[End of Drawing Game Objects]]
-	base.spriteBatch:unbind()
-	graphics.draw(base.spriteBatch, 0, 0)
+
+	graphics.setPixelEffect()
+	effect.spriteBatch:unbind()
+	graphics.draw(effect.spriteBatch, 0 ,0)
+
+	graphics.setPixelEffect(base.circleShader)
+	base.circleSpriteBatch:unbind()
+	graphics.draw(base.circleSpriteBatch, 0, 0)
 
 	UI.draw()
-
+	graphics.translate(swypetimer.var, 0)
 end
 
 function drawBackground()
@@ -444,7 +451,6 @@ function playText()
 	return playmessage
 end
 
-local todelete = {}
 
 function love.update(dt)
 	if dt > 0.03333 then dt = 0.03333 end
@@ -463,10 +469,11 @@ function love.update(dt)
 		psycho:update(dt)
 	end
 
-	updateotherstuff (dt)
+	updateBodies(dt)
 end
 
-function updateotherstuff (dt)
+local todelete = {}
+function updateBodies( dt )
 	for i, v in pairs(paintables) do
 		for j, m in pairs(v) do
 			m:update(dt)
@@ -478,9 +485,9 @@ function updateotherstuff (dt)
 		local n
 		for k = #todelete, 1, -1 do
 			n = todelete[k]
-			todelete[k] = nil
 			v[n]:handleDelete()
 			v[n] = nil
+			todelete[k] = nil
 		end
 	end
 end

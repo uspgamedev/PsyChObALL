@@ -33,7 +33,7 @@ function superball:__init()
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-		e.speed = pos:sub(self.position):normalize():mult(1.5 * v, 1.5 * v):rotate((math.random()-.5)*torad(30))
+		e.speed = pos:sub(self.position):normalize():mult(1.5 * v, 1.5 * v):rotate((math.random()-.5)*base.toRadians(30))
 		e:register(self.extra and unpack(self.extra) or nil)
 	end
 
@@ -45,8 +45,8 @@ function superball:__init()
 		function self.speedtimer.funcToCall(timer)
 			timer.timelimit = math.random()*3 + 1
 			local vx, vy = math.random(-50, 50), math.random(-50, 50)
-			vx = vx + v*sign(vx)
-			vy = vy + v*sign(vy)
+			vx = vx + v*base.sign(vx)
+			vy = vy + v*base.sign(vy)
 			self.speed:set(vx, vy)
 		end
 	end
@@ -73,7 +73,7 @@ end
 function superball:onInit( shot, exitpos, timeout, ... )
 	self.shot = shot and enemies[shot] or state == survival and enemy or enemies.simpleball
 	self.timeout = timeout
-	self.exitposition = self.exitposition or clone(exitpos) or clone(self.position)
+	self.exitposition = self.exitposition or base.clone(exitpos) or base.clone(self.position)
 	self.extra = select('#', ...) > 0 and {...} or nil
 end
 

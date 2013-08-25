@@ -63,7 +63,7 @@ function paintOn( self, p )
 end
 
 function clear()
-	for k in pairs(bodies) do
-		cleartable(bodies[k])
+	for k, b in pairs(bodies) do
+		base.clearTable(b)
 	end
 end

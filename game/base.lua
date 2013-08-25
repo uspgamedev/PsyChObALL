@@ -1,9 +1,13 @@
 width, height = 1080, 720
 require 'lux.object'
 require 'vector'
+require 'list'
+require 'stack'
 
 --mythical stuff
-base = {}
+module('base', package.seeall)
+
+math.atan = error --use math.atan2
 
 --[[
 	"Localizes" Love2D tables
@@ -19,13 +23,10 @@ local function fixPosIgnoreNone( func )
 	end
 end
 
-love.graphics.getHeight = nil
-love.graphics.getWidth  = nil
+pixel = love.graphics.newImage 'resources/pixel.png'
+pixel:setFilter('linear','linear', 0)
 
-base.pixel = love.graphics.newImage 'resources/pixel.png'
-base.pixel:setFilter('linear','linear', 0)
-
-base.circleShader = love.graphics.newPixelEffect [[
+circleShader = love.graphics.newPixelEffect [[
 	extern number min;
 	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
 		number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
@@ -37,13 +38,16 @@ base.circleShader = love.graphics.newPixelEffect [[
 		return color;
 	}
 ]]
-base.circleShader:send("min", 0)
+circleShader:send("min", 0)
 
-base.spriteBatch = love.graphics.newSpriteBatch(base.pixel, 500, 'stream')
+circleSpriteBatch = love.graphics.newSpriteBatch(pixel, 500, 'stream')
 
-base.lineWidth = 1
 
-graphics = {
+local translateStack = stack:new{}
+translateStack:push(vector:new{0, 0})
+
+local lineWidth = 1
+_G.graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
 	circle = function ( mode, x, y, r )
 		if cheats.image.enabled and (cheats.dkmode or mode == 'fill') then
@@ -53,15 +57,16 @@ graphics = {
 		else
 			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 			if mode == 'line' then
-				local min = base.lineWidth*ratio + 1
+				local min = lineWidth*ratio + 1
 				min = (((rFixed - min)/(rFixed))^2)/4
 				if love.graphics.getLineWidth() > 1 then print 'asd' end
-				base.circleShader:send('min', min)
-				love.graphics.draw(base.pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
-				base.circleShader:send('min', 0) 
+				circleShader:send('min', min)
+				love.graphics.draw(pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
+				circleShader:send('min', 0) 
 			else
-				base.spriteBatch:setColor(graphics.getColor())
-				base.spriteBatch:add(xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
+				circleSpriteBatch:setColor(graphics.getColor())
+				local tx, ty = translateStack:peek():unpack()
+				circleSpriteBatch:add(xFixed - rFixed + tx, yFixed - rFixed + ty, 0, 2*rFixed)
 			end
 		end
 	end,
@@ -72,13 +77,23 @@ graphics = {
 	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,
 	translate = function(x, y) 
 		local tx, ty = sign(x)*math.floor(math.abs(x)*ratio), sign(y)*math.floor(math.abs(y)*ratio)
+		translateStack:peek():add(tx or 0, ty or 0)
 		love.graphics.translate(tx, ty)
+	end,
+	push = function()
+		translateStack:push(vector:new{}:set(translateStack:peek()))
+		love.graphics.push()
+	end,
+	pop = function()
+		translateStack:pop()
+		love.graphics.pop()
 	end,
 	rectangle = function (mode, x, y, width, height) love.graphics.rectangle(mode, x*ratio, y*ratio, width*ratio, height*ratio) end,
 	line = function(x1,y1,x2,y2) love.graphics.line(x1*ratio, y1*ratio, x2*ratio, y2*ratio) end,
-	setLineWidth = function(l) base.lineWidth = l love.graphics.setLineWidth(l) end
+	setLineWidth = function(l) lineWidth = l love.graphics.setLineWidth(l) end
 }
-mouse = {
+
+_G.mouse = {
 	getPosition = function()
 		local x, y = love.mouse.getPosition()
 		return x/ratio, y/ratio
@@ -86,6 +101,7 @@ mouse = {
 	getX = function() return love.mouse.getX()/ratio end,
 	getY = function() return love.mouse.getY()/ratio end
 }
+
 for k,v in pairs(love) do
 	if type(v) == 'table' then
 		if _G[k] then
@@ -102,7 +118,7 @@ end
 	If you try to set a value that already exists on _G, it will be set there,
 	otherwise, it will be created on the table
 ]]
-function base.globalize( t )
+function globalize( t )
 	t.global = _G
 	t.self = { __index = t, __newindex = function ( nt, k, v )
 		rawset(t, k, v)
@@ -125,7 +141,7 @@ local response = http.request{ url=URL, create=function()
 	return req_sock
 end}
 
-function base.getLatestVersion()
+function getLatestVersion()
 	local version = http.request("http://uspgamedev.org/downloads/projects/psychoball/latest")
 	if version then version = version:sub(1,version:len()-1) end --cutting the '\n' at the end
 	return version
@@ -139,7 +155,7 @@ function restrainInScreen( vec )
 	return vec
 end
 
-function cleartable( t )
+function clearTable( t )
 	for k in pairs(t) do t[k] = nil end
 end
 
@@ -147,12 +163,12 @@ function sign(a)
 	return a == 0 and 0 or a > 0 and 1 or -1 
 end
 
-local constrad = math.pi/180
-function torad( degree )
-	return degree*constrad
+local constDegreeToRadians = math.pi/180
+function toRadians( degree )
+	return degree*constDegreeToRadians
 end
 
-function donothing()
+function doNothing()
 	-- nothing
 end
 
@@ -166,5 +182,3 @@ function collides( p1, r1, p2, r2 )
 	end
 	return (r1 + r2)^2 >= (p1[1] - p2[1])^2 + (p1[2] - p2[2])^2
 end
-
-math.atan = error --use math.atan2
