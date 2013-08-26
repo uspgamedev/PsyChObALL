@@ -1,9 +1,11 @@
-snake = body:new {
+snake = Body:new {
 	size = 17,
 	segmentsN = 5,
 	vulnerable = true,
 	__type = 'snake'
 }
+
+Body.makeClass(snake)
 
 function snake:draw()
 	if self.first <= self.last then
@@ -16,13 +18,13 @@ function snake:draw()
 	end
 end
 
-local auxVec = vector:new{}
+local auxVec = Vector:new{}
 
 function snake:update( dt )
 	for i = self.first, self.last, 1 do
 		local s = self.segments[i]
 		s.position:add(auxVec:set(s.speed):mult(dt))
-		for _, v in pairs(shot.bodies) do
+		for _, v in pairs(Shot.bodies) do
 			if base.collides(s.position, self.size, v.position, v.size) then
 				v.collides = true
 				v.explosionEffect = i ~= self.first
@@ -81,11 +83,11 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 	self.segmentsN = n
 	self.segments = {}
 	self.path = clone {p2, ...}
-	self.position = vector:new(base.clone(p1))
+	self.position = Vector:new(base.clone(p1))
 	self.speedvalue = spd or v
-	self.leadchange = vartimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
+	self.leadchange = VarTimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
-	local speed = vector:new(base.clone(p2)):sub(self.position):normalize()
+	local speed = Vector:new(base.clone(p2)):sub(self.position):normalize()
 	self.considersize = self.considersize or self.size
 	local diff = speed * (self.considersize*2)
 	speed:mult(spd or v*.8, spd or v*.8)
@@ -103,7 +105,7 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 end
 
 function snake:start()
-	body.start(self)
+	Body.start(self)
 	if not self.vulnerable then
 		self.coloreffect = ColorManager.noLSDEffect
 	end

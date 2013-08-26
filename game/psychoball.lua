@@ -5,7 +5,7 @@ local ultratimer
 local ultrablastcharging
 local ultrablastrelease
 
-psychoball = circleEffect:new {
+Psychoball = CircleEffect:new {
 	size	 = 23 - psychosizediff,
 	sizediff = psychosizediff,
 	maxsize = width,
@@ -17,13 +17,16 @@ psychoball = circleEffect:new {
 	changesimage = true,
 	canbehit = true,
 	pseudoDied = false,
-	__index = circleEffect.__index,
-	__newindex = circleEffect.__newindex
+	__index = CircleEffect.__index,
+	__newindex = CircleEffect.__newindex,
+	__type = 'Psychoball'
 }
 
-function psychoball.init()
+Body.makeClass(Psychoball)
+
+function Psychoball.init()
 	ultrablastmax = 84 -- maximum number of shots on ultrablast
-	ultratimer = timer:new {
+	ultratimer = Timer:new {
 		timelimit  = .02,
 		persistent = true
 	}
@@ -42,9 +45,9 @@ function psychoball.init()
 	end
 end
 
-psychoball.min, psychoball.max = math.min, math.max
+Psychoball.min, Psychoball.max = math.min, math.max
 
-function psychoball:update(dt)
+function Psychoball:update(dt)
 
 	if self.pseudoDied or gamelost then return end
 	gametime = gametime + dt
@@ -55,15 +58,15 @@ function psychoball:update(dt)
 	end
 	if usingjoystick then
 		self.speed:set(joystick.getAxis(1, 1), joystick.getAxis(1, 2)):mult(v*1.3, v*1.3)
-		if not shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then shot.timer:start(shot.timer.timelimit) end
-		if shot.timer.running and joystick.getAxis(1, 3) == 0 and joystick.getAxis(1, 4) == 0 then shot.timer:stop() end
+		if not Shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then Shot.timer:start(Shot.timer.timelimit) end
+		if Shot.timer.running and joystick.getAxis(1, 3) == 0 and joystick.getAxis(1, 4) == 0 then Shot.timer:stop() end
 	end
 
-	body.update(self, dt)
+	Body.update(self, dt)
 
 	self.position:set(
-		psychoball.max(self.size + psychosizediff, psychoball.min(width - self.size - psychosizediff, self.position[1])),
-		psychoball.max(self.size + psychosizediff, psychoball.min(height - self.size - psychosizediff, self.position[2]))
+		Psychoball.max(self.size + psychosizediff, Psychoball.min(width - self.size - psychosizediff, self.position[1])),
+		Psychoball.max(self.size + psychosizediff, Psychoball.min(height - self.size - psychosizediff, self.position[2]))
 	)
 
 	if keyspressed[' '] and not ultratimer.running and ultracounter > 0 then
@@ -80,10 +83,10 @@ function psychoball:update(dt)
 		self.sizeGrowth = 0
 	end
 
-	circleEffect.update(self, dt)
+	CircleEffect.update(self, dt)
 end
 
-function psychoball:startblast()
+function Psychoball:startblast()
 	ultracounter = ultracounter - 1
 	ultrablast = 10
 	self.sizeGrowth = 17
@@ -91,16 +94,16 @@ function psychoball:startblast()
 	ultratimer:start()
 end
 
-function psychoball:releaseblast()
+function Psychoball:releaseblast()
 	ultratimer:stop()
 	self.sizeGrowth = -300
 	do_ultrablast()
 end
 
-function psychoball:draw()
+function Psychoball:draw()
 	if self.pseudoDied or gamelost then return end
 	self.size = self.size + psychosizediff
-	body.draw(self)
+	Body.draw(self)
 	self.size = self.size - psychosizediff
 end
 
@@ -149,24 +152,24 @@ local effects = {
 	end
 }
 
-local auxVec = vector:new{}
+local auxVec = Vector:new{}
 local updateHelper = function(self, dt)
 	self.position:add(auxVec:set(self.speed):mult(dt))	
 	--never be deleted
 end
-function psychoball:handleDelete()
-	shot.timer:stop() -- stops shooting
+function Psychoball:handleDelete()
+	Shot.timer:stop() -- stops shooting
 	self.speed:set(0,0) -- stops moving
 	
-	self.size = psychoball.size + psychosizediff
+	self.size = Psychoball.size + psychosizediff
 	local deatheffects = {}
 	self.sizeGrowth = -300
 	local efunc = effects[math.random(#effects)]
-	for i = self.x - self.size, self.x + self.size, effect.size/1.5 do
-		for j = self.y - self.size, self.y + self.size, effect.size/1.5 do
+	for i = self.x - self.size, self.x + self.size, Effect.size/1.5 do
+		for j = self.y - self.size, self.y + self.size, Effect.size/1.5 do
 			if (i - self.x)^2 + (j - self.y)^2 <= self.size^2 then
-				local e = effect:new{
-					position = vector:new{i, j},
+				local e = Effect:new{
+					position = Vector:new{i, j},
 					variance = self.variance,
 					coloreffect = self.coloreffect,
 					alpha = self.alpha,
@@ -201,7 +204,7 @@ function psychoball:handleDelete()
 			self.prevdist = curdist
 		end
 	end
-	self.size = psychoball.size
+	self.size = Psychoball.size
 	local m = {noShader = true}
 	m.__index = m
 	setmetatable(deatheffects, m)
@@ -213,18 +216,18 @@ function psychoball:handleDelete()
 		lives = lives - 1
 		self.canbehit = false
 		self.pseudoDied = true
-		timer:new{ timelimit = 1, running = true, timeaffected = false, onceonly = true, funcToCall = function()
+		Timer:new{ timelimit = 1, running = true, timeaffected = false, onceonly = true, funcToCall = function()
 			UI.keypressed 'restartstory'
 		end
 		}
 	end
 end
 
-function psychoball:recreate()
+function Psychoball:recreate()
 	timefactor = 1
 	self.pseudoDied = false
-	if mouse.isDown('l') then shot.timer:start() end
-	local blink = timer:new {
+	if mouse.isDown('l') then Shot.timer:start() end
+	local blink = Timer:new {
 		timelimit = .4,
 		time = .37,
 		running = true,
@@ -238,7 +241,7 @@ function psychoball:recreate()
 			end
 		end
 	}
-	--[[stopblinking]]timer:new {
+	--[[stopblinking]]Timer:new {
 		timelimit = 1,
 		running = true,
 		onceonly = true,
@@ -250,7 +253,7 @@ function psychoball:recreate()
 	}
 end
 
-function psychoball:keypressed( key )
+function Psychoball:keypressed( key )
 	auxspeed:add(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
 			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
@@ -268,15 +271,15 @@ function psychoball:keypressed( key )
 	end
 end
 
-function psychoball:joystickpressed( joynum, button )
+function Psychoball:joystickpressed( joynum, btn )
 	
 end
 
-function psychoball:joystickreleased( joynum, button )
+function Psychoball:joystickreleased( joynum, btn )
 
 end
 
-function psychoball:keyreleased( key )
+function Psychoball:keyreleased( key )
 	auxspeed:sub(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
 			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
@@ -296,9 +299,9 @@ end
 
 function do_ultrablast()
 	for i=1, ultrablast do
-		shot:new{
+		Shot:new{
 			position = psycho.position:clone(),
-			speed = vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v)
+			speed = Vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v)
 		}:register()
 	end
 end

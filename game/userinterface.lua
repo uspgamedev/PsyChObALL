@@ -1,9 +1,9 @@
 module('UI', base.globalize)
 
 function init()
-	playbutton = button:new{
+	playbutton = Button:new{
 		size = 120,
-		position = vector:new {width/2 + 200, 430},
+		position = Vector:new {width/2 + 200, 430},
 		text = 'Survival',
 		alphafollows = alphatimer,
 		fontsize = 40
@@ -15,13 +15,13 @@ function init()
 		reloadSurvival()
 		self.visible = false
 		neweffects(self, 50)
-		button.cancelclick = true
+		Button.cancelclick = true
 	end
 
 
-	storybutton = button:new {
+	storybutton = Button:new {
 		size = 120,
-		position = vector:new {width/2 - 200, 430},
+		position = Vector:new {width/2 - 200, 430},
 		text = 'Adventure',
 		alphafollows = alphatimer,
 		fontsize = 40
@@ -33,22 +33,22 @@ function init()
 		reloadStory 'Level 1-1'
 		self.visible = false
 		neweffects(self, 50)
-		button.cancelclick = true
+		Button.cancelclick = true
 	end
 
 
-	local controlsbutton = button:new {
+	local controlsbutton = Button:new {
 		size = 80,
-		position = vector:new {width - 100, height - 100},
+		position = Vector:new {width - 100, height - 100},
 		text = "Controls",
 		fontsize = 20,
 		alphafollows = alphatimer,
 		pressed = toTutorialMenu
 	}
 
-	local backbutton = button:new {
+	local backbutton = Button:new {
 		size = 80,
-		position = vector:new {100, height - 100},
+		position = Vector:new {100, height - 100},
 		text = "Back",
 		menu = tutorialmenu,
 		fontsize = 20,
@@ -56,9 +56,9 @@ function init()
 		pressed = toMainMenu
 	}
 
-	local testingbutton = button:new {
+	local testingbutton = Button:new {
 		size = 50,
-		position = vector:new{width/2, height - 100},
+		position = Vector:new{width/2, height - 100},
 		text = "Practice",
 		fontsize = 15,
 		alphafollows = alphatimer,
@@ -114,7 +114,7 @@ function restartMenu()
 	alphatimer:setAndGo(0, 255)
 	state = mainmenu
 	resetVars()
-	timer.closenonessential()
+	Timer.closenonessential()
 	if soundmanager.currentsong ~= soundmanager.menusong then
 		soundmanager.changeSong(soundmanager.menusong)
 	end
@@ -122,7 +122,7 @@ function restartMenu()
 end
 
 function mousepressed( x, y, btn )
-	button.mousepressed(x,y,button)
+	Button.mousepressed(x, y, btn)
 	if not swypetimer.running then
 		if btn == 'r' and state == mainmenu then
 			toTutorialMenu()
@@ -131,7 +131,7 @@ function mousepressed( x, y, btn )
 end
 
 function mousereleased( x, y, btn )
-	button.mousereleased(x, y, btn)
+	Button.mousereleased(x, y, btn)
 end
 
 function keypressed( key )
@@ -161,7 +161,7 @@ function keypressed( key )
 		if global.paintables.psychoeffects[1] == nil then table.foreach(global.paintables.psychoeffects, print) end
 		global.paintables.psychoeffects[1].prevdist = 
 			global.paintables.psychoeffects[1].position:distsqr(global.paintables.psychoeffects[1].firstpos)
-		timer:new{
+		Timer:new{
 			running = true,
 			timeaffected = false,
 			onceonly = true,

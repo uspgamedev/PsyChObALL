@@ -4,23 +4,23 @@ chapter = 'Part 2 - The Betrayal'
 function run()
 	local vform = formation {
 		type = 'V',
-		startpoint = vector:new{23, -1020},
+		startpoint = Vector:new{23, -1020},
 		size = width,
 		growth = 810,
-		setspeedto = vector:new{0, 2*v}
+		setspeedto = Vector:new{0, 2*v}
 	}
 
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
 		angle = base.toRadians(-45),
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
@@ -104,11 +104,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 1-3' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 +20},
+				position = Vector:new{width/2 - 400, height/2 +20},
 				limit = 800,
 				align = 'center'
 			}:register()

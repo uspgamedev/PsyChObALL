@@ -16,7 +16,7 @@ function run()
 		movetorwards = 'right',
 		distance = 42,
 		startsat = 20,
-		setspeedto = vector:new{0, 300}
+		setspeedto = Vector:new{0, 300}
 	}
 
 	local f = formation {
@@ -25,7 +25,7 @@ function run()
 			return math.sin(x*200)*(height/2-50)+height/2
 		end,
 		side = 'right',
-		setspeedto = vector:new{-2.4*v,0},
+		setspeedto = Vector:new{-2.4*v,0},
 		distance = 30
 	}
 
@@ -59,7 +59,7 @@ function run()
 	wait(3)
 	enemy(simple, 60, f)
 	wait(2.5)
-	f.setspeedto = vector:new{-1.6*v,0}
+	f.setspeedto = Vector:new{-1.6*v,0}
 	f.func = function(x)
 			return math.sin(x*200)*(height/2-180)+height/2-180
 		end
@@ -78,34 +78,34 @@ function run()
 			return math.cos(x*200)*(height/2-50)+height/2-50
 	end
 	f.side = 'left'
-	f.setspeedto = vector:new{1.6*v,0}
+	f.setspeedto = Vector:new{1.6*v,0}
 	enemy({simple,divide1}, 100, f)
 	wait(19)
 	f.distance = 30
 	f.side = 'bottom'
-	f.setspeedto = vector:new{0,-0.7*v}
+	f.setspeedto = Vector:new{0,-0.7*v}
 	f.func = function(x)
 			return -math.sin(x*200)*(width/2-30)+width/2
 		end
 	enemy(simple, 100, f)
-	f.setspeedto = vector:new{0,0.7*v}
+	f.setspeedto = Vector:new{0,0.7*v}
 	f.side = 'top'
 	f.func = function(x)
 			return math.sin(x*200)*(width/2-30)+width/2
 	end
 	enemy(simple, 100, f)
 	wait(6)
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.6*v, v}, life = 180, size = 40}, divide1, {width/2, height+30}, 16)
+	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.6*v, v}, life = 180, size = 40}, divide1, {width/2, height+30}, 16)
 	wait(18)
 	
 	f.distance = 60
 	f.side = 'bottom'
-	f.setspeedto = vector:new{0,-0.7*v}
+	f.setspeedto = Vector:new{0,-0.7*v}
 	f.func = function(x)
 			return math.cos(x*200)*(width/2-30)+width/2
 		end
 	enemy({simple,divide1}, 100, f)
-	f.setspeedto = vector:new{0,0.7*v}
+	f.setspeedto = Vector:new{0,0.7*v}
 	f.side = 'top'
 	f.func = function(x)
 			return math.cos(x*200)*(width/2-30)+width/2
@@ -115,13 +115,13 @@ function run()
 			return math.cos(x*200)*(height/2-50)+height/2+50
 	end
 	f.side = 'right'
-	f.setspeedto = vector:new{-0.7*v,0}
+	f.setspeedto = Vector:new{-0.7*v,0}
 	enemy({simple,divide1}, 100, f)
 	f.func = function(x)
 			return math.cos(x*200)*(height/2-50)+height/2-50
 	end
 	f.side = 'left'
-	f.setspeedto = vector:new{0.7*v,0}
+	f.setspeedto = Vector:new{0.7*v,0}
 	enemy({simple,divide1}, 100, f)
 	enemy(simple, 100, f)
 	wait(40)
@@ -129,11 +129,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 3-3' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

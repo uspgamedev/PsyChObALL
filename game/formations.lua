@@ -122,17 +122,17 @@ end
 
 line = formation:new {
 	name = 'line',
-	startpoint = nil, --vector
+	startpoint = nil, --Vector
 	dx = 20, dy = 20,
 	distribute = false,
-	distribute_between = nil --vector
+	distribute_between = nil --Vector
 }
 
 function line:applyOn( enemies )
 	formation.applyOn(self, enemies)
 	local n = #enemies
 
-	local transl = vector:new{self.dx,self.dy}
+	local transl = Vector:new{self.dx,self.dy}
 	if self.distribute then
 		transl:set(self.distribute_between):sub(self.startpoint):div(n, n)
 	end
@@ -163,7 +163,7 @@ function V:applyOn( enemies )
 
 	local half = math.ceil(n/2)
 	local even = n % 2 == 0
-	local transl = vector:new{self.size/n, 2*self.growth/n}
+	local transl = Vector:new{self.size/n, 2*self.growth/n}
 	if self.vertical then transl[1], transl[2] = transl[2], transl[1] end
 	local speed = self.speed or v
 	local prevp = self.startpoint - transl
@@ -200,7 +200,7 @@ around = formation:new {
 	angle = 0,
 	anglechange = base.toRadians(60),
 	radius = width,
-	center = vector:new{width/2, height/2},
+	center = Vector:new{width/2, height/2},
 	adapt = true,
 	distance = 0
 }

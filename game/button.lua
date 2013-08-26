@@ -1,16 +1,17 @@
-button = body:new {
+Button = Body:new {
 	text = '',
 	fontsize = 12,
 	onHover = false,
-	__type = 'button',
+	__type = 'Button',
 	visible = true,
 	bodies = {},
 	noShader = true,
 	allbuttons = {}
 }
-setmetatable(button.allbuttons, {__mode = 'v'})
+setmetatable(Button.allbuttons, {__mode = 'v'})
+Body.makeClass(Button)
 
-function button:__init()
+function Button:__init()
 	if self.menu and self.menu < 10 then
 		self.position:add((self.menu - 1)*width)
 	end
@@ -18,18 +19,18 @@ function button:__init()
 	self.variance = math.random(ColorManager.cycleTime * 1000)/1000
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
-	self.effectsBurst = timer:new {
+	self.effectsBurst = Timer:new {
 		timelimit = .07,
 		pausable = false,
 		registerSelf = false,
 		persistent = true
 	}
 
-	function self.effectsBurst.funcToCall(timer)
+	function self.effectsBurst.funcToCall()
 		neweffects(self, 1)
 	end
 
-	self.hoverring = circleEffect:new {
+	self.hoverring = CircleEffect:new {
 		size = .1,
 		sizeGrowth = 0,
 		alpha = 255,
@@ -39,10 +40,10 @@ function button:__init()
 		index = false
 	}
 
-	table.insert(button.allbuttons, self)
+	table.insert(Button.allbuttons, self)
 end
 
-function button:draw()
+function Button:draw()
 	if not self.visible or self.alphafollows.var == 0 then return end
 	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect)
 	graphics.setColor(ColorManager.invertEffect(color))
@@ -50,7 +51,7 @@ function button:draw()
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')
 end
 
-function button:update( dt )
+function Button:update( dt )
 	if self.hoverring.size > self.size then
 		self.hoverring.size = self.size
 		self.hoverring.sizeGrowth = 0
@@ -68,7 +69,7 @@ function button:update( dt )
 	end
 end
 
-function button:setText( t )
+function Button:setText( t )
 	self.text = t or self.text
 	local font = getFont(self.fontsize/ratio)
 	local dx, dy = font:getWrap(self.text, self.size*2)
@@ -77,16 +78,16 @@ function button:setText( t )
 		self.y - font:getHeight()*dy/2
 end
 
-function button:pressed()
+function Button:pressed()
 	print 'pressed'
 end
 
-function button:start()
+function Button:start()
 	self.visible = nil
 	self.effectsBurst:register()
 end
 
-function button:close()
+function Button:close()
 	if self.onHover then
 		self.onHover = false
 		self:hover(false)
@@ -94,25 +95,25 @@ function button:close()
 	self.effectsBurst:remove()
 end
 
-function button:hover(hovering)
+function Button:hover(hovering)
 	if hovering then
 		self.effectsBurst:start()
 		self.hoverring.size = 0
 		self.hoverring.sizeGrowth = 350
 		self.hoverring.delete = false
-		circleEffect.bodies[self] = self.hoverring
+		CircleEffect.bodies[self] = self.hoverring
 	else
 		self.effectsBurst:stop()
 		self.hoverring.sizeGrowth = -350
 	end
 end
 
-function button:isClicked(x, y)
+function Button:isClicked(x, y)
 	return self.menu == state and ((x-self.x)^2 + (y-self.y)^2) < self.size^2
 end
 
-function button.mousepressed( x, y, btn )
-	for k, b in pairs(button.allbuttons) do
+function Button.mousepressed( x, y, btn )
+	for k, b in pairs(Button.allbuttons) do
 		if b:isClicked(x, y) then
 			b:pressed()
 			return
@@ -120,6 +121,6 @@ function button.mousepressed( x, y, btn )
 	end
 end
 
-function button.mousereleased( x, y, btn )
-	-- body
+function Button.mousereleased( x, y, btn )
+	
 end

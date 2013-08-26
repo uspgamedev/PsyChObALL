@@ -1,4 +1,4 @@
-bossLast = body:new{
+bossLast = Body:new{
 	size = 100,
 	width = 200,
 	height = 200,
@@ -7,9 +7,11 @@ bossLast = body:new{
 	maxhealth = 10,
 	collides = true,
 	ord = 8,
-	angle = nil, --vartimer
+	angle = nil, --VarTimer
 	__type = 'bossLast'
 }
+
+Body.makeClass(bossLast)
 
 function bossLast:draw()
 	if not self.visible then return end
@@ -24,7 +26,7 @@ function bossLast:draw()
 end
 
 function bossLast:update( dt )
-	body.update(self, dt)
+	Body.update(self, dt)
 	if not self.visible then return end
 
 	if self.collides then
@@ -35,7 +37,7 @@ function bossLast:update( dt )
 		elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 	end
 
-	for _, s in pairs(shot.bodies) do
+	for _, s in pairs(Shot.bodies) do
 		if self:collidesWith(s) then
 			s.collides = true
 			s.explosionEffects = true
@@ -60,11 +62,11 @@ end
 
 function bossLast:__init()
 	self.position:set(width/2, height/2)
-	self.angle = vartimer:new{var = 0}
+	self.angle = VarTimer:new{var = 0}
 	self.visible = false
-	self.alphafollows = vartimer:new{var = 0}
+	self.alphafollows = VarTimer:new{var = 0}
 	self.health = bossLast.maxhealth
-	self.colorchange = vartimer:new{var = 255}
+	self.colorchange = VarTimer:new{var = 255}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
 
 	local components = {{},{},{},{}}
@@ -78,7 +80,7 @@ function bossLast:__init()
 			if e.y + e.size > height/2 + 120 then e.speed:set(nil, -math.abs(e.Vy))
 			elseif e.y - e.size < height/2 - 120 then e.speed:set(nil,  math.abs(e.Vy)) end
 		end
-	local ballsalpha = vartimer:new{var = 255}
+	local ballsalpha = VarTimer:new{var = 255}
 	for i = 1, 160 do
 		local e = enemies.grayball:new{}
 		e.coloreffect = base.doNothing
@@ -90,7 +92,7 @@ function bossLast:__init()
 	end
 	local f = formations.around:new{
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(20),
 		distance = 80,
 		adapt = false,
@@ -106,7 +108,7 @@ function bossLast:__init()
 	f.angle = math.pi/2
 	f:applyOn(components[4])
 
-	self.shoottimer = timer:new {
+	self.shoottimer = Timer:new {
 		timelimit = .5,
 		works_on_gamelost = false,
 		funcToCall = function()
@@ -119,7 +121,7 @@ function bossLast:__init()
 		end
 	}
 
-	timer:new{
+	Timer:new{
 		timelimit = .2,
 		running = true,
 		funcToCall = function(timer)
@@ -145,8 +147,8 @@ function bossLast:__init()
 	}
 end
 
-local auxVec = vector:new{}
-local auxVec2 = vector:new{}
+local auxVec = Vector:new{}
+local auxVec2 = Vector:new{}
 
 function bossLast:collidesWith( pos, size ) --rectangle with circle
 	if not size then

@@ -5,14 +5,14 @@ function run()
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
 		angle = base.toRadians(-45),
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
@@ -47,7 +47,7 @@ function run()
 	end)
 
 	wait(1)
-	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
+	enemy(simple, 1, { position = Vector:new{-20, height/2}, speed = Vector:new{v, 0} })
 	wait(3)
 	enemy(simple, 2, f1)
 	wait(2.5)
@@ -77,11 +77,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 1-2' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

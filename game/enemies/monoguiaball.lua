@@ -1,4 +1,4 @@
-monoguiaball = body:new {
+monoguiaball = Body:new {
 	size =  25,
 	divideN = 3,
 	args = {},
@@ -6,14 +6,16 @@ monoguiaball = body:new {
 	__type = 'monoguiaball'
 }
 
+Body.makeClass(monoguiaball)
+
 function monoguiaball:__init()
-	if not rawget(self.position, 1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then Enemy.__init(self) end
 end
 
 function monoguiaball:update( dt )
-	body.update(self, dt)
+	Body.update(self, dt)
 
-	for _, v in pairs(shot.bodies) do
+	for _, v in pairs(Shot.bodies) do
 		if not v.collides and self:collidesWith(v) then
 			self.collides = true
 			v.collides = true
@@ -32,7 +34,7 @@ function monoguiaball:update( dt )
 end
 
 function monoguiaball:handleDelete()
-	body.handleDelete(self)
+	Body.handleDelete(self)
 	neweffects(self, 20)
 	if self.diereason ~= "shot" then return end
 	addscore(100)

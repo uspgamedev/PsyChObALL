@@ -1,4 +1,4 @@
-seeker = body:new {
+seeker = Body:new {
 	size = 20,
 	timeout = 10,
 	seek = true,
@@ -6,17 +6,19 @@ seeker = body:new {
 	__type = 'seeker'
 }
 
+Body.makeClass(seeker)
+
 function seeker:__init()
-	if not rawget(self.position, 1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then Enemy.__init(self) end
 	self.speedN = self.speedN or math.random(v - 30, v)
 	self.exitposition = self.exitposition or self.position
-	self.colors = {vartimer:new{var = .88*255}, vartimer:new{var = .66*255}, vartimer:new{var = .37*255}}
+	self.colors = {VarTimer:new{var = .88*255}, VarTimer:new{var = .66*255}, VarTimer:new{var = .37*255}}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
 end
 
 function seeker:start()
-	body.start(self)
-	self.timeout = timer:new{
+	Body.start(self)
+	self.timeout = Timer:new{
 		timelimit = self.timeout,
 		onceonly = true,
 		running = true,
@@ -31,9 +33,9 @@ function seeker:update( dt )
 	if self.seek then
 		self.speed:set(psycho.position):sub(self.position):normalize():mult(self.speedN, self.speedN)
 	end
-	body.update(self, dt)
+	Body.update(self, dt)
 
-	for _, v in pairs(shot.bodies) do
+	for _, v in pairs(Shot.bodies) do
 		if not v.collides and self:collidesWith(v) then
 			v.collides = true
 			v.explosionEffects = false
@@ -64,7 +66,7 @@ function seeker:onInit( timeout, exitpos )
 end
 
 function seeker:handleDelete()
-	body.handleDelete(self)
+	Body.handleDelete(self)
 	if self.diereason == 'shot'then addscore(100) end
 	neweffects(self, 40)
 end

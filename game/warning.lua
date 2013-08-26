@@ -1,13 +1,16 @@
-warning = body:new {
+Warning = Body:new {
 	mode = 'line',
 	piece = .15,
 	lineWidth = 1,
 	angle = 0,
+	noShader = true,
 	bodies = {},
-	__type = 'warning'
+	__type = 'Warning'
 }
 
-function warning:__init()
+Body.makeClass(Warning)
+
+function Warning:__init()
 	if self.based_on then
 		self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
 		self.size = self.based_on.size*2
@@ -19,11 +22,11 @@ function warning:__init()
 	end
 end
 
-function warning:recalc_angle()
+function Warning:recalc_angle()
 	self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
 end
 
-function warning:draw()
+function Warning:draw()
 	graphics.setLine(self.lineWidth)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.arc(self.mode, self.position[1], self.position[2], self.size, self.angle - self.piece, self.angle + self.piece)

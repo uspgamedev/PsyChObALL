@@ -1,4 +1,4 @@
-bossFour = body:new{
+bossFour = Body:new{
 	size = 60,
 	width = 400,
 	height = 300,
@@ -10,6 +10,8 @@ bossFour = body:new{
 	ord = 6,
 	__type = 'bossFour'
 }
+
+Body.makeClass(bossFour)
 
 bossFour.behaviors = {}
 
@@ -26,7 +28,7 @@ function bossFour.behaviors.arriving( self )
 		end
 		local f = formations.around:new{
 			angle = 0,
-			target = vector:new{width/2, height/2},
+			target = Vector:new{width/2, height/2},
 			anglechange = base.toRadians(30),
 			distance = 0,
 			adapt = false,
@@ -50,7 +52,7 @@ function bossFour.behaviors.arriving( self )
 		f.shootattarget = true
 		self.form = f
 
-		timer:new{
+		Timer:new{
 			timelimit = 5,
 			onceonly = true,
 			running = true,
@@ -105,21 +107,21 @@ function bossFour.behaviors.tocenter( self )
 		self.currentBehavior = base.doNothing
 		
 		self.dontattack = true
-		timer:new{
+		Timer:new{
 			timelimit = 1.1,
 			onceonly = true,
 			running = true,
 			funcToCall = function()
 				self.cage = {}
 				local angchange = base.toRadians(360/30)
-				local pos = vector:new{0, 200}
+				local pos = Vector:new{0, 200}
 				local possible = {}
 				for _, b in ipairs(self.pool) do if b.inBox then table.insert(possible, b) end end
 				if #possible < 30 then
 					local lim = 30 - #possible
 					for i = 1, lim do
 						local e = self:getShot()
-						enemy.__init(e)
+						Enemy.__init(e)
 						e.position:set(self.position)
 						self:prepare(e)
 						e.inBox = true
@@ -130,7 +132,7 @@ function bossFour.behaviors.tocenter( self )
 					local lim = 50 - #self.pool
 					for i = 1, lim do
 						local e = self:getShot()
-						enemy.__init(e)
+						Enemy.__init(e)
 						e.position:set(self.position)
 						self:prepare(e)
 						e.inBox = true
@@ -152,7 +154,7 @@ function bossFour.behaviors.tocenter( self )
 				self.currentBehavior = bossFour.behaviors.third
 			end
 		}
-		timer:new{
+		Timer:new{
 			timelimit = 2.1,
 			onceonly = true,
 			running = true,
@@ -245,7 +247,7 @@ function bossFour.behaviors.gathering ( self )
 			self.health = bossFour.maxhealth*.25
 			self.vulnerable = true
 		end
-		self.shoottimer = timer:new {
+		self.shoottimer = Timer:new {
 			timelimit = 1,
 			running = true,
 			funcToCall = function ()
@@ -283,8 +285,8 @@ function bossFour:update( dt )
 		end
 	end
 
-	body.update(self, dt)
-	circleEffect.update(self, dt)
+	Body.update(self, dt)
+	CircleEffect.update(self, dt)
 	self:currentBehavior()
 
 	if self.collides then
@@ -300,7 +302,7 @@ function bossFour:update( dt )
 		lostgame()
 	end
 
-	for _, s in pairs(shot.bodies) do
+	for _, s in pairs(Shot.bodies) do
 		if self:collidesWith(s) then
 			s.collides = true
 			s.explosionEffects = true
@@ -312,7 +314,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					--self.colors[2] is already correct
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossFour.behaviors.first then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[3]:setAndGo(nil, d*255, 400)
@@ -324,7 +326,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossFour.behaviors.second then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*50, 400)
@@ -337,7 +339,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossFour.behaviors.third then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*122, 400)
@@ -350,7 +352,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						self.colors[1]:setAndGo(nil, .59*225 + (1-d)*.41*255, 400)
 						self.colors[2]:setAndGo(nil, .44*255*d, 400)
 						self.colors[3]:setAndGo(nil, .9*255*d, 400)
@@ -368,7 +370,7 @@ function bossFour:draw()
 			p:draw()
 		end
 	end
-	body.draw(self)
+	Body.draw(self)
 end
 
 function bossFour:prepare( enemy )
@@ -389,7 +391,7 @@ function bossFour:grow( n )
 		e:getWarning()
 		table.insert(es, e)
 	end
-	timer:new{ 
+	Timer:new{ 
 		timelimit = 1,
 		running = true,
 		onceonly = true,
@@ -428,9 +430,9 @@ function bossFour:__init()
 			if e.y + e.size > (e.by or (self.y + self.height/2)) then e.speed:set(nil, -math.abs(e.Vy))
 			elseif e.y - e.size < (e.ty or (self.y - self.height/2)) then e.speed:set(nil,  math.abs(e.Vy)) end
 		end
-	self.colors = {vartimer:new{var = 122}, vartimer:new{var = 122}, vartimer:new{var = 122}, vartimer:new{var = 10}}
+	self.colors = {VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 10}}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
-	self.shoottimer = timer:new{
+	self.shoottimer = Timer:new{
 		timelimit = .1,
 		funcToCall = function()
 			if not self.recharging and math.random() < .1 then self:grow(1) end
@@ -445,7 +447,7 @@ function bossFour:__init()
 			end
 		end
 	}
-	self.replacetimer = timer:new{
+	self.replacetimer = Timer:new{
 		timelimit = .1,
 		funcToCall = function()
  			if not self.recharging and #self.pool/self.poolN < .4 then
@@ -472,7 +474,7 @@ function bossFour:__init()
 						e:getWarning()
 					end
 				end
-				timer:new {
+				Timer:new {
 					timelimit = 1.5,
 					onceonly = true,
 					running = true,

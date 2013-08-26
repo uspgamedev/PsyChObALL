@@ -1,18 +1,20 @@
-simpleball = body:new {
+simpleball = Body:new {
 	size = 20,
 	coloreffect = ColorManager.ColorManager.getColorEffect(0, 0, 255, 40),
 	__type = "simpleball"
 }
 
+Body.makeClass(simpleball)
+
 function simpleball:__init()
-	if not rawget(self.position, 1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then Enemy.__init(self) end
 end
 
 function simpleball:update( dt )
-	body.update(self, dt)
+	Body.update(self, dt)
 
 	--if self.position[1] < -self.size or self.position[1] > width + self.size or self.position[2] < -self.size or self.position[2] > width + self.size then return end
-	for _, v in pairs(shot.bodies) do
+	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
 			self.collides = true
 			v.collides = true
@@ -31,7 +33,7 @@ function simpleball:update( dt )
 end
 
 function simpleball:handleDelete()
-	body.handleDelete(self)
+	Body.handleDelete(self)
 	if self.diereason == 'shot' then addscore(25) end
 	neweffects(self, 40)
 end

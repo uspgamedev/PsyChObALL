@@ -4,13 +4,13 @@ bodies = {}
 
 function init()
 	--[[superball]]
-	superball.addtimer = timer:new {
+	superball.addtimer = Timer:new {
 		timelimit = 30,
 		works_on_gamelost = false,
 		persistent = true
 	}
 
-	local possiblePositions = {vector:new{30, 30}, vector:new{width - 30, 30}, vector:new{width - 30, height - 30}, vector:new{30, height - 30}}
+	local possiblePositions = {Vector:new{30, 30}, Vector:new{width - 30, 30}, Vector:new{width - 30, height - 30}, Vector:new{30, height - 30}}
 	function superball.addtimer:funcToCall()
 		if #bodies.superball > math.floor(gametime/90) then self.timelimit = 2 return end
 		superball.list:push(superball:new{ position = possiblePositions[math.random(4)]:clone() })
@@ -21,14 +21,14 @@ function init()
 		self:stop()
 	end
 
-	superball.releasetimer = timer:new {
+	superball.releasetimer = Timer:new {
 		timelimit = 30,
 		works_on_gamelost = false,
 		persistent = true
 	}
 
 	function superball.releasetimer:funcToCall()
-		if #superball.bodies > math.floor(gametime/90) then self.timelimit = 2 return end
+		if superball.list.first == superball.list.last then self.timelimit = 2 return end
 		superball.list:pop():register()
 		self.timelimit = 30
 	end
@@ -55,7 +55,7 @@ function paintOn( self, p )
 		setmetatable(bodies[name], m)
 		self[name].bodies = bodies[name]
 		self[name]:paintOn(p)
-		self[name].list = list:new{}
+		self[name].list = List:new{}
 		self['new' .. name] = function ( prototype )
 			return self[name]:new(prototype)
 		end

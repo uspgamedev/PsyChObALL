@@ -1,26 +1,27 @@
-stack = lux.object.new {
-	size = 0
+Stack = lux.object.new {
+	size = 0,
+	__type = 'Stack'
 }
 
-function stack:push(x)
+function Stack:push(x)
 	self.size = self.size + 1
 	self[self.size] = x
 end
 
-function stack:pop()
-	if self.size == 0 then print("stack empty") return nil end
+function Stack:pop()
+	if self.size == 0 then print("Stack empty") return nil end
 	local x = self[self.size]
 	self[self.size] = nil
 	self.size = self.size - 1
 	return x
 end
 
-function stack:peek()
-	if self.size == 0 then print("stack empty") end
+function Stack:peek()
+	if self.size == 0 then print("Stack empty") end
 	return self[self.size]
 end
 
-function stack:clear()
+function Stack:clear()
 	for i = 1, self.size, 1 do
 		self[i] = nil
 	end

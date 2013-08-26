@@ -16,7 +16,7 @@ function init()
 	menusong:setLooping(true)
 	menusong:setVolume(muted and 0 or volume/100)
 	menusong:play()
-	songfadeout = timer:new{
+	songfadeout = Timer:new{
 		timelimit	 = .01,
 		running		 = false,
 		pausable		 = false,
@@ -32,7 +32,7 @@ function init()
 		else currentsong:setVolume(currentsong:getVolume() - .02) end
 	end
 
-	songfadein = timer:new{
+	songfadein = Timer:new{
 		timelimit	 = .03,
 		running		 = false,
 		pausable		 = false,

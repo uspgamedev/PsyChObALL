@@ -1,6 +1,4 @@
-module('enemies', package.seeall)
-
-superball = body:new {
+superball = Body:new {
 	size = 40,
 	variance = 13,
 	life = 60,
@@ -10,24 +8,26 @@ superball = body:new {
 	__type = 'superball'
 }
 
+Body.makeClass(superball)
+
 function superball:__init()
-	if not rawget(self.position, 1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then Enemy.__init(self) end
 
 	local vx, vy = math.random(v, v+50), math.random(v, v+50)
 	vx = self.x < height/2 and vx or -vx
 	vy = self.y < width/2 and vy or -vy
-	self.speed	  = vector:new {vx, vy}
+	self.speed	  = Vector:new {vx, vy}
 
 	self.coloreffect = self.shot.coloreffect
 	self.variance = self.shot.variance
 
-	self.shoottimer = timer:new {
+	self.shoottimer = Timer:new {
 		timelimit = 1.5 + math.random(),
 		works_on_gamelost = false,
 		time = math.random()*1.6
 	}
 
-	function self.shoottimer.funcToCall( timer )
+	function self.shoottimer.funcToCall(timer )
 		timer.timelimit = 1 + math.random()
 		local e = self.shot:new{}
 		e.position = self.position:clone()
@@ -38,7 +38,7 @@ function superball:__init()
 	end
 
 	if state == survival then 
-		self.speedtimer = timer:new {
+		self.speedtimer = Timer:new {
 			timelimit = math.random()*4 + 1
 		}
 
@@ -51,7 +51,7 @@ function superball:__init()
 		end
 	end
 
-	self.lifeCircle = circleEffect:new {
+	self.lifeCircle = CircleEffect:new {
 		alpha = 60,
 		sizeGrowth = 0,
 		size = self.size + self.life,
@@ -60,7 +60,7 @@ function superball:__init()
 		linewidth = 6
 	}
 
-	self.timeout = timer:new {
+	self.timeout = Timer:new {
 		timelimit = self.timeout,
 		onceonly = true,
 		funcToCall = function()
@@ -71,14 +71,14 @@ function superball:__init()
 end
 
 function superball:onInit( shot, exitpos, timeout, ... )
-	self.shot = shot and enemies[shot] or state == survival and enemy or enemies.simpleball
+	self.shot = shot and enemies[shot] or state == survival and Enemy or enemies.simpleball
 	self.timeout = timeout
 	self.exitposition = self.exitposition or base.clone(exitpos) or base.clone(self.position)
 	self.extra = select('#', ...) > 0 and {...} or nil
 end
 
 function superball:start( shot )
-	body.start(self)
+	Body.start(self)
 	self.healthbak = self.life
 	self.lifeCircle.size = self.size + self.life
 	self.shoottimer:start()
@@ -89,7 +89,7 @@ function superball:start( shot )
 end
 
 function superball:update(dt)
-	body.update(self, dt)
+	Body.update(self, dt)
 	if self.collides then
 		if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
 		elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
@@ -98,7 +98,7 @@ function superball:update(dt)
 		elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 	end
 
-	for i,v in pairs(shot.bodies) do
+	for i,v in pairs(Shot.bodies) do
 		if (v.size + self.lifeCircle.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
 			v.collides = true
 			v.explosionEffects = false
@@ -123,7 +123,7 @@ function superball:update(dt)
 end
 
 function superball:handleDelete()
-	body.handleDelete(self)
+	Body.handleDelete(self)
 	if self.diereason == "shot" then addscore(4*self.healthbak + 2*self.size) end
 	neweffects(self,100)
 	self.lifeCircle.sizeGrowth = -300

@@ -1,6 +1,6 @@
 width, height = 1080, 720
 require 'lux.object'
-require 'vector'
+require 'Vector'
 require 'list'
 require 'stack'
 
@@ -43,8 +43,8 @@ circleShader:send("min", 0)
 circleSpriteBatch = love.graphics.newSpriteBatch(pixel, 500, 'stream')
 
 
-local translateStack = stack:new{}
-translateStack:push(vector:new{0, 0})
+local translateStack = Stack:new{}
+translateStack:push(Vector:new{0, 0})
 
 local lineWidth = 1
 _G.graphics = {
@@ -81,7 +81,7 @@ _G.graphics = {
 		love.graphics.translate(tx, ty)
 	end,
 	push = function()
-		translateStack:push(vector:new{}:set(translateStack:peek()))
+		translateStack:push(Vector:new{}:set(translateStack:peek()))
 		love.graphics.push()
 	end,
 	pop = function()
@@ -169,7 +169,7 @@ function toRadians( degree )
 end
 
 function doNothing()
-	-- nothing
+	-- nothing, what did you expect?
 end
 
 clone = lux.object.clone

@@ -13,7 +13,7 @@ function run()
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
@@ -24,7 +24,7 @@ function run()
 			return math.sin(x*200)*(height/2-50)+height/2
 		end,
 		side = 'right',
-		setspeedto = vector:new{-1.65*v,0},
+		setspeedto = Vector:new{-1.65*v,0},
 		distance = 30
 	}
 
@@ -50,17 +50,17 @@ function run()
 
 	local vform = formation {
 		type = 'V',
-		startpoint = vector:new{width+23, 20},
+		startpoint = Vector:new{width+23, 20},
 		size = height-10,
 		growth = 1010,
-		setspeedto = vector:new{-v, 0},
+		setspeedto = Vector:new{-v, 0},
 		vertical = true
 	}
 
 	local f2 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true,
 		adapt = false
@@ -69,7 +69,7 @@ function run()
 	local f3 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/4},
+		target = Vector:new{width/2, height/4},
 		anglechange = base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
@@ -84,13 +84,13 @@ function run()
 	local snake = 'snake'
 	local nic = 'cage'
 	local mono = 'monoguiaball'
-	local vc = function(data) return vector:new(data) end
+	local vc = function(data) return Vector:new(data) end
 
 	wait(3)
-	enemy(mono, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
+	enemy(mono, 1, { position = Vector:new{-20, height/2}, speed = Vector:new{v, 0} })
 	wait(4)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.3*v, 0.3*v}, life = 90, size = 40}, mono, {width/2, -30}, 22)
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.3*v, 0.3*v}, life = 90, size = 40}, mono, {width/2, height+30}, 22)
+	enemy(super, 1, { position = Vector:new{width/2, -30}, speed = Vector:new{0.3*v, 0.3*v}, life = 90, size = 40}, mono, {width/2, -30}, 22)
+	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.3*v, 0.3*v}, life = 90, size = 40}, mono, {width/2, height+30}, 22)
 	wait(8)
 	enemy(range, 1, {timeToShoot = 2}, 4, vc{width/2, 70}, vc{width/2, -30}, nil, mono, {50,205,50}, 0, 26)
 	enemy(range, 1, {timeToShoot = 2}, 4, vc{width/2, height - 70}, vc{width/2, height + 30}, nil, mono, {50,205,50}, 0, 26)
@@ -158,11 +158,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 4-3' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

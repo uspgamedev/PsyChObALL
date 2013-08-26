@@ -1,16 +1,17 @@
-list = lux.object.new {
+List = lux.object.new {
 	first = 1,
-	last = 1
+	last = 1,
+	__type = 'List'
 }
 
-function list:push(x)
+function List:push(x)
 	if x.getWarning then x:getWarning() end
 	self[self.last] = x
 	self.last = self.last + 1
 end
 
-function list:pop()
-	if self.first == self.last then print("list empty") return nil end
+function List:pop()
+	if self.first == self.last then print("List empty") return nil end
 	local x = self[self.first]
 	if x.freeWarning then x:freeWarning() end
 	self[self.first] = nil
@@ -18,7 +19,7 @@ function list:pop()
 	return x
 end
 
-function list:clear()
+function List:clear()
 	for i = self.first, self.last-1 do
 		if self[i].freeWarning then self[i]:freeWarning() end
 		self[i] = nil

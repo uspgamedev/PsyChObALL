@@ -1,5 +1,5 @@
 --use this to change variables with time
-vartimer = timer:new {
+VarTimer = Timer:new {
 	persistent = true,
 	var = 0,
 	limit = 100,
@@ -8,7 +8,7 @@ vartimer = timer:new {
 	pausable = true
 }
 
-function vartimer:funcToCall( dt )
+function VarTimer:funcToCall( dt )
 	if self.backwards then
 		if self.var > self.limit then 
 			self.var = self.var - self.speed*dt
@@ -28,14 +28,14 @@ function vartimer:funcToCall( dt )
 	end
 end
 
-function vartimer:set( starts, ends, speed )
+function VarTimer:set( starts, ends, speed )
 	self.var = starts or self.var
 	self.limit = ends or self.limit
 	self.backwards = self.limit < self.var
 	self.speed = speed or self.speed
 end
 
-function vartimer:setAndGo( ... )
+function VarTimer:setAndGo( ... )
 	self:set(...)
 	self:start()
 end

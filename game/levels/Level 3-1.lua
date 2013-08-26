@@ -16,14 +16,14 @@ function run()
 		movetorwards = 'right',
 		distance = 42,
 		startsat = 20,
-		setspeedto = vector:new{0, 300}
+		setspeedto = Vector:new{0, 300}
 	}
 
 	local f = formation {
 		type = 'horizontal',
 		from = 'left',
 		movetorwards = 'center',
-		setspeedto = vector:new{0, 0},
+		setspeedto = Vector:new{0, 0},
 		distance = 'distribute'
 	}
 
@@ -87,8 +87,8 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
-	enemy(super, 1, { position = vector:new{width+30, -30}, speed = vector:new{0.25*v, 0.25*v}, life = 120, size = 60}, simple, {width/2, height+30}, 13)
-	enemy(super, 1, { position = vector:new{width+30, height+30}, speed = vector:new{0.25*v, 0.25*v}, life = 60, size = 50}, divide1, {width/2, height+30}, 13)
+	enemy(super, 1, { position = Vector:new{width+30, -30}, speed = Vector:new{0.25*v, 0.25*v}, life = 120, size = 60}, simple, {width/2, height+30}, 13)
+	enemy(super, 1, { position = Vector:new{width+30, height+30}, speed = Vector:new{0.25*v, 0.25*v}, life = 60, size = 50}, divide1, {width/2, height+30}, 13)
 	enemy(snake, 1, {size = 20}, 20, 1200, 0, {30, -30}, unpack(t))
 	wait(15)
 	t = {}
@@ -118,19 +118,19 @@ function run()
 		table.insert(t, {x, y})
 		y = height - 10
 	end
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.2*v, 0.25*v}, life = 150, size = 90}, divide1, {width/2, height+30}, 18)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.2*v, 0.25*v}, life = 150, size = 90}, divide1, {width/2, height+30}, 18)
+	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.2*v, 0.25*v}, life = 150, size = 90}, divide1, {width/2, height+30}, 18)
+	enemy(super, 1, { position = Vector:new{width/2, -30}, speed = Vector:new{0.2*v, 0.25*v}, life = 150, size = 90}, divide1, {width/2, height+30}, 18)
 	enemy(snake, 1, {size = 5}, 200, 600, 0.5, {30, -30}, unpack(t))
 	wait(30)
 	doNow( function(timer)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 3-2' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

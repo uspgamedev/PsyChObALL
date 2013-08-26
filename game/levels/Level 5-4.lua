@@ -5,14 +5,14 @@ function run()
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
 		angle = base.toRadians(-45),
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
@@ -45,14 +45,14 @@ function run()
 	wait(1)
 	
 	doNow( function(timer)
-		local a = vartimer:new{var = 0}
+		local a = VarTimer:new{var = 0}
 		a:setAndGo(0, 255, 70)
-		text:new{
+		Text:new{
 			text = "Congratulation, you've reached the end. But not really, more is coming!\nThe next update of PsyChObALL will"
 			.. " include two whole new levels, including The End.",
 			font = getCoolFont(55),
 			printmethod = graphics.printf,
-			position = vector:new{width/2 - 450, height/2 - 200},
+			position = Vector:new{width/2 - 450, height/2 - 200},
 			limit = 900,
 			alphafollows = a,
 			align = 'center'

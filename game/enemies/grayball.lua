@@ -1,18 +1,20 @@
-grayball = body:new {
+grayball = Body:new {
 	size = 20,
 	coloreffect = ColorManager.noLSDEffect,
 	__type = "grayball"
 }
 
+Body.makeClass(grayball)
+
 function grayball:__init()
-	if not rawget(self.position, 1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then Enemy.__init(self) end
 end
 
 function grayball:update( dt )
-	body.update(self, dt)
+	Body.update(self, dt)
 
 	if self.position[1] < self.size or self.position[1] > width + self.size or self.position[2] < self.size or self.position[2] > width + self.size then return end
-	for _, v in pairs(shot.bodies) do
+	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
 			v.collides = true
 			v.explosionEffects = true
@@ -26,6 +28,6 @@ function grayball:update( dt )
 end
 
 function grayball:handleDelete()
-	body.handleDelete(self)
+	Body.handleDelete(self)
 	neweffects(self, 40)
 end

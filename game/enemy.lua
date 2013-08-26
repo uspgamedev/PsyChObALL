@@ -1,14 +1,16 @@
-enemy = body:new {
+Enemy = Body:new {
 	collides = false,
 	diereason = 'leftscreen',
 	size = 16,
-	__type = 'enemy',
+	__type = 'Enemy',
 	bodies = {}
 }
 
+Body.makeClass(Enemy)
+
 local sides = {top = 1, up = 1, bottom = 2, down = 2, left = 3, right = 4}
 
-function enemy:__init()
+function Enemy:__init()
 	self.variance = math.random(ColorManager.cycleTime * 1000) / 1000
 
 	local side = self.side and sides[self.side] or math.random(4)
@@ -29,40 +31,42 @@ function enemy:__init()
 	end
 end
 
-function enemy.init()
-	enemy.addtimer = timer:new {
+function Enemy.init()
+	Enemy.list = List:new{}
+
+	Enemy.addtimer = Timer:new {
 		timelimit = 2,
 		persistent = true
 	}
 
-	function enemy.addtimer:funcToCall() --adds the enemies to a list
+	function Enemy.addtimer:funcToCall() --adds the enemies to a list
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		enemylist:push(enemy:new{})
+		Enemy.list:push(Enemy:new{})
 	end
 
-	function enemy.addtimer:handlereset()
+	function Enemy.addtimer:handlereset()
 		self:stop()
 	end
 
-	enemy.releasetimer = timer:new {
+	Enemy.releasetimer = Timer:new {
 		timelimit = 2,
 		persistent = true
 	}
 
-	function enemy.releasetimer:funcToCall() --actually releases the enemies on screen
+	function Enemy.releasetimer:funcToCall() --actually releases the enemies on screen
 		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		local e = enemylist:pop()
+		local e = Enemy.list:pop()
 		if e then e:register()
-		else print 'enemy missing' end
+		else print 'Enemy missing' end
 	end
 
-	function enemy.releasetimer:handlereset()
+	function Enemy.releasetimer:handlereset()
 		self:stop()
 	end
 end
 
-function enemy:handleDelete()
-	body.handleDelete(self)
+function Enemy:handleDelete()
+	Body.handleDelete(self)
 	if self.diereason == "shot" then
 		addscore((self.size / 3) * multiplier)
 		neweffects(self, 23)
@@ -71,17 +75,17 @@ function enemy:handleDelete()
 		if not  multtimer.running then  multtimer:start()
 		else  multtimer.time = 0 end
 
-		if not gamelost and multiplier >= 10 and currentEffect ~= ColorManager.noLSDEffect then
+		if not gamelost and multiplier >= 10 and ColorManager.currentEffect ~= ColorManager.noLSDEffect then
 			if not inverttimer.running then
 				inverttimer:start()
 				soundmanager.setPitch(1.0)
 				timefactor = 1.1
-				currentEffect = ColorManager.invertEffect
+				ColorManager.currentEffect = ColorManager.invertEffect
 			else inverttimer.time = 0 end
 		end
 
 		if self.size >= 15 then 
-			circleEffect:new{
+			CircleEffect:new{
 				based_on = self,
 				linewidth = 7,
 				alpha = 80,
@@ -97,7 +101,7 @@ function enemy:handleDelete()
 		local times = self.size >= 15 and 3 or 2
 		local size  = self.size >= 15 and self.size/3 + 5 or 6
 		for i = 1, times do
-			local e = enemy:new{
+			local e = Enemy:new{
 				size = size
 			}
 			e.position:set(self.position):add(math.random(self.size), math.random(self.size))
@@ -109,10 +113,10 @@ function enemy:handleDelete()
 	end
 end
 
-function enemy:update(dt)
-	body.update(self, dt)
+function Enemy:update(dt)
+	Body.update(self, dt)
 	
-	for i,v in pairs(shot.bodies) do
+	for i,v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
 			self.collides = true
 			v.collides = true

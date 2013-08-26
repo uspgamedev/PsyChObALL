@@ -5,7 +5,7 @@ function run()
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/4},
+		target = Vector:new{width/2, height/4},
 		anglechange = base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
@@ -38,25 +38,25 @@ function run()
 
 	local vform = formation {
 		type = 'V',
-		startpoint = vector:new{-320, 23},
+		startpoint = Vector:new{-320, 23},
 		size = height,
 		growth = -650,
 		vertical = true,
-		setspeedto = vector:new{1.6*v, 0}
+		setspeedto = Vector:new{1.6*v, 0}
 	}
 
 	local line = formation {
 	type = 'line',
-	startpoint = nil, --vector
+	startpoint = nil, --Vector
 	dx = 0, dy = 0,
 	distribute = true,
-	distribute_between = nil --vector
+	distribute_between = nil --Vector
 }
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 	local range = 'ranged'
 
-	local vc = function(data) return vector:new(data) end
+	local vc = function(data) return Vector:new(data) end
 	warnEnemies = true
 
 
@@ -92,9 +92,9 @@ function run()
 	enemy(range, 1, nil, 4, vc{width -70, 70}, vc{width +30, -30}, nil, simple, {50,205,50}, 0, 12)
 	f1.anglechange = 0
 	f1.shootattarget = true
-	f1.target = vector:new{width/2,height/2}
+	f1.target = Vector:new{width/2,height/2}
 	f1.angle = base.toRadians(0)
-	f1.center = vector:new{width/2, height/2}
+	f1.center = Vector:new{width/2, height/2}
 	enemy({simple,divide1}, 20, f1)
 	f1.angle = base.toRadians(45)
 	enemy({simple,divide1}, 20, f1)
@@ -134,7 +134,7 @@ function run()
 	enemy({simple,divide1}, 16, f1)
 	f1.angle = base.toRadians(-135)
 	enemy({simple,divide1}, 16, f1)
-	f1.target = vector:new{width/2, height/2}
+	f1.target = Vector:new{width/2, height/2}
 	f1.angle = base.toRadians(0)
 	enemy({simple,divide1}, 16, f1)
 	f1.angle = base.toRadians(45)
@@ -156,11 +156,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 2-2' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

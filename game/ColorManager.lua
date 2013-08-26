@@ -6,7 +6,7 @@ local xt = cycleTime
 local maincolor = {0,0,0,0}
 
 function init()
-	timer = timer:new{
+	timer = Timer:new{
 		timelimit  = 300,
 		pausable   = false,
 		persistent = true,
@@ -79,7 +79,7 @@ end
 -- create your own colorEffect
 function getColorEffect( r, g, b, change )
 	change = change or 60
-	if type(r) == 'table' then --consider all vartimers
+	if type(r) == 'table' then --consider all VarTimers
 		if type(change) ~= 'table' then change = {var = change} end
 		return function ( color )
 			color[1], color[2], color[3] = 

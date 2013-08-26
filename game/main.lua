@@ -61,19 +61,19 @@ function initBase()
 			end
 		end
 		})
-	shot:paintOn(paintables)
-	enemy:paintOn(paintables)
-	effect:paintOn(paintables)
+	Shot:paintOn(paintables)
+	Enemy:paintOn(paintables)
+	Effect:paintOn(paintables)
 	enemies:paintOn(paintables)
-	warning:paintOn(paintables)
-	circleEffect:paintOn(paintables)
-	text:paintOn(paintables)
-	imagebody:paintOn(paintables)
+	Warning:paintOn(paintables)
+	CircleEffect:paintOn(paintables)
+	Text:paintOn(paintables)
+	ImageBody:paintOn(paintables)
 	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
 	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
-	button:paintOn(UI.paintables)
+	Button:paintOn(UI.paintables)
 
 	bestscore, besttime, bestmult = 0, 0, 0
 	lastLevel = 'Level 1-1'
@@ -87,11 +87,11 @@ function initBase()
 	-- [[Loading Resources]]
 	logo = graphics.newImage 'resources/LogoBeta.png'
 	splash = graphics.newImage 'resources/Marvellous Soft.png'
-	splashtimer = timer:new{timelimit = 1.75, running = true, persistent = true, onceonly = true, pausable = false, 
+	splashtimer = Timer:new{timelimit = 1.75, running = true, persistent = true, onceonly = true, pausable = false, 
 		funcToCall = function() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
-	version = '1.0.0'
+	version = '1.0.1 indev'
 	latest = base.getLatestVersion() or version
 	soundmanager.init()
 	cheats.init()
@@ -105,17 +105,17 @@ function initGameVars()
 	-- [[Creating Persistent Timers]]
 	ColorManager.init()
 
-	circleEffect.init()
+	CircleEffect.init()
 
-	enemy.init()
+	Enemy.init()
 
 	enemies.init()
 
-	shot.init()
+	Shot.init()
 
-	psychoball.init()
+	Psychoball.init()
 
-	multtimer = timer:new {
+	multtimer = Timer:new {
 		timelimit  = 2.2,
 		persistent = true,
 		works_on_gamelost = false
@@ -130,7 +130,7 @@ function initGameVars()
 		self:funcToCall()
 	end
 
-	inverttimer = timer:new {
+	inverttimer = Timer:new {
 		timelimit  = 2.2,
 		persistent = true,
 		works_on_gamelost = false
@@ -149,31 +149,30 @@ function initGameVars()
 		self:funcToCall()
 	end
 
-	swypetimer = vartimer:new { -- swypes the screen on menu change
+	swypetimer = VarTimer:new { -- swypes the screen on menu change
 		var = 0,
 		speed = 3000,
 		pausable = false
 	}
 
-	alphatimer = vartimer:new { --fades out and in the logo
+	alphatimer = VarTimer:new { --fades out and in the logo
 		var = 255,
 		speed = 300,
 		pausable = false
 	}
 
-	angle = vartimer:new {
+	angle = VarTimer:new {
 		var = 0,
 		speed = 1,
 		pausable = false
 	}
 	-- [[End of Creating Persistent Timers]]
 
-	psycho = psychoball:new{
-		position = vector:new{width/2,height/2}
+	psycho = Psychoball:new{
+		position = Vector:new{width/2,height/2}
 	}
 	
-	enemylist = list:new{}
-	auxspeed = vector:new {}
+	auxspeed = Vector:new {}
 	keyspressed = {}
 	timefactor = 1.0
 
@@ -190,17 +189,17 @@ function resetVars()
 		ultracounter = 3
 	end
 	
-	enemylist:clear()
+	Enemy.list:clear()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
-	shot:clear()
+	Shot:clear()
 	if notclearcircleeffect then notclearcircleeffect = false
-	else circleEffect:clear() end
-	enemy:clear()
+	else CircleEffect:clear() end
+	Enemy:clear()
 	enemies:clear()
-	warning:clear()
-	text:clear()
-	imagebody:clear()
+	Warning:clear()
+	Text:clear()
+	ImageBody:clear()
 	--[[End of Resetting Paintables]]
 	base.clearTable(keyspressed)
 
@@ -220,16 +219,16 @@ end
 
 function reloadSurvival()
 	soundmanager.changeSong(soundmanager.survivalsong)
-	if state == survival then effect:clear() end
+	if state == survival then Effect:clear() end
 	state = survival
-	enemy.addtimer:funcToCall()
+	Enemy.addtimer:funcToCall()
 	resetVars()
-	timer.closenonessential()
+	Timer.closenonessential()
 
 	soundmanager.restart()
 	enemies.restartSurvival()
-	enemy.addtimer:start(2)
-	enemy.releasetimer:start(1.5)
+	Enemy.addtimer:start(1.5)
+	Enemy.releasetimer:start(.7)
 
 	mouse.setGrab(true)
 end
@@ -244,15 +243,15 @@ function reloadStory( name )
 		psycho.pseudoDied = false
 		paintables.psychoeffects = nil
 	end
-	effect:clear()
+	Effect:clear()
 	if state == story and name ~= 'Level 1-1' then
-		timer.closenonessential()
+		Timer.closenonessential()
 	else
 		state = story
 		lives = 10
 		soundmanager.changeSong(soundmanager.limitlesssong)
 		resetVars()
-		timer.closenonessential()
+		Timer.closenonessential()
 
 		soundmanager.restart()
 		enemies.restartStory()
@@ -350,7 +349,7 @@ function love.draw()
 	base.circleSpriteBatch:clear()
 	base.circleSpriteBatch:bind()
 
-	effect.spriteBatch:bind()
+	Effect.spriteBatch:bind()
 
 	graphics.translate(-swypetimer.var, 0)
 	--[[End of setting camera]]
@@ -374,8 +373,8 @@ function love.draw()
 	--[[End of Drawing Game Objects]]
 
 	graphics.setPixelEffect()
-	effect.spriteBatch:unbind()
-	graphics.draw(effect.spriteBatch, 0 ,0)
+	Effect.spriteBatch:unbind()
+	graphics.draw(Effect.spriteBatch, 0 ,0)
 
 	graphics.setPixelEffect(base.circleShader)
 	base.circleSpriteBatch:unbind()
@@ -459,7 +458,7 @@ function love.update(dt)
 	mouseX = mouseX + swypetimer.var
 	isPaused = (paused or onMenu())
 
-	timer.updatetimers(dt, timefactor, isPaused, gamelost)
+	Timer.updatetimers(dt, timefactor, isPaused, gamelost)
 	UI.update(dt)
 	
 	dt = dt * timefactor
@@ -495,16 +494,16 @@ end
 function love.mousepressed(x, y, btn)
 	x, y  = x/ratio, y/ratio
 	if btn == 'l' and onGame() and not (gamelost or paused or psycho.pseudoDied) then
-		shot.timer:start(shot.timer.timelimit) --starts shooting already
+		Shot.timer:start(Shot.timer.timelimit) --starts shooting already
 	end
 	UI.mousepressed(x + swypetimer.var, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
 	x, y  = x/ratio, y/ratio		
-	UI.mousereleased(x + swypetimer.var,y,button)
+	UI.mousereleased(x + swypetimer.var, y, btn)
 	if btn == 'l' and onGame() then
-		shot.timer:stop()
+		Shot.timer:stop()
 	end
 end
 
@@ -524,14 +523,14 @@ function addscore(x)
 	end
 end
 
-function love.joystickpressed( joynum, button )
+function love.joystickpressed( joynum, btn )
 	if not usingjoystick then return end
-	psycho:joystickpressed(joynum, button)
+	psycho:joystickpressed(joynum, btn)
 end
 
-function love.joystickreleased( joynum, button )
+function love.joystickreleased( joynum, btn )
 	if not usingjoystick then return end
-	psycho:joystickreleased(joynum, button)
+	psycho:joystickreleased(joynum, btn)
 end
 
 function love.keypressed(key)

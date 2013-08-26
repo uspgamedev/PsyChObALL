@@ -1,4 +1,4 @@
-timer = lux.object.new {
+Timer = lux.object.new {
 	time			 = 0,
 	onceonly		 = false,
 	pausable		 = true, -- If pause
@@ -11,11 +11,11 @@ timer = lux.object.new {
 	timers = {}
 }
 
-function timer:__init()
-	if self.registerSelf then timer.register(self) end
+function Timer:__init()
+	if self.registerSelf then Timer.register(self) end
 end
 
-function timer:update(dt, timefactor, paused, gamelost)
+function Timer:update(dt, timefactor, paused, gamelost)
 	if not self.running or (paused and self.pausable) or (gamelost and not self.works_on_gamelost) then return end
 	if self.timeaffected then dt = dt * timefactor end
 	self.time = self.time + dt
@@ -34,18 +34,18 @@ function timer:update(dt, timefactor, paused, gamelost)
 	end
 end
 
-function timer:start(delay)
+function Timer:start(delay)
 	self.time = delay or self.time
 	self.running = true
 end
 
-function timer:stop()
+function Timer:stop()
 	self.running = false
 	self.time = 0
 end
 
-local ts = timer.timers
-function timer.updatetimers(dt, timefactor, paused, gamelost)
+local ts = Timer.timers
+function Timer.updatetimers(dt, timefactor, paused, gamelost)
 	for i = #ts, 1, -1 do
 		local v = ts[i]
 		if v.delete then
@@ -56,7 +56,7 @@ function timer.updatetimers(dt, timefactor, paused, gamelost)
 	end
 end
 
-function timer.closenonessential()
+function Timer.closenonessential()
 	for i = #ts, 1, -1 do
 		local v = ts[i]
 		if not v.persistent then v.delete = true
@@ -66,13 +66,13 @@ function timer.closenonessential()
 	end
 end
 
-function timer.remove( t )
+function Timer.remove( t )
 	t.delete = true
 	t.running = false
 	t.time = 0
 end
 
-function timer.register( t )
+function Timer.register( t )
 	if t.delete then t.delete = false end
 	table.insert(ts, t)
 end

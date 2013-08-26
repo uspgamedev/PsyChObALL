@@ -5,14 +5,14 @@ levels = {
 }
 currentLevel = nil
 
-function pushEnemies( timer, enemies )
+function pushEnemies(timer, enemies)
 	for _, enemy in ipairs(enemies) do
 		enemy:getWarning()
 	end
 	timer.running = false
 end
 
-function registerEnemies( timer, enemies)
+function registerEnemies(timer, enemies)
 	for _, enemy in ipairs(enemies) do
 		enemy:register()
 	end
@@ -58,23 +58,23 @@ function levelEnv.enemy( name, n, format, ... )
 
 	if levelEnv.warnEnemies then
 		-- warns about the enemy
-		local warn = timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), funcToCall = pushEnemies, 
+		local warn = Timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), funcToCall = pushEnemies, 
 			extraelements = extraelements, onceonly = true, registerSelf = false}
 		table.insert(currentLevel.timers_, warn)
 		if format and format.shootattarget then
 			-- follows the target with the warnings
-			table.insert(currentLevel.timers_, timer:new {
+			table.insert(currentLevel.timers_, Timer:new {
 				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1) + .01,
 				prevtarget = format.target:clone(),
 				registerSelf = false,
 				funcToCall = function(self)
 					self.timelimit = nil
-					if not enemylist[1].warning then self:remove() return end
+					if not enemylist[1].Warning then self:remove() return end
 					if self.prevtarget == format.target then return end
 					local speed = format.speed or v
 					for i = 1, n do
 						enemylist[i].speed:set(format.target):sub(enemylist[i].position):normalize():mult(speed, speed)
-						enemylist[i].warning:recalc_angle()
+						enemylist[i].Warning:recalc_angle()
 					end
 					self.prevtarget:set(target)
 				end
@@ -83,7 +83,7 @@ function levelEnv.enemy( name, n, format, ... )
 	end
 
 	-- release the enemy onscreen
-	local t = timer:new{timelimit = levelEnv.time, funcToCall = registerEnemies, 
+	local t = Timer:new{timelimit = levelEnv.time, funcToCall = registerEnemies, 
 		extraelements = extraelements, onceonly = true, registerSelf = false}
 	table.insert(currentLevel.timers_, t)
 end
@@ -101,7 +101,7 @@ end
 function levelEnv.registerTimer( data )
 	data.time = -levelEnv.time
 	data.registerSelf = false
-	table.insert(currentLevel.timers_, timer:new(data))
+	table.insert(currentLevel.timers_, Timer:new(data))
 end
 
 function levelEnv.doNow( func )
@@ -128,18 +128,18 @@ function runLevel( name )
 		t:start(t.time + delay)
 	end
 	if changetitle then
-		local t = text:new {
+		local t = Text:new {
 			text = currentLevel.title,
-			alphafollows = vartimer:new{ var = 255 },
+			alphafollows = VarTimer:new{ var = 255 },
 			font = getCoolFont(100),
-			position = vector:new{50, 200},
+			position = Vector:new{50, 200},
 			limit = width - 100,
 			align = 'center',
 			printmethod = graphics.printf,
 			variance = 0
 		}
 		t:register()
-		timer:new{
+		Timer:new{
 			timelimit = 3,
 			running = true,
 			funcToCall = function ( timer )
@@ -190,11 +190,11 @@ end
 
 function reloadPractice()
 	local ls = {}
-	local levelselectalpha = vartimer:new{ speed = 300, pausable = false }
-	local translate = vartimer:new{ var = 0, speed = width*2, pausable = false }
+	local levelselectalpha = VarTimer:new{ speed = 300, pausable = false }
+	local translate = VarTimer:new{ var = 0, speed = width*2, pausable = false }
 
 	local b = {}
-	b[1] = button:new {size = 100, position = vector:new{156, height/2 - 100}, fontsize = 20,
+	b[1] = Button:new {size = 100, position = Vector:new{156, height/2 - 100}, fontsize = 20,
 		menu = levelselect, pressed = function(self)
 				levelselectalpha:setAndGo(255, 0)
 				self.visible = falsen
@@ -204,16 +204,16 @@ function reloadPractice()
 		draw = function(self)
 			if not self.visible or levelselectalpha.var == 0 then return end
 			graphics.translate(-translate.var, 0)
-			button.draw(self)
+			Button.draw(self)
 			if self.hoverring and self.hoverring.size > 2 then
 				graphics.setPixelEffect(base.circleShader)
-				circleEffect.draw(self.hoverring) 
+				CircleEffect.draw(self.hoverring) 
 				graphics.setPixelEffect()
 			end
 			graphics.translate(translate.var, 0)
 		end,
 		isClicked = function ( self, x, y )
-			return button.isClicked(self, x + translate.var, y )
+			return Button.isClicked(self, x + translate.var, y )
 		end,
 		update = function(self, dt)
 			if self.hoverring.size > self.size then
@@ -239,15 +239,15 @@ function reloadPractice()
 	b[4] = b[1]:clone()
 	b[4].position:set(924, nil)
 
-	local back = button:new{
+	local back = Button:new{
 		size = 50,
-		position = vector:new{width - 160, 580},
+		position = Vector:new{width - 160, 580},
 		text = "back",
 		fontsize = 20,
 		menu = levelselect,
 		alphafollows = levelselectalpha,
 		draw = function(self)
-			button.draw(self)
+			Button.draw(self)
 			graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows.var, self.coloreffect))
 			graphics.setFont(getCoolFont(70))
 			graphics.printf("Practice", 0, 30, width, 'center')
@@ -264,9 +264,9 @@ function reloadPractice()
 	}
 	table.insert(ls, back)
 
-	local nextB = button:new{
+	local nextB = Button:new{
 		size = 50,
-		position = vector:new{width/2 + 100, 400},
+		position = Vector:new{width/2 + 100, 400},
 		text = ">",
 		fontsize = 55,
 		draw = b[1].draw,
@@ -277,9 +277,9 @@ function reloadPractice()
 			translate:setAndGo(nil, translate.var + width)
 		end
 	}
-	local prevB = button:new{
+	local prevB = Button:new{
 		size = 50,
-		position = vector:new{width/2 - 100, 400},
+		position = Vector:new{width/2 - 100, 400},
 		text = "<",
 		fontsize = 55,
 		draw = b[1].draw,
@@ -298,7 +298,7 @@ function reloadPractice()
 		end
 	end
 
-	local transl = vector:new{0, 0}
+	local transl = Vector:new{0, 0}
 	local levelN = 5
 	for i = 1, levelN do
 		if 'Level ' .. i > lastLevel then break end

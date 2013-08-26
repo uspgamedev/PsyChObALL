@@ -1,4 +1,4 @@
-cage = circleEffect:new {
+cage = CircleEffect:new {
 	size = width,
 	speedN = v*.4,
 	maxsize = width*2,
@@ -11,9 +11,11 @@ cage = circleEffect:new {
 	__type = 'cage'
 }
 
+Body.makeClass(cage)
+
 function cage:update( dt )
-	circleEffect.update(self, dt)
-	body.update(self, dt)
+	CircleEffect.update(self, dt)
+	Body.update(self, dt)
 
 	if self.desiredsize and ((self.sizeGrowth > 0 and self.size > self.desiredsize) 
 		or (self.sizeGrowth < 0 and self.size < self.desiredsize)) then
@@ -64,7 +66,7 @@ function cage:doaction( actN )
 			self.destroy = true
 		end
 		if act.wait then
-			timer:new{
+			Timer:new{
 				timelimit = act.wait,
 				running = true,
 				onceonly = true,
@@ -80,7 +82,7 @@ end
 
 function cage:onInit( pos1, ...)
 	self.variance = math.random()*6 + 2
-	self.position = vector:new(base.clone(pos1))
+	self.position = Vector:new(base.clone(pos1))
 	self.actions = {...}
 end
 

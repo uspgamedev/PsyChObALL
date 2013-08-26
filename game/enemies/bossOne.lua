@@ -1,4 +1,4 @@
-bossOne = circleEffect:new {
+bossOne = CircleEffect:new {
 	size = 80,
 	maxhealth = 160,
 	basespeed = 2*v,
@@ -10,10 +10,10 @@ bossOne = circleEffect:new {
 	sizeGrowth = 0,
 	maxsize = width,
 	ord = 7,
-	__index = circleEffect.__index,
-	__newindex = circleEffect.__newindex,
 	__type = 'bossOne'
 }
+
+Body.makeClass(bossOne)
 
 function bossOne:__init()
 	self.position:set(-self.size, -self.size)
@@ -23,7 +23,7 @@ function bossOne:__init()
 	self.variance = math.random((ColorManager.cycleTime-3)*1000)/1000 + 3
 	bossOne.shot = enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
-	self.colors = {vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0xFF, speed = 200}, vartimer:new{var = 0, speed = 200}}
+	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	restrictToScreenThreshold = 10
 	restrictToScreenSpeed = nil
@@ -36,15 +36,15 @@ function bossOne.behaviors.arriving( self )
 	if curdist < 1 or curdist > self.prevdist then
 		self.position:set(self.size + 10, self.size + 10)
 		self.speed:set(bossOne.basespeed, 0)
-		self.speedchange = timer:new {
+		self.speedchange = Timer:new {
 			timelimit = 5 + math.random()*10,
 			running = true,
-			funcToCall = function( timer )
+			funcToCall = function(timer )
 				timer.timelimit = 5 + math.random()*10
 				self.speed:negate()
 			end
 		}
-		self.shoottimer = timer:new {
+		self.shoottimer = Timer:new {
 			timelimit = .5,
 			works_on_gamelost = false,
 			time = math.random(),
@@ -68,8 +68,8 @@ function bossOne.behaviors.first( self )
 	self:restrictToScreen()
 	if self.health/bossOne.maxhealth < .75 then
 		addscore(500)
-		local t = imagebody:new{ coloreffect = ColorManager.sinCityEffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
-		enemy.__init(t)
+		local t = ImageBody:new{ coloreffect = ColorManager.sinCityEffect, image = graphics.newImage 'resources/warn.png', scale = .3 }
+		Enemy.__init(t)
 		t.speed:mult(2.2)
 		t:register()
 		self.currentBehavior = bossOne.behaviors.second
@@ -120,7 +120,7 @@ function bossOne.behaviors.toTheMiddle( self )
 			self.circleshoot.timescount = 0
 			self.circleshoot:start(self.circleshoot.timelimit)
 		end
-		self.circleshoot = timer:new {
+		self.circleshoot = Timer:new {
 			timelimit = .07,
 			anglechange = base.toRadians(6),
 			times = 100,
@@ -160,7 +160,7 @@ function bossOne.behaviors.third( self )
 		bossOne.shot = enemies.simpleball
 		--change color or whatever
 		self.coloreffect = ColorManager.sinCityEffect
-		timer:new {
+		Timer:new {
 			running = true,
 			onceonly = true,
 			timelimit = 1,
@@ -202,11 +202,11 @@ function bossOne:restrictToScreen()
 end
 
 function bossOne:update( dt )
-	circleEffect.update(self, dt)
-	body.update(self, dt)
+	CircleEffect.update(self, dt)
+	Body.update(self, dt)
 	self:currentBehavior()
 
-	for _, v in pairs(shot.bodies) do
+	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
 			v.collides = true
 			v.explosionEffects = true
@@ -218,7 +218,7 @@ function bossOne:update( dt )
 					--self.colors[1] is already correct
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
 							self.colors[2]:setAndGo(nil, d*255, 400)
 						end
@@ -229,7 +229,7 @@ function bossOne:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossOne.behaviors.second then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*255, 400)
@@ -241,7 +241,7 @@ function bossOne:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*255, 400)

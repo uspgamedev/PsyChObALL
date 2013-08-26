@@ -1,19 +1,17 @@
-body = lux.object.new {
+Body = lux.object.new {
 	size = 0,
 	mode = 'fill',
 	variance = 0,
 	changesimage = true,
 	positionfollows = nil, --function
-	__type = 'unnamed body'
+	__type = 'unnamed Body'
 }
 
-local auxVec = vector:new{}
+local auxVec = Vector:new{}
 
-function body:__init()
-	self.position = rawget(self, 'position') or vector:new{}
-	self.speed = rawget(self, 'speed') or vector:new{}
-	self.__index = index
-	self.__newindex = newindex
+function Body:__init()
+	self.position = rawget(self, 'position') or Vector:new{}
+	self.speed = rawget(self, 'speed') or Vector:new{}
 	
 	if self.onInitInfo then
 		self:onInit(unpack(self.onInitInfo))
@@ -23,7 +21,7 @@ function body:__init()
 	end
 end
 
-function index( self, key )
+local function index( self, key )
 	if key == 'x'      then return self.position[1]
 	elseif key == 'y'  then return self.position[2]
 	elseif key == 'Vx' then return self.speed[1]
@@ -31,7 +29,7 @@ function index( self, key )
 	else return getmetatable(self)[key] end
 end
 
-function newindex( self, key, v )
+local function newindex( self, key, v )
 	if		 key == 'x' then  self.position[1] = v
 	elseif key == 'y' then  self.position[2] = v
 	elseif key == 'Vx' then self.speed[1] 	  = v
@@ -39,7 +37,12 @@ function newindex( self, key, v )
 	else rawset(self, key, v) end
 end
 
-function body:update( dt )
+function Body.makeClass( subclass )
+	subclass.__newindex = newindex
+	subclass.__index = index
+end
+
+function Body:update( dt )
 	if self.positionfollows then
 		self.position:set(self.positionfollows(gametime - self.initialtime)):add(self.initialpos)
 	else
@@ -52,41 +55,41 @@ function body:update( dt )
 	end 
 end
 
-function body:draw()
+function Body:draw()
 	if self.linewidth then graphics.setLineWidth(self.linewidth) end
 	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect)
 	graphics.setColor(color)
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
-function body:handleDelete()
+function Body:handleDelete()
 
 end
 
-function body:onInit()
+function Body:onInit()
 	-- abstract
 end
 
-function body:start()
+function Body:start()
 	
 end
 
-body.collidesWith = base.collides
+Body.collidesWith = base.collides
 
-function body:getWarning()
-	self.warning = warning:new {
+function Body:getWarning()
+	self.warning = Warning:new {
 		based_on = self
 	}
-	warning.bodies[self] = self.warning
+	Warning.bodies[self] = self.warning
 	return self.warning
 end
 
-function body:freeWarning()
-	warning.bodies[self] = nil
+function Body:freeWarning()
+	Warning.bodies[self] = nil
 	self.warning = nil
 end
 
-function body:paintOn( p )
+function Body:paintOn( p )
 	local m = {
 		name = self.name,
 		ord = self.ord or 5,
@@ -97,11 +100,11 @@ function body:paintOn( p )
 	table.insert(p, self.bodies)
 end
 
-function body:clear()
+function Body:clear()
 	base.clearTable(self.bodies)
 end
 
-function body:register(...)
+function Body:register(...)
 	self:freeWarning()
 	self:start(...)
 	table.insert(self.bodies, self)

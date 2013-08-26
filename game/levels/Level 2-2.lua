@@ -12,7 +12,7 @@ function run()
 		movetorwards = 'down',
 		distance = 42,
 		startsat = 20,
-		setspeedto = vector:new{300,0}
+		setspeedto = Vector:new{300,0}
 	}
 	local f2 = formation {
 		type = 'vertical',
@@ -20,12 +20,12 @@ function run()
 		movetorwards = 'right',
 		distance = 42,
 		startsat = 20,
-		setspeedto = vector:new{0, 300}
+		setspeedto = Vector:new{0, 300}
 	}
 	local f3 = formation {
 		type = 'around',
 		angle = 50,
-		target = vector:new{30,30},
+		target = Vector:new{30,30},
 		anglechange = 0,
 		shootattarget = true,
 		adapt = true,
@@ -34,16 +34,16 @@ function run()
 
 	local vform = formation {
 		type = 'V',
-		startpoint = vector:new{23, -1020},
+		startpoint = Vector:new{23, -1020},
 		size = width,
 		growth = 1010,
-		setspeedto = vector:new{0, v}
+		setspeedto = Vector:new{0, v}
 	}
 
 	local f4 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true,
 		shootatplayer = false
@@ -55,7 +55,7 @@ function run()
 	
 
 	wait(3)
-	enemy(grey, 1, { position = vector:new{-20, height/2}, speed = vector:new{v, 0} })
+	enemy(grey, 1, { position = Vector:new{-20, height/2}, speed = Vector:new{v, 0} })
 	wait(5)
 	enemy(grey, 11, f2)
 	f2.movetorwards = 'left'
@@ -83,7 +83,7 @@ function run()
 		type = 'horizontal',
 		from = 'left',
 		movetorwards = 'center',
-		setspeedto = vector:new{0, 0},
+		setspeedto = Vector:new{0, 0},
 		distance = 'distribute'
 	}
 	
@@ -159,20 +159,20 @@ function run()
 		if i == 16 then enemy(grey, 21, vform) end
 		if i%5 == 0 and i >= 45 and i <=63 then
 			vform.growth = - 600
-			vform.setspeedto = vector:new{0, -2.5*v}
-			vform.startpoint = vector:new{-900 + 10*i, height + 620}
+			vform.setspeedto = Vector:new{0, -2.5*v}
+			vform.startpoint = Vector:new{-900 + 10*i, height + 620}
 			enemy(grey, 40, vform)
 			vform.growth = 600
-			vform.startpoint = vector:new{300 + 10*i, height + 620}
+			vform.startpoint = Vector:new{300 + 10*i, height + 620}
 			enemy(grey, 40, vform)
 		end
 		if i%4 == 0 and i >= 69 and i <=90 then
 			vform.growth =  600
-			vform.setspeedto = vector:new{0, -2.7*v}
-			vform.startpoint = vector:new{width -2070 + 20*i, height + 620}
+			vform.setspeedto = Vector:new{0, -2.7*v}
+			vform.startpoint = Vector:new{width -2070 + 20*i, height + 620}
 			enemy(grey, 40, vform)
 			vform.growth = - 600
-			vform.startpoint = vector:new{width-3270 + 20*i, height + 620}
+			vform.startpoint = Vector:new{width-3270 + 20*i, height + 620}
 			enemy(grey, 40, vform)
 		end
 		if i == 120 then
@@ -218,11 +218,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 2-3' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

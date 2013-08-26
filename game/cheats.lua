@@ -75,7 +75,7 @@ function keypressed( key )
 
 		invisible = invisiblepass(key)
 		dkmode = allimagespass(key)
-		circleEffect.changesimage = dkmode
+		CircleEffect.changesimage = dkmode
 		image.processCheats(key)
 
 		if tiltmode then
@@ -101,9 +101,9 @@ function keypressed( key )
 			elseif key == 'l' and not gamelost then deathText(1) lostgame()
 			elseif key == 'u' then love.update(10) --skips 10 seconds
 			elseif key == 'g' then godmode = not godmode
-			elseif key == 'e' then print(#effect.bodies)
+			elseif key == 'e' then print(#Effect.bodies)
 			elseif key == 'r' then timefactor = 1
-			elseif key == 'j' then shot.shotnum = shot.shotnum == 1 and 10 or 1
+			elseif key == 'j' then Shot.shotnum = Shot.shotnum == 1 and 10 or 1
 			end
 		end
 		

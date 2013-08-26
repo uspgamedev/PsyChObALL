@@ -13,7 +13,7 @@ function run()
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(90),
 		shootattarget = true
 	}
@@ -24,7 +24,7 @@ function run()
 			return math.sin(x*200)*(height/2-50)+height/2
 		end,
 		side = 'right',
-		setspeedto = vector:new{-1.65*v,0},
+		setspeedto = Vector:new{-1.65*v,0},
 		distance = 30
 	}
 
@@ -50,17 +50,17 @@ function run()
 
 	local vform = formation {
 		type = 'V',
-		startpoint = vector:new{width+23, 20},
+		startpoint = Vector:new{width+23, 20},
 		size = height-10,
 		growth = 1010,
-		setspeedto = vector:new{-v, 0},
+		setspeedto = Vector:new{-v, 0},
 		vertical = true
 	}
 
 	local f2 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true,
 		adapt = false
@@ -69,7 +69,7 @@ function run()
 	local f3 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/4},
+		target = Vector:new{width/2, height/4},
 		anglechange = base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
@@ -82,7 +82,7 @@ function run()
 	local grey = 'grayball'
 	local snake = 'snake'
 	local nic = 'cage'
-	local vc = function(data) return vector:new(data) end
+	local vc = function(data) return Vector:new(data) end
 
 	wait(2)
 	enemy(nic, 1, nil, {width/2,height/2},
@@ -109,7 +109,7 @@ function run()
 		{destroy = true, sizeGrowth = 460}
 	)
 	wait(5)
-	enemy(simple, 1, { position = vector:new{width+20, height/2}, speed = vector:new{-1.2*v, 0} })
+	enemy(simple, 1, { position = Vector:new{width+20, height/2}, speed = Vector:new{-1.2*v, 0} })
 	wait(5)
 	enemy(divide1, 4, f1)
 	wait(4)
@@ -129,9 +129,9 @@ function run()
 	wait(9)
 	f3.anglechange = 0
 	f3.shootattarget = true
-	f3.target = vector:new{width/2,height/2}
+	f3.target = Vector:new{width/2,height/2}
 	f3.angle = base.toRadians(0)
-	f3.center = vector:new{width/2, height/2}
+	f3.center = Vector:new{width/2, height/2}
 	enemy({simple,divide1}, 20, f3)
 	f3.angle = base.toRadians(45)
 	enemy({simple,divide1}, 20, f3)
@@ -150,7 +150,7 @@ function run()
 	wait(9)
 	enemy({simple,divide1,simple}, 180, f)
 	wait(13.5)
-	f.setspeedto = vector:new{-1.1*v,0}
+	f.setspeedto = Vector:new{-1.1*v,0}
 	f.func = function(x)
 			return math.sin(x*200)*(height/2-180)+height/2-180
 		end
@@ -164,11 +164,11 @@ function run()
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 3-4' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()

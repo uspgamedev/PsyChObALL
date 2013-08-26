@@ -1,4 +1,4 @@
-multiball = body:new {
+multiball = Body:new {
 	size =  20,
 	divideN = 2,
 	args = {},
@@ -6,15 +6,17 @@ multiball = body:new {
 	__type = 'multiball'
 }
 
+Body.makeClass(multiball)
+
 function multiball:__init()
-	if not rawget(self.position, 1) then enemy.__init(self) end
+	if not rawget(self.position, 1) then Enemy.__init(self) end
 end
 
 function multiball:update( dt )
-	body.update(self, dt)
+	Body.update(self, dt)
 
 	if self.position[1] < self.size or self.position[1] > width + self.size or self.position[2] < self.size or self.position[2] > width + self.size then return end
-	for _, v in pairs(shot.bodies) do
+	for _, v in pairs(Shot.bodies) do
 		if not v.collides and self:collidesWith(v) then
 			self.collides = true
 			v.collides = true
@@ -33,7 +35,7 @@ function multiball:update( dt )
 end
 
 function multiball:handleDelete()
-	body.handleDelete(self)
+	Body.handleDelete(self)
 	neweffects(self, 20)
 	if self.diereason ~= "shot" then return end
 	addscore(50)

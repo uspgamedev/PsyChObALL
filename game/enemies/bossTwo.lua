@@ -1,4 +1,4 @@
-bossTwo = circleEffect:new {
+bossTwo = CircleEffect:new {
 	size = 80,
 	maxhealth = 35,
 	basespeed = v,
@@ -12,10 +12,12 @@ bossTwo = circleEffect:new {
 	vulnerable = true,
 	maxsize = width,
 	ord = 7,
-	__index = circleEffect.__index,
-	__newindex = circleEffect.__newindex,
+	__index = CircleEffect.__index,
+	__newindex = CircleEffect.__newindex,
 	__type = 'bossTwo'
 }
+
+Body.makeClass(bossTwo)
 
 bossTwo.behaviors = {}
 
@@ -24,10 +26,10 @@ function bossTwo:__init()
 	self.position:set(200, 200)
 	self.ballspeed = 0
 	self.ballscolors = {
-		{vartimer:new{var = 0}, vartimer:new{var = 120}, vartimer:new{var = 0}},
-		{vartimer:new{var = 0}, vartimer:new{var = 120}, vartimer:new{var = 0}},
-		{vartimer:new{var = 0}, vartimer:new{var = 120}, vartimer:new{var = 0}},
-		{vartimer:new{var = 0}, vartimer:new{var = 120}, vartimer:new{var = 0}}
+		{VarTimer:new{var = 0}, VarTimer:new{var = 120}, VarTimer:new{var = 0}},
+		{VarTimer:new{var = 0}, VarTimer:new{var = 120}, VarTimer:new{var = 0}},
+		{VarTimer:new{var = 0}, VarTimer:new{var = 120}, VarTimer:new{var = 0}},
+		{VarTimer:new{var = 0}, VarTimer:new{var = 120}, VarTimer:new{var = 0}}
 	}
 	self.ballscoloreffects = {
 		ColorManager.ColorManager.getColorEffect(self.ballscolors[1][1], self.ballscolors[1][2], self.ballscolors[1][3], 20),
@@ -36,10 +38,10 @@ function bossTwo:__init()
 		ColorManager.ColorManager.getColorEffect(self.ballscolors[4][1], self.ballscolors[4][2], self.ballscolors[4][3], 20)
 	}
 	bossTwo.turrets = { 
-		bossTwo.turret:new{ position = vector:new{ 0, -50 } }, 
-		bossTwo.turret:new{ position = vector:new{  50, 0 } }, 
-		bossTwo.turret:new{ position = vector:new{ 0,  50 } }, 
-		bossTwo.turret:new{ position = vector:new{ -50, 0 } }
+		bossTwo.turret:new{ position = Vector:new{ 0, -50 } }, 
+		bossTwo.turret:new{ position = Vector:new{  50, 0 } }, 
+		bossTwo.turret:new{ position = Vector:new{ 0,  50 } }, 
+		bossTwo.turret:new{ position = Vector:new{ -50, 0 } }
 	}
 	self.healths = { bossTwo.maxhealth, bossTwo.maxhealth, bossTwo.maxhealth, bossTwo.maxhealth }
 	self.currentBehavior = bossTwo.behaviors.arriving
@@ -57,7 +59,7 @@ function bossTwo.behaviors.arriving( self )
 	if curdist < 1 or curdist > self.prevdist then
 		self.position:set(width/2, height/2)
 		self.speed:reset()
-		self.shoottimer = timer:new {
+		self.shoottimer = Timer:new {
 			timelimit = 1.6,
 			works_on_gamelost = false,
 			time = math.random(),
@@ -73,7 +75,7 @@ function bossTwo.behaviors.arriving( self )
 			e:register()
 		end
 
-		timer:new{ timelimit = 2, running = true, onceonly = true, funcToCall = function()
+		Timer:new{ timelimit = 2, running = true, onceonly = true, funcToCall = function()
 			local pos = {{90, 90},{width - 90, 90},  {width - 90, height - 90}, {90, height - 90}}
 				self.turretsoldpos = {0,0,0,0}
 				for i = 1, 4 do 
@@ -84,7 +86,7 @@ function bossTwo.behaviors.arriving( self )
 					t.target = pos[i]
 					t.prevdist = t.position:distsqr(t.target)
 				end
-				timer:new {
+				Timer:new {
 					timelimit = .1,
 					running = true,
 					funcToCall = function(timer)
@@ -164,7 +166,7 @@ function bossTwo.behaviors.gathering( self )
 			local t = bossTwo.turrets[i]
 			t:attach(self.position)
 		end
-		timer:new {
+		Timer:new {
 			timelimit = 1,
 			running = true,
 			onceonly = true,
@@ -181,7 +183,7 @@ function bossTwo.behaviors.gathering( self )
 				self.rotatetimer:start(0)
 			end
 		}
-		timer:new{
+		Timer:new{
 			timelimit = 3.5,
 			running = true,
 			onceonly = true,
@@ -196,9 +198,9 @@ function bossTwo.behaviors.gathering( self )
 				self.vulnerable = true
 			end
 		}
-		self.rotatetimer = timer:new {
+		self.rotatetimer = Timer:new {
 			timelimit = 2.5,
-			funcToCall = function( timer )
+			funcToCall = function(timer )
 				for i = 1, 4 do
 					local t = bossTwo.turrets[i]
 					local n = bossTwo.turrets[(i % 4) + 1]
@@ -227,7 +229,7 @@ function bossTwo.behaviors.third( self )
 			t.speed:set(t.target):sub(t.position):normalize():mult(v,v)
 			t.prevdist = t.position:distsqr(t.target)
 			t.shoottimer:stop()
-			timer:new{
+			Timer:new{
 				timelimit = .1,
 				time = -1,
 				running = true,
@@ -294,14 +296,14 @@ function bossTwo.behaviors.caging( self )
 			local c1, c2 = t.circles[(i % 4) + 1], t.circles[((i-2) % 4) + 1]
 			t.circles[(i % 4) + 1], t.circles[((i-2) % 4) + 1] = nil, nil
 			t.circles[1], t.circles[2] = c1, c2
-			c1.growafter = timer:new{
+			c1.growafter = Timer:new{
 				timelimit = 1.5,
 				funcToCall = function(timer)
 					c1.sizeGrowth = 3
 					timer:stop()
 				end
 			}
-			c2.growafter = timer:new{
+			c2.growafter = Timer:new{
 				timelimit = 1.5,
 				funcToCall = function(timer)
 					c2.sizeGrowth = 3
@@ -327,7 +329,7 @@ function bossTwo.behaviors.fourth( self )
 			if c2.size > 50 then c2.sizeGrowth = 0 c2.size = 50 end
 		end
 		if c1 or c2 then
-			for _, s in pairs(shot.bodies) do
+			for _, s in pairs(Shot.bodies) do
 				local c1c, c2c = s:collidesWith(c1), s:collidesWith(c2)
 				local c = c1c and c1 or c2
 				if c1c or c2c then
@@ -378,9 +380,9 @@ function bossTwo.behaviors.imploding( self )
 	for i = 1, 4 do if not bossTwo.turrets[i].onLocation then return end	end
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
-		t.lifecircle = circleEffect:new{ alpha = 255, index = t, size = t.size, sizeGrowth = 35, position = t.position + self.position, linewidth = 5 }
+		t.lifecircle = CircleEffect:new{ alpha = 255, index = t, size = t.size, sizeGrowth = 35, position = t.position + self.position, linewidth = 5 }
 		function t.lifecircle:update( dt )
-			circleEffect.update(self, dt)
+			CircleEffect.update(self, dt)
 			if self.size > t.size + 60 then self.sizeGrowth = 0 self.size = t.size + 60 t.shoottimer:start(t.shoottimer.timelimit) end
 			if self.size < t.size then 
 				self.delete = true 
@@ -400,7 +402,7 @@ function bossTwo.behaviors.turretprotection( self )
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
 		if t and t.lifecircle.sizeGrowth then
-			for i,v in pairs(shot.bodies) do
+			for i,v in pairs(Shot.bodies) do
 				if v:collidesWith(t.lifecircle) then
 					t.lifecircle.size = t.lifecircle.size - 2
 					v.collides = true
@@ -410,19 +412,19 @@ function bossTwo.behaviors.turretprotection( self )
 		end
 	end
 	for i = 1, 4 do if bossTwo.turrets[i] then return end end
-	local a = vartimer:new{}
+	local a = VarTimer:new{}
 	a:setAndGo(0, 255, 100)
-	self.plead = text:new{
+	self.plead = Text:new{
 		text = "Please don't kill me!",
 		font = getCoolFont(30),
-		position = vector:new{width/2 - 146, height/2 - 110},
+		position = Vector:new{width/2 - 146, height/2 - 110},
 		alphafollows = a
 	}
 	self.plead:register()
-	timer:new{ timelimit = 4, onceonly = true, running = true, funcToCall = function ()
+	Timer:new{ timelimit = 4, onceonly = true, running = true, funcToCall = function ()
 		a:setAndGo(255, 0, 100)
 	end}
-	timer:new{ timelimit = 1, onceonly = true, running = true, funcToCall = function ()
+	Timer:new{ timelimit = 1, onceonly = true, running = true, funcToCall = function ()
 		self.plead = nil
 		self.ballscolors[4][1]:setAndGo(nil, 0, 100)
 		self.ballscolors[4][2]:setAndGo(nil, 255, 100)
@@ -471,8 +473,8 @@ function bossTwo:getShot()
 end
 
 function bossTwo:update( dt )
-	circleEffect.update(self, dt)
-	body.update(self, dt)
+	CircleEffect.update(self, dt)
+	Body.update(self, dt)
 	self:currentBehavior()
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
@@ -480,7 +482,7 @@ function bossTwo:update( dt )
 	end
 	self.ballspos = self.ballspos + self.ballspeed*dt
 
-	for i,v in pairs(shot.bodies) do
+	for i,v in pairs(Shot.bodies) do
 		local c1, c2, c3, c4 = self:collides(v, 1), self:collides(v, 2), self:collides(v, 3), self:collides(v, 4)
 		if c1 or c2 or c3 or c4 then
 			local n = c1 and 1 or c2 and 2 or c3 and 3 or 4
@@ -500,7 +502,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						--colors[3] is already correct
-						timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 							local colors = self.ballscolors[n]
 							colors[1]:setAndGo(nil, (1-d)*255, 300)
 							colors[2]:setAndGo(nil, d*120, 300)
@@ -518,7 +520,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						colors[3]:setAndGo(0, 700)
-						timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 							colors[1]:setAndGo(nil, (1-d)*255, 300)
 							colors[2]:setAndGo(nil, d*50, 300)
 							colors[3]:setAndGo(nil, d*140, 300)
@@ -536,7 +538,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						--colors[3]:setAndGo(0, 700)
-						timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 							colors[1]:setAndGo(nil, 80 + (1-d)*(255 - 80), 300)
 							colors[2]:setAndGo(nil, d*90, 300)
 							--colors[3]:setAndGo(nil, d*255, 300)
@@ -556,7 +558,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						--colors[3]:setAndGo(0, 700)
-						timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
 							colors[1]:setAndGo(nil, (1-d)*255, 300)
 							colors[2]:setAndGo(nil, d*240, 300)
 							--colors[3]:setAndGo(nil, d*255, 300)
@@ -581,7 +583,7 @@ function bossTwo:__index( key )
 	else return bossTwo:__super().__index(self, key) end
 end
 
-bossTwo.turret = body:new {
+bossTwo.turret = Body:new {
 	size = 60,
 	health = bossTwo.maxhealth/4,
 	variance = math.random(ColorManager.cycleTime*1000)/1000,
@@ -592,8 +594,10 @@ bossTwo.turret = body:new {
 	__type = 'bossTwoTurret'
 }
 
+Body.makeClass(bossTwo.turret)
+
 function bossTwo.turret:__init()
-	self.shoottimer = timer:new {
+	self.shoottimer = Timer:new {
 		timelimit = 1.5,
 		funcToCall = function ()
 			local e = bossTwo:getTurretShot()
@@ -605,12 +609,12 @@ function bossTwo.turret:__init()
 		end
 	}
 	self.circles = {
-		circleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = vector:new{0, -55}},
-		circleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = vector:new{ 55, 0}},
-		circleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = vector:new{0,  55}},
-		circleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = vector:new{-55, 0}}
+		CircleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = Vector:new{0, -55}},
+		CircleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = Vector:new{ 55, 0}},
+		CircleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = Vector:new{0,  55}},
+		CircleEffect:new{ index = false, alpha = 255, mode = 'fill', size = 30, sizeGrowth = 0, coloreffect = self.ballscoloreffect, position = Vector:new{-55, 0}}
 	}
-	self.bossTwopos = vector:new{}
+	self.bossTwopos = Vector:new{}
 end
 
 function bossTwo.turret:draw( xt, yt )
@@ -624,10 +628,10 @@ function bossTwo.turret:draw( xt, yt )
 	graphics.translate(-x,-y)
 end
 
-local auxVec = vector:new{}
+local auxVec = Vector:new{}
 
 function bossTwo.turret:update( dt )
-	body.update(self, dt)
+	Body.update(self, dt)
 
 	for _, c in pairs(self.circles) do
 		c:update(dt)
@@ -647,7 +651,7 @@ function bossTwo.turret:update( dt )
 	end
 
 	self.position:add(self.bossTwopos)
-	for i,v in pairs(shot.bodies) do
+	for i,v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
 			if self.health > 0 then self.health = self.health - 1 end
 			v.collides = true

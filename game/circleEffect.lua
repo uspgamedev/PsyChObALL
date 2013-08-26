@@ -1,15 +1,17 @@
-circleEffect = body:new {
+CircleEffect = Body:new {
 	alpha = 10,
 	maxsize = width / 1.9,
 	mode = 'line',
-	__type = 'circleEffect',
+	__type = 'CircleEffect',
 	changesimage = false,
 	linewidth = 4,
 	ord = 3,
 	bodies = {}
 }
 
-function circleEffect:__init()
+Body.makeClass(CircleEffect)
+
+function CircleEffect:__init()
 	if self.based_on then --circle to be based on
 		self.position = self.based_on.position:clone{}
 		self.size = self.based_on.size
@@ -19,11 +21,11 @@ function circleEffect:__init()
 	
 	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
 	self.variance = self.variance or math.random(0, 100*ColorManager.cycleTime) / 100
-	if #circleEffect.bodies > 250 then table.remove(circleEffect.bodies, 1) end
+	if #CircleEffect.bodies > 250 then table.remove(CircleEffect.bodies, 1) end
 	if self.index ~= nil then
 		if self.index ~= false then
 			self:start()
-			circleEffect.bodies[self.index] = self
+			CircleEffect.bodies[self.index] = self
 		end
 	else
 		self:register()
@@ -35,30 +37,32 @@ function circleEffect:__init()
 		end)]]
 end
 
-function circleEffect.init()
-	circleEffect.timer = timer:new{
+function CircleEffect.init()
+	CircleEffect.timer = Timer:new{
 		timelimit = .2,
 		running = true,
 		persistent = true
 	}
 
-	function circleEffect.timer:funcToCall() -- releases cirleEffects
+	function CircleEffect.timer:funcToCall() -- releases cirleEffects
 		if onGame() then
-			circleEffect:new {
+			CircleEffect:new {
 				based_on = psycho
 			}
 		end
-		for i,v in pairs(enemy.bodies) do
-			if v.size >= 15 and math.random() < .5 --[[reducing chance]] then 
-				circleEffect:new{
-					based_on = v
-				} 
+		if state == survival then
+			for i,v in pairs(Enemy.bodies) do
+				if v.size >= 15 and math.random() < .5 --[[reducing chance]] then 
+					CircleEffect:new{
+						based_on = v
+					} 
+				end
 			end
 		end
 	end
 end
 
-function circleEffect:update(dt)
+function CircleEffect:update(dt)
 	self.size = self.size + self.sizeGrowth * dt
 	if self.desiredsize then
 		if self.sizeGrowth > 0 then

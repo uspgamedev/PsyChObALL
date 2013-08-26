@@ -1,41 +1,41 @@
 require "lux.object"
 
-vector = lux.object.new {
+Vector = lux.object.new {
 	0,		-- x-axis
 	0,		-- y-axis
-	__type = "vector"
+	__type = "Vector"
 }
 
-function vector:__tostring()
+function Vector:__tostring()
 	return ('['..self[1]..', '..self[2]..']')
 end
 
-function vector:__index(n)
+function Vector:__index(n)
 	if n=='x' then return self[1]
 	elseif n=='y' then return self[2]
 	else return getmetatable(self)[n] end
 end
 
-function vector:__newindex(i, v)
+function Vector:__newindex(i, v)
 	if i=='x' then self[1] = v
 	elseif i=='y' then self[2] = v
 	else rawset(self,i,v) end
 end
 
 --	returns first + second
-function vector.__add( first, second )
+function Vector.__add( first, second )
 	if type(first) == 'number' then
-		return vector:new {
+		return Vector:new {
 			second[1] + first,
 			second[2] + first
 		}
 	elseif type(second) == 'number' then
-		return vector:new {
+		return Vector:new {
 			first[1] + second,
 			first[2] + second
 		}
-	else --both are vectors
-		return vector:new {
+	else --both are Vectors
+		return Vector:new {
 			first[1] + second[1],
 			first[2] + second[2]
 		}
@@ -43,19 +43,19 @@ function vector.__add( first, second )
 end
 
 --	returns first - second
-function vector.__sub( first, second)
+function Vector.__sub( first, second)
 	if type(first) == 'number' then
-		return vector:new {
+		return Vector:new {
 			second[1] - first,
 			second[2] - first
 		}
 	elseif type(second) == 'number' then
-		return vector:new {
+		return Vector:new {
 			first[1] - second,
 			first[2] - second
 		}
-	else --both are vectors
-		return vector:new {
+	else --both are Vectors
+		return Vector:new {
 			first[1] - second[1],
 			first[2] - second[2]
 		}
@@ -63,19 +63,19 @@ function vector.__sub( first, second)
 end
 
 --	returns first*second
-function vector.__mul( first, second )
+function Vector.__mul( first, second )
 	if type(first) == 'number' then
-		return vector:new {
+		return Vector:new {
 			second[1] * first,
 			second[2] * first
 		}
 	elseif type(second) == 'number' then
-		return vector:new {
+		return Vector:new {
 			first[1] * second,
 			first[2] * second
 		}
-	else --both are vectors
-		return vector:new {
+	else --both are Vectors
+		return Vector:new {
 			first[1] * second[1],
 			first[2] * second[2]
 		}
@@ -83,19 +83,19 @@ function vector.__mul( first, second )
 end
 
 --	returns first/second
-function vector.__div( first, second )
+function Vector.__div( first, second )
 	if type(first) == 'number' then
-		return vector:new {
+		return Vector:new {
 			first / second[1],
 			first / second[2]
 		}
 	elseif type(second) == 'number' then
-		return vector:new {
+		return Vector:new {
 			first[1] / second,
 			first[2] / second
 		}
-	else --both are vectors
-		return vector:new {
+	else --both are Vectors
+		return Vector:new {
 			first[1] / second[1],
 			first[2] / second[2]
 		}
@@ -103,26 +103,26 @@ function vector.__div( first, second )
 end
 
 --	returns -first
-function vector.__unm( first )
-	return vector:new {
+function Vector.__unm( first )
+	return Vector:new {
 		-first[1],
 		-first[2]
 	}
 end
 
 --	checks if first == second
-function vector.__eq( first, second )
+function Vector.__eq( first, second )
 	return (first[1] == second[1]) and (first[2] == second[2])
 end
 
-function vector:negate()
+function Vector:negate()
 	self[1] = -self[1]
 	self[2] = -self[2]
 
 	return self
 end
 
-function vector:set(x, y)
+function Vector:set(x, y)
 	if x == nil or type(x) == 'number' then
 		self[1] = x or self[1]
 		self[2] = y or self[2]
@@ -134,7 +134,7 @@ function vector:set(x, y)
 	return self
 end
 
-function vector:add(x, y)
+function Vector:add(x, y)
 	if x==nil or type(x)=='number' then
 		self[1] = self[1] + (x or 0)
 		self[2] = self[2] + (y or 0)
@@ -146,7 +146,7 @@ function vector:add(x, y)
 	return self
 end
 
-function vector:sub(x, y)
+function Vector:sub(x, y)
 	if x==nil or type(x)=='number' then
 		self[1] = self[1] - (x or 0)
 		self[2] = self[2] - (y or 0)
@@ -158,14 +158,14 @@ function vector:sub(x, y)
 	return self
 end
 
-function vector:mult( x, y )
+function Vector:mult( x, y )
 	self[1] = self[1] * (x or 1)
 	self[2] = self[2] * (y or x or 1)
 	
 	return self
 end
 
-function vector:div( x, y )
+function Vector:div( x, y )
 	self[1] = self[1] / (x or 1)
 	self[2] = self[2] / (y or x or 1)
 	
@@ -173,7 +173,7 @@ function vector:div( x, y )
 end
 
 
-function vector:equals(x, y)
+function Vector:equals(x, y)
 	if y then
 		return (self[1] == x) and (self[2] == y)
 	else
@@ -181,7 +181,7 @@ function vector:equals(x, y)
 	end
 end
 
-function vector:distsqr(x, y)
+function Vector:distsqr(x, y)
 	if y then
 		return (self[1]-x)^2 + (self[2]-y)^2
 	else
@@ -189,37 +189,37 @@ function vector:distsqr(x, y)
 	end
 end
 
-function vector:dist(x, y)
+function Vector:dist(x, y)
 	return math.sqrt(self:distsqr(x,y))
 end
 
-function vector:unpack()
+function Vector:unpack()
 	return self[1], self[2]
 end
 
-function vector:lengthsqr()
+function Vector:lengthsqr()
 	return self[1]^2 + self[2]^2
 end
 
-function vector:length()
+function Vector:length()
 	return math.sqrt(self:lengthsqr())
 end
 
-function vector:normalized()
+function Vector:normalized()
 	return self/self:length()
 end
 
-function vector:normalize()
+function Vector:normalize()
 	local length = self:length()
 	return self:div(length,length)
 end
 
-function vector:reset()
+function Vector:reset()
 	self[1], self[2] = nil, nil
 	return self
 end
 
-function vector:rotate( rad )
+function Vector:rotate( rad )
 	local sin, cos = math.sin(rad), math.cos(rad)
 	self[1], self[2] = 
 		cos*self[1] - sin*self[2],
@@ -227,6 +227,6 @@ function vector:rotate( rad )
 	return self
 end
 
-function vector:rotated( rad )
-	return vector:new{self[1], self[2]}:rotate()
+function Vector:rotated( rad )
+	return Vector:new{self[1], self[2]}:rotate()
 end

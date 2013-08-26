@@ -1,16 +1,19 @@
-effect = body:new {
+Effect = Body:new {
 	size	 = 3,
-	__type   = 'effect',
+	__type   = 'Effect',
 	noShader = true,
 	bodies = {}
 }
 
-effect.spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1200, 'dynamic')
+Body.makeClass(Effect)
+
+Effect.spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1200, 'dynamic')
+
 local effectCount = 0
 local allEffects = {}
 local canClear = true
 setmetatable(allEffects, {__mode = 'v'})
-local clearTimer = timer:new{
+local clearTimer = Timer:new{
 		timelimit = 3,
 		pausable = false,
 		persistent = true,
@@ -20,8 +23,8 @@ local clearTimer = timer:new{
 		end
 	}
 
-function effect:start()
-	body.start(self)
+function Effect:start()
+	Body.start(self)
 	self.etc = 0
 	table.insert(allEffects, self)
 	self:addToBatch()
@@ -30,46 +33,46 @@ function effect:start()
 		clearTimer:start() -- prevents clearing for another 3 seconds
 
 		effectCount = 0
-		effect.spriteBatch:clear()
-		effect.spriteBatch:bind()
+		Effect.spriteBatch:clear()
+		Effect.spriteBatch:bind()
 		for _, e in pairs(allEffects) do
 			e:addToBatch()
 		end
-		effect.spriteBatch:unbind()
+		Effect.spriteBatch:unbind()
 	end
 end
 
-function effect:addToBatch()
+function Effect:addToBatch()
 	if self.delete or effectCount > 1197 then return end
-	self.id = effect.spriteBatch:add(self.x, self.y, 0, self.size)
+	self.id = Effect.spriteBatch:add(self.x, self.y, 0, self.size)
 	effectCount = effectCount + 1
 end
 
-function effect:draw()
+function Effect:draw()
 	local color = ColorManager.getComposedColor(self.variance + ColorManager.timer.time, 255, self.coloreffect)
 	if self.id then
-		effect.spriteBatch:setColor(unpack(color))
-		effect.spriteBatch:set(self.id, self.x, self.y, 0, self.size)
+		Effect.spriteBatch:setColor(unpack(color))
+		Effect.spriteBatch:set(self.id, self.x, self.y, 0, self.size)
 	else
 		graphics.setColor(color)
 		graphics.draw(base.pixel, self.x, self.y, 0, self.size)
 	end
 end
 
-function effect:update(dt)
-	body.update(self, dt)
+function Effect:update(dt)
+	Body.update(self, dt)
 	self.etc = self.etc + dt
 
 	self.delete = self.delete or self.etc > self.timetogo
 end
 
-function effect:handleDelete()
-	body.handleDelete(self)
+function Effect:handleDelete()
+	Body.handleDelete(self)
 	if not self.id then return end
-	effect.spriteBatch:set(self.id, 0, 0, 0, 0, 0)
+	Effect.spriteBatch:set(self.id, 0, 0, 0, 0, 0)
 end
 
-function effect:clear()
+function Effect:clear()
 	for k, e in pairs(self.bodies) do
 		e:handleDelete()
 		self.bodies[k] = nil
@@ -81,7 +84,7 @@ function neweffects(based_on, times)
 	--local speedinfluence = based_on.speed * .6
 	if (based_on.alpha or (based_on.alphafollows and based_on.alphafollows.var) or 1) == 0 then return end
 	for i = 1, times do
-		local e = effect:new{
+		local e = Effect:new{
 			position = based_on.position + {based_on.size * (2 * math.random() - 1),based_on.size * (2 * math.random() - 1)},
 			variance = based_on.variance,
 			coloreffect = based_on.coloreffect,
@@ -94,6 +97,6 @@ function neweffects(based_on, times)
 		e.timetogo = math.random(50,130) / 100
 		e:start()
 		
-		table.insert(effect.bodies, e)
+		table.insert(Effect.bodies, e)
 	end
 end

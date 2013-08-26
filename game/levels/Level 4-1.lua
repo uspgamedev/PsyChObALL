@@ -38,16 +38,16 @@ function run()
 
 	local vform = formation {
 		type = 'V',
-		startpoint = vector:new{23, -1020},
+		startpoint = Vector:new{23, -1020},
 		size = width,
 		growth = 1010,
-		setspeedto = vector:new{0, v}
+		setspeedto = Vector:new{0, v}
 	}
 	
 	local f1 = formation {
 		type = 'around',
 		angle = 0,
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(180),
 		shootattarget = true,
 		adapt = false
@@ -58,13 +58,13 @@ function run()
 		movetorwards = 'right',
 		distance = 42,
 		startsat = width/2-200,
-		setspeedto = vector:new{0, 300}
+		setspeedto = Vector:new{0, 300}
 	}
 
 	local f3 = formation {
 		type = 'around',
 		angle = base.toRadians(-45),
-		target = vector:new{width/2, height/2},
+		target = Vector:new{width/2, height/2},
 		anglechange = base.toRadians(45),
 		shootattarget = true
 	}
@@ -75,7 +75,7 @@ function run()
 	local grey = 'grayball'
 	local snake = 'snake'
 	local nic = 'cage'
-	local vc = function(data) return vector:new(data) end
+	local vc = function(data) return Vector:new(data) end
 	local mono = 'monoguiaball'
 	
 	wait(3)
@@ -188,18 +188,18 @@ function run()
 	f2.startsat = 20
 	enemy(grey, 11, f2)
 	wait(3)
-	enemy(super, 1, { position = vector:new{width/2, -30}, speed = vector:new{0.5*v, 0.5*v}, life = 40, size = 50}, divide1, nil, 5)
-	enemy(super, 1, { position = vector:new{width/2, height+30}, speed = vector:new{0.5*v, 0.5*v}, life = 80, size = 70}, simple, nil, 5)
+	enemy(super, 1, { position = Vector:new{width/2, -30}, speed = Vector:new{0.5*v, 0.5*v}, life = 40, size = 50}, divide1, nil, 5)
+	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.5*v, 0.5*v}, life = 80, size = 70}, simple, nil, 5)
 	wait(10)
 	doNow( function(timer)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 4-2' end
 		else
-			text:new{
+			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
 				font = getCoolFont(50),
 				printmethod = graphics.printf,
-				position = vector:new{width/2 - 400, height/2 + 20},
+				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'
 			}:register()
