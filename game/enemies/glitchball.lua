@@ -3,6 +3,7 @@ glitchball = Body:new {
 	coloreffect = ColorManager.noLSDEffect,
 	mode = 'line',
 	linewidth = 10,
+	spriteBatch = false,
 	__type = "glitchball"
 }
 
@@ -11,6 +12,8 @@ Body.makeClass(glitchball)
 function glitchball:__init()
 	if not rawget(self.position, 1) then Enemy.__init(self) end
 end
+
+glitchball.draw = CircleEffect.draw
 
 function glitchball:update( dt )
 	Body.update(self, dt)

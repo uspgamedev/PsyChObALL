@@ -5,7 +5,6 @@ Button = Body:new {
 	__type = 'Button',
 	visible = true,
 	bodies = {},
-	noShader = true,
 	allbuttons = {}
 }
 setmetatable(Button.allbuttons, {__mode = 'v'})

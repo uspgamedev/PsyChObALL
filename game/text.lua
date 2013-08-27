@@ -3,8 +3,8 @@ Text = Body:new {
 	size = 20,
 	ord = 6,
 	printmethod = graphics.print,
-	noShader = true,
 	__type = 'Text',
+	spriteBatch = false,
 	mode = 'none',
 	bodies = {}
 }

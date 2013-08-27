@@ -4,6 +4,10 @@ superball = Body:new {
 	life = 60,
 	timeout = 40,
 	collides = true,
+	shader = base.circleShader,
+	spriteBatch = graphics.newSpriteBatch(base.pixel, 10, 'dynamic'),
+	spriteMaxNum = 10,
+	spriteSafety = 2,
 	ord = 6,
 	__type = 'superball'
 }

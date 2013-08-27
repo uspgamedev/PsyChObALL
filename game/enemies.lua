@@ -50,9 +50,6 @@ function paintOn( self, p )
 		local name = v:sub(0,v:len() - 4)
 		require('enemies.' .. name)
 		bodies[name] = {}
-		local m = {name = name, onShader = self[name].onShader, ord = self[name].ord}
-		m.__index = m
-		setmetatable(bodies[name], m)
 		self[name].bodies = bodies[name]
 		self[name]:paintOn(p)
 		self[name].list = List:new{}

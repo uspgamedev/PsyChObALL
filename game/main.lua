@@ -69,11 +69,11 @@ function initBase()
 	CircleEffect:paintOn(paintables)
 	Text:paintOn(paintables)
 	ImageBody:paintOn(paintables)
+	Button:paintOn(paintables)
 	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
 	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
 		sets _G.paintables because of base.globalize]]
-	Button:paintOn(UI.paintables)
 
 	bestscore, besttime, bestmult = 0, 0, 0
 	lastLevel = 'Level 1-1'
@@ -346,20 +346,10 @@ function love.draw()
 		return
 	end
 
-	base.circleSpriteBatch:clear()
-	base.circleSpriteBatch:bind()
-
-	Effect.spriteBatch:bind()
-
 	graphics.translate(-swypetimer.var, 0)
 	--[[End of setting camera]]
-	love.graphics.setPixelEffect(base.circleShader)
-	for i, v in pairs(paintables) do
-		if v.noShader then love.graphics.setPixelEffect() end
-		for j, m in pairs(v) do
-			m:draw()
-		end
-		if v.noShader then love.graphics.setPixelEffect(base.circleShader) end
+	for _, paintable in pairs(paintables) do
+		paintable:drawComponents()
 	end
 
 	--[[Drawing Game Objects]]
@@ -371,14 +361,6 @@ function love.draw()
 		end
 	end
 	--[[End of Drawing Game Objects]]
-
-	graphics.setPixelEffect()
-	Effect.spriteBatch:unbind()
-	graphics.draw(Effect.spriteBatch, 0 ,0)
-
-	graphics.setPixelEffect(base.circleShader)
-	base.circleSpriteBatch:unbind()
-	graphics.draw(base.circleSpriteBatch, 0, 0)
 
 	UI.draw()
 	graphics.translate(swypetimer.var, 0)
@@ -410,16 +392,15 @@ function drawShootingDirection()
 		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
 		if a1 == 0 and a2 == 0 then return end
 		local x = a2 > 0 and width or 0
-		graphics.setPixelEffect()
 		graphics.line(psycho.x, psycho.y, a2*1200 + psycho.x, a1*1200 + psycho.y)
 	else
-		local mx, my = mouse.getPosition()
-		graphics.circle("line", mx, my, 5)
+		graphics.setPixelEffect(base.circleShader)
+		graphics.circle("line", mouseX, mouseY, 5)
 		color[4] = 60 -- alpha
 		graphics.setColor(color)
-		local x = mx > psycho.x and width or 0
+		local x = mouseX > psycho.x and width or 0
 		graphics.setPixelEffect()
-		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((my - psycho.y)/(mx - psycho.x)))
+		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((mouseY - psycho.y)/(mouseX - psycho.x)))
 	end
 	graphics.setPixelEffect(base.circleShader)
 end
@@ -471,23 +452,10 @@ function love.update(dt)
 	updateBodies(dt)
 end
 
-local todelete = {}
 function updateBodies( dt )
 	for i, v in pairs(paintables) do
-		for j, m in pairs(v) do
-			m:update(dt)
-			if m.delete then
-				table.insert(todelete, j)
-			end
-		end
-
-		local n
-		for k = #todelete, 1, -1 do
-			n = todelete[k]
-			v[n]:handleDelete()
-			v[n] = nil
-			todelete[k] = nil
-		end
+		if not v.updateComponents then table.foreach(v, print) error() end
+		v:updateComponents(dt)
 	end
 end
 

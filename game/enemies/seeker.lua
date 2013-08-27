@@ -3,6 +3,9 @@ seeker = Body:new {
 	timeout = 10,
 	seek = true,
 	health = 10,
+	spriteBatch = graphics.newSpriteBatch(base.pixel, 20, 'dynamic'),
+	spriteMaxNum = 20,
+	spriteSafety = 3,
 	__type = 'seeker'
 }
 

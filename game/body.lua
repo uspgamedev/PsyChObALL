@@ -4,6 +4,7 @@ Body = lux.object.new {
 	variance = 0,
 	changesimage = true,
 	positionfollows = nil, --function
+	ord = 5,
 	__type = 'unnamed Body'
 }
 
@@ -40,6 +41,14 @@ end
 function Body.makeClass( subclass )
 	subclass.__newindex = newindex
 	subclass.__index = index
+	if subclass.spriteBatch == nil then
+		subclass.spriteBatch = graphics.newSpriteBatch(base.pixel, 200, 'dynamic')
+		subclass.spriteMaxNum = 200
+	end
+	if subclass.spriteBatch then
+		subclass.spriteCount = 0
+
+	end
 end
 
 function Body:update( dt )
@@ -58,12 +67,14 @@ end
 function Body:draw()
 	if self.linewidth then graphics.setLineWidth(self.linewidth) end
 	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect)
-	graphics.setColor(color)
-	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
+	self.spriteBatch:setColor(unpack(color))
+	self.spriteBatch:set(self.id, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 end
 
 function Body:handleDelete()
-
+	if self.spriteBatch then
+		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0) 
+	end
 end
 
 function Body:onInit()
@@ -71,7 +82,23 @@ function Body:onInit()
 end
 
 function Body:start()
-	
+	if self.spriteBatch then self:addToBatch() end
+end
+
+function Body:addToBatch()
+	if self.spriteBatch then
+		if self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then
+			self:__super().spriteCount = 1
+			self.spriteBatch:bind()
+			self.spriteBatch:clear()
+			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
+			for _, p in pairs(self.bodies) do p:addToBatch() end
+			self.spriteBatch:unbind()
+		else
+			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
+			self:__super().spriteCount = self:__super().spriteCount + 1
+		end
+	end
 end
 
 Body.collidesWith = base.collides
@@ -90,18 +117,42 @@ function Body:freeWarning()
 end
 
 function Body:paintOn( p )
-	local m = {
-		name = self.name,
-		ord = self.ord or 5,
-		noShader = self.noShader
-	}
-	m.__index = m
-	setmetatable(self.bodies, m)
-	table.insert(p, self.bodies)
+	table.insert(p, self)
+end
+
+function Body:drawComponents()
+	if self.shader then graphics.setPixelEffect(self.shader) end
+	if self.spriteBatch then self.spriteBatch:bind() end
+	for _, body in pairs(self.bodies) do
+		body:draw()
+	end
+	if self.spriteBatch then self.spriteBatch:unbind()	graphics.draw(self.spriteBatch, 0, 0) end
+	if self.shader then graphics.setPixelEffect() end
+end
+
+local todelete = {}
+function Body:updateComponents( dt )
+	for k, body in pairs(self.bodies) do
+		body:update(dt)
+		if body.delete then
+			table.insert(todelete, k)
+		end
+	end
+
+	local n
+	for k = #todelete, 1, -1 do
+		n = todelete[k]
+		self.bodies[n]:handleDelete()
+		self.bodies[n] = nil
+		todelete[k] = nil
+	end
 end
 
 function Body:clear()
-	base.clearTable(self.bodies)
+	for k, b in pairs(self.bodies) do
+		Body.handleDelete(b)
+		self.bodies[k] = nil
+	end
 end
 
 function Body:register(...)

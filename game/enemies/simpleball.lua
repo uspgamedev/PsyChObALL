@@ -1,6 +1,10 @@
 simpleball = Body:new {
 	size = 20,
 	coloreffect = ColorManager.ColorManager.getColorEffect(0, 0, 255, 40),
+	shader = base.circleShader,
+	spriteBatch = graphics.newSpriteBatch(base.pixel, 400, 'dynamic'),
+	spriteMaxNum = 400,
+	spriteSafety = 10,
 	__type = "simpleball"
 }
 

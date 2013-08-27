@@ -64,9 +64,7 @@ _G.graphics = {
 				love.graphics.draw(pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
 				circleShader:send('min', 0) 
 			else
-				circleSpriteBatch:setColor(graphics.getColor())
-				local tx, ty = translateStack:peek():unpack()
-				circleSpriteBatch:add(xFixed - rFixed + tx, yFixed - rFixed + ty, 0, 2*rFixed)
+				love.graphics.draw(pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
 			end
 		end
 	end,

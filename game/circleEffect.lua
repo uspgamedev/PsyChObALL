@@ -5,6 +5,7 @@ CircleEffect = Body:new {
 	__type = 'CircleEffect',
 	changesimage = false,
 	linewidth = 4,
+	spriteBatch = false,
 	ord = 3,
 	bodies = {}
 }
@@ -60,6 +61,12 @@ function CircleEffect.init()
 			end
 		end
 	end
+end
+
+function CircleEffect:draw()
+	graphics.setLine(self.linewidth)
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect))
+	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function CircleEffect:update(dt)

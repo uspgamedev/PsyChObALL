@@ -3,9 +3,10 @@ Shot = Body:new {
 	size 	 = 4,
 	variance = 0,
 	explosionEffects = true,
-	__type   = 'Shot',
+	shader = base.circleShader,
 	shotnum = 1,
-	bodies = {}
+	bodies = {},
+	__type   = 'Shot'
 }
 
 Body.makeClass(Shot)

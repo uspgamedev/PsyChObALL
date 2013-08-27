@@ -17,8 +17,7 @@ Psychoball = CircleEffect:new {
 	changesimage = true,
 	canbehit = true,
 	pseudoDied = false,
-	__index = CircleEffect.__index,
-	__newindex = CircleEffect.__newindex,
+	spriteBatch = false,
 	__type = 'Psychoball'
 }
 
@@ -45,10 +44,8 @@ function Psychoball.init()
 	end
 end
 
-Psychoball.min, Psychoball.max = math.min, math.max
-
+local max, min = math.max, math.min
 function Psychoball:update(dt)
-
 	if self.pseudoDied or gamelost then return end
 	gametime = gametime + dt
 	blastime = blastime + dt
@@ -65,8 +62,8 @@ function Psychoball:update(dt)
 	Body.update(self, dt)
 
 	self.position:set(
-		Psychoball.max(self.size + psychosizediff, Psychoball.min(width - self.size - psychosizediff, self.position[1])),
-		Psychoball.max(self.size + psychosizediff, Psychoball.min(height - self.size - psychosizediff, self.position[2]))
+		max(self.size + psychosizediff, min(width - self.size - psychosizediff, self.position[1])),
+		max(self.size + psychosizediff, min(height - self.size - psychosizediff, self.position[2]))
 	)
 
 	if keyspressed[' '] and not ultratimer.running and ultracounter > 0 then
@@ -103,7 +100,8 @@ end
 function Psychoball:draw()
 	if self.pseudoDied or gamelost then return end
 	self.size = self.size + psychosizediff
-	Body.draw(self)
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect))
+	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 	self.size = self.size - psychosizediff
 end
 
@@ -157,6 +155,9 @@ local updateHelper = function(self, dt)
 	self.position:add(auxVec:set(self.speed):mult(dt))	
 	--never be deleted
 end
+local drawHelper = function ( self )
+	graphics.rectangle(self.mode, self.position[1] - self.size, self.position[2] - self.size, self.size*2, self.size*2)
+end
 function Psychoball:handleDelete()
 	Shot.timer:stop() -- stops shooting
 	self.speed:set(0,0) -- stops moving
@@ -165,8 +166,8 @@ function Psychoball:handleDelete()
 	local deatheffects = {}
 	self.sizeGrowth = -300
 	local efunc = effects[math.random(#effects)]
-	for i = self.x - self.size, self.x + self.size, Effect.size/1.5 do
-		for j = self.y - self.size, self.y + self.size, Effect.size/1.5 do
+	for i = self.x - self.size, self.x + self.size, Effect.size * 1.3 do
+		for j = self.y - self.size, self.y + self.size, Effect.size * 1.3 do
 			if (i - self.x)^2 + (j - self.y)^2 <= self.size^2 then
 				local e = Effect:new{
 					position = Vector:new{i, j},
@@ -178,7 +179,8 @@ function Psychoball:handleDelete()
 				local distr = efunc(e.position, self.position, self.size)
 				e.speed = (e.position - self.position):normalize():mult(v * distr, v * distr)
 				e.update = updateHelper
-				e:start()
+				e.draw = drawHelper
+				e.spriteBatch = false
 				
 				table.insert(deatheffects, e)
 			end
@@ -194,10 +196,6 @@ function Psychoball:handleDelete()
 					if not psycho.pseudoDied then levels.closeLevel() reloadStory 'Level 1-1'
 					else psycho:recreate() end
 				elseif state == survival then reloadSurvival() end
-				for k, e in pairs(paintables.psychoeffects) do 
-					e:handleDelete()
-					e.delete = true
-				end
 				paintables.psychoeffects = nil
 				return
 			end
@@ -205,7 +203,16 @@ function Psychoball:handleDelete()
 		end
 	end
 	self.size = Psychoball.size
-	local m = {noShader = true}
+	local m = {
+		updateComponents = function ( self, dt )
+			for _, body in pairs(self) do body:update(dt) end
+		end,
+		drawComponents = function (self)
+			for _, body in pairs(self) do
+				body:draw()
+			end
+		end
+	}
 	m.__index = m
 	setmetatable(deatheffects, m)
 	paintables.psychoeffects = deatheffects

@@ -1,8 +1,8 @@
 ImageBody = Body:new {
 	image = nil,
-	noShader = true,
 	bodies = {},
 	scale = 1,
+	spriteBatch = false,
 	mode = 'none',
 	__type = 'ImageBody'
 }

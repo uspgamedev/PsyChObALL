@@ -2,8 +2,9 @@ Enemy = Body:new {
 	collides = false,
 	diereason = 'leftscreen',
 	size = 16,
-	__type = 'Enemy',
-	bodies = {}
+	shader = base.circleShader,
+	bodies = {},
+	__type = 'Enemy'
 }
 
 Body.makeClass(Enemy)

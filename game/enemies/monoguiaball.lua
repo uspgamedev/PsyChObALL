@@ -3,6 +3,9 @@ monoguiaball = Body:new {
 	divideN = 3,
 	args = {},
 	coloreffect = ColorManager.ColorManager.getColorEffect(20, 140, 0),
+	spriteBatch = graphics.newSpriteBatch(base.pixel, 150, 'dynamic'),
+	spriteMaxNum = 150,
+	spriteSafety = 10,
 	__type = 'monoguiaball'
 }
 

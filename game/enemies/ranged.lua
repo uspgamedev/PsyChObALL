@@ -6,6 +6,9 @@ ranged = Body:new {
 	life = 5,
 	timeout = 10,
 	timeToShoot = 1,
+	spriteBatch = graphics.newSpriteBatch(base.pixel, 20, 'dynamic'),
+	spriteMaxNum = 20,
+	spriteSafety = 2,
 	ord = 6,
 	__type = 'ranged'
 }

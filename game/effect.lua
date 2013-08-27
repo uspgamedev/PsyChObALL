@@ -1,62 +1,17 @@
 Effect = Body:new {
-	size	 = 3,
+	size	 = 1.7,
 	__type   = 'Effect',
-	noShader = true,
+	spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1200, 'dynamic'),
+	spriteMaxNum = 1200,
+	spriteCount = 0,
 	bodies = {}
 }
 
 Body.makeClass(Effect)
 
-Effect.spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1200, 'dynamic')
-
-local effectCount = 0
-local allEffects = {}
-local canClear = true
-setmetatable(allEffects, {__mode = 'v'})
-local clearTimer = Timer:new{
-		timelimit = 3,
-		pausable = false,
-		persistent = true,
-		funcToCall = function(t)
-			t:stop()
-			canClear = true
-		end
-	}
-
 function Effect:start()
 	Body.start(self)
 	self.etc = 0
-	table.insert(allEffects, self)
-	self:addToBatch()
-	if effectCount > 1195 and canClear then
-		canClear = false
-		clearTimer:start() -- prevents clearing for another 3 seconds
-
-		effectCount = 0
-		Effect.spriteBatch:clear()
-		Effect.spriteBatch:bind()
-		for _, e in pairs(allEffects) do
-			e:addToBatch()
-		end
-		Effect.spriteBatch:unbind()
-	end
-end
-
-function Effect:addToBatch()
-	if self.delete or effectCount > 1197 then return end
-	self.id = Effect.spriteBatch:add(self.x, self.y, 0, self.size)
-	effectCount = effectCount + 1
-end
-
-function Effect:draw()
-	local color = ColorManager.getComposedColor(self.variance + ColorManager.timer.time, 255, self.coloreffect)
-	if self.id then
-		Effect.spriteBatch:setColor(unpack(color))
-		Effect.spriteBatch:set(self.id, self.x, self.y, 0, self.size)
-	else
-		graphics.setColor(color)
-		graphics.draw(base.pixel, self.x, self.y, 0, self.size)
-	end
 end
 
 function Effect:update(dt)
@@ -64,19 +19,6 @@ function Effect:update(dt)
 	self.etc = self.etc + dt
 
 	self.delete = self.delete or self.etc > self.timetogo
-end
-
-function Effect:handleDelete()
-	Body.handleDelete(self)
-	if not self.id then return end
-	Effect.spriteBatch:set(self.id, 0, 0, 0, 0, 0)
-end
-
-function Effect:clear()
-	for k, e in pairs(self.bodies) do
-		e:handleDelete()
-		self.bodies[k] = nil
-	end
 end
 
 function neweffects(based_on, times)
