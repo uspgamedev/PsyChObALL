@@ -9,6 +9,7 @@ bossThree = Body:new{
 	segmentsN = 9,
 	maxsize = width,
 	visible = true,
+	spriteBatch = false,
 	ord = 6,
 	__type = 'bossThree'
 }
@@ -355,28 +356,32 @@ function bossThree:draw()
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, self.coloreffect))
 		if self.guy then 
 			graphics.setInvertedStencil(self.invertedstencil)
-
 			love.graphics.circle(self.mode, s.position[1]*ratio, s.position[2]*ratio, self.size*ratio)
 		else
-			graphics.circle(self.mode, s.position[1], s.position[2], self.size)
+			graphics.draw(base.pixel, s.position[2] - self.size, s.position[2] - self.size, 0, 2*self.size)
 		end
+
 		graphics.translate(unpack(s.extraposition))
+
 		if self.guy then 
 			graphics.setInvertedStencil(self.invertedstencil)
 			love.graphics.circle(self.mode, s.position[1]*ratio, s.position[2]*ratio, self.size*ratio)
 		else
-			graphics.circle(self.mode, s.position[1], s.position[2], self.size)
+			graphics.draw(base.pixel, s.position[2] - self.size, s.position[2] - self.size, 0, 2*self.size)
 		end
+
 		graphics.translate(-s.extraposition[1], -s.extraposition[2])
+		
 		if self.guy then 
 			graphics.setInvertedStencil()
 		end
 	end
+
 	for i = self.first + 1, self.last, 1 do
 		local s = self.segments[i]
 		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, ColorManager.noLSDEffect))
-		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
-		graphics.circle(self.mode, s.position[1] + s.extraposition[1], s.position[2] + s.extraposition[2], self.size)
+		graphics.draw(base.pixel, s.position[1] - self.size, s.position[2] - self.size, 0, 2*self.size)
+		graphics.draw(base.pixel, s.position[1] + s.extraposition[1] - self.size, s.position[2] + s.extraposition[1] - self.size, 0, 2*self.size)
 	end
 end
 
