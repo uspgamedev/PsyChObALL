@@ -10,10 +10,9 @@ bossTwo = CircleEffect:new {
 	changesimage = true,
 	sizeGrowth = 0,
 	vulnerable = true,
+	spriteBatch = false,
 	maxsize = width,
 	ord = 7,
-	__index = CircleEffect.__index,
-	__newindex = CircleEffect.__newindex,
 	__type = 'bossTwo'
 }
 
@@ -448,6 +447,7 @@ function bossTwo.behaviors.final( self )
 end
 
 function bossTwo:draw()
+	graphics.setPixelEffect(base.circleShader)
 	local xt, yt = self.position:unpack()
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
@@ -455,13 +455,14 @@ function bossTwo:draw()
 	end
 	local bp = self.ballspos
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[1]))
-	graphics.circle('fill', xt - bp, yt - bp, self.size)
+	graphics.draw(base.pixel, xt - bp - self.size, yt - bp - self.size, 0, 2*self.size)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[2]))
-	graphics.circle('fill', xt + bp, yt - bp, self.size)
+	graphics.draw(base.pixel, xt + bp - self.size, yt - bp - self.size, 0, 2*self.size)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[3]))
-	graphics.circle('fill', xt - bp, yt + bp, self.size)
+	graphics.draw(base.pixel, xt - bp - self.size, yt + bp - self.size, 0, 2*self.size)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[4]))
-	graphics.circle('fill', xt + bp, yt + bp, self.size)
+	graphics.draw(base.pixel, xt + bp - self.size, yt + bp - self.size, 0, 2*self.size)
+	graphics.setPixelEffect()
 end
 
 function bossTwo:collides( v, n )
@@ -623,9 +624,9 @@ function bossTwo.turret:draw( xt, yt )
 	local x, y = self.bossTwopos[1] + self.position[1], self.bossTwopos[2] + self.position[2]
 	graphics.translate(x, y)
 	for _, c in pairs(self.circles) do c:draw() end
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
-	graphics.circle('fill', 0, 0, self.size)
 	graphics.translate(-x,-y)
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
+	graphics.draw(base.pixel, x - self.size, y - self.size, 0, 2*self.size)
 end
 
 local auxVec = Vector:new{}

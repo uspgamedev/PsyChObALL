@@ -7,6 +7,7 @@ bossOne = CircleEffect:new {
 	alpha = 255,
 	mode = 'fill',
 	changesimage = true,
+	spriteBatch = false,
 	sizeGrowth = 0,
 	maxsize = width,
 	ord = 7,
@@ -258,6 +259,14 @@ function bossOne:update( dt )
 		psycho.diereason = "shot"
 		lostgame()
 	end
+end
+
+function bossOne:draw()
+	graphics.setPixelEffect(base.circleShader)
+	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect)
+	graphics.setColor(color)
+	graphics.draw(base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size, 2*self.size)
+	graphics.setPixelEffect()
 end
 
 function bossOne:handleDelete()

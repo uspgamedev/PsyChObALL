@@ -156,6 +156,7 @@ local updateHelper = function(self, dt)
 	--never be deleted
 end
 local drawHelper = function ( self )
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance))
 	graphics.rectangle(self.mode, self.position[1] - self.size, self.position[2] - self.size, self.size*2, self.size*2)
 end
 function Psychoball:handleDelete()

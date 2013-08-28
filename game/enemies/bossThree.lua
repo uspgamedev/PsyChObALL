@@ -9,7 +9,6 @@ bossThree = Body:new{
 	segmentsN = 9,
 	maxsize = width,
 	visible = true,
-	noShader = true,
 	ord = 6,
 	__type = 'bossThree'
 }
