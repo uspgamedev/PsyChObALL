@@ -9,6 +9,7 @@ require "circleEffect"
 require "effect"
 require "enemy"
 require "shot"
+require "ultrashot"
 require "timer"
 require "vartimer"
 require "list"
@@ -61,6 +62,7 @@ function initBase()
 		end
 		})
 	shot:paintOn(paintables)
+	ultrashot:paintOn(paintables)
 	enemy:paintOn(paintables)
 	effect:paintOn(paintables)
 	enemies:paintOn(paintables)
@@ -116,6 +118,8 @@ function initGameVars()
 
 	shot.init()
 
+	ultrashot.init()
+
 	psychoball.init()
 
 	multtimer = timer:new {
@@ -159,8 +163,8 @@ function initGameVars()
 	}
 
 	alphatimer = vartimer:new { --fades out and in the logo
-		var = 255,
-		speed = 300,
+		var = 254,
+		speed = 500,
 		pausable = false
 	}
 
@@ -197,6 +201,7 @@ function resetVars()
 	auxspeed:reset()
 	--[[Resetting Paintables]]
 	shot:clear()
+	ultrashot:clear()
 	if notclearcircleeffect then notclearcircleeffect = false
 	else circleEffect:clear() end
 	enemy:clear()

@@ -22,7 +22,7 @@ psychoball = circleEffect:new {
 }
 
 function psychoball.init()
-	ultrablastmax = 84 -- maximum number of shots on ultrablast
+	ultrablastmax = 42 -- maximum number of shots on ultrablast
 	ultratimer = timer:new {
 		timelimit  = .02,
 		persistent = true
@@ -284,7 +284,7 @@ end
 
 function do_ultrablast()
 	for i=1, ultrablast do
-		shot:new{
+		ultrashot:new{
 			position = psycho.position:clone(),
 			speed = vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v)
 		}:register()

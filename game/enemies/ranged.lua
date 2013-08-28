@@ -86,6 +86,18 @@ function ranged:update( dt )
 		end
 	end
 
+	for _, v in pairs(ultrashot.bodies) do
+		if self:collidesWith(v) then
+			self.life = self.life - 1
+			self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
+			self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
+			self.colorvars[3].var = self.basecolor[3] - ((ranged.life - self.life) / ranged.life) * self.basecolor[3]
+			v.collides = true
+			v.explosionEffects = false
+			self.diereason = "ultrashot"
+		end
+	end
+
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()

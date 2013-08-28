@@ -115,6 +115,24 @@ function superball:update(dt)
 		end
 	end
 
+	for i,v in pairs(ultrashot.bodies) do
+		if (v.size + self.lifeCircle.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
+			v.collides = true
+			v.explosionEffects = false
+			local bakvariance = v.variance
+			v.variance = self.variance
+			neweffects(v,10)
+			v.variance = bakvariance
+			self.life = self.life - 4
+			self.lifeCircle.size = self.size + self.life
+			if self.life <= 0 then
+				self.diereason = "ultrashot"
+				self.delete = true
+				break
+			end
+		end
+	end
+
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()

@@ -49,6 +49,24 @@ function seeker:update( dt )
 		end
 	end
 
+	for _, v in pairs(ultrashot.bodies) do
+		if not v.collides and self:collidesWith(v) then
+			v.collides = true
+			v.explosionEffects = false
+			self.health = self.health - 1
+			if self.health == 0 then
+				self.collides = true
+				self.diereason = "ultrashot"
+			end
+			local d = self.health/seeker.health
+			self.colors[1]:setAndGo(nil, .88*255 + (1-d)*.22*255, 30)
+			self.colors[2]:setAndGo(nil, .66*255*d, 30)
+			self.colors[3]:setAndGo(nil, .37*255*d, 30)
+			break
+		end
+	end
+
+
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()

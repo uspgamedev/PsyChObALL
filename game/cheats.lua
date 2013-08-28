@@ -99,7 +99,11 @@ function keypressed( key )
 			elseif key == '2' then lives = lives + 1
 			elseif key == '1' then lives = lives - 1
 			elseif key == 'l' and not gamelost then deathText(1) lostgame()
-			elseif key == 'u' then love.update(10) --skips 10 seconds
+			--NO. NO. NO. FUCKING NO. NEVER DO THIS AGAIN. RAPTORS WILL FIND YOU
+			--AND KILL YOU. VIOLENTLY. AND NO ONE WILL MISS YOU. BECAUSE OF THE 
+			--NEXT LINE. JUST NO.
+			--elseif key == 'u' then love.update(10) --skips 10 seconds
+			elseif key == 'x' then ultracounter = ultracounter + 1
 			elseif key == 'g' then godmode = not godmode
 			elseif key == 'e' then print(#effect.bodies)
 			elseif key == 'r' then timefactor = 1

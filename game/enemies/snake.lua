@@ -41,6 +41,26 @@ function snake:update( dt )
 			end
 		end
 
+		for _, v in pairs(ultrashot.bodies) do
+			if collides(s.position, self.size, v.position, v.size) then
+				v.collides = true
+				v.explosionEffect = i ~= self.first
+				if i == self.first and self.vulnerable then
+					self.first = self.first + 1
+					s.size = self.size
+					neweffects(s, 20)
+					if self.first > self.last then self.delete = true
+					else 
+						self.position = self.segments[self.first].position
+						if self.vulnerable then
+							self.leadchange:setAndGo(0, 130, 130/self.timeout)
+							self.vulnerable = false
+						end
+					end
+				end
+			end
+		end
+
 		if psycho.canbehit and not gamelost and collides(s.position, self.size, psycho.position, psycho.size) then
 			psycho.diereason = "shot"
 			lostgame()

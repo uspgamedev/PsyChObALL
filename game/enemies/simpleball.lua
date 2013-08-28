@@ -22,6 +22,16 @@ function simpleball:update( dt )
 		end
 	end
 
+	for _, v in pairs(ultrashot.bodies) do
+		if self:collidesWith(v) then
+			self.collides = true
+			v.collides = true
+			v.explosionEffects = false
+			self.diereason = "ultrashot"
+			break
+		end
+	end
+
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
@@ -31,6 +41,6 @@ function simpleball:update( dt )
 end
 
 function simpleball:handleDelete()
-	if self.diereason == 'shot' then addscore(25) end
+	if self.diereason == 'shot' or self.diereason == 'ultrashot' then addscore(25) end
 	neweffects(self, 40)
 end

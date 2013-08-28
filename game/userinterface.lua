@@ -11,7 +11,7 @@ function init()
 
 	function playbutton:pressed()
 		closeMenu()
-		alphatimer:setAndGo(255, 0)
+		alphatimer:setAndGo(254, 1)
 		reloadSurvival()
 		self.visible = false
 		neweffects(self, 100)
@@ -29,7 +29,7 @@ function init()
 
 	function storybutton:pressed()
 		closeMenu()
-		alphatimer:setAndGo(255, 0)
+		alphatimer:setAndGo(254, 1)
 		reloadStory 'Level 1-1'
 		self.visible = false
 		neweffects(self, 50)
@@ -75,8 +75,8 @@ end
 function selectLevel()
 	state = levelselect
 	closeMenu()
-	alphatimer:setAndGo(255, 0)
-	UI.paintables.levelselect[1].alphafollows:setAndGo(0, 255)
+	alphatimer:setAndGo(254, 1)
+	UI.paintables.levelselect[1].alphafollows:setAndGo(1, 254)
 	for _, but in pairs(UI.paintables.levelselect) do
 		but:start()
 	end
@@ -108,7 +108,7 @@ end
 
 function restartMenu()
 	global.levelselected = false
-	alphatimer:setAndGo(0, 255)
+	alphatimer:setAndGo(1, 254)
 	state = mainmenu
 	resetVars()
 	timer.closenonessential()
@@ -322,7 +322,7 @@ function draw()
 	end
 
 	--[[Drawing Menu]]
-	if alphatimer.var > 0 then
+	if alphatimer.var > 1 then
 		graphics.setColor(color(colortimer.time - colortimer.timelimit / 2))
 		graphics.push()
 		
