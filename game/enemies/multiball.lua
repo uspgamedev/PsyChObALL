@@ -27,13 +27,6 @@ function multiball:update( dt )
 		end
 	end
 
-	for _, v in pairs(ultrashot.bodies) do
-		if self:collidesWith(v) then
-			self:manageShotCollision(v)
-			break
-		end
-	end
-
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
@@ -46,13 +39,13 @@ function multiball:manageShotCollision( shot )
 	shot.collides = true
 	shot.explosionEffects = false
 	self.collides = true
-	self.diereason =shot.__type
+	self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
 end
 
 function multiball:handleDelete()
 	Body.handleDelete(self)
 	neweffects(self, 20)
-	if self.diereason ~= "Shot" then return end
+	if self.diereason ~= "shot" then return end
 	addscore(50)
 	local speed = self.speed:length()
 	for i = 1, self.divideN do

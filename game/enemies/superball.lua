@@ -109,13 +109,6 @@ function superball:update(dt)
 		end
 	end
 
-	for _, v in pairs(ultrashot.bodies) do
-		if base.collides(v.position, v.size, self.position, self.lifeCircle.size) then
-			self:manageShotCollision(v)
-			break
-		end
-	end
-
 	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		lostgame()
@@ -132,14 +125,14 @@ function manageShotCollision( shot )
 	self.life = self.life - 4
 	self.lifeCircle.size = self.size + self.life
 	if self.life <= 0 then
-		self.diereason = shot.__type
+		self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
 		self.delete = true
 	end
 end
 
 function superball:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == "Shot" then addscore(4*self.healthbak + 2*self.size) end
+	if self.diereason == 'shot' then addscore(4*self.healthbak + 2*self.size) end
 	neweffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
 	self.shoottimer:remove()

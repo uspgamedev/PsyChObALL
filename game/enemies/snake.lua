@@ -34,14 +34,7 @@ function snake:update( dt )
 		
 		for _, v in pairs(Shot.bodies) do
 			if base.collides(s.position, self.size, v.position, v.size) then
-				self:manageShotCollision(s, v)
-				break
-			end
-		end
-
-		for _, v in pairs(ultrashot.bodies) do
-			if collides(s.position, self.size, v.position, v.size) then
-				self:manageShotCollision(s, v)
+				self:manageShotCollision(i, v)
 				break
 			end
 		end
@@ -78,10 +71,10 @@ function snake:update( dt )
 end
 
 function snake:manageShotCollision( segmentN, shot )
-	local s = self.segments[segmentsN]
+	local s = self.segments[segmentN]
 	shot.collides = true
 	shot.explosionEffect = segmentsN ~= self.first
-	if segmentsN == self.first and self.vulnerable then
+	if segmentN == self.first and self.vulnerable then
 		addscore(20)
 		self.spriteBatch:set(s.id, 0, 0, 0, 0, 0)
 		s.size = self.size

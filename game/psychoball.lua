@@ -307,9 +307,10 @@ end
 
 function do_ultrablast()
 	for i=1, ultrablast do
-		ultrashot:new{
+		Shot:new{
 			position = psycho.position:clone(),
-			speed = Vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v)
+			speed = Vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v),
+			isUltraShot = true
 		}:register()
 	end
 end

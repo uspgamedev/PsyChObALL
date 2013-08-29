@@ -82,25 +82,8 @@ function ranged:update( dt )
 
 	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
-			self.life = self.life - 1
-			self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
-			self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
-			self.colorvars[3].var = self.basecolor[3] - ((ranged.life - self.life) / ranged.life) * self.basecolor[3]
-			v.collides = true
-			v.explosionEffects = false
-			self.diereason = "shot"
-		end
-	end
-
-	for _, v in pairs(ultrashot.bodies) do
-		if self:collidesWith(v) then
-			self.life = self.life - 1
-			self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
-			self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
-			self.colorvars[3].var = self.basecolor[3] - ((ranged.life - self.life) / ranged.life) * self.basecolor[3]
-			v.collides = true
-			v.explosionEffects = false
-			self.diereason = "ultrashot"
+			self:manageShotCollision(v)
+			break
 		end
 	end
 
@@ -110,6 +93,16 @@ function ranged:update( dt )
 	end
 
 	self.delete = self.delete or self.life == 0
+end
+
+function ranged:manageShotCollision( shot )
+	shot.collides = true
+	shot.explosionEffects = false
+	self.life = self.life - 1
+	self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
+	self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
+	self.colorvars[3].var = self.basecolor[3] - ((ranged.life - self.life) / ranged.life) * self.basecolor[3]
+	self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
 end
 
 function ranged:shoot()
