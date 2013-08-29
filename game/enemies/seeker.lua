@@ -6,6 +6,7 @@ seeker = Body:new {
 	spriteBatch = graphics.newSpriteBatch(base.pixel, 20, 'dynamic'),
 	spriteMaxNum = 20,
 	spriteSafety = 3,
+	shader = base.circleShader,
 	__type = 'seeker'
 }
 

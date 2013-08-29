@@ -7,6 +7,9 @@ bossFour = Body:new{
 	basespeed = 1.5*v,
 	maxhealth = 60,
 	vulnerable = false,
+	spriteBatch = false,
+	shader = base.circleShader,
+	linewidth = 1,
 	ord = 6,
 	__type = 'bossFour'
 }
@@ -367,14 +370,15 @@ end
 function bossFour:draw()
 	if self.pool then
 		for k, p in pairs(self.pool) do
-			p:draw()
+			base.defaultDraw(p)
 		end
 	end
-	Body.draw(self)
+	base.defaultDraw(self)
 end
 
 function bossFour:prepare( enemy )
 	if not self.pool then return end
+	enemy.spriteBatch = false
 	enemy.update = self.updateFunc
 	enemy:freeWarning()
 	table.insert(self.pool, enemy)

@@ -6,6 +6,7 @@ monoguiaball = Body:new {
 	spriteBatch = graphics.newSpriteBatch(base.pixel, 150, 'dynamic'),
 	spriteMaxNum = 150,
 	spriteSafety = 10,
+	shader = base.circleShader,
 	__type = 'monoguiaball'
 }
 

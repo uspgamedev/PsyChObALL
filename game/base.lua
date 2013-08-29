@@ -55,6 +55,7 @@ _G.graphics = {
 			graphics.draw(cheats.image.image, x - r, y - r, 
 				0, 2*r / cheats.image.image:getWidth(), 2*r / cheats.image.image:getHeight())
 		else
+			--assume base.circleShader is being used
 			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 			if mode == 'line' then
 				local min = lineWidth*ratio + 1
@@ -108,6 +109,11 @@ for k,v in pairs(love) do
 			_G[k] = v
 		end
 	end
+end
+
+function defaultDraw( obj )
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + obj.variance, obj.alphafollows and obj.alphafollows.var or obj.alpha, obj.coloreffect))
+	graphics.circle(obj.mode, obj.position[1], obj.position[2], obj.size)
 end
 
 --[[

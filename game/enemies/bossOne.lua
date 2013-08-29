@@ -262,11 +262,7 @@ function bossOne:update( dt )
 	end
 end
 
-function bossOne:draw()
-	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect)
-	graphics.setColor(color)
-	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
-end
+bossOne.draw = base.defaultDraw
 
 function bossOne:handleDelete()
 	self.size = 1
