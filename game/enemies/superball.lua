@@ -115,7 +115,7 @@ function superball:update(dt)
 	end
 end
 
-function manageShotCollision( shot )
+function superball:manageShotCollision( shot )
 	shot.collides = true
 	shot.explosionEffects = false
 	local bakvariance = shot.variance

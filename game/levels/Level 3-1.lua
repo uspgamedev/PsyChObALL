@@ -90,7 +90,7 @@ function run()
 	enemy(super, 1, { position = Vector:new{width+30, -30}, speed = Vector:new{0.25*v, 0.25*v}, life = 120, size = 60}, simple, {width/2, height+30}, 13)
 	enemy(super, 1, { position = Vector:new{width+30, height+30}, speed = Vector:new{0.25*v, 0.25*v}, life = 60, size = 50}, divide1, {width/2, height+30}, 13)
 	enemy(snake, 1, {size = 20}, 20, 1200, 0, {30, -30}, unpack(t))
-	wait(15)
+	wait(17)
 	t = {}
 	local x = width+30
 	local y = 10
@@ -99,7 +99,7 @@ function run()
 		table.insert(t, {width/2+40, y})
 		table.insert(t, {width/2+40, y+30})
 		table.insert(t, {-30, y + 30})
-		enemy(snake, 2, {size = 20}, 20, 400, 0.5, unpack(t))
+		enemy(snake, 1, {size = 20}, 20, 400, 0.5, unpack(t))
 		y = y + 90
 		t = {}
 	end

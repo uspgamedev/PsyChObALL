@@ -105,7 +105,10 @@ function keypressed( key )
 			--elseif key == 'u' then love.update(10) --skips 10 seconds
 			elseif key == 'x' then ultracounter = ultracounter + 1
 			elseif key == 'g' then godmode = not godmode
-			elseif key == 'e' then print(#Effect.bodies)
+			elseif key == 'e' then 
+				local effectCount = 0
+				for _, __ in pairs(Effect.bodies) do effectCount = effectCount + 1 end
+				print(effectCount)
 			elseif key == 'r' then timefactor = 1
 			elseif key == 'j' then Shot.shotnum = Shot.shotnum == 1 and 10 or 1
 			end

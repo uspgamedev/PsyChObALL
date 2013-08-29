@@ -1,8 +1,8 @@
 Effect = Body:new {
 	size	 = 1.7,
 	__type   = 'Effect',
-	spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1200, 'dynamic'),
-	spriteMaxNum = 1200,
+	spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1000, 'dynamic'),
+	spriteMaxNum = 1000,
 	spriteCount = 0,
 	bodies = {}
 }
