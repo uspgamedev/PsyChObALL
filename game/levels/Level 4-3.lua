@@ -132,7 +132,7 @@ function run()
 	wait(10)
 	enemy(sek, 6, horizontall, 13, Vector:new{width/2, -30})
 	enemy(sek, 6, horizontalr, 13, Vector:new{width/2, -30})
-	wait(15)
+	wait(19)
 	doNow( function(timer)
 		if not levelselected then
 			if not gamelost then reloadStory 'Level 4-4' end

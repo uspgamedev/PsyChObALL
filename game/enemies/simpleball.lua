@@ -17,13 +17,16 @@ end
 function simpleball:update( dt )
 	Body.update(self, dt)
 
-	--if self.position[1] < -self.size or self.position[1] > width + self.size or self.position[2] < -self.size or self.position[2] > width + self.size then return end
 	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
-			self.collides = true
-			v.collides = true
-			v.explosionEffects = false
-			self.diereason = "shot"
+			self:manageShotCollision(v)
+			break
+		end
+	end
+
+	for _, v in pairs(ultrashot.bodies) do
+		if self:collidesWith(v) then
+			self:manageShotCollision(v)
 			break
 		end
 	end
@@ -36,8 +39,15 @@ function simpleball:update( dt )
 	self.delete = self.delete or self.collides
 end
 
+function simpleball:manageShotCollision( shot )
+	shot.collides = true
+	shot.explosionEffects = false
+	self.collides = true
+	self.diereason = shot.__type
+end
+
 function simpleball:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == 'shot' then addscore(25) end
+	if self.diereason == 'Shot' or self.diereason == 'ultrashot' then addscore(25) end
 	neweffects(self, 40)
 end

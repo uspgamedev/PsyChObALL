@@ -121,7 +121,6 @@ function runLevel( name )
 	currentLevelname = name
 	currentLevel.reload()
 	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
-	changetitle = false
 	local delay = changetitle and -5 or 0
 	for _, t in ipairs(currentLevel.timers_) do
 		t:register()
@@ -130,7 +129,7 @@ function runLevel( name )
 	if changetitle then
 		local t = Text:new {
 			text = currentLevel.title,
-			alphafollows = VarTimer:new{ var = 255 },
+			alphafollows = VarTimer:new{ var = 254 },
 			font = getCoolFont(100),
 			position = Vector:new{50, 200},
 			limit = width - 100,
@@ -145,7 +144,7 @@ function runLevel( name )
 			funcToCall = function ( timer )
 				if timer.first then t.delete = true timer:remove() return end
 				timer.first = true
-				t.alphafollows:setAndGo(255, 0, 100)
+				t.alphafollows:setAndGo(254, 1, 100)
 			end
 		}
 	end 
@@ -258,7 +257,7 @@ function reloadPractice()
 			end
 			self.visible = false
 			neweffects(self, 26)
-			self.alphafollows:setAndGo(255, 0, 300)
+			self.alphafollows:setAndGo(254, 1, 300)
 			UI.restartMenu()
 		end
 	}

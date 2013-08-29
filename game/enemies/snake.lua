@@ -31,26 +31,18 @@ function snake:update( dt )
 	for i = self.first, self.last, 1 do
 		local s = self.segments[i]
 		s.position:add(auxVec:set(s.speed):mult(dt))
+		
 		for _, v in pairs(Shot.bodies) do
 			if base.collides(s.position, self.size, v.position, v.size) then
-				v.collides = true
-				v.explosionEffect = i ~= self.first
-				if i == self.first and self.vulnerable then
-					addscore(20)
-					self.spriteBatch:set(s.id, 0, 0, 0, 0, 0)
-					s.size = self.size
-					neweffects(s, 20)
-					self.segments[self.first] = nil
-					self.first = self.first + 1
-					if self.first > self.last then self.delete = true
-					else 
-						self.position = self.segments[self.first].position
-						if self.vulnerable then
-							self.leadchange:setAndGo(0, 130, 130/self.timeout)
-							self.vulnerable = false
-						end
-					end
-				end
+				self:manageShotCollision(s, v)
+				break
+			end
+		end
+
+		for _, v in pairs(ultrashot.bodies) do
+			if collides(s.position, self.size, v.position, v.size) then
+				self:manageShotCollision(s, v)
+				break
 			end
 		end
 
@@ -80,6 +72,28 @@ function snake:update( dt )
 				end
 			else 
 				s.prevdist = curdist
+			end
+		end
+	end
+end
+
+function snake:manageShotCollision( segmentN, shot )
+	local s = self.segments[segmentsN]
+	shot.collides = true
+	shot.explosionEffect = segmentsN ~= self.first
+	if segmentsN == self.first and self.vulnerable then
+		addscore(20)
+		self.spriteBatch:set(s.id, 0, 0, 0, 0, 0)
+		s.size = self.size
+		neweffects(s, 20)
+		self.segments[self.first] = nil
+		self.first = self.first + 1
+		if self.first > self.last then self.delete = true
+		else 
+			self.position = self.segments[self.first].position
+			if self.vulnerable then
+				self.leadchange:setAndGo(0, 130, 130/self.timeout)
+				self.vulnerable = false
 			end
 		end
 	end

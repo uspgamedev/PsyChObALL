@@ -19,7 +19,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local wasd = Text:new{
@@ -28,7 +28,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local shift = Text:new{
@@ -37,7 +37,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local aim = Text:new{
@@ -46,7 +46,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local hit = Text:new{
@@ -55,7 +55,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local space = Text:new{
@@ -73,7 +73,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local music = Text:new{
@@ -82,7 +82,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local remember = Text:new{
@@ -91,67 +91,67 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphafollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 
 	wait(2.5)
 	doNow(function()
 		welcome:register()
-		welcome.alphafollows:setAndGo(0, 255, 100)
+		welcome.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 1.5,
 		funcToCall = function()
-			welcome.alphafollows:setAndGo(255, 0, 100)
+			welcome.alphafollows:setAndGo(254, 1, 100)
 			welcome.alphafollows.alsoCall = function() welcome.delete = true end
 		end
 	}
 	wait(4)
 	doNow(function()
 		wasd:register()
-		wasd.alphafollows:setAndGo(0, 255, 100)
+		wasd.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 2.5,
 		funcToCall = function()
-			wasd.alphafollows:setAndGo(255, 0, 100)
+			wasd.alphafollows:setAndGo(254, 1, 100)
 			wasd.alphafollows.alsoCall = function() wasd.delete = true end
 		end
 	}
 	wait(4)
 	doNow(function()
 		shift:register()
-		shift.alphafollows:setAndGo(0, 255, 100)
+		shift.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 2.5,
 		funcToCall = function()
-			shift.alphafollows:setAndGo(255, 0, 100)
+			shift.alphafollows:setAndGo(254, 1, 100)
 			shift.alphafollows.alsoCall = function() shift.delete = true end
 		end
 	}
 	wait(4)
 	doNow(function()
 		aim:register()
-		aim.alphafollows:setAndGo(0, 255, 100)
+		aim.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3.0,
 		funcToCall = function()
-			aim.alphafollows:setAndGo(255, 0, 100)
+			aim.alphafollows:setAndGo(254, 1, 100)
 			aim.alphafollows.alsoCall = function() aim.delete = true end
 		end
 	}
 	wait(4.5)
 	doNow(function()
 		hit:register()
-		hit.alphafollows:setAndGo(0, 255, 100)
+		hit.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3.0,
 		funcToCall = function()
-			hit.alphafollows:setAndGo(255, 0, 100)
+			hit.alphafollows:setAndGo(254, 1, 100)
 			hit.alphafollows.alsoCall = function() hit.delete = true end
 		end
 	}
@@ -160,12 +160,12 @@ function run()
 	wait(3.5)
 	doNow(function()
 		space:register()
-		space.alphafollows:setAndGo(0, 255, 100)
+		space.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3,
 		funcToCall = function()
-			space.alphafollows:setAndGo(255, 0, 100)
+			space.alphafollows:setAndGo(254, 1, 100)
 			space.alphafollows.alsoCall = function() space.delete = true end
 		end
 	}
@@ -178,40 +178,40 @@ function run()
 	wait(4)
 	doNow(function()
 		pause:register()
-		pause.alphafollows:setAndGo(0, 255, 100)
+		pause.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 2.5,
 		funcToCall = function()
-			pause.alphafollows:setAndGo(255, 0, 100)
+			pause.alphafollows:setAndGo(254, 1, 100)
 			pause.alphafollows.alsoCall = function() pause.delete = true end
 		end
 	}
 	wait(4)
 	doNow(function()
 		music:register()
-		music.alphafollows:setAndGo(0, 255, 100)
+		music.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 2.5,
+		timelimit = 3.5,
 		funcToCall = function()
-			music.alphafollows:setAndGo(255, 0, 100)
+			music.alphafollows:setAndGo(254, 1, 100)
 			music.alphafollows.alsoCall = function() music.delete = true end
 		end
 	}
-	wait(6)
+	wait(4)
 	doNow(function()
 		remember:register()
-		remember.alphafollows:setAndGo(0, 255, 100)
+		remember.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 2.5,
+		timelimit = 4.5,
 		funcToCall = function()
-			remember.alphafollows:setAndGo(255, 0, 100)
+			remember.alphafollows:setAndGo(254, 1, 100)
 			remember.alphafollows.alsoCall = function() remember.delete = true end
 		end
 	}
-	wait(6)
+	wait(7)
 	doNow( function(timer)
 			Text:new{
 				text = "Tutorial Completed. Press ESC or P and return to the menu.",

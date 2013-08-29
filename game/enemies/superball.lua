@@ -102,21 +102,17 @@ function superball:update(dt)
 		elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 	end
 
-	for i,v in pairs(Shot.bodies) do
-		if (v.size + self.lifeCircle.size)^2 >= (v.x - self.x)^2 + (v.y - self.y)^2 then
-			v.collides = true
-			v.explosionEffects = false
-			local bakvariance = v.variance
-			v.variance = self.variance
-			neweffects(v,10)
-			v.variance = bakvariance
-			self.life = self.life - 4
-			self.lifeCircle.size = self.size + self.life
-			if self.life <= 0 then
-				self.diereason = "shot"
-				self.delete = true
-				break
-			end
+	for _, v in pairs(Shot.bodies) do
+		if base.collides(v.position, v.size, self.position, self.lifeCircle.size) then
+			self:manageShotCollision(v)
+			break
+		end
+	end
+
+	for _, v in pairs(ultrashot.bodies) do
+		if base.collides(v.position, v.size, self.position, self.lifeCircle.size) then
+			self:manageShotCollision(v)
+			break
 		end
 	end
 
@@ -126,12 +122,27 @@ function superball:update(dt)
 	end
 end
 
+function manageShotCollision( shot )
+	shot.collides = true
+	shot.explosionEffects = false
+	local bakvariance = shot.variance
+	shot.variance = self.variance
+	neweffects(shot,10)
+	shot.variance = bakvariance
+	self.life = self.life - 4
+	self.lifeCircle.size = self.size + self.life
+	if self.life <= 0 then
+		self.diereason = shot.__type
+		self.delete = true
+	end
+end
+
 function superball:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == "shot" then addscore(4*self.healthbak + 2*self.size) end
+	if self.diereason == "Shot" then addscore(4*self.healthbak + 2*self.size) end
 	neweffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
 	self.shoottimer:remove()
-	if state == survival then self.speedtimer:remove() end
 	self.timeout:remove()
+	if state == survival then self.speedtimer:remove() end
 end
