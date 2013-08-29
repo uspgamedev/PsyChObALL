@@ -9,6 +9,7 @@ bossOne = CircleEffect:new {
 	changesimage = true,
 	spriteBatch = false,
 	sizeGrowth = 0,
+	shader = base.circleShader,
 	maxsize = width,
 	ord = 7,
 	__type = 'bossOne'
@@ -262,11 +263,9 @@ function bossOne:update( dt )
 end
 
 function bossOne:draw()
-	graphics.setPixelEffect(base.circleShader)
 	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect)
 	graphics.setColor(color)
-	graphics.draw(base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size, 2*self.size)
-	graphics.setPixelEffect()
+	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 end
 
 function bossOne:handleDelete()

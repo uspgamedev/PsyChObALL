@@ -455,13 +455,13 @@ function bossTwo:draw()
 	end
 	local bp = self.ballspos
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[1]))
-	graphics.draw(base.pixel, xt - bp - self.size, yt - bp - self.size, 0, 2*self.size)
+	graphics.circle(self.mode, xt - bp, yt - bp, self.size)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[2]))
-	graphics.draw(base.pixel, xt + bp - self.size, yt - bp - self.size, 0, 2*self.size)
+	graphics.circle(self.mode, xt + bp, yt - bp, self.size)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[3]))
-	graphics.draw(base.pixel, xt - bp - self.size, yt + bp - self.size, 0, 2*self.size)
+	graphics.circle(self.mode, xt - bp, yt + bp, self.size)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[4]))
-	graphics.draw(base.pixel, xt + bp - self.size, yt + bp - self.size, 0, 2*self.size)
+	graphics.circle(self.mode, xt + bp, yt + bp, self.size)
 	graphics.setPixelEffect()
 end
 
@@ -626,7 +626,7 @@ function bossTwo.turret:draw( xt, yt )
 	for _, c in pairs(self.circles) do c:draw() end
 	graphics.translate(-x,-y)
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
-	graphics.draw(base.pixel, x - self.size, y - self.size, 0, 2*self.size)
+	graphics.circle(self.mode, x, y, self.size)
 end
 
 local auxVec = Vector:new{}
