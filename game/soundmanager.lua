@@ -61,7 +61,7 @@ function init()
 		graphics.newQuad(0,   0, 40, 40, 300, 40),
 		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
-	soundquadindex = muted and 7 or volume/20 + 1
+	soundquadindex = muted and 7 or math.ceil(volume/20) + 1
 end
 
 function changeSong( to )
@@ -96,19 +96,19 @@ function keypressed( key )
 	if muted then
 		if key == 'm' then
 			muted = false
-			soundquadindex = volume/20 + 1
+			soundquadindex = math.ceil(volume/20) + 1
 			if not gamelost then currentsong:setVolume(volume / 100) end
 		end
 	else
 		if key == '.' and volume < 100 then
-			volume = volume + 20
-			soundquadindex = volume/20 + 1
+			volume = volume + 10
+			soundquadindex = math.ceil(volume/20) + 1
 			if not gamelost then
 				currentsong:setVolume(volume / 100)
 			end
 		elseif key == ',' and volume > 0 then
-			volume = volume - 20
-			soundquadindex = volume/20 + 1
+			volume = volume - 10
+			soundquadindex = math.ceil(volume/20) + 1
 			if not gamelost and not songfadein.running then
 				currentsong:setVolume(volume / 100)
 			end

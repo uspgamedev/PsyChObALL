@@ -23,16 +23,7 @@ function run()
 		align = 'center'
 	}
 	local wasd = text:new{
-		text = "Use WASD or the directional keys to move",
-		font = getCoolFont(50),
-		printmethod = graphics.printf,
-		position = vector:new{width/2 - 400, height/2 - 20},
-		limit = 800,
-		alphafollows = vartimer:new{var = 1},
-		align = 'center'
-	}
-	local shift = text:new{
-		text = "Hold shift to move slowly",
+		text = "Use WASD or the directional keys to move\nHold shift to move slowly",
 		font = getCoolFont(50),
 		printmethod = graphics.printf,
 		position = vector:new{width/2 - 400, height/2 - 20},
@@ -59,7 +50,7 @@ function run()
 		align = 'center'
 	}
 	local space = text:new{
-		text = "Hold space to charge ultrablast, and release to use it",
+		text = "Hold space to charge ultrablast, and release to use it\nHold it longer for more balls",
 		font = getCoolFont(50),
 		printmethod = graphics.printf,
 		position = vector:new{width/2 - 400, height/2 - 20},
@@ -95,7 +86,6 @@ function run()
 		align = 'center'
 	}
 
-	wait(2.5)
 	doNow(function()
 		welcome:register()
 		welcome.alphafollows:setAndGo(1, 254, 100)
@@ -107,30 +97,20 @@ function run()
 			welcome.alphafollows.alsoCall = function() welcome.delete = true end
 		end
 	}
-	wait(4)
+	wait(3)
 	doNow(function()
 		wasd:register()
 		wasd.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 2.5,
+		timelimit = 3.5,
 		funcToCall = function()
 			wasd.alphafollows:setAndGo(254, 1, 100)
 			wasd.alphafollows.alsoCall = function() wasd.delete = true end
 		end
 	}
-	wait(4)
-	doNow(function()
-		shift:register()
-		shift.alphafollows:setAndGo(1, 254, 100)
-	end)
-	registerTimer {
-		timelimit = 2.5,
-		funcToCall = function()
-			shift.alphafollows:setAndGo(254, 1, 100)
-			shift.alphafollows.alsoCall = function() shift.delete = true end
-		end
-	}
+	wait(0.5)
+	enemy(simple, 1, { position = vector:new{width+20, height/2}, speed = vector:new{-1.65*v, 0} })
 	wait(4)
 	doNow(function()
 		aim:register()
@@ -143,7 +123,10 @@ function run()
 			aim.alphafollows.alsoCall = function() aim.delete = true end
 		end
 	}
-	wait(4.5)
+	wait(0.5)
+	enemy(simple, 1, { position = vector:new{width+20, height/2}, speed = vector:new{-1.65*v, 0} })
+	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{1.65*v, 0} })
+	wait(3.5)
 	doNow(function()
 		hit:register()
 		hit.alphafollows:setAndGo(1, 254, 100)
@@ -155,27 +138,30 @@ function run()
 			hit.alphafollows.alsoCall = function() hit.delete = true end
 		end
 	}
-	wait(4.5)
+	wait(1.5)
 	enemy(simple, 1, { position = vector:new{-20, height/2}, speed = vector:new{1.65*v, 0} })
-	wait(3.5)
+	enemy(simple, 1, { position = vector:new{width+20, height/2}, speed = vector:new{-1.65*v, 0} })
+	enemy(simple, 1, { position = vector:new{width/2, -20}, speed = vector:new{0, 1.65*v} })
+	enemy(simple, 1, { position = vector:new{width/2, height+20}, speed = vector:new{0, -1.65*v} })
+	wait(1.5)
 	doNow(function()
 		space:register()
 		space.alphafollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 3,
+		timelimit = 4,
 		funcToCall = function()
 			space.alphafollows:setAndGo(254, 1, 100)
 			space.alphafollows.alsoCall = function() space.delete = true end
 		end
 	}
-	wait(5)
+	wait(3.5)
 	f1.anglechange = torad(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600
 	enemy(simple, 15, f1)
-	wait(4)
+	wait(2.2)
 	doNow(function()
 		pause:register()
 		pause.alphafollows:setAndGo(1, 254, 100)
@@ -187,7 +173,7 @@ function run()
 			pause.alphafollows.alsoCall = function() pause.delete = true end
 		end
 	}
-	wait(4)
+	wait(3)
 	doNow(function()
 		music:register()
 		music.alphafollows:setAndGo(1, 254, 100)
@@ -199,7 +185,7 @@ function run()
 			music.alphafollows.alsoCall = function() music.delete = true end
 		end
 	}
-	wait(4)
+	wait(3)
 	doNow(function()
 		remember:register()
 		remember.alphafollows:setAndGo(1, 254, 100)
@@ -211,7 +197,7 @@ function run()
 			remember.alphafollows.alsoCall = function() remember.delete = true end
 		end
 	}
-	wait(7)
+	wait(5.5)
 	doNow( function(timer)
 			text:new{
 				text = "Tutorial Completed. Press ESC or P and return to the menu.",

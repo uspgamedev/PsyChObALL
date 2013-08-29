@@ -6,11 +6,21 @@ THE HISTORY OF PSYCHOBALL
 (xx/xx/2013) Version 1.1.0    -  PsyChO Fixed
 *************************************************
 
+-Added Tutorial
+-Adventure mode rebalanced
+	-Lots of changes to balance difficulty
+	-Changes on ultrablasts/lives per score
 -Fixed lots of bugs
 	-Text bugging
 	-Fixes on cheats
+	-Fixes on rare crashes
+	-Fixes on Snakes
+	-Fixes on levels
+-Total refactoring!
+	-"Cleaner" code
+	-Less instability on FPS
+	-Now using shaders!
 	 
-
 *************************************************
 (19/08/2013) Version 1.0.0    -  PsyChO Unchained
 *************************************************

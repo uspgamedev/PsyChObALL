@@ -71,8 +71,19 @@ function run()
 	f2.movetorwards = 'right'
 	f2.startsat = 20
 	enemy(simple, 12, f2)
+
+	f2.movetorwards = 'left'
+	f2.startsat = width - 20
+	f2.from = 'top'
+	f2.setspeedto.y = 300
+	enemy(simple, 12, f2)
+	f2.movetorwards = 'right'
+	f2.startsat = 20
+	enemy(simple, 12, f2)
+	
 	wait(7)
-	enemy(simple, 10, horizontall)
+	enemy(divide1, 10, horizontall)
+	enemy(divide1, 10, horizontalr)
 	wait(4)
 	t = {}
 	local x = 30
