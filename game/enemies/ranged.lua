@@ -6,9 +6,8 @@ ranged = Body:new {
 	life = 5,
 	timeout = 10,
 	timeToShoot = 1,
-	spriteBatch = graphics.newSpriteBatch(base.pixel, 20, 'dynamic'),
-	spriteMaxNum = 20,
-	spriteSafety = 2,
+	spriteBatch = false,
+	shader = base.circleShader,
 	ord = 6,
 	__type = 'ranged'
 }
@@ -59,6 +58,8 @@ function ranged:start()
 	Body.start(self)
 	CircleEffect.bodies[self] = self.shotcircle
 end
+
+ranged.draw = base.defaultDraw
 
 function ranged:update( dt )
 	Body.update(self, dt)

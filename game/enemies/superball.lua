@@ -5,9 +5,7 @@ superball = Body:new {
 	timeout = 40,
 	collides = true,
 	shader = base.circleShader,
-	spriteBatch = graphics.newSpriteBatch(base.pixel, 10, 'dynamic'),
-	spriteMaxNum = 10,
-	spriteSafety = 2,
+	spriteBatch = false,
 	ord = 6,
 	__type = 'superball'
 }
@@ -91,6 +89,8 @@ function superball:start( shot )
 	self.lifeCircle.position = self.position
 	self.lifeCircle:register()
 end
+
+superball.draw = base.defaultDraw
 
 function superball:update(dt)
 	Body.update(self, dt)

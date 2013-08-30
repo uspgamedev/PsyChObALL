@@ -12,7 +12,7 @@ function init()
 
 	local possiblePositions = {Vector:new{30, 30}, Vector:new{width - 30, 30}, Vector:new{width - 30, height - 30}, Vector:new{30, height - 30}}
 	function superball.addtimer:funcToCall()
-		if #bodies.superball > math.floor(gametime/90) then self.timelimit = 2 return end
+		if #superball.bodies > math.floor(gametime/90) then self.timelimit = 2 return end
 		superball.list:push(superball:new{ position = possiblePositions[math.random(4)]:clone() })
 		self.timelimit = 30
 	end
@@ -49,8 +49,8 @@ function paintOn( self, p )
 	for k, v in ipairs(filesystem.enumerate 'enemies') do
 		local name = v:sub(0,v:len() - 4)
 		require('enemies.' .. name)
-		bodies[name] = {}
-		self[name].bodies = bodies[name]
+		self[name].bodies = rawget(self[name], 'bodies') or {}
+		bodies[name] = self[name]
 		self[name]:paintOn(p)
 		self[name].list = List:new{}
 		self['new' .. name] = function ( prototype )
@@ -61,6 +61,6 @@ end
 
 function clear()
 	for k, b in pairs(bodies) do
-		base.clearTable(b)
+		b:clear()
 	end
 end

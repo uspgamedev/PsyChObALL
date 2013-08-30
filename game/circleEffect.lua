@@ -6,6 +6,7 @@ CircleEffect = Body:new {
 	changesimage = false,
 	linewidth = 4,
 	spriteBatch = false,
+	shader = base.circleShader,
 	ord = 3,
 	bodies = {}
 }
@@ -22,7 +23,6 @@ function CircleEffect:__init()
 	
 	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
 	self.variance = self.variance or math.random(0, 100*ColorManager.cycleTime) / 100
-	if #CircleEffect.bodies > 250 then table.remove(CircleEffect.bodies, 1) end
 	if self.index ~= nil then
 		if self.index ~= false then
 			self:start()
@@ -31,11 +31,6 @@ function CircleEffect:__init()
 	else
 		self:register()
 	end
-	--[[self.stencil = graphics.newStencil( function() 
-		local n = (self.linewidth or 4) + 4
-		graphics.setLine(n)
-		graphics.circle(self.mode, self.x, self.y, self.size - n/2) 
-		end)]]
 end
 
 function CircleEffect.init()
@@ -72,13 +67,13 @@ function CircleEffect:update(dt)
 	self.size = self.size + self.sizeGrowth * dt
 	if self.desiredsize then
 		if self.sizeGrowth > 0 then
-			if self.size > self.desiredsize then
+			if self.size >= self.desiredsize then
 				self.size = self.desiredsize
 				self.sizeGrowth = 0
 				self.desiredsize = nil
 			end
 		else
-			if self.size < self.desiredsize then
+			if self.size <= self.desiredsize then
 				self.size = self.desiredsize
 				self.sizeGrowth = 0
 				self.desiredsize = nil

@@ -3,9 +3,7 @@ seeker = Body:new {
 	timeout = 10,
 	seek = true,
 	health = 10,
-	spriteBatch = graphics.newSpriteBatch(base.pixel, 20, 'dynamic'),
-	spriteMaxNum = 20,
-	spriteSafety = 3,
+	spriteBatch = false,
 	shader = base.circleShader,
 	__type = 'seeker'
 }
@@ -32,6 +30,8 @@ function seeker:start()
 		end
 	}
 end
+
+seeker.draw = base.defaultDraw
 
 function seeker:update( dt )
 	if self.seek then
