@@ -204,7 +204,7 @@ function keypressed( key )
 
 	if state == mainmenu then
 		resetted = resetpass (key)
-		if resetted then filemanager.resetstats() end
+		if resetted then FileManager.resetStats() end
 	end
 
 	if state == mainmenu and key == 'q' then

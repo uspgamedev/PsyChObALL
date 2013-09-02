@@ -1,49 +1,44 @@
-module('filemanager', base.globalize)
+module('FileManager', base.globalize)
 
-function readstats()
-	local stats = filemanager.readTable "stats"
+function init()
+	-- removing old stuff
+	if filesystem.exists 'stats' then
+		filesystem.remove 'stats'
+	end
+end
+
+function readStats()
+	--[[local stats = readTable "stats"
 
 	besttime  = stats.besttime  or 0
 	bestmult  = stats.bestmult  or 0
 	bestscore = stats.bestscore or 0
-	lastLevel = stats.lastLevel or 'Level 1-1'
+	lastLevel = stats.lastLevel or 'Level 1-1']]
 end
 
-function writestats()
+function writeStats()
 	if cheats.wasdev then return end
-	besttime  = math.max(besttime, gametime)
+	--[[besttime  = math.max(besttime, gametime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)
-	filemanager.writeTable({
+	writeTable({
 		besttime  = besttime,
 		bestmult  = bestmult,
 		bestscore = bestscore,
 		lastLevel = lastLevel
-	}, "stats")
+	}, "stats")]]
 end
 
-function resetstats()
-	besttime, bestmult, bestscore  = 0, 0, 0
-	filemanager.writeTable({
+function resetStats()
+	--[[besttime, bestmult, bestscore  = 0, 0, 0
+	writeTable({
 		besttime  = 0,
 		bestmult  = 0,
 		bestscore = 0
-	}, "stats")
+	}, "stats")]]
 end
 
---[[function readachievements()
-	local achievements = filemanager.readTable "achievements"
-
-	twentymult  = achievements.twentymult or false
-end
-
-function writeachievements()
-	filemanager.writeTable({
-		twentymult  = twentymult
-	}, "achievements")
-end]]
-
-function readconfig()
+function readConfig()
 	local config = readCleanTable "config"
 
 	global.ratio = tonumber(config.screenratio) or 1
@@ -58,7 +53,7 @@ function readconfig()
 	if ratio ~= 1 then love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false, false, 0) end
 end
 
-function writeconfig()
+function writeConfig()
 	writeCleanTable({
 		screenratio = ratio,
 		volume =	 soundmanager.volume,
@@ -76,7 +71,7 @@ function openFile( name, method )
 	return file
 end
 
--- considers everything to be strings, output is better
+-- considers everything to be one-line strings, output is better
 function writeCleanTable( t, filename )
 	local file = openFile(filename, 'w')
 	if not file then return end
@@ -108,76 +103,96 @@ function readCleanTable( filename )
 	return t
 end
 
--- writes a table to disk, supports writing numbers, strings and booleans for now
+-- writes a table to disk, supports writing numbers, strings, booleans and tables
 function writeTable( t, filename )
-	--local usedTables = {t} --used to avoid infinite looping --not used yet
 	local file = openFile(filename, 'w')
 	if not file then return end
 
-	file:write(writestring(t))
+	file:write(writeTableToString(t))
 
 	file:close()
 end
 
-function writestring(t)
-	local towrite = ''
-	local first = true
-	for k, v in pairs(t) do
-		if not first then towrite = towrite .. '\r\n' end
-		first = false
-
-		if type(k) == 'string' then
-			towrite = towrite .. k .. ' =s'
-		elseif type(k) == 'number' then
-			towrite = towrite .. k .. ' =n'
-		end
-
-		if type(v) == 'number' then
-			towrite = towrite .. 'n ' .. v
-		elseif type(v) == 'boolean' then
-			towrite = towrite .. 'b ' .. (v and 'true' or 'false')
-		elseif type(v) == 'string' then
-			local lines, pos = 0, 0
-			repeat lines = lines + 1 pos = v:find('\n',pos + 1) until pos == nil
-			towrite = towrite .. 's ' .. lines .. '\r\n' .. v
-		end
+local function getInfo( thing )
+	if type(thing) == 'number' then
+		return 'n'
+	elseif type(thing) == 'boolean' then
+		return 'b'
+	elseif type(thing) == 'string' then
+		return 's' .. thing:len()
+	elseif type(thing) == 'table' then
+		return 't'
 	end
+end
+
+function writeTableToString(t)
+	local towrite = ''
+
+	for key, value in pairs(t) do
+		local table1, table2
+		if type(key) == 'table' then
+			table1 = writeTableToString(key)
+		end
+		if type(value) == 'table' then
+			table2 = writeTableToString(value)
+		end
+
+		towrite = towrite .. getInfo(key) .. (table1 and table1:len() or '')
+			..	'\n' .. getInfo(value) .. (table2 and table2:len() or '') .. '\n'
+
+		towrite = towrite .. (table1 or (tostring(key) .. '\n')) .. (table2 or (tostring(value) .. '\n'))
+	end
+
 	return towrite
 end
 
--- read a table from disk, supports reading numbers, strings and booleans for now
+-- Reads a table from disk, supports reading numbers, strings and booleans for now
+-- Obs. Assumes no tables contains itself (or any other kind of cyclic referencing)
 function readTable( filename )
 	if not filesystem.exists(filename) then return {} end
 	local file = filesystem.newFile(filename)
-	local t = {}
 	if not pcall(file.open, file, 'r') then
 		print "some error hapenned"
-		return t
+		return {}
 	end
 
-	local key, keyinfo, info, value
-	local lines = file:lines()
-	local line
-	repeat
-		line = lines()
-		if line == nil then break end
-		key, keyinfo, info, value = line:gmatch('(%w+) =(.)(.) (.+)')()
-		if keyinfo == 'n' then key = tonumber(key) end
+	return readTableFromString(file:read())
+end
 
-		if info == 'n' then --it's a number
-			value = tonumber(value)
-		elseif info == 'b' then --it's a boolean
-			value = value == 'true'
-		elseif info == 's' then --it's a string
-			local s = lines()
-			for i = 2,tonumber(value) do
-				s = s .. '\n' .. lines()
-			end
-			value = s
+local function getThing( info, nextLineFunc, str, curPos )
+	if info == 'n' then -- it's a number
+		local n = nextLineFunc()
+		return tonumber(n), curPos + n:len() + 1
+	elseif info == 'b' then -- it's a boolean
+		local b = nextLineFunc()
+		return b == 'true', curPos + b:len() + 1
+	elseif info:sub(1, 1) == 's' then -- it's a string
+		local charCount = tonumber(info:sub(2))
+		return str:sub(curPos + 1, curPos + charCount), curPos + 1 + charCount
+	elseif info:sub(1, 1) == 't' then -- it's a table
+		local charCount = tonumber(info:sub(2))
+		return readTableFromString(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
+	end
+end
+
+function readTableFromString( str )
+	local pos, pos2 = 0, 0
+	local t = {}
+	local key, value, keyInfo, valueInfo
+	local nextLine = function()
+			pos, pos2 = str:find('[^\n]*\n', pos2 + 1)
+			if pos2 then return str:sub(pos, pos2 - 1) end
 		end
-		if key~=nil then t[key] = value end
-	until false
+	while true do
+		keyInfo = nextLine()
+		if not keyInfo then break end
 
-	file:close()
+		valueInfo = nextLine()
+		local prevp2 = pos2
+		key, pos2 = getThing(keyInfo, nextLine, str, pos2)
+		value, pos2 = getThing(valueInfo, nextLine, str, pos2)
+
+		t[key] = value
+	end
 	return t
 end

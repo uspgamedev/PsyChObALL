@@ -80,8 +80,9 @@ function initBase()
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
-	filemanager.readconfig()
-	filemanager.readstats()
+	FileManager.init()
+	FileManager.readConfig()
+	FileManager.readStats()
 	-- [[end of Reading Files]]
 	
 	-- [[Loading Resources]]
@@ -298,7 +299,7 @@ function lostgame()
 	local autorestart = state == story and lives > 0
 	if not autorestart then
 		mouse.setGrab(false)
-		filemanager.writestats()
+		FileManager.writeStats()
 		soundmanager.fadeout()
 
 		if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
@@ -541,6 +542,6 @@ function love.focus(f)
 end
 
 function love.quit()
-	filemanager.writeconfig()
-	filemanager.writestats()
+	FileManager.writeConfig()
+	FileManager.writeStats()
 end
