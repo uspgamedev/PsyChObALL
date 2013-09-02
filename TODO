@@ -1,0 +1,16 @@
+Important
+	- Finish last 2 levels
+	- Kill all enemies close to you when you die
+	- Add forces
+		- Make seekers repel each other
+		- Add a enemy that avoids your shots (or add this to an existing enemy)
+	- Refactor EVERYTHING
+		- Redo score/level/allotherstats saving
+		- Rewrite how all menu's are done
+
+Bugs
+	- Fix warnings not following you when needed
+
+Maybe's
+	- Do a continue system
+	- Change how ultrablast works
