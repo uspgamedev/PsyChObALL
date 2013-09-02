@@ -16,6 +16,7 @@ function seeker:__init()
 	self.exitposition = self.exitposition or self.position
 	self.colors = {VarTimer:new{var = .88*255}, VarTimer:new{var = .66*255}, VarTimer:new{var = .37*255}}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
+	self.acceleration = Vector:new{0, 0}
 end
 
 function seeker:start()
@@ -27,22 +28,56 @@ function seeker:start()
 		funcToCall = function()
 			self.seek = false
 			self.speed:set(self.exitposition):sub(self.position):normalize():mult(self.speedN)
+			self.acceleration:set(0,0)
 		end
 	}
 end
 
 seeker.draw = base.defaultDraw
 
+local auxVec = Vector:new{}
 function seeker:update( dt )
-	if self.seek then
-		self.speed:set(psycho.position):sub(self.position):normalize():mult(self.speedN, self.speedN)
+	for _, sek in pairs(seeker.bodies) do
+		if sek ~= self then
+			auxVec:set(sek.position):sub(self.position)
+			local len = auxVec:length()
+			if len < 200 then
+				auxVec:mult((200 - len)/len):mult(25)
+				sek.acceleration:add(auxVec)
+			end
+		end
 	end
-	Body.update(self, dt)
+
+	if self.seek then
+		auxVec:set(psycho.position):sub(self.position)
+		local len = math.min(auxVec:length(), 300)
+		auxVec:mult((400 - len)/len):mult(60)
+		self.acceleration:add(auxVec)
+		self.speed:add(auxVec:set(self.acceleration):mult(dt))
+		self.acceleration:set(0, 0)
+		
+		local spd = self.speed:length()
+		if spd > self.speedN then
+			self.speed:mult(self.speedN/spd)
+		end
+		self.position:add(auxVec:set(self.speed):mult(dt))
+	else
+		Body.update(self, dt)
+	end
 
 	for _, v in pairs(Shot.bodies) do
 		if not v.collides and self:collidesWith(v) then
 			self:manageShotCollision(v)
 			break
+		end
+		if self.seek then
+			auxVec:set(self.position):sub(v.position)
+			local len = auxVec:length()
+			if len < 200 then
+				len = math.max(len, 20)
+				auxVec:mult((200 - len)/len):mult(80)
+				self.acceleration:add(auxVec)
+			end
 		end
 	end
 
@@ -55,8 +90,8 @@ function seeker:update( dt )
 end
 
 function seeker:manageShotCollision( shot )
-	v.collides = true
-	v.explosionEffects = false
+	shot.collides = true
+	shot.explosionEffects = false
 	self.health = self.health - 1
 	if self.health == 0 then
 		self.collides = true

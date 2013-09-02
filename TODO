@@ -1,15 +1,14 @@
 Important
 	- Finish last 2 levels
-	- Kill all enemies close to you when you die
-	- Add forces
-		- Make seekers repel each other
-		- Add a enemy that avoids your shots (or add this to an existing enemy)
 	- Refactor EVERYTHING
 		- Redo score/level/allotherstats saving
 		- Rewrite how all menu's are done
+	- Change 3-1 ending
 
 Bugs
+	- Error "AL lib: ReleaseALC: 1 device not closed" ?
 
 Maybe's
 	- Do a continue system
+	- Kill all enemies close to you when you die
 	- Change how ultrablast works
