@@ -63,18 +63,18 @@ function levelEnv.enemy( name, n, format, ... )
 		table.insert(currentLevel.timers_, warn)
 		if format and format.shootattarget then
 			-- follows the target with the warnings
+			local speed = format.speed or v
 			table.insert(currentLevel.timers_, Timer:new {
-				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1) + .01,
+				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
 				prevtarget = format.target:clone(),
 				registerSelf = false,
 				funcToCall = function(self)
-					self.timelimit = nil
-					if not enemylist[1].Warning then self:remove() return end
+					if self.timelimit then self.timelimit = nil return end
+					if not enemylist[1].warning then self:remove() return end
 					if self.prevtarget == format.target then return end
-					local speed = format.speed or v
 					for i = 1, n do
 						enemylist[i].speed:set(format.target):sub(enemylist[i].position):normalize():mult(speed, speed)
-						enemylist[i].Warning:recalc_angle()
+						enemylist[i].warning:recalc_angle()
 					end
 					self.prevtarget:set(target)
 				end
