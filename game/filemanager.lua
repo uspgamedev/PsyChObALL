@@ -175,14 +175,22 @@ local function getThing( info, nextLineFunc, str, curPos )
 		return str:sub(curPos + 1, curPos + charCount), curPos + 1 + charCount
 	elseif info:sub(1, 1) == 't' then -- it's a table
 		local charCount = tonumber(info:sub(2))
-		return readTableFromString(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
+		return readTableFromStringUnsafe(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
 	elseif info:sub(1, 1) == 'f' then
 		local charCount = tonumber(info:sub(2))
 		return loadstring(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
 	end
 end
 
+local readTableFromStringUnsafe
+
 function readTableFromString( str )
+	local ok, t = pcall(readTableFromStringUnsafe, str)
+	if not ok then io.write("The table wasn't correct. (error: ", t, ')\n') return {} end
+	return t
+end
+
+function readTableFromStringUnsafe( str )
 	local pos, pos2 = 0, 0
 	local t = {}
 	local key, value, keyInfo, valueInfo
