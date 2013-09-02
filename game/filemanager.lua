@@ -2,23 +2,25 @@ module('FileManager', base.globalize)
 
 function init()
 	-- removing old stuff
-	if filesystem.exists 'stats' then
+	--[[if filesystem.exists 'stats' then
 		filesystem.remove 'stats'
-	end
+	end]]
 end
 
 function readStats()
-	--[[local stats = readTable "stats"
+	-- CHANGE THIS
+	local stats = readTable "stats"
 
 	besttime  = stats.besttime  or 0
 	bestmult  = stats.bestmult  or 0
 	bestscore = stats.bestscore or 0
-	lastLevel = stats.lastLevel or 'Level 1-1']]
+	lastLevel = stats.lastLevel or 'Level 1-1'
 end
 
 function writeStats()
+	-- CHANGE THIS
 	if cheats.wasdev then return end
-	--[[besttime  = math.max(besttime, gametime)
+	besttime  = math.max(besttime, gametime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)
 	writeTable({
@@ -26,16 +28,17 @@ function writeStats()
 		bestmult  = bestmult,
 		bestscore = bestscore,
 		lastLevel = lastLevel
-	}, "stats")]]
+	}, "stats")
 end
 
 function resetStats()
-	--[[besttime, bestmult, bestscore  = 0, 0, 0
+	-- CHANGE THIS
+	besttime, bestmult, bestscore  = 0, 0, 0
 	writeTable({
 		besttime  = 0,
 		bestmult  = 0,
 		bestscore = 0
-	}, "stats")]]
+	}, "stats")
 end
 
 function readConfig()
@@ -103,7 +106,8 @@ function readCleanTable( filename )
 	return t
 end
 
--- writes a table to disk, supports writing numbers, strings, booleans and tables
+-- writes a table to disk, supports writing numbers, strings, booleans, tables and functions
+-- Obs. Assumes no tables contains itself (or any other kind of cyclic referencing)
 function writeTable( t, filename )
 	local file = openFile(filename, 'w')
 	if not file then return end
@@ -114,14 +118,10 @@ function writeTable( t, filename )
 end
 
 local function getInfo( thing )
-	if type(thing) == 'number' then
-		return 'n'
-	elseif type(thing) == 'boolean' then
-		return 'b'
-	elseif type(thing) == 'string' then
+	if type(thing) == 'string' then
 		return 's' .. thing:len()
-	elseif type(thing) == 'table' then
-		return 't'
+	else
+		return type(thing):sub(1, 1)
 	end
 end
 
@@ -129,25 +129,29 @@ function writeTableToString(t)
 	local towrite = ''
 
 	for key, value in pairs(t) do
-		local table1, table2
+		local extra1, extra2
 		if type(key) == 'table' then
-			table1 = writeTableToString(key)
+			extra1 = writeTableToString(key)
+		elseif type(key) == 'function' then
+			extra1 = string.dump(key) ..'\n'
 		end
+
 		if type(value) == 'table' then
-			table2 = writeTableToString(value)
+			extra2 = writeTableToString(value)
+		elseif type(value) == 'function' then
+			extra2 = string.dump(value) .. '\n'
 		end
 
-		towrite = towrite .. getInfo(key) .. (table1 and table1:len() or '')
-			..	'\n' .. getInfo(value) .. (table2 and table2:len() or '') .. '\n'
+		towrite = towrite .. getInfo(key) .. (extra1 and extra1:len() or '')
+			..	'\n' .. getInfo(value) .. (extra2 and extra2:len() or '') .. '\n'
 
-		towrite = towrite .. (table1 or (tostring(key) .. '\n')) .. (table2 or (tostring(value) .. '\n'))
+		towrite = towrite .. (extra1 or (tostring(key) .. '\n')) .. (extra2 or (tostring(value) .. '\n'))
 	end
 
 	return towrite
 end
 
--- Reads a table from disk, supports reading numbers, strings and booleans for now
--- Obs. Assumes no tables contains itself (or any other kind of cyclic referencing)
+-- Reads a table from disk, supports reading numbers, strings, booleans, tables and functions
 function readTable( filename )
 	if not filesystem.exists(filename) then return {} end
 	local file = filesystem.newFile(filename)
@@ -172,6 +176,9 @@ local function getThing( info, nextLineFunc, str, curPos )
 	elseif info:sub(1, 1) == 't' then -- it's a table
 		local charCount = tonumber(info:sub(2))
 		return readTableFromString(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
+	elseif info:sub(1, 1) == 'f' then
+		local charCount = tonumber(info:sub(2))
+		return loadstring(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
 	end
 end
 
