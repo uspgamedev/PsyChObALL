@@ -117,11 +117,20 @@ function writeTable( t, filename )
 	file:close()
 end
 
-local function getInfo( thing )
-	if type(thing) == 'string' then
-		return 's' .. thing:len()
-	else
-		return type(thing):sub(1, 1)
+local function writeObject( obj )
+	local t = type(obj)
+	if t == 'number' then
+		return 'n' .. obj .. ' '
+	elseif t == 'boolean' then
+		return 'b' .. (obj and '1 ' or '0 ')
+	elseif t == 'function' then
+		local str = string.dump(obj)
+		return 'f' .. str:len() .. ' ' .. str
+	elseif t == 'string' then
+		return 's' .. obj:len() .. ' ' .. obj
+	elseif t == 'table' then
+		local str = writeTableToString(obj)
+		return 't' .. str:len() .. ' ' .. str
 	end
 end
 
@@ -129,23 +138,7 @@ function writeTableToString(t)
 	local towrite = ''
 
 	for key, value in pairs(t) do
-		local extra1, extra2
-		if type(key) == 'table' then
-			extra1 = writeTableToString(key)
-		elseif type(key) == 'function' then
-			extra1 = string.dump(key) ..'\n'
-		end
-
-		if type(value) == 'table' then
-			extra2 = writeTableToString(value)
-		elseif type(value) == 'function' then
-			extra2 = string.dump(value) .. '\n'
-		end
-
-		towrite = towrite .. getInfo(key) .. (extra1 and extra1:len() or '')
-			..	'\n' .. getInfo(value) .. (extra2 and extra2:len() or '') .. '\n'
-
-		towrite = towrite .. (extra1 or (tostring(key) .. '\n')) .. (extra2 or (tostring(value) .. '\n'))
+		towrite = towrite .. writeObject(key) .. writeObject(value)
 	end
 
 	return towrite
@@ -163,26 +156,28 @@ function readTable( filename )
 	return readTableFromString(file:read())
 end
 
-local function getThing( info, nextLineFunc, str, curPos )
+local readTableFromStringUnsafe
+
+local function readObject( str, curPos )
+	local newPos
+	if not curPos then error()return nil, nil end
+	local info = str:sub(curPos + 1, curPos + 1)
+	if info == 'b' then -- it's a boolean
+		return str:sub(curPos + 2, curPos + 2) == '1', curPos + 3
+	end
+	newPos = str:find(' ', curPos + 2)
+	if not newPos then return nil, nil end
+	local size = tonumber(str:sub(curPos + 2, newPos - 1))
 	if info == 'n' then -- it's a number
-		local n = nextLineFunc()
-		return tonumber(n), curPos + n:len() + 1
-	elseif info == 'b' then -- it's a boolean
-		local b = nextLineFunc()
-		return b == 'true', curPos + b:len() + 1
-	elseif info:sub(1, 1) == 's' then -- it's a string
-		local charCount = tonumber(info:sub(2))
-		return str:sub(curPos + 1, curPos + charCount), curPos + 1 + charCount
-	elseif info:sub(1, 1) == 't' then -- it's a table
-		local charCount = tonumber(info:sub(2))
-		return readTableFromStringUnsafe(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
-	elseif info:sub(1, 1) == 'f' then
-		local charCount = tonumber(info:sub(2))
-		return loadstring(str:sub(curPos + 1, curPos + charCount)), curPos + charCount
+		return size, newPos
+	elseif info == 's' then -- it's a string
+		return str:sub(newPos + 1, newPos + size), newPos + size
+	elseif info == 't' then -- it's a table
+		return readTableFromStringUnsafe(str:sub(newPos + 1, newPos + size)), newPos + size
+	elseif info == 'f' then
+		return loadstring(str:sub(newPos + 1, newPos + size)), newPos + size
 	end
 end
-
-local readTableFromStringUnsafe
 
 function readTableFromString( str )
 	local ok, t = pcall(readTableFromStringUnsafe, str)
@@ -191,21 +186,13 @@ function readTableFromString( str )
 end
 
 function readTableFromStringUnsafe( str )
-	local pos, pos2 = 0, 0
+	local pos = 0
 	local t = {}
-	local key, value, keyInfo, valueInfo
-	local nextLine = function()
-			pos, pos2 = str:find('[^\n]*\n', pos2 + 1)
-			if pos2 then return str:sub(pos, pos2 - 1) end
-		end
+	local key, value
 	while true do
-		keyInfo = nextLine()
-		if not keyInfo then break end
-
-		valueInfo = nextLine()
-		local prevp2 = pos2
-		key, pos2 = getThing(keyInfo, nextLine, str, pos2)
-		value, pos2 = getThing(valueInfo, nextLine, str, pos2)
+		key, pos = readObject(str, pos)
+		if key == nil then break end
+		value, pos = readObject(str, pos)
 
 		t[key] = value
 	end

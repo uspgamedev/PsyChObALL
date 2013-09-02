@@ -94,6 +94,7 @@ function initBase()
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '1.0.1 indev'
 	latest = base.getLatestVersion() or version
+	oldVersion = version < latest
 	soundmanager.init()
 	cheats.init()
 	--[[End of Loading Resources]]

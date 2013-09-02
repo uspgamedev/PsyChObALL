@@ -337,7 +337,7 @@ function draw()
 		graphics.print('Write "reset" to delete stats', 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
 
-		if latest ~= version then
+		if oldVersion then
 			graphics.print("Version " .. latest, 422, 700)
 			graphics.print("is available to download!", 510, 700)
 		end
