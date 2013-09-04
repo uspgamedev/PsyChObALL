@@ -3,7 +3,7 @@ Important
 	- Refactor EVERYTHING
 		- Redo score/level/allotherstats saving
 		- Rewrite how all menu's are done
-	- Change 3-1 ending
+	- Change 4-3 ending
 
 Bugs
 	- Error "AL lib: ReleaseALC: 1 device not closed" ?

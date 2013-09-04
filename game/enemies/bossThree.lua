@@ -355,7 +355,7 @@ function bossThree:draw()
 
 	if self.first <= self.last then
 		local s = self.segments[self.first]
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, self.coloreffect))
+		graphics.setColor(ColorManager.getComposedColor(self.variance, nil, self.coloreffect))
 		if self.guy then
 			graphics.setPixelEffect()
 			graphics.setInvertedStencil(self.invertedstencil)
@@ -383,7 +383,7 @@ function bossThree:draw()
 
 	for i = self.first + 1, self.last, 1 do
 		local s = self.segments[i]
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, ColorManager.noLSDEffect))
+		graphics.setColor(ColorManager.getComposedColor(self.variance, nil, ColorManager.noLSDEffect))
 		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
 		graphics.translate(unpack(s.extraposition))
 		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
@@ -417,9 +417,9 @@ function bossThree:update( dt )
 			end
 		end
 
-		if psycho.canbehit and not gamelost and base.collides(s.position, self.size, psycho.position, psycho.size) then
+		if psycho.canbehit and not DeathManager.gameLost and base.collides(s.position, self.size, psycho.position, psycho.size) then
 			psycho.diereason = "shot"
-			lostgame()
+			DeathManager.manageDeath()
 		end
 
 		if self.snakemode then
@@ -615,7 +615,7 @@ function bossThree.food:draw()
 	graphics.setPixelEffect(base.circleShader)
 	CircleEffect.draw(self)
 	if self.creationsize.var > 0 then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, ColorManager.noLSDEffect))
+		graphics.setColor(ColorManager.getComposedColor(self.variance, nil, ColorManager.noLSDEffect))
 		graphics.circle('fill', self.position[1], self.position[2], self.creationsize.var)
 	end
 	graphics.setPixelEffect()
@@ -759,7 +759,7 @@ end
 
 function bossThree.ghost:draw()
 	graphics.setPixelEffect(base.circleShader)
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, nil, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, nil, self.coloreffect))
 	graphics.circle('fill', self.position[1], self.position[2], self.size)
 	graphics.setPixelEffect()
 end
@@ -772,9 +772,9 @@ function bossThree.ghost:update( dt )
 	if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
 	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 
 	for _, s in pairs(Shot.bodies) do

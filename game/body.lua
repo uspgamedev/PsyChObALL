@@ -66,7 +66,7 @@ end
 
 function Body:draw()
 	if self.linewidth then graphics.setLineWidth(self.linewidth) end
-	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect)
+	local color = ColorManager.getComposedColor(self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect)
 	self.spriteBatch:setColor(unpack(color))
 	self.spriteBatch:set(self.id, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 end

@@ -17,6 +17,7 @@ require "psychoball"
 require "warning"
 require "button"
 require "filemanager"
+require "DeathManager"
 require "soundmanager"
 require "cheats"
 
@@ -45,9 +46,10 @@ function initBase()
 	coolfonts = {}
 	resetted = false
 	godmode = false
+	paused = false
 	usingjoystick = joystick.isOpen(1)
 
-	gamelostinfo =  {
+	gameLostinfo =  {
 		timetorestart = .5,
 		timeofdeath = nil,
 		isrestarting = false
@@ -95,7 +97,7 @@ function initBase()
 	version = '1.0.1 indev'
 	latest = base.getLatestVersion() or version
 	oldVersion = version < latest
-	soundmanager.init()
+	SoundManager.init()
 	cheats.init()
 	--[[End of Loading Resources]]
 
@@ -106,6 +108,8 @@ end
 function initGameVars()
 	-- [[Creating Persistent Timers]]
 	ColorManager.init()
+
+	DeathManager.init()
 
 	CircleEffect.init()
 
@@ -120,7 +124,7 @@ function initGameVars()
 	multtimer = Timer:new {
 		timelimit  = 2.2,
 		persistent = true,
-		works_on_gamelost = false
+		works_on_gameLost = false
 	}
 
 	function multtimer:funcToCall() -- resets multiplier
@@ -135,14 +139,14 @@ function initGameVars()
 	inverttimer = Timer:new {
 		timelimit  = 2.2,
 		persistent = true,
-		works_on_gamelost = false
+		works_on_gameLost = false
 	}
 
 	function inverttimer:funcToCall() -- disinverts the screen color
-		if currentEffect ~= ColorManager.noLSDEffect then 
-			soundmanager.setPitch(1)
+		if ColorManager.currentEffect ~= ColorManager.noLSDEffect then 
+			SoundManager.setPitch(1)
 			timefactor = 1.0
-			currentEffect = nil
+			ColorManager.currentEffect = nil
 		end
 		self:stop()
 	end
@@ -185,7 +189,7 @@ end
 function resetVars()
 	if cheats.konamicode then
 		ultracounter = 30
-		if lives then lives = 30 end
+		if psycho.lives then psycho.lives = 30 end
 		cheats.konamicode = false
 	else
 		ultracounter = 3
@@ -213,21 +217,21 @@ function resetVars()
 	blastscore = 0 --Variavel que dá ultrablast points por pontos
 	lifescore = 0
 
-	gamelost = false
+	DeathManager.gameLost = false
 	paused = false
 
-	deathmessage = nil
+	DeathManager.resetDeathText()
 end
 
 function reloadSurvival()
-	soundmanager.changeSong(soundmanager.survivalsong)
+	SoundManager.changeSong(SoundManager.survivalsong)
 	if state == survival then Effect:clear() end
 	state = survival
 	Enemy.addtimer:funcToCall()
 	resetVars()
 	Timer.closenonessential()
 
-	soundmanager.restart()
+	SoundManager.restart()
 	enemies.restartSurvival()
 	Enemy.addtimer:start(1.5)
 	Enemy.releasetimer:start(.7)
@@ -243,19 +247,20 @@ function reloadStory( name )
 	if psycho.pseudoDied then
 		psycho.canbehit = true
 		psycho.pseudoDied = false
-		paintables.psychoeffects = nil
+		paintables.deathEffects.bodies = nil
+		paintables.deathEffects = nil
 	end
 	Effect:clear()
 	if state == story and name ~= 'Level 1-1' then
 		Timer.closenonessential()
 	else
 		state = story
-		lives = 10
-		soundmanager.changeSong(soundmanager.limitlesssong)
+		psycho.lives = Psychoball.lives
+		SoundManager.changeSong(SoundManager.limitlesssong)
 		resetVars()
 		Timer.closenonessential()
 
-		soundmanager.restart()
+		SoundManager.restart()
 		enemies.restartStory()
 
 		mouse.setGrab(true)
@@ -291,44 +296,6 @@ function getCoolFont(size)
 	if coolfonts[size] then return coolfonts[size] end
 	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
 	return coolfonts[size]
-end
-
-local moarLSDchance = 3
-
-function lostgame()
-	if gamelost or godmode then return end
-	local autorestart = state == story and lives > 0
-	if not autorestart then
-		mouse.setGrab(false)
-		FileManager.writeStats()
-		soundmanager.fadeout()
-
-		if deathText() == "Supreme." then deathmessage = nil end --make it much rarer
-		if state == story and deathText() == "The LSD wears off" then
-			deathmessage = "Why are you even doing this?" --or something else
-		end
-
-		if deathText() == "The LSD wears off" then
-			soundmanager.setPitch(.8)
-			deathtexts[1] = "MOAR LSD"
-			for i = 1, moarLSDchance do table.insert(deathtexts, "MOAR LSD") end
-			currentEffect = ColorManager.noLSDEffect
-		elseif deathText() == "MOAR LSD" then
-			soundmanager.setPitch(1)
-			deathtexts[1] = "The LSD wears off"
-			for i = 1, moarLSDchance do table.remove(deathtexts) end
-			currentEffect = nil
-		end
-
-		gamelost   = true
-		pausemessage = nil
-	end
-	
-	timefactor = .05
-
-	psycho:handleDelete()
-	gamelostinfo.timeofdeath = totaltime
-	gamelostinfo.isrestarting = false
 end
 
 function love.draw()
@@ -369,7 +336,7 @@ function love.draw()
 end
 
 function drawBackground()
-	local color = ColorManager.getRawColor(ColorManager.timer.time*.654)
+	local color = ColorManager.getRawColor(-ColorManager.timer.time*.35)
 	color[1] = color[1] / 3
 	color[2] = color[2] / 3
 	color[3] = color[3] / 3
@@ -383,10 +350,10 @@ function drawBackground()
 end
 
 function drawShootingDirection()
-	if gamelost or psycho.pseudoDied then return end
+	if DeathManager.gameLost or psycho.pseudoDied then return end
 
 	graphics.setLineWidth(1)
-	local color = ColorManager.getComposedColor(ColorManager.timer.time + 2)
+	local color = ColorManager.getComposedColor(2)
 	graphics.setColor(color)
 	if usingjoystick then
 		color[4] = 60 -- alpha
@@ -407,33 +374,6 @@ function drawShootingDirection()
 	graphics.setPixelEffect(base.circleShader)
 end
 
-playtexts = {"Start", "START", "Start Mission", "game.\nplay()", "Don't Click Me", "Give me  BALLS"}
-
-pausetexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"}
-
-deathtexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "You now lay\n   with the dead", "Yo momma so fat\n   you died",
-"You ceased to exist", "Your mother\n   wouldn't be proud","Snake? Snake?\n   Snaaaaaaaaaake","Already?", "All your base\n     are belong to BALLS",
-"You wake up and\n     realize it was all a nightmare", "MIND BLOWN","Just one more","USPGameDev Rulez","A winner is not you","Have a nice death",
-"There is no cake\n   also you died","You have died of\n      dysentery","You failed", "Epic fail", "BAD END","Supreme.","Embrace your defeat","Balls have no mercy","You have no balls left","Nevermore...",
-"Rest in Peace","Die in shame","You've found your end", "KIA", "Status: Deceased", "Requiescat in Pace", "Valar Morghulis", "What is dead may never die","Mission Failed",
-"It's dead Jim", "Arrivederci", ""}
-
-function deathText( n )
-	deathmessage = n and deathtexts[n] or (deathmessage or deathtexts[math.random(#deathtexts)])
-	return deathmessage
-end
-
-function pauseText()
-	pausemessage = pausemessage or pausetexts[math.random(#pausetexts)]
-	return pausemessage
-end
-
-function playText()
-	playmessage = playtexts[math.random(#playtexts)]
-	return playmessage
-end
-
-
 function love.update(dt)
 	if dt > 0.03333 then dt = 0.03333 end
 	totaltime = totaltime + dt
@@ -441,7 +381,7 @@ function love.update(dt)
 	mouseX = mouseX + swypetimer.var
 	isPaused = (paused or onMenu())
 
-	Timer.updatetimers(dt, timefactor, isPaused, gamelost)
+	Timer.updatetimers(dt, timefactor, isPaused, DeathManager.gameLost)
 	UI.update(dt)
 	
 	dt = dt * timefactor
@@ -463,7 +403,7 @@ end
 
 function love.mousepressed(x, y, btn)
 	x, y  = x/ratio, y/ratio
-	if btn == 'l' and onGame() and not (gamelost or paused or psycho.pseudoDied) then
+	if btn == 'l' and onGame() and not (DeathManager.gameLost or paused or psycho.pseudoDied) then
 		Shot.timer:start(Shot.timer.timelimit) --starts shooting already
 	end
 	UI.mousepressed(x + swypetimer.var, y, btn)
@@ -478,7 +418,7 @@ function love.mousereleased(x, y, btn)
 end
 
 function addscore(x)
-	if not gamelost then
+	if not DeathManager.gameLost then
 		score = score + x
 		blastscore = blastscore + x
 		lifescore = lifescore + x
@@ -488,7 +428,7 @@ function addscore(x)
 		end
 		if state == story and lifescore >= 15000 then
 			lifescore = lifescore - 15000
-			lives = lives + 1
+			psycho:addLife()
 		end
 	end
 end
@@ -508,27 +448,20 @@ function love.keypressed(key)
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
-	if (key == 'escape' or key == 'p') and onGame() and not gamelost then
-		pausemessage = nil --resets pauseText()
-		paused = not paused --pauses or unpauses
-		mouse.setGrab(not paused) --releases the mouse if paused
-	end
-
-	if not gamelost and onGame() then 
+	if not DeathManager.gameLost and onGame() then 
 		psycho:keypressed(key)
 	end
 
 	UI.keypressed(key)
 	cheats.keypressed(key)
-	soundmanager.keypressed(key)
-
+	SoundManager.keypressed(key)
 end
 
 function love.keyreleased(key)
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 
-	if not gamelost and onGame() then
+	if not DeathManager.gameLost and onGame() then
 		psycho:keyreleased(key)
 	end
 	
@@ -539,7 +472,7 @@ function love.keyreleased(key)
 end
 
 function love.focus(f)
-	if onGame() and not (f or gamelost) then paused = true end
+	if onGame() and not (f or DeathManager.gameLost) then paused = true end
 end
 
 function love.quit()

@@ -6,7 +6,7 @@ function init()
 	--[[superball]]
 	superball.addtimer = Timer:new {
 		timelimit = 30,
-		works_on_gamelost = false,
+		works_on_gameLost = false,
 		persistent = true
 	}
 
@@ -23,7 +23,7 @@ function init()
 
 	superball.releasetimer = Timer:new {
 		timelimit = 30,
-		works_on_gamelost = false,
+		works_on_gameLost = false,
 		persistent = true
 	}
 

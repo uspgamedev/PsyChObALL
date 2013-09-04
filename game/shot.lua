@@ -14,7 +14,7 @@ Body.makeClass(Shot)
 function Shot.init()
 	Shot.timer = Timer:new{
 		timelimit = .18,
-		works_on_gamelost = false,
+		works_on_gameLost = false,
 		persistent = true
 	}
 

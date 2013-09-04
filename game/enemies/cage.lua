@@ -38,8 +38,8 @@ function cage:update( dt )
 		end
 	end
 	
-	if (self.size - psycho.size - psycho.sizediff - self.linewidth + 3)^2 < self.position:distsqr(psycho.position) then
-		psycho.position:sub(self.position):normalize():mult(self.size - psycho.size - psycho.sizediff - self.linewidth + 3):add(self.position)
+	if (self.size - psycho.size - psycho.sizeDiff - self.linewidth + 3)^2 < self.position:distsqr(psycho.position) then
+		psycho.position:sub(self.position):normalize():mult(self.size - psycho.size - psycho.sizeDiff - self.linewidth + 3):add(self.position)
 	end
 end
 

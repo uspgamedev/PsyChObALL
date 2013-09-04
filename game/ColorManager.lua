@@ -1,8 +1,7 @@
 module ('ColorManager', package.seeall)
 
-cycleTime = 10
+colorCycleTime = 10
 currentEffect = nil
-local xt = cycleTime
 local maincolor = {0,0,0,0}
 
 function init()
@@ -18,8 +17,9 @@ function getComposedColor( x, alpha, effect )
 	return applyEffect(effect, getRawColor(x, alpha))
 end
 
+local xt = colorCycleTime
 function getRawColor(x, alpha)
-	x = x % cycleTime
+	x = ((x or 0) + timer.time) % colorCycleTime
 	local r, g, b
 	if x <= xt / 3 then
 		r = 100					  -- 100%

@@ -6,7 +6,7 @@ Timer = lux.object.new {
 	timeaffected = true,
 	persistent	 = false, -- continues on death
 	delete		 = false,
-	works_on_gamelost = true,
+	works_on_gameLost = true,
 	registerSelf = true,
 	timers = {}
 }
@@ -15,8 +15,8 @@ function Timer:__init()
 	if self.registerSelf then Timer.register(self) end
 end
 
-function Timer:update(dt, timefactor, paused, gamelost)
-	if not self.running or (paused and self.pausable) or (gamelost and not self.works_on_gamelost) then return end
+function Timer:update(dt, timefactor, paused)
+	if not self.running or (paused and self.pausable) or (DeathManager.gameLost and not self.works_on_gameLost) then return end
 	if self.timeaffected then dt = dt * timefactor end
 	self.time = self.time + dt
 	if not self.timelimit and self.funcToCall then 
@@ -45,13 +45,13 @@ function Timer:stop()
 end
 
 local ts = Timer.timers
-function Timer.updatetimers(dt, timefactor, paused, gamelost)
+function Timer.updatetimers(dt, timefactor, paused)
 	for i = #ts, 1, -1 do
 		local v = ts[i]
 		if v.delete then
 			table.remove(ts, i)
 		else
-			v:update(dt, timefactor, paused, gamelost)
+			v:update(dt, timefactor, paused)
 		end
 	end
 end

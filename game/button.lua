@@ -15,7 +15,7 @@ function Button:__init()
 		self.position:add((self.menu - 1)*width)
 	end
 
-	self.variance = math.random(ColorManager.cycleTime * 1000)/1000
+	self.variance = math.random(ColorManager.colorCycleTime * 1000)/1000
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
 	self.effectsBurst = Timer:new {
@@ -44,7 +44,7 @@ end
 
 function Button:draw()
 	if not self.visible or self.alphafollows.var == 0 then return end
-	local color = ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect)
+	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect)
 	graphics.setColor(ColorManager.invertEffect(color))
 	graphics.setFont(getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')

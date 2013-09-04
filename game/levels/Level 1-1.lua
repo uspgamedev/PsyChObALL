@@ -43,7 +43,7 @@ function run()
 	local divide1 = 'multiball'
 
 --	doNow( function(timer)
---		if not gamelost then reloadStory 'Tutorial' end
+--		if not DeathManager.gameLost then reloadStory 'Tutorial' end
 --	end)
 
 	wait(1)
@@ -75,7 +75,7 @@ function run()
 	wait(4)
 	doNow( function(timer)
 		if not levelselected then
-			if not gamelost then reloadStory 'Level 1-2' end
+			if not DeathManager.gameLost then reloadStory 'Level 1-2' end
 		else
 			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto

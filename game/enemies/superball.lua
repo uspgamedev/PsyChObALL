@@ -25,7 +25,7 @@ function superball:__init()
 
 	self.shoottimer = Timer:new {
 		timelimit = 1.5 + math.random(),
-		works_on_gamelost = false,
+		works_on_gameLost = false,
 		time = math.random()*1.6
 	}
 
@@ -109,9 +109,9 @@ function superball:update(dt)
 		end
 	end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 end
 

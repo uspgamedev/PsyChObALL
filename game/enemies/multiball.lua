@@ -27,9 +27,9 @@ function multiball:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 
 	self.delete = self.delete or self.collides

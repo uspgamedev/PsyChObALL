@@ -17,7 +17,7 @@ function bossLast:draw()
 	if not self.visible then return end
 	graphics.setPixelEffect()
 	graphics.push()
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphafollows.var, self.coloreffect))
 	graphics.translate(self.x, self.y)
 	graphics.rotate(self.angle.var)
 	graphics.rectangle(self.mode, -self.width/2, -self.height/2, self.width, self.height)
@@ -50,9 +50,9 @@ function bossLast:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 end
 
@@ -110,7 +110,7 @@ function bossLast:__init()
 
 	self.shoottimer = Timer:new {
 		timelimit = .5,
-		works_on_gamelost = false,
+		works_on_gameLost = false,
 		funcToCall = function()
 			local e = self.getShot()
 			e.position = self.position:clone()

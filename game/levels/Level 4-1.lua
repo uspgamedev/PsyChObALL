@@ -193,7 +193,7 @@ function run()
 	wait(10)
 	doNow( function(timer)
 		if not levelselected then
-			if not gamelost then reloadStory 'Level 4-2' end
+			if not DeathManager.gameLost then reloadStory 'Level 4-2' end
 		else
 			Text:new{
 				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto

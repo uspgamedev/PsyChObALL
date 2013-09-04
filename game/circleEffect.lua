@@ -22,7 +22,7 @@ function CircleEffect:__init()
 	end
 	
 	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
-	self.variance = self.variance or math.random(0, 100*ColorManager.cycleTime) / 100
+	self.variance = self.variance or math.random(0, 100*ColorManager.colorCycleTime) / 100
 	if self.index ~= nil then
 		if self.index ~= false then
 			self:start()

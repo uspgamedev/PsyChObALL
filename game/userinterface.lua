@@ -115,10 +115,22 @@ function restartMenu()
 	state = mainmenu
 	resetVars()
 	Timer.closenonessential()
-	if soundmanager.currentsong ~= soundmanager.menusong then
-		soundmanager.changeSong(soundmanager.menusong)
+	if SoundManager.currentsong ~= SoundManager.menusong then
+		SoundManager.changeSong(SoundManager.menusong)
 	end
 	for _, b in pairs(paintables.menu) do b:start() end
+end
+
+local pauseTexts = {"to surrender","to go back","to give up","to admit defeat","to /ff", "to RAGE QUIT","if you can't handle the balls"}
+local pauseMessage
+
+function pauseText()
+	pauseMessage = pauseMessage or pauseTexts[math.random(#pauseTexts)]
+	return pauseMessage
+end
+
+function resetPauseText()
+	pauseMessage = nil
 end
 
 function mousepressed( x, y, btn )
@@ -135,6 +147,12 @@ function mousereleased( x, y, btn )
 end
 
 function keypressed( key )
+	if (key == 'escape' or key == 'p') and onGame() and not DeathManager.gameLost then
+		resetPauseText()
+		paused = not paused --pauses or unpauses
+		mouse.setGrab(not paused) --releases the mouse if paused
+	end
+
 	if key == 'r' and paused then
 		if state == story then
 			if levelselected then
@@ -149,35 +167,11 @@ function keypressed( key )
 		end
 	end
 
-	if key == 'restartstory' or (gamelost and key == 'r') then
-		--restarting
-		if gamelostinfo.isrestarting then return end
-		gamelostinfo.isrestarting = true
-		gamelostinfo.timeofrestart = totaltime
-		local m = (totaltime - gamelostinfo.timeofdeath - .07)/gamelostinfo.timetorestart
-		for _, eff in pairs(global.paintables.psychoeffects) do
-			eff.speed:negate():mult(m, m)
-		end
-		if global.paintables.psychoeffects[1] == nil then table.foreach(global.paintables.psychoeffects, print) end
-		global.paintables.psychoeffects[1].prevdist = 
-			global.paintables.psychoeffects[1].position:distsqr(global.paintables.psychoeffects[1].firstpos)
-		Timer:new{
-			running = true,
-			timeaffected = false,
-			onceonly = true,
-			timelimit = gamelostinfo.timetorestart,
-			funcToCall = function()
-				if not global.paintables.psychoeffects then return end
-				local s = math.sqrt(global.paintables.psychoeffects[1].prevdist)/.025
-				s = s / global.paintables.psychoeffects[1].speed:length()
-				for _, eff in pairs(global.paintables.psychoeffects) do
-					eff.speed:mult(s, s)
-				end
-			end
-		}
+	if DeathManager.gameLost and key == 'r' then
+		DeathManager.beginGameRestart()
 	end
 
-	if (gamelost or paused) and key == 'b' then
+	if (DeathManager.gameLost or paused) and key == 'b' then
 		if global.paintables.psychoeffects then
 			for _, e in pairs(global.paintables.psychoeffects) do e:handleDelete() end
 			global.paintables.psychoeffects = nil
@@ -185,7 +179,6 @@ function keypressed( key )
 
 		if state == story then
 			levels.closeLevel()
-			lives = 3
 		end
 		psycho.pseudoDied = false
 		psycho.canbehit = true
@@ -197,9 +190,9 @@ function keypressed( key )
 		cheats.image.enabled = false
 		resetted = false
 
-		soundmanager.reset()
+		SoundManager.reset()
 		timefactor = 1.0
-		currentEffect = nil
+		ColorManager.currentEffect = nil
 	end
 
 	if state == mainmenu then
@@ -226,7 +219,7 @@ function draw()
 	graphics.setPixelEffect()
 	--[[Drawing On-Game Info]]
 	if onGame() then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time))
+		graphics.setColor(ColorManager.getComposedColor())
 		if state == survival then
 			graphics.setFont(getCoolFont(22))
 			graphics.print(string.format("%.0f", score), 68, 20)
@@ -248,7 +241,7 @@ function draw()
 		elseif state == story then
 			graphics.setFont(getCoolFont(30))
 			graphics.print(string.format("%.0f", score), 25, 48)
-			graphics.print(string.format("%.0f", lives), 25, 98)
+			graphics.print(string.format("%.0f", psycho.lives), 25, 98)
 			graphics.setFont(getCoolFont(20))
 			graphics.print(levels.currentLevel.chapter, 200, 40)
 			graphics.setFont(getCoolFont(18))
@@ -278,17 +271,17 @@ function draw()
 	--[[Drawing Things that how up on every page]]
 	--[[End of Drawing On-Game Info]]
 
-	local color = ColorManager.getComposedColor(ColorManager.timer.time)
+	local color = ColorManager.getComposedColor()
 	graphics.setColor(color)
 	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), width - 80, 10)
 	color[4] = 70 --alpha
 	graphics.setColor(color)
-	soundmanager.drawSoundIcon(width - 50, height - 50)
+	SoundManager.drawSoundIcon(width - 50, height - 50)
 	--[[End of Drawing Things that show up on every page]]
 
 	--[[Drawing Death Screen]]
-	if gamelost and onGame() then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time - ColorManager.timer.timelimit / 2))
+	if DeathManager.gameLost and onGame() then
+		graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
 		if state == survival then
 			if cheats.wasdev then
 				graphics.setFont(getCoolFont(20))
@@ -309,7 +302,7 @@ function draw()
 			end
 		end
 		graphics.setFont(getCoolFont(40))
-		graphics.print(deathText(), 270, 300)
+		graphics.print(DeathManager.getDeathText(), 270, 300)
 		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
 		graphics.setFont(getCoolFont(23))
 		if state == survival then graphics.print("Press R to retry", 280, 640)
@@ -327,12 +320,12 @@ function draw()
 
 	--[[Drawing Menu]]
 	if alphatimer.var > 1 then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time - ColorManager.timer.timelimit / 2))
+		graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
 		graphics.push()
 		
 		--drawing mainmenu
 		graphics.setFont(getFont(12))
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 0.856, alphatimer.var))
+		graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144, alphatimer.var))
 		graphics.print("v" .. version, width/2 - 10, 685)
 		graphics.print('Write "reset" to delete stats', 15, 10)
 		if resetted then graphics.print("~~stats deleted~~", 25, 23) end
@@ -349,19 +342,19 @@ function draw()
 		end
 		graphics.setFont(getFont(30))
 
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 4.5 + .54, alphatimer.var))
+		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 2.5 + 1, alphatimer.var))
 		graphics.draw(logo, (width - logo:getWidth()/4)/2, 75, nil, 0.25, 0.20)
 		graphics.setFont(getFont(12))
 		--end of mainmenu
 
 		graphics.translate(width, 0)
 		--drawing tutorialmenu
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 1.5 + .54))
+		graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time*.25 + 3))
 		graphics.setFont(getCoolFont(50))
 		graphics.print("CONTROLS", 380, 36)
 		graphics.setFont(getCoolFont(40))
 		graphics.print("Survival Mode:", 170, 350)
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 2.5 + .54))
+		graphics.setColor(ColorManager.getComposedColor(1))
 		graphics.setFont(getCoolFont(20))
 		graphics.print("You get points when", 540, 425)
 		graphics.print("  you kill an enemy", 570, 455)
@@ -374,17 +367,16 @@ function draw()
 		graphics.print("Click or hold the left mouse button to shoot", 540, 170)
 		graphics.print("Hold space to charge", 70, 252)
 		graphics.setFont(getCoolFont(35))
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 0.856))
+		graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144))
 		graphics.print("ulTrAbLaST", 290, 242)
 
 		graphics.setPixelEffect(base.circleShader)
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 6.5 + .54))
+		graphics.setColor(ColorManager.getComposedColor(6))
 		graphics.circle("fill", 130, 180, 10)
 		graphics.circle("fill", 520, 450, 10)
 		graphics.circle("fill", 160, 510, 10)
 		graphics.circle("fill", 520, 240, 10)
 		graphics.circle("fill", 520, 280, 10)
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 7.5 + .54))
 		graphics.circle("fill", 520, 180, 10)
 		graphics.circle("fill", 130, 450, 10)
 		graphics.circle("fill", 50, 263, 10)
@@ -393,14 +385,13 @@ function draw()
 
 		graphics.translate(-2 * width, 0)
 		--drawing achievmentsmenu
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 1.5 + .54))
+		graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * .25 + 1))
 		graphics.setFont(getCoolFont(50))
 		graphics.print("ACHIEVEMENTS", 340, 36)
 
 		graphics.setPixelEffect(base.circleShader)
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 6.5 + .54))
+		graphics.setColor(ColorManager.getComposedColor(1))
 		graphics.circle("fill", 130, 180, 5)
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 7.5 + .54))
 		graphics.circle("fill", 130, 210, 5)
 		graphics.setPixelEffect()
 		graphics.setFont(getCoolFont(30))
@@ -413,7 +404,7 @@ function draw()
 	
 	--[[Drawing Pause Menu]]
 	if paused and onGame() then
-		graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time - ColorManager.timer.timelimit / 2))
+		graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
 		graphics.setFont(getFont(40))
 		graphics.print("Paused", 270, 300)
 		graphics.setFont(getCoolFont(23))

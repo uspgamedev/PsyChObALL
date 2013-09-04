@@ -300,9 +300,9 @@ function bossFour:update( dt )
 		elseif self.y - self.height/2 < 0 then self.speed:set(nil,  math.abs(self.Vy)) end
 	end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 
 	for _, s in pairs(Shot.bodies) do

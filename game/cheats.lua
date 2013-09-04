@@ -87,7 +87,7 @@ function keypressed( key )
 		end
 
 		if devmode then
-			if not esc and key == 'k' then lostgame() end
+			if not esc and key == 'k' then DeathManager.manageDeath() end
 			if 	 key == '0' then multiplier = multiplier + 2
 			elseif key == '9' then multiplier = multiplier - 2
 			elseif key == '8' then addscore(100)
@@ -96,13 +96,9 @@ function keypressed( key )
 			elseif key == '5' then v = v - 10
 			elseif key == '4' then timefactor = timefactor * 1.1
 			elseif key == '3' then timefactor = timefactor * 0.9
-			elseif key == '2' then lives = lives + 1
-			elseif key == '1' then lives = lives - 1
-			elseif key == 'l' and not gamelost then deathText(1) lostgame()
-			--NO. NO. NO. FUCKING NO. NEVER DO THIS AGAIN. RAPTORS WILL FIND YOU
-			--AND KILL YOU. VIOLENTLY. AND NO ONE WILL MISS YOU. BECAUSE OF THE 
-			--NEXT LINE. JUST NO.
-			--elseif key == 'u' then love.update(10) --skips 10 seconds
+			elseif key == '2' then psycho:addLife()
+			elseif key == '1' then psycho:removeLife()
+			elseif key == 'l' and not DeathManager.gameLost then DeathManager.getDeathText(1) DeathManager.manageDeath()
 			elseif key == 'x' then ultracounter = ultracounter + 1
 			elseif key == 'g' then godmode = not godmode
 			elseif key == 'e' then 

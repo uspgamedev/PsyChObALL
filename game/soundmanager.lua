@@ -1,4 +1,4 @@
-module('soundmanager', package.seeall)
+module('SoundManager', package.seeall)
 require 'lux.functional'
 
 function init()
@@ -41,7 +41,7 @@ function init()
 	}
 
 	function songfadein:funcToCall() -- song fades in
-		if muted or gamelost then return end
+		if muted or DeathManager.gameLost then return end
 		if currentsong:getVolume() >= (.98 * volume / 100) then 
 			currentsong:setVolume(volume / 100)
 			self:stop()
@@ -97,19 +97,19 @@ function keypressed( key )
 		if key == 'm' then
 			muted = false
 			soundquadindex = math.ceil(volume/20) + 1
-			if not gamelost then currentsong:setVolume(volume / 100) end
+			if not DeathManager.gameLost then currentsong:setVolume(volume / 100) end
 		end
 	else
 		if key == '.' and volume < 100 then
 			volume = volume + 10
 			soundquadindex = math.ceil(volume/20) + 1
-			if not gamelost then
+			if not DeathManager.gameLost then
 				currentsong:setVolume(volume / 100)
 			end
 		elseif key == ',' and volume > 0 then
 			volume = volume - 10
 			soundquadindex = math.ceil(volume/20) + 1
-			if not gamelost and not songfadein.running then
+			if not DeathManager.gameLost and not songfadein.running then
 				currentsong:setVolume(volume / 100)
 			end
 		elseif key == 'm' then

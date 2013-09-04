@@ -60,7 +60,7 @@ function bossTwo.behaviors.arriving( self )
 		self.speed:reset()
 		self.shoottimer = Timer:new {
 			timelimit = 1.6,
-			works_on_gamelost = false,
+			works_on_gameLost = false,
 			time = math.random(),
 			running = true
 		}
@@ -454,13 +454,13 @@ function bossTwo:draw()
 		if t then t:draw(xt, yt) end
 	end
 	local bp = self.ballspos
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[1]))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.ballscoloreffects[1]))
 	graphics.circle(self.mode, xt - bp, yt - bp, self.size)
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[2]))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.ballscoloreffects[2]))
 	graphics.circle(self.mode, xt + bp, yt - bp, self.size)
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[3]))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.ballscoloreffects[3]))
 	graphics.circle(self.mode, xt - bp, yt + bp, self.size)
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.ballscoloreffects[4]))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.ballscoloreffects[4]))
 	graphics.circle(self.mode, xt + bp, yt + bp, self.size)
 	graphics.setPixelEffect()
 end
@@ -573,9 +573,9 @@ function bossTwo:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and (self:collides(psycho, 1) or self:collides(psycho, 2) or self:collides(psycho, 3) or self:collides(psycho, 4)) then
+	if psycho.canbehit and not DeathManager.gameLost and (self:collides(psycho, 1) or self:collides(psycho, 2) or self:collides(psycho, 3) or self:collides(psycho, 4)) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 end
 
@@ -587,7 +587,7 @@ end
 bossTwo.turret = Body:new {
 	size = 60,
 	health = bossTwo.maxhealth/4,
-	variance = math.random(ColorManager.cycleTime*1000)/1000,
+	variance = math.random(ColorManager.colorCycleTime*1000)/1000,
 	turretnum = 4,
 	ballscoloreffect = ColorManager.ColorManager.getColorEffect(175, 0, 0, 40),
 	coloreffect = ColorManager.noLSDEffect,
@@ -625,7 +625,7 @@ function bossTwo.turret:draw( xt, yt )
 	graphics.translate(x, y)
 	for _, c in pairs(self.circles) do c:draw() end
 	graphics.translate(-x,-y)
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + self.variance, 255, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.coloreffect))
 	graphics.circle(self.mode, x, y, self.size)
 end
 
@@ -660,9 +660,9 @@ function bossTwo.turret:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 	self.position:sub(self.bossTwopos)
 

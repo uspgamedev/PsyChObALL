@@ -45,8 +45,8 @@ function readConfig()
 	local config = readCleanTable "config"
 
 	global.ratio = tonumber(config.screenratio) or 1
-	soundmanager.volume = tonumber(config.volume) or 100
-	soundmanager.muted  = config.muted == 'true'
+	SoundManager.volume = tonumber(config.volume) or 100
+	SoundManager.muted  = config.muted == 'true'
 	config.version = config.version or version
 
 	if version ~= config.version then
@@ -59,8 +59,8 @@ end
 function writeConfig()
 	writeCleanTable({
 		screenratio = ratio,
-		volume =	 soundmanager.volume,
-		muted =	 soundmanager.muted,
+		volume =	 SoundManager.volume,
+		muted =	 SoundManager.muted,
 		version = version
 	}, 'config')
 end

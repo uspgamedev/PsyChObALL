@@ -26,7 +26,8 @@ function run()
 					position = Vector:new{0,0},
 					handleDelete = function ()
 						if not levelselected then
-							lives = lives + 2
+							psycho:addLife()
+							psycho:addLife()
 							reloadStory 'Level 5-1' 
 						else
 							Text:new{

@@ -22,7 +22,7 @@ function bossOne:__init()
 	self.speed:set(v, v)
 	self.currentBehavior = bossOne.behaviors.arriving
 	self.health = bossOne.maxhealth
-	self.variance = math.random((ColorManager.cycleTime-3)*1000)/1000 + 3
+	self.variance = math.random((ColorManager.colorCycleTime-3)*1000)/1000 + 3
 	bossOne.shot = enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
@@ -48,7 +48,7 @@ function bossOne.behaviors.arriving( self )
 		}
 		self.shoottimer = Timer:new {
 			timelimit = .5,
-			works_on_gamelost = false,
+			works_on_gameLost = false,
 			time = math.random(),
 			running = true
 		}
@@ -127,7 +127,7 @@ function bossOne.behaviors.toTheMiddle( self )
 			anglechange = base.toRadians(6),
 			times = 100,
 			angle = 0,
-			works_on_gamelost = false,
+			works_on_gameLost = false,
 			time = math.random()*2
 		}
 		function self.circleshoot.funcToCall(timer)
@@ -256,9 +256,9 @@ function bossOne:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not gamelost and self:collidesWith(psycho) then
+	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
-		lostgame()
+		DeathManager.manageDeath()
 	end
 end
 

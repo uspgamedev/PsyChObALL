@@ -112,7 +112,7 @@ for k,v in pairs(love) do
 end
 
 function defaultDraw( obj )
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time + obj.variance, obj.alphafollows and obj.alphafollows.var or obj.alpha, obj.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(obj.variance, obj.alphafollows and obj.alphafollows.var or obj.alpha, obj.coloreffect))
 	graphics.circle(obj.mode, obj.position[1], obj.position[2], obj.size)
 end
 
