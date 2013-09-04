@@ -49,17 +49,11 @@ function initBase()
 	paused = false
 	usingjoystick = joystick.isOpen(1)
 
-	gameLostinfo =  {
-		timetorestart = .5,
-		timeofdeath = nil,
-		isrestarting = false
-	}
-
 	paintables = {}
 	setmetatable(paintables, {
 		__index = function ( self, index )
 			for _, p in pairs(self) do
-				if p.name == index then return p end
+				if p.__type == index then return p end
 			end
 		end
 		})
@@ -73,9 +67,6 @@ function initBase()
 	ImageBody:paintOn(paintables)
 	Button:paintOn(paintables)
 	table.sort(paintables, function(a, b) return a.ord < b.ord end)
-
-	UI.self.paintables = {} --[[If you just use UI.paintables = {} it actually
-		sets _G.paintables because of base.globalize]]
 
 	bestscore, besttime, bestmult = 0, 0, 0
 	lastLevel = 'Level 1-1'
@@ -241,7 +232,7 @@ end
 
 function reloadStory( name )
 	if name and name > lastLevel then lastLevel = name levels.reloadPractice() end
-	for _, but in pairs(UI.paintables.levelselect) do
+	for _, but in pairs(paintables.levelselect) do
 		but:close()
 	end
 	if psycho.pseudoDied then
@@ -382,7 +373,6 @@ function love.update(dt)
 	isPaused = (paused or onMenu())
 
 	Timer.updatetimers(dt, timefactor, isPaused, DeathManager.gameLost)
-	UI.update(dt)
 	
 	dt = dt * timefactor
 	
@@ -396,7 +386,7 @@ end
 
 function updateBodies( dt )
 	for i, v in pairs(paintables) do
-		if not v.updateComponents then table.foreach(v, print) error() end
+		if not v.updateComponents then print('error on ' .. i) table.foreach(v, print) error() end
 		v:updateComponents(dt)
 	end
 end

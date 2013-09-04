@@ -334,8 +334,12 @@ function reloadPractice()
 		transl:add(width, 0)
 	end
 
-	local m = {noShader = true}
+	local m = {
+		updateComponents = Body.updateComponents,
+		drawComponents = Body.drawComponents,
+		bodies = ls
+	}
 	m.__index = m
 	setmetatable(ls, m)
-	UI.paintables.levelselect = ls
+	paintables.levelselect = ls
 end

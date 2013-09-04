@@ -66,7 +66,11 @@ function init()
 	}
 
 	paintables.menu = {playbutton, testingbutton, storybutton, controlsbutton, backbutton}
-	local m = {noShader = true}
+	local m = {
+		updateComponents = Body.updateComponents,
+		drawComponents = Body.drawComponents,
+		bodies = paintables.menu
+	}
 	m.__index = m
 	setmetatable(paintables.menu, m)
 
@@ -79,8 +83,8 @@ function selectLevel()
 	state = levelselect
 	closeMenu()
 	alphatimer:setAndGo(254, 1)
-	UI.paintables.levelselect[1].alphafollows:setAndGo(1, 254)
-	for _, but in pairs(UI.paintables.levelselect) do
+	paintables.levelselect[1].alphafollows:setAndGo(1, 254)
+	for _, but in pairs(paintables.levelselect) do
 		but:start()
 	end
 	global.levelselected = true
@@ -172,9 +176,9 @@ function keypressed( key )
 	end
 
 	if (DeathManager.gameLost or paused) and key == 'b' then
-		if global.paintables.psychoeffects then
-			for _, e in pairs(global.paintables.psychoeffects) do e:handleDelete() end
-			global.paintables.psychoeffects = nil
+		if paintables.psychoeffects then
+			for _, e in pairs(paintables.psychoeffects) do e:handleDelete() end
+			paintables.psychoeffects = nil
 		end
 
 		if state == story then
@@ -204,14 +208,6 @@ function keypressed( key )
 		toAchievMenu()
 	elseif state == achievmenu and key == 'q' then
 		toMainMenu()
-	end
-end
-
-function update(dt)
-	for _,v in pairs(paintables) do
-		for __,b in pairs(v) do
-			b:update(dt)
-		end
 	end
 end
 
@@ -273,6 +269,7 @@ function draw()
 
 	local color = ColorManager.getComposedColor()
 	graphics.setColor(color)
+	graphics.setFont(base.getFont(12))
 	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), width - 80, 10)
 	color[4] = 70 --alpha
 	graphics.setColor(color)
@@ -281,38 +278,7 @@ function draw()
 
 	--[[Drawing Death Screen]]
 	if DeathManager.gameLost and onGame() then
-		graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
-		if state == survival then
-			if cheats.wasdev then
-				graphics.setFont(getCoolFont(20))
-				graphics.print("Your scores didn't count, cheater!", 382, 215)
-			else
-				if besttime == gametime then
-					graphics.setFont(getFont(35))
-					graphics.print("You beat the best time!", 260, 100)
-				end	
-				if bestscore == score then
-					graphics.setFont(getFont(35))
-					graphics.print("You beat the best score!", 290, 140)
-				end
-				if bestmult == multiplier then
-					graphics.setFont(getFont(35))
-					graphics.print("You beat the best multiplier!", 320, 180)
-				end
-			end
-		end
-		graphics.setFont(getCoolFont(40))
-		graphics.print(DeathManager.getDeathText(), 270, 300)
-		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
-		graphics.setFont(getCoolFont(23))
-		if state == survival then graphics.print("Press R to retry", 280, 640)
-		else graphics.print("Press R to start over", 280, 640) end
-		graphics.setFont(getFont(30))
-		if state == survival then graphics.print("_____________", 280, 645)
-		else 	graphics.print("__________________", 280, 645) end
-		graphics.setFont(getCoolFont(18))
-		graphics.print("Press B", 580, 650)
-		graphics.print(pauseText(), 649, 650)
+		DeathManager.drawDeathScreen()
 	end
 	--[[End of Drawing Death Screen]]
 	color[4] = 255
@@ -419,16 +385,6 @@ function draw()
 		graphics.setFont(getFont(12))
 	end
 	--[[End of Drawing Pause Menu]]
-	
-	--drawing menu paintables
-	graphics.setPixelEffect(base.circleShader)
-	for _,v in pairs(paintables) do
-		if v.noShader then love.graphics.setPixelEffect() end
-		for k, p in pairs(v) do
-			p:draw()
-		end
-		if v.noShader then love.graphics.setPixelEffect(base.circleShader) end
-	end
 
 	if state == levelselect then
 

@@ -135,7 +135,7 @@ local updateHelper = function(self, dt)
 end
 local drawHelper = function ( self )
 	graphics.setColor(ColorManager.getComposedColor(self.variance))
-	graphics.rectangle(self.mode, self.position[1] - self.size, self.position[2] - self.size, self.size*2, self.size*2)
+	graphics.draw(base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, self.size*2)
 	--just draws a rectangle, no spriteBatch stuff
 end
 
@@ -220,3 +220,38 @@ function setDeathMessage( msg )
 end
 
 resetDeathText = setDeathMessage
+
+function drawDeathScreen()
+	graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
+		if state == survival then
+			if cheats.wasdev then
+				graphics.setFont(getCoolFont(20))
+				graphics.print("Your scores didn't count, cheater!", 382, 215)
+			else
+				if besttime == gametime then
+					graphics.setFont(getFont(35))
+					graphics.print("You beat the best time!", 260, 100)
+				end	
+				if bestscore == score then
+					graphics.setFont(getFont(35))
+					graphics.print("You beat the best score!", 290, 140)
+				end
+				if bestmult == multiplier then
+					graphics.setFont(getFont(35))
+					graphics.print("You beat the best multiplier!", 320, 180)
+				end
+			end
+		end
+		graphics.setFont(getCoolFont(40))
+		graphics.print(getDeathText(), 270, 300)
+		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
+		graphics.setFont(getCoolFont(23))
+		if state == survival then graphics.print("Press R to retry", 280, 640)
+		else graphics.print("Press R to start over", 280, 640) end
+		graphics.setFont(getFont(30))
+		if state == survival then graphics.print("_____________", 280, 645)
+		else 	graphics.print("__________________", 280, 645) end
+		graphics.setFont(getCoolFont(18))
+		graphics.print("Press B", 580, 650)
+		graphics.print(UI.pauseText(), 649, 650)
+end
