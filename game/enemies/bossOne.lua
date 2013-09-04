@@ -9,7 +9,7 @@ bossOne = CircleEffect:new {
 	changesimage = true,
 	spriteBatch = false,
 	sizeGrowth = 0,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	maxsize = width,
 	ord = 7,
 	__type = 'bossOne'
@@ -23,13 +23,13 @@ function bossOne:__init()
 	self.currentBehavior = bossOne.behaviors.arriving
 	self.health = bossOne.maxhealth
 	self.variance = math.random((ColorManager.colorCycleTime-3)*1000)/1000 + 3
-	bossOne.shot = enemies.simpleball
+	bossOne.shot = Enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	restrictToScreenThreshold = 10
 	restrictToScreenSpeed = nil
-	--bossOne.turret.bodies = enemies.bossOne.bodies
+	--bossOne.turret.bodies = Enemies.bossOne.bodies
 end
 
 bossOne.behaviors = {}
@@ -54,11 +54,11 @@ function bossOne.behaviors.arriving( self )
 		}
 
 		function self.shoottimer.funcToCall()
-			local e = (math.random() > .5 and enemies.simpleball or enemies.multiball):new{}
+			local e = (math.random() > .5 and Enemies.simpleball or Enemies.multiball):new{}
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*base.toRadians(15))
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*Base.toRadians(15))
 			e:register()
 		end
 		self.currentBehavior = bossOne.behaviors.first
@@ -79,11 +79,11 @@ function bossOne.behaviors.first( self )
 		self.speedchange = nil
 		self.health = bossOne.maxhealth * .75
 		function self.shoottimer.funcToCall()
-			local e = (enemies.multiball):new{}
+			local e = (Enemies.multiball):new{}
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*base.toRadians(15))
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*Base.toRadians(15))
 			e:register()
 		end
 		self.colors[1]:setAndGo(nil, 0, 122)
@@ -114,24 +114,24 @@ function bossOne.behaviors.toTheMiddle( self )
 		self.currentBehavior = bossOne.behaviors.third
 		self.shoottimer.timelimit = 8
 		self.shoottimer.time = 5
-		bossOne.shot = enemies.simpleball
+		bossOne.shot = Enemies.simpleball
 		function self.shoottimer.funcToCall()
 			local side = math.random() < .5 and -1 or 1
-			self.circleshoot.angle = math.atan2(psycho.x - self.x, psycho.y - self.y)  + side*base.toRadians(30)
+			self.circleshoot.angle = math.atan2(psycho.x - self.x, psycho.y - self.y)  + side*Base.toRadians(30)
 			self.circleshoot.anglechange = -math.abs(self.circleshoot.anglechange)*side
 			self.circleshoot.timescount = 0
 			self.circleshoot:start(self.circleshoot.timelimit)
 		end
 		self.circleshoot = Timer:new {
 			timelimit = .07,
-			anglechange = base.toRadians(6),
+			anglechange = Base.toRadians(6),
 			times = 100,
 			angle = 0,
 			works_on_gameLost = false,
 			time = math.random()*2
 		}
 		function self.circleshoot.funcToCall(timer)
-			local e = enemies.multiball:new{}
+			local e = Enemies.multiball:new{}
 			e.position = self.position + {math.sin(timer.angle)*(bossOne.size-e.size), math.cos(timer.angle)*(bossOne.size-e.size)}
 			e.speed:set(
 				bossOne.basespeed * math.sin(timer.angle),
@@ -157,9 +157,9 @@ function bossOne.behaviors.third( self )
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.circleshoot:remove()
-		self.circleshoot.anglechange = base.toRadians(15)
+		self.circleshoot.anglechange = Base.toRadians(15)
 		self.circleshoot.times = 360/15
-		bossOne.shot = enemies.simpleball
+		bossOne.shot = Enemies.simpleball
 		--change color or whatever
 		self.coloreffect = ColorManager.sinCityEffect
 		Timer:new {
@@ -187,19 +187,19 @@ function bossOne:restrictToScreen()
 	if self.x > width - th - self.size then
 		self.x = width - th - self.size
 		self.speed:set(0, self.y > height/2 and -sp or sp)
-		return -1, base.sign(self.Vy)
+		return -1, Base.sign(self.Vy)
 	elseif self.x < self.size + th then
 		self.x = self.size + th
 		self.speed:set(0, self.y > height/2 and -sp or sp)
-		return 1, base.sign(self.Vy)
+		return 1, Base.sign(self.Vy)
 	elseif self.y > height - th - self.size then
 		self.y = height - th - self.size
 		self.speed:set(self.x > width/2 and -sp or sp, 0)
-		return base.sign(self.Vx), -1
+		return Base.sign(self.Vx), -1
 	elseif self.y < self.size + th then
 		self.y = self.size + th
 		self.speed:set(self.x > width/2 and -sp or sp, 0)
-		return base.sign(self.Vx), 1
+		return Base.sign(self.Vx), 1
 	end
 end
 
@@ -262,7 +262,7 @@ function bossOne:update( dt )
 	end
 end
 
-bossOne.draw = base.defaultDraw
+bossOne.draw = Base.defaultDraw
 
 function bossOne:handleDelete()
 	self.size = 1

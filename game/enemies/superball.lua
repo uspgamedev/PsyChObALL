@@ -4,7 +4,7 @@ superball = Body:new {
 	life = 60,
 	timeout = 40,
 	collides = true,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	spriteBatch = false,
 	ord = 6,
 	__type = 'superball'
@@ -35,7 +35,7 @@ function superball:__init()
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-		e.speed = pos:sub(self.position):normalize():mult(1.5 * v, 1.5 * v):rotate((math.random()-.5)*base.toRadians(30))
+		e.speed = pos:sub(self.position):normalize():mult(1.5 * v, 1.5 * v):rotate((math.random()-.5)*Base.toRadians(30))
 		e:register(self.extra and unpack(self.extra) or nil)
 	end
 
@@ -47,8 +47,8 @@ function superball:__init()
 		function self.speedtimer.funcToCall(timer)
 			timer.timelimit = math.random()*3 + 1
 			local vx, vy = math.random(-50, 50), math.random(-50, 50)
-			vx = vx + v*base.sign(vx)
-			vy = vy + v*base.sign(vy)
+			vx = vx + v*Base.sign(vx)
+			vy = vy + v*Base.sign(vy)
 			self.speed:set(vx, vy)
 		end
 	end
@@ -73,9 +73,9 @@ function superball:__init()
 end
 
 function superball:onInit( shot, exitpos, timeout, ... )
-	self.shot = shot and enemies[shot] or state == survival and Enemy or enemies.simpleball
+	self.shot = shot and Enemies[shot] or state == survival and Enemy or Enemies.simpleball
 	self.timeout = timeout
-	self.exitposition = self.exitposition or base.clone(exitpos) or base.clone(self.position)
+	self.exitposition = self.exitposition or Base.clone(exitpos) or Base.clone(self.position)
 	self.extra = select('#', ...) > 0 and {...} or nil
 end
 
@@ -90,7 +90,7 @@ function superball:start( shot )
 	self.lifeCircle:register()
 end
 
-superball.draw = base.defaultDraw
+superball.draw = Base.defaultDraw
 
 function superball:update(dt)
 	Body.update(self, dt)
@@ -103,7 +103,7 @@ function superball:update(dt)
 	end
 
 	for _, v in pairs(Shot.bodies) do
-		if base.collides(v.position, v.size, self.position, self.lifeCircle.size) then
+		if Base.collides(v.position, v.size, self.position, self.lifeCircle.size) then
 			self:manageShotCollision(v)
 			break
 		end

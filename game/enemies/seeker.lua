@@ -4,7 +4,7 @@ seeker = Body:new {
 	seek = true,
 	health = 10,
 	spriteBatch = false,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	__type = 'seeker'
 }
 
@@ -33,7 +33,7 @@ function seeker:start()
 	}
 end
 
-seeker.draw = base.defaultDraw
+seeker.draw = Base.defaultDraw
 
 local auxVec = Vector:new{}
 function seeker:update( dt )
@@ -105,7 +105,7 @@ end
 
 function seeker:onInit( timeout, exitpos )
 	self.timeout = timeout
-	self.exitposition = base.clone(exitpos)
+	self.exitposition = Base.clone(exitpos)
 end
 
 function seeker:handleDelete()

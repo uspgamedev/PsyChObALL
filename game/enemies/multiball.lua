@@ -3,8 +3,8 @@ multiball = Body:new {
 	divideN = 2,
 	args = {},
 	coloreffect = ColorManager.ColorManager.getColorEffect(255, 0, 0),
-	shader = base.circleShader,
-	spriteBatch = graphics.newSpriteBatch(base.pixel, 250, 'dynamic'),
+	shader = Base.circleShader,
+	spriteBatch = graphics.newSpriteBatch(Base.pixel, 250, 'dynamic'),
 	spriteMaxNum = 250,
 	spriteSafety = 10,
 	__type = 'multiball'
@@ -49,11 +49,11 @@ function multiball:handleDelete()
 	addscore(50)
 	local speed = self.speed:length()
 	for i = 1, self.divideN do
-		local e = (self.divideType or enemies.simpleball):new(lux.object.clone(self.args))
+		local e = (self.divideType or Enemies.simpleball):new(lux.object.clone(self.args))
 		e.size = self.size - 6
 		e.position:set(self.position):add(math.random(self.size), math.random(self.size))
 		e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
-		if math.abs(e.Vy) + math.abs(e.Vx) then e.Vy = base.sign(self.Vy) * math.random(3 * v / 4, v) end
+		if math.abs(e.Vy) + math.abs(e.Vx) then e.Vy = Base.sign(self.Vy) * math.random(3 * v / 4, v) end
 		e:register()
 	end
 end

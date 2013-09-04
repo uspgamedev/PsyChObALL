@@ -47,9 +47,9 @@ function bossTwo:__init()
 	self.position:set(-200, -200)
 	self.speed:set(width/2, height/2):sub(self.position):normalize():mult(1.5*self.basespeed, 1.5*self.basespeed)
 	self.prevdist = self.position:distsqr(width/2, height/2)
-	bossTwo.shot = enemies.simpleball
+	bossTwo.shot = Enemies.simpleball
 	function bossTwo:getTurretShot()
-		return enemies.simpleball:new{}
+		return Enemies.simpleball:new{}
 	end
 end
 
@@ -116,7 +116,7 @@ function bossTwo.behaviors.first( self )
 		restrictToScreenThreshold = 20
 		restrictToScreenSpeed = v
 		self.currentBehavior = bossTwo.behaviors.second
-		self.getShot = function () return enemies.multiball:new{} end
+		self.getShot = function () return Enemies.multiball:new{} end
 		bossTwo.getTurretShot = self.getShot
 		for i = 1, 4 do
 			self.healths[i] = bossTwo.maxhealth * .75
@@ -149,7 +149,7 @@ function bossTwo.behaviors.second( self )
 		end
 		self.vulnerable = false
 		self.currentBehavior = bossTwo.behaviors.gathering
-		self.getShot = function() return enemies.glitchball:new{} end
+		self.getShot = function() return Enemies.glitchball:new{} end
 		bossTwo.getTurretShot = self.getShot
 		self.sizeGrowth = 30
 		self.ballspeed = 10
@@ -392,7 +392,7 @@ function bossTwo.behaviors.imploding( self )
 				for _, tur in pairs(bossTwo.turrets) do tur.shoottimer.timelimit = tur.shoottimer.timelimit/1.5 end
 			end
 		end
-		t.update = base.doNothing
+		t.update = Base.doNothing
 	end
 	self.currentBehavior = bossTwo.behaviors.turretprotection
 end
@@ -432,7 +432,7 @@ function bossTwo.behaviors.turretprotection( self )
 	end}
 	
 	self.healths[1] = 100
-	self.currentBehavior = base.doNothing
+	self.currentBehavior = Base.doNothing
 end
 
 function bossTwo.behaviors.final( self )
@@ -447,7 +447,7 @@ function bossTwo.behaviors.final( self )
 end
 
 function bossTwo:draw()
-	graphics.setPixelEffect(base.circleShader)
+	graphics.setPixelEffect(Base.circleShader)
 	local xt, yt = self.position:unpack()
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
@@ -470,7 +470,7 @@ function bossTwo:collides( v, n )
 end
 
 function bossTwo:getShot()
-	return (math.random() < .5 and enemies.simpleball or enemies.multiball):new{}
+	return (math.random() < .5 and Enemies.simpleball or Enemies.multiball):new{}
 end
 
 function bossTwo:update( dt )

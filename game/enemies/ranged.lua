@@ -7,7 +7,7 @@ ranged = Body:new {
 	timeout = 10,
 	timeToShoot = 1,
 	spriteBatch = false,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	ord = 6,
 	__type = 'ranged'
 }
@@ -20,7 +20,7 @@ function ranged:__init()
 	self.speed:set(self.target):sub(self.position):normalize():mult(1.3*v, 1.3*v)
 	self.prevdist = self.position:distsqr(self.target)
 	self.onLocation = false
-	self.anglechange = self.anglechange or base.toRadians(360/self.divideN)
+	self.anglechange = self.anglechange or Base.toRadians(360/self.divideN)
 	self.shotcircle = CircleEffect:new{
 		coloreffect = self.shot.coloreffect,
 		size = self.size + 4,
@@ -47,11 +47,11 @@ function ranged:onInit( num, target, pos, exitpos, shot, initialcolor, angle, ti
 	self.colorvars = {VarTimer:new{var = self.basecolor[1]}, VarTimer:new{var = self.basecolor[2]}, VarTimer:new{var = self.basecolor[3]}}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colorvars))
 	self.divideN = num or self.divideN
-	self.shot = shot and enemies[shot] or enemies.simpleball
+	self.shot = shot and Enemies[shot] or Enemies.simpleball
 	if not pos then Enemy.__init(self)
-	else self.position = base.clone(pos) end
-	self.exitposition = base.clone(exitpos) or self.position:clone()
-	self.target = base.clone(target)
+	else self.position = Base.clone(pos) end
+	self.exitposition = Base.clone(exitpos) or self.position:clone()
+	self.target = Base.clone(target)
 end
 
 function ranged:start()
@@ -59,7 +59,7 @@ function ranged:start()
 	CircleEffect.bodies[self] = self.shotcircle
 end
 
-ranged.draw = base.defaultDraw
+ranged.draw = Base.defaultDraw
 
 function ranged:update( dt )
 	Body.update(self, dt)
@@ -107,7 +107,7 @@ function ranged:manageShotCollision( shot )
 end
 
 function ranged:shoot()
-	local ang = self.angle + base.toRadians(180)
+	local ang = self.angle + Base.toRadians(180)
 	local speed = self.setspeed or 1.5*v
 	for i = 1, self.divideN do
 		local e = self.shot:new{}
@@ -126,7 +126,7 @@ function ranged:handleDelete()
 	if self.diereason == "shot" then
 		addscore(25*self.divideN)
 		self.divideN = self.divideN + 3	
-		self.anglechange = base.toRadians(360/self.divideN)
+		self.anglechange = Base.toRadians(360/self.divideN)
 		self:shoot()
 	end
 	if self.shoottimer then self.shoottimer:remove() end

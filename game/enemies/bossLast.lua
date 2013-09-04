@@ -22,7 +22,7 @@ function bossLast:draw()
 	graphics.rotate(self.angle.var)
 	graphics.rectangle(self.mode, -self.width/2, -self.height/2, self.width, self.height)
 	graphics.pop()
-	graphics.setPixelEffect(base.circleShader)
+	graphics.setPixelEffect(Base.circleShader)
 end
 
 function bossLast:update( dt )
@@ -57,7 +57,7 @@ function bossLast:update( dt )
 end
 
 function bossLast.getShot()
-	return enemies.multiball:new{}
+	return Enemies.multiball:new{}
 end
 
 function bossLast:__init()
@@ -71,8 +71,8 @@ function bossLast:__init()
 
 	local components = {{},{},{},{}}
 	local updateFunc =  function (e, dt)
-			enemies.grayball.update(e, dt)
-			if not e.inBox and base.collides(e, self) then e.inBox = true end
+			Enemies.grayball.update(e, dt)
+			if not e.inBox and Base.collides(e, self) then e.inBox = true end
 			if not e.inBox then return end
 			if e.x  + e.size > width/2 + 120 then e.speed:set(-math.abs(e.Vx))
 			elseif e.x - e.size < width/2 - 120 then e.speed:set( math.abs(e.Vx)) end
@@ -82,18 +82,18 @@ function bossLast:__init()
 		end
 	local ballsalpha = VarTimer:new{var = 255}
 	for i = 1, 160 do
-		local e = enemies.grayball:new{}
-		e.coloreffect = base.doNothing
+		local e = Enemies.grayball:new{}
+		e.coloreffect = Base.doNothing
 		e.variance = 5
 		e.alphafollows = ballsalpha
 		e.update = updateFunc
 		e:register()
 		components[math.floor((i-1)/40) + 1][((i-1) % 40) + 1] = e
 	end
-	local f = formations.around:new{
+	local f = Formations.around:new{
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(20),
+		anglechange = Base.toRadians(20),
 		distance = 80,
 		adapt = false,
 		speed = 1.1*v,
@@ -161,5 +161,5 @@ function bossLast:collidesWith( pos, size ) --rectangle with circle
 		math.max(math.min(auxVec[1], self.position[1] + self.width/2), self.position[1] - self.width/2),
 		math.max(math.min(auxVec[2], self.position[2] + self.height/2), self.position[2] - self.height/2)
 	)
-	return base.collides(auxVec, 0, auxVec2, size)
+	return Base.collides(auxVec, 0, auxVec2, size)
 end

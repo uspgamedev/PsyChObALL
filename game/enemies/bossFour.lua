@@ -8,7 +8,7 @@ bossFour = Body:new{
 	maxhealth = 60,
 	vulnerable = false,
 	spriteBatch = false,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	linewidth = 1,
 	ord = 6,
 	__type = 'bossFour'
@@ -29,23 +29,23 @@ function bossFour.behaviors.arriving( self )
 			self:prepare(e)
 			components[math.floor((i-1)/12) + 1][((i-1) % 12) + 1] = e
 		end
-		local f = formations.around:new{
+		local f = Formations.around:new{
 			angle = 0,
 			target = Vector:new{width/2, height/2},
-			anglechange = base.toRadians(30),
+			anglechange = Base.toRadians(30),
 			distance = 0,
 			adapt = false,
 			speed = 1.1*v,
 			shootattarget = true
 		}
 		f:applyOn(components[1])
-		f.angle = base.toRadians(7)
+		f.angle = Base.toRadians(7)
 		f.radius = f.radius + width/3
 		f:applyOn(components[2])
-		f.angle = base.toRadians(14)
+		f.angle = Base.toRadians(14)
 		f.radius = f.radius + width/3
 		f:applyOn(components[3])
-		f.angle = base.toRadians(21)
+		f.angle = Base.toRadians(21)
 		f.radius = f.radius + width/3
 		f:applyOn(components[4])
 
@@ -107,7 +107,7 @@ function bossFour.behaviors.tocenter( self )
 	local curdist = self.position:distsqr(width/2, height/2)
 	if curdist < 1 or curdist > self.prevdist then
 		self.speed:reset()
-		self.currentBehavior = base.doNothing
+		self.currentBehavior = Base.doNothing
 		
 		self.dontattack = true
 		Timer:new{
@@ -116,7 +116,7 @@ function bossFour.behaviors.tocenter( self )
 			running = true,
 			funcToCall = function()
 				self.cage = {}
-				local angchange = base.toRadians(360/30)
+				local angchange = Base.toRadians(360/30)
 				local pos = Vector:new{0, 200}
 				local possible = {}
 				for _, b in ipairs(self.pool) do if b.inBox then table.insert(possible, b) end end
@@ -241,7 +241,7 @@ function bossFour.behaviors.gathering ( self )
 		self.currentBehavior = bossFour.behaviors.final
 		self.pool = nil
 		self.form.radius = 3
-		self.getShot = function() return (math.random() < .5 and enemies.monoguiaball or enemies.grayball):new{} end
+		self.getShot = function() return (math.random() < .5 and Enemies.monoguiaball or Enemies.grayball):new{} end
 		self.colors[1]:setAndGo(nil, .59*225, 100)
 		self.colors[2]:setAndGo(nil, .44*255, 100)
 		self.colors[3]:setAndGo(nil, .9*255, 100)
@@ -256,7 +256,7 @@ function bossFour.behaviors.gathering ( self )
 			funcToCall = function ()
 				self.form.angle = math.random()*math.pi
 				local n = math.random(14, 22)
-				self.form.anglechange = base.toRadians(360/n)
+				self.form.anglechange = Base.toRadians(360/n)
 				local es = {}
 				for i = 1, n do
 					local e = self:getShot()
@@ -370,10 +370,10 @@ end
 function bossFour:draw()
 	if self.pool then
 		for k, p in pairs(self.pool) do
-			base.defaultDraw(p)
+			Base.defaultDraw(p)
 		end
 	end
-	base.defaultDraw(self)
+	Base.defaultDraw(self)
 end
 
 function bossFour:prepare( enemy )
@@ -385,7 +385,7 @@ function bossFour:prepare( enemy )
 end
 
 function bossFour:getShot()
-	return (math.random() < .4 and enemies.monoguiaball or enemies.multiball):new{}
+	return (math.random() < .4 and Enemies.monoguiaball or Enemies.multiball):new{}
 end
 
 function bossFour:grow( n )
@@ -422,9 +422,9 @@ function bossFour:__init()
 			end
 			e:__super().update(e, dt)
 			if e.ignoreBox then return end
-			if not e.inBox and base.collides(e, self) then 
+			if not e.inBox and Base.collides(e, self) then 
 				e.inBox = true
-				e.speed:set((math.random()*v*.3 + v*1.4)*base.sign(math.random()-.5), (math.random()*v*.3 + v*1.4)*base.sign(math.random()-.5))
+				e.speed:set((math.random()*v*.3 + v*1.4)*Base.sign(math.random()-.5), (math.random()*v*.3 + v*1.4)*Base.sign(math.random()-.5))
 				e.positionfollows = nil
 			end
 			if not e.inBox then return end

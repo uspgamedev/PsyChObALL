@@ -2,7 +2,7 @@ snake = Body:new {
 	size = 17,
 	segmentsN = 5,
 	spriteBatch = false,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	vulnerable = true,
 	__type = 'snake'
 }
@@ -32,13 +32,13 @@ function snake:update( dt )
 		s.position:add(auxVec:set(s.speed):mult(dt))
 		
 		for _, v in pairs(Shot.bodies) do
-			if base.collides(s.position, self.size, v.position, v.size) then
+			if Base.collides(s.position, self.size, v.position, v.size) then
 				self:manageShotCollision(i, v)
 				break
 			end
 		end
 
-		if psycho.canbehit and not DeathManager.gameLost and base.collides(s.position, self.size, psycho.position, psycho.size) then
+		if psycho.canbehit and not DeathManager.gameLost and Base.collides(s.position, self.size, psycho.position, psycho.size) then
 			psycho.diereason = "shot"
 			DeathManager.manageDeath()
 		end
@@ -96,12 +96,12 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 	self.timeout = timeout or 1.5
 	self.segmentsN = n
 	self.segments = {}
-	self.path = base.clone {p2, ...}
-	self.position = Vector:new(base.clone(p1))
+	self.path = Base.clone {p2, ...}
+	self.position = Vector:new(Base.clone(p1))
 	self.speedvalue = spd or v
 	self.leadchange = VarTimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
-	local speed = Vector:new(base.clone(p2)):sub(self.position):normalize()
+	local speed = Vector:new(Base.clone(p2)):sub(self.position):normalize()
 	self.considersize = self.considersize or self.size
 	local diff = speed * (self.considersize*2)
 	speed:mult(spd or v*.8, spd or v*.8)
