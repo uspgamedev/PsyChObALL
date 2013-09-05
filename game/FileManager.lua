@@ -1,4 +1,4 @@
-module('FileManager', base.globalize)
+module('FileManager', Base.globalize)
 
 function init()
 	-- removing old stuff
@@ -19,7 +19,7 @@ end
 
 function writeStats()
 	-- CHANGE THIS
-	if cheats.wasdev then return end
+	if Cheats.wasdev then return end
 	besttime  = math.max(besttime, gametime)
 	bestmult  = math.max(bestmult, multiplier)
 	bestscore = math.max(bestscore, score)

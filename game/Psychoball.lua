@@ -111,7 +111,7 @@ end
 function Psychoball:draw()
 	if self.pseudoDied or DeathManager.gameLost then return end
 	self.size = self.size + psychoSizeDiff
-	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows and self.alphaFollows.var or self.alpha, self.coloreffect))
 	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
 	self.size = self.size - psychoSizeDiff
 end

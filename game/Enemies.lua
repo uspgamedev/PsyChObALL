@@ -1,4 +1,4 @@
-module('enemies', package.seeall)
+module('Enemies', package.seeall)
 
 bodies = {}
 

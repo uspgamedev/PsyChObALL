@@ -6,7 +6,7 @@ CircleEffect = Body:new {
 	changesimage = false,
 	linewidth = 4,
 	spriteBatch = false,
-	shader = base.circleShader,
+	shader = Base.circleShader,
 	ord = 3,
 	bodies = {}
 }
@@ -60,7 +60,7 @@ end
 
 function CircleEffect:draw()
 	graphics.setLine(self.linewidth)
-	base.defaultDraw(self)
+	Base.defaultDraw(self)
 end
 
 function CircleEffect:update(dt)

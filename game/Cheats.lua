@@ -1,4 +1,4 @@
-module('cheats', base.globalize)
+module('Cheats', Base.globalize)
 
 devmode = false
 invisible = false

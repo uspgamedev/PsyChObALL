@@ -14,14 +14,14 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
-		angle = base.toRadians(-45),
+		angle = Base.toRadians(-45),
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(90),
+		anglechange = Base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -52,7 +52,7 @@ function run()
 	warnEnemies = true
 	warnEnemiesTime = 4
 	wait(5)
-	enemy('simpleball', 20, formation { type = 'around', anglechange = base.toRadians(360/20), adapt = false, radius = 600, shootatplayer = true})
+	enemy('simpleball', 20, formation { type = 'around', anglechange = Base.toRadians(360/20), adapt = false, radius = 600, shootatplayer = true})
 	warnEnemiesTime = 0.7
 	wait(4)
 	horizontalr.speed = v
@@ -63,13 +63,13 @@ function run()
 	wait(3.0)
 	enemy(divide1, 4, f2)
 	f2.speed = 1.2*v
-	f2.angle = base.toRadians (0)
+	f2.angle = Base.toRadians (0)
 	enemy(divide1, 4, f2)
-	f2.angle = base.toRadians (135/2)
+	f2.angle = Base.toRadians (135/2)
 	enemy(divide1, 4, f2)
 	wait(.5)
-	f2.angle = base.toRadians (360/12)
-	f2.anglechange = base.toRadians (360/12)
+	f2.angle = Base.toRadians (360/12)
+	f2.anglechange = Base.toRadians (360/12)
 	enemy(divide1, 12, f2)
 	enemy(divide1, 8, verticalt)
 	enemy(divide1, 8, verticalb)
@@ -83,9 +83,9 @@ function run()
 	enemy('simpleball', 21, vform)
 	warnEnemiesTime = 0.7
 	wait(4)
-	enemy({'simpleball', 'multiball'}, 20, formation { type = 'around', anglechange = base.toRadians(360/20), adapt = false, radius = 600, shootatplayer = true})
+	enemy({'simpleball', 'multiball'}, 20, formation { type = 'around', anglechange = Base.toRadians(360/20), adapt = false, radius = 600, shootatplayer = true})
 	wait(4.0)
-	f1.anglechange = base.toRadians(360/15)
+	f1.anglechange = Base.toRadians(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600
@@ -101,7 +101,7 @@ function run()
 	enemy(simple, 20, f1)
 	wait(5)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 1-3' end
 		else
 			Text:new{

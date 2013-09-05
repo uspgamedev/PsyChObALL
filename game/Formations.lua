@@ -1,6 +1,6 @@
 require 'lux.object'
 
-module ('formations', package.seeall)
+module ('Formations', package.seeall)
 
 formation = lux.object.new {
 	name = 'empty',
@@ -198,7 +198,7 @@ end
 around = formation:new {
 	name = 'around',
 	angle = 0,
-	anglechange = base.toRadians(60),
+	anglechange = Base.toRadians(60),
 	radius = width,
 	center = Vector:new{width/2, height/2},
 	adapt = true,
@@ -213,7 +213,7 @@ function around:applyOn( enemies )
 	local d = 1 + self.distance
 	for i = 1, n do
 		enemies[i].position:set(math.sin(angle)*(self.radius + d) + self.center.x, math.cos(angle)*(self.radius + d) + self.center.y)
-		if self.adapt then base.restrainInScreen(enemies[i].position) end
+		if self.adapt then Base.restrainInScreen(enemies[i].position) end
 		angle = angle - self.anglechange
 		d = d + self.distance
 

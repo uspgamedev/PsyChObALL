@@ -1,8 +1,6 @@
-module('levels', package.seeall)
+module('Levels', package.seeall)
 
-levels = {
-
-}
+levels = {} -- list of all levels
 currentLevel = nil
 
 function pushEnemies(timer, enemies)
@@ -35,14 +33,14 @@ function levelEnv.enemy( name, n, format, ... )
 	cp.onInitInfo = initInfo
 
 	if type(name) == 'string' then
-		local enemy = enemies[name]
+		local enemy = Enemies[name]
 		for i = 1, n do
-			enemylist[i] = enemy:new(base.clone(cp))
+			enemylist[i] = enemy:new(Base.clone(cp))
 		end
 	else
 		local k, s = 1, #name
 		for i = 1, n do
-			enemylist[i] = enemies[name[k]]:new(base.clone(cp))
+			enemylist[i] = Enemies[name[k]]:new(Base.clone(cp))
 			k = k + 1
 			if k > s then k = 1 end
 		end
@@ -95,7 +93,7 @@ end
 function levelEnv.formation( data )
 	local t = data.type or 'empty'
 	data.type = nil
-	return formations[t]:new(data)
+	return Formations[t]:new(data)
 end
 
 function levelEnv.registerTimer( data )
@@ -129,7 +127,7 @@ function runLevel( name )
 	if changetitle then
 		local t = Text:new {
 			text = currentLevel.title,
-			alphafollows = VarTimer:new{ var = 254 },
+			alphaFollows = VarTimer:new{ var = 254 },
 			font = getCoolFont(100),
 			position = Vector:new{50, 200},
 			limit = width - 100,
@@ -144,7 +142,7 @@ function runLevel( name )
 			funcToCall = function ( timer )
 				if timer.first then t.delete = true timer:remove() return end
 				timer.first = true
-				t.alphafollows:setAndGo(254, 1, 100)
+				t.alphaFollows:setAndGo(254, 1, 100)
 			end
 		}
 	end 
@@ -175,7 +173,7 @@ local loaded = false
 function loadAll()
 	if loaded then return end
 	loaded = true
-	base.clearTable(levels)
+	Base.clearTable(levels)
 	local files = filesystem.enumerate('levels')
 	for _, file in ipairs(files) do
 		local lev = assert(filesystem.load('levels/' .. file))
@@ -185,161 +183,4 @@ function loadAll()
 		currentLevel.run = nil
 	end
 	currentLevel = nil
-end
-
-function reloadPractice()
-	local ls = {}
-	local levelselectalpha = VarTimer:new{ speed = 300, pausable = false }
-	local translate = VarTimer:new{ var = 0, speed = width*2, pausable = false }
-
-	local b = {}
-	b[1] = Button:new {size = 100, position = Vector:new{156, height/2 - 100}, fontsize = 20,
-		menu = levelselect, pressed = function(self)
-				levelselectalpha:setAndGo(255, 0)
-				self.visible = falsen
-				neweffects(self, 40)
-				reloadStory(self.levelname)
-			end,
-		draw = function(self)
-			if not self.visible or levelselectalpha.var == 0 then return end
-			graphics.translate(-translate.var, 0)
-			Button.draw(self)
-			if self.hoverring and self.hoverring.size > 2 then
-				graphics.setPixelEffect(base.circleShader)
-				CircleEffect.draw(self.hoverring) 
-				graphics.setPixelEffect()
-			end
-			graphics.translate(translate.var, 0)
-		end,
-		isClicked = function ( self, x, y )
-			return Button.isClicked(self, x + translate.var, y )
-		end,
-		update = function(self, dt)
-			if self.hoverring.size > self.size then
-				self.hoverring.size = self.size
-				self.hoverring.sizeGrowth = 0
-			end
-			if self.menu ~= state then
-				if self.onHover then 
-					self.onHover = false
-					self:hover(false)
-				end
-				return
-			end
-			if self.onHover ~= ((mouseX + translate.var - self.x)^2 + (mouseY - self.y)^2 < self.size^2) then
-				self.onHover = not self.onHover
-				self:hover(self.onHover)
-			end
-		end} 
-	b[2] = b[1]:clone()
-	b[2].position:set(412, nil)
-	b[3] = b[1]:clone()
-	b[3].position:set(668, nil)
-	b[4] = b[1]:clone()
-	b[4].position:set(924, nil)
-
-	local back = Button:new{
-		size = 50,
-		position = Vector:new{width - 160, 580},
-		text = "back",
-		fontsize = 20,
-		menu = levelselect,
-		alphafollows = levelselectalpha,
-		draw = function(self)
-			Button.draw(self)
-			graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphafollows.var, self.coloreffect))
-			graphics.setFont(getCoolFont(70))
-			graphics.printf("Practice", 0, 30, width, 'center')
-		end,
-		pressed = function(self)
-			for _, but in pairs(UI.paintables.levelselect) do
-				but:close()
-			end
-			self.visible = false
-			neweffects(self, 26)
-			self.alphafollows:setAndGo(254, 1, 300)
-			UI.restartMenu()
-		end
-	}
-	table.insert(ls, back)
-
-	local nextB = Button:new{
-		size = 50,
-		position = Vector:new{width/2 + 100, 400},
-		text = ">",
-		fontsize = 55,
-		draw = b[1].draw,
-		isClicked = b[1].isClicked,
-		update = b[1].update,
-		menu = levelselect,
-		pressed = function(self)
-			translate:setAndGo(nil, translate.var + width)
-		end
-	}
-	local prevB = Button:new{
-		size = 50,
-		position = Vector:new{width/2 - 100, 400},
-		text = "<",
-		fontsize = 55,
-		draw = b[1].draw,
-		isClicked = b[1].isClicked,
-		update = b[1].update,
-		menu = levelselect,
-		pressed = function(self)
-			translate:setAndGo(nil, translate.var - width)
-		end
-	}
-	local fixeff  = function(self)
-		self.effectsBurst.funcToCall = function()
-			self.x = self.x - translate.var
-			neweffects(self, 2)
-			self.x = self.x + translate.var
-		end
-	end
-
-	local transl = Vector:new{0, 0}
-	local levelN = 5
-	for i = 1, levelN do
-		if 'Level ' .. i > lastLevel then break end
-		for j = 1, 4 do
-			if j ~= 4 or i ~= 1 then
-				local levelname = 'Level ' .. i .. '-' .. j
-				if lastLevel < levelname then break end
-				local but = b[j]:clone()
-				but.levelname = levelname
-				but.position:add(transl)
-				but:setText(but.levelname)
-				but.alphafollows = levelselectalpha
-				fixeff(but)
-				table.insert(ls, but)
-			end
-		end
-		if i > 1 then
-			but = prevB:clone()
-			but.position:add(transl)
-			but:setText()
-			but.alphafollows = levelselectalpha
-			fixeff(but)
-			table.insert(ls, but)
-		end
-		if i < levelN and 'Level ' .. (i+1) <= lastLevel then
-			but = nextB:clone()
-			but.position:add(transl)
-			but:setText()
-			but.alphafollows = levelselectalpha
-			fixeff(but)
-			table.insert(ls, but)
-		end
-
-		transl:add(width, 0)
-	end
-
-	local m = {
-		updateComponents = Body.updateComponents,
-		drawComponents = Body.drawComponents,
-		bodies = ls
-	}
-	m.__index = m
-	setmetatable(ls, m)
-	paintables.levelselect = ls
 end

@@ -134,7 +134,7 @@ function run()
 	enemy(snake, 1, {size = 5}, 200, 600, 0.5, {30, -30}, unpack(t))
 	wait(30)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 3-2' end
 		else
 			Text:new{

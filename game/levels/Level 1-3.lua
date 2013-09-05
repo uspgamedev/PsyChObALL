@@ -17,14 +17,14 @@ function run()
 	registerTimer {
 		timelimit = .5,
 		funcToCall = function ( timer )
-			if not next(enemies.bossOne.bodies) then
+			if not next(Enemies.bossOne.bodies) then
 				Text:new {
 					text = 'The start of the end',
 					speed = Vector:new{v, v},
 					size = 40,
 					position = Vector:new{0,0},
 					handleDelete = function ()
-						if not levelselected then
+						if not Levels.currentLevel.wasSelected then
 							psycho:addLife()
 							psycho:addLife()
 							reloadStory 'Level 2-1' 

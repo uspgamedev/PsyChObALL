@@ -48,7 +48,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true,
 		adapt = false
 	}
@@ -63,9 +63,9 @@ function run()
 
 	local f3 = formation {
 		type = 'around',
-		angle = base.toRadians(-45),
+		angle = Base.toRadians(-45),
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(45),
+		anglechange = Base.toRadians(45),
 		shootattarget = true
 	}
 	local simple = 'simpleball'
@@ -192,7 +192,7 @@ function run()
 	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.5*v, 0.5*v}, life = 80, size = 70}, simple, nil, 5)
 	wait(10)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 4-2' end
 		else
 			Text:new{

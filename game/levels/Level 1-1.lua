@@ -6,14 +6,14 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
-		angle = base.toRadians(-45),
+		angle = Base.toRadians(-45),
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(90),
+		anglechange = Base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -67,14 +67,14 @@ function run()
 	enemy(simple, 10, verticalt)
 	enemy(simple, 10, verticalb)
 	wait(2.0)
-	f1.anglechange = base.toRadians(360/15)
+	f1.anglechange = Base.toRadians(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600
 	enemy(simple, 15, f1)
 	wait(4)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 1-2' end
 		else
 			Text:new{

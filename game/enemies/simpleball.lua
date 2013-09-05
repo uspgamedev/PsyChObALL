@@ -17,6 +17,7 @@ end
 function simpleball:update( dt )
 	Body.update(self, dt)
 
+	if self.position[1] < -self.size or self.position[1] > width + self.size or self.position[2] < -self.size or self.position[2] > width + self.size then return end
 	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then
 			self:manageShotCollision(v)

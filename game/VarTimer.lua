@@ -8,19 +8,25 @@ VarTimer = Timer:new {
 	pausable = true
 }
 
+function VarTimer:__init()
+	Timer.__init(self)
+	if self[1] then
+		self.var = self[1]
+		self[1] = nil
+	end
+end
+
 function VarTimer:funcToCall( dt )
 	if self.backwards then
-		if self.var > self.limit then 
-			self.var = self.var - self.speed*dt
-		else
+		self.var = self.var - self.speed * dt
+		if self.var <= self.limit then 
 			self.var = self.limit
 			self:stop()
 			if self.alsoCall then self:alsoCall() end
 		end
 	else
-		if self.var < self.limit then 
-			self.var = self.var + self.speed*dt
-		else
+		self.var = self.var + self.speed * dt
+		if self.var >= self.limit then 
 			self.var = self.limit
 			self:stop()
 			if self.alsoCall then self:alsoCall() end

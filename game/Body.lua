@@ -42,7 +42,7 @@ function Body.makeClass( subclass )
 	subclass.__newindex = newindex
 	subclass.__index = index
 	if subclass.spriteBatch == nil then
-		subclass.spriteBatch = graphics.newSpriteBatch(base.pixel, 200, 'dynamic')
+		subclass.spriteBatch = graphics.newSpriteBatch(Base.pixel, 200, 'dynamic')
 		subclass.spriteMaxNum = 200
 	end
 	if subclass.spriteBatch then
@@ -66,7 +66,7 @@ end
 
 function Body:draw()
 	if self.linewidth then graphics.setLineWidth(self.linewidth) end
-	local color = ColorManager.getComposedColor(self.variance, self.alphafollows and self.alphafollows.var or self.alpha, self.coloreffect)
+	local color = ColorManager.getComposedColor(self.variance, self.alphaFollows and self.alphaFollows.var or self.alpha, self.coloreffect)
 	self.spriteBatch:setColor(unpack(color))
 	self.spriteBatch:set(self.id, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 end
@@ -101,7 +101,7 @@ function Body:addToBatch()
 	end
 end
 
-Body.collidesWith = base.collides
+Body.collidesWith = Base.collides
 
 function Body:getWarning()
 	self.warning = Warning:new {

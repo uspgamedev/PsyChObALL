@@ -1,7 +1,7 @@
 Effect = Body:new {
 	size	 = 1.7,
 	__type   = 'Effect',
-	spriteBatch = love.graphics.newSpriteBatch(base.pixel, 1000, 'dynamic'),
+	spriteBatch = love.graphics.newSpriteBatch(Base.pixel, 1000, 'dynamic'),
 	spriteMaxNum = 1000,
 	spriteCount = 0,
 	bodies = {}
@@ -24,14 +24,14 @@ end
 function neweffects(based_on, times)
 	times = math.ceil(times/2)
 	--local speedinfluence = based_on.speed * .6
-	if (based_on.alpha or (based_on.alphafollows and based_on.alphafollows.var) or 1) == 0 then return end
+	if (based_on.alpha or (based_on.alphaFollows and based_on.alphaFollows.var) or 1) == 0 then return end
 	for i = 1, times do
 		local e = Effect:new{
 			position = based_on.position + {based_on.size * (2 * math.random() - 1),based_on.size * (2 * math.random() - 1)},
 			variance = based_on.variance,
 			coloreffect = based_on.coloreffect,
 			alpha = based_on.alpha,
-			alphafollows = based_on.alphafollows
+			alphaFollows = based_on.alphaFollows
 		}
 
 		e.speed:set(e.position):sub(based_on.position):normalize():mult(math.random() * v, math.random() * v)

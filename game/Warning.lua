@@ -14,11 +14,11 @@ function Warning:__init()
 	if self.based_on then
 		self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
 		self.size = self.based_on.size*2
-		self.position = base.restrainInScreen(self.based_on.position:clone())
+		self.position = Base.restrainInScreen(self.based_on.position:clone())
 		self.variance = self.based_on.variance
 		self.coloreffect = self.based_on.coloreffect
 		self.alpha = self.based_on.alpha
-		self.alphafollows = self.based_on.alphafollows
+		self.alphaFollows = self.based_on.alphaFollows
 	end
 end
 
@@ -28,6 +28,6 @@ end
 
 function Warning:draw()
 	graphics.setLine(self.lineWidth)
-	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect))
 	graphics.arc(self.mode, self.position[1], self.position[2], self.size, self.angle - self.piece, self.angle + self.piece)
 end

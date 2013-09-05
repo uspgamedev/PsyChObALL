@@ -11,10 +11,6 @@ setmetatable(Button.allbuttons, {__mode = 'v'})
 Body.makeClass(Button)
 
 function Button:__init()
-	if self.menu and self.menu < 10 then
-		self.position:add((self.menu - 1)*width)
-	end
-
 	self.variance = math.random(ColorManager.colorCycleTime * 1000)/1000
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
@@ -35,7 +31,7 @@ function Button:__init()
 		alpha = 255,
 		linewidth = 3,
 		position = self.position,
-		alphafollows = self.alphafollows,
+		alphaFollows = self.alphaFollows,
 		index = false
 	}
 
@@ -43,8 +39,8 @@ function Button:__init()
 end
 
 function Button:draw()
-	if not self.visible or self.alphafollows.var == 0 then return end
-	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect)
+	if not self.visible or self.alphaFollows.var == 0 then return end
+	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect)
 	graphics.setColor(ColorManager.invertEffect(color))
 	graphics.setFont(getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')

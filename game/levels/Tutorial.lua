@@ -6,7 +6,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true
 	}
 
@@ -19,7 +19,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 
@@ -29,7 +29,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local aim = Text:new{
@@ -38,7 +38,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local hit = Text:new{
@@ -47,7 +47,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local space = Text:new{
@@ -56,7 +56,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 0},
+		alphaFollows = VarTimer:new{var = 0},
 		align = 'center'
 	}
 	local pause = Text:new{
@@ -65,7 +65,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local music = Text:new{
@@ -74,7 +74,7 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 	local remember = Text:new{
@@ -83,31 +83,31 @@ function run()
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
-		alphafollows = VarTimer:new{var = 1},
+		alphaFollows = VarTimer:new{var = 1},
 		align = 'center'
 	}
 
 	doNow(function()
 		welcome:register()
-		welcome.alphafollows:setAndGo(1, 254, 100)
+		welcome.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 1.5,
 		funcToCall = function()
-			welcome.alphafollows:setAndGo(254, 1, 100)
-			welcome.alphafollows.alsoCall = function() welcome.delete = true end
+			welcome.alphaFollows:setAndGo(254, 1, 100)
+			welcome.alphaFollows.alsoCall = function() welcome.delete = true end
 		end
 	}
 	wait(3)
 	doNow(function()
 		wasd:register()
-		wasd.alphafollows:setAndGo(1, 254, 100)
+		wasd.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3.5,
 		funcToCall = function()
-			wasd.alphafollows:setAndGo(254, 1, 100)
-			wasd.alphafollows.alsoCall = function() wasd.delete = true end
+			wasd.alphaFollows:setAndGo(254, 1, 100)
+			wasd.alphaFollows.alsoCall = function() wasd.delete = true end
 		end
 	}
 	wait(0.5)
@@ -115,13 +115,13 @@ function run()
 	wait(4)
 	doNow(function()
 		aim:register()
-		aim.alphafollows:setAndGo(1, 254, 100)
+		aim.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3.0,
 		funcToCall = function()
-			aim.alphafollows:setAndGo(254, 1, 100)
-			aim.alphafollows.alsoCall = function() aim.delete = true end
+			aim.alphaFollows:setAndGo(254, 1, 100)
+			aim.alphaFollows.alsoCall = function() aim.delete = true end
 		end
 	}
 	wait(0.5)
@@ -130,13 +130,13 @@ function run()
 	wait(3.5)
 	doNow(function()
 		hit:register()
-		hit.alphafollows:setAndGo(1, 254, 100)
+		hit.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3.0,
 		funcToCall = function()
-			hit.alphafollows:setAndGo(254, 1, 100)
-			hit.alphafollows.alsoCall = function() hit.delete = true end
+			hit.alphaFollows:setAndGo(254, 1, 100)
+			hit.alphaFollows.alsoCall = function() hit.delete = true end
 		end
 	}
 
@@ -149,17 +149,17 @@ function run()
 
 	doNow(function()
 		space:register()
-		space.alphafollows:setAndGo(1, 254, 100)
+		space.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 4,
 		funcToCall = function()
-			space.alphafollows:setAndGo(254, 1, 100)
-			space.alphafollows.alsoCall = function() space.delete = true end
+			space.alphaFollows:setAndGo(254, 1, 100)
+			space.alphaFollows.alsoCall = function() space.delete = true end
 		end
 	}
 	wait(3.5)
-	f1.anglechange = base.toRadians(360/15)
+	f1.anglechange = Base.toRadians(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600
@@ -167,37 +167,37 @@ function run()
 	wait(2.2)
 	doNow(function()
 		pause:register()
-		pause.alphafollows:setAndGo(1, 254, 100)
+		pause.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 2.5,
 		funcToCall = function()
-			pause.alphafollows:setAndGo(254, 1, 100)
-			pause.alphafollows.alsoCall = function() pause.delete = true end
+			pause.alphaFollows:setAndGo(254, 1, 100)
+			pause.alphaFollows.alsoCall = function() pause.delete = true end
 		end
 	}
 	wait(3)
 	doNow(function()
 		music:register()
-		music.alphafollows:setAndGo(1, 254, 100)
+		music.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 3.5,
 		funcToCall = function()
-			music.alphafollows:setAndGo(254, 1, 100)
-			music.alphafollows.alsoCall = function() music.delete = true end
+			music.alphaFollows:setAndGo(254, 1, 100)
+			music.alphaFollows.alsoCall = function() music.delete = true end
 		end
 	}
 	wait(3)
 	doNow(function()
 		remember:register()
-		remember.alphafollows:setAndGo(1, 254, 100)
+		remember.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
 		timelimit = 4.5,
 		funcToCall = function()
-			remember.alphafollows:setAndGo(254, 1, 100)
-			remember.alphafollows.alsoCall = function() remember.delete = true end
+			remember.alphaFollows:setAndGo(254, 1, 100)
+			remember.alphaFollows.alsoCall = function() remember.delete = true end
 		end
 	}
 	wait(5.5)

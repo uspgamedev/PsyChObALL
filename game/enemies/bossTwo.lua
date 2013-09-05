@@ -417,7 +417,7 @@ function bossTwo.behaviors.turretprotection( self )
 		text = "Please don't kill me!",
 		font = getCoolFont(30),
 		position = Vector:new{width/2 - 146, height/2 - 110},
-		alphafollows = a
+		alphaFollows = a
 	}
 	self.plead:register()
 	Timer:new{ timelimit = 4, onceonly = true, running = true, funcToCall = function ()

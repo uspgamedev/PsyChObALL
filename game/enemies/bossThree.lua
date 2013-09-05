@@ -607,7 +607,7 @@ function bossThree.food:__init()
 
 	self.normalsize = 25
 	self.creationsize = VarTimer:new{var = 0}
-	self.alphafollows = VarTimer:new{var = 255}
+	self.alphaFollows = VarTimer:new{var = 255}
 	Base.restrainInScreen(self.position)
 end
 

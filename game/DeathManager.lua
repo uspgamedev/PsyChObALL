@@ -1,4 +1,4 @@
-module('DeathManager', base.globalize)
+module('DeathManager', Base.globalize)
 local deathTexts, deathMessage
 local DeathEffect
 local handlePsychoExplosion
@@ -71,7 +71,7 @@ end
 function restartGame()
 	if state == story then 
 		if not psycho.pseudoDied then
-			levels.closeLevel()
+			Levels.closeLevel()
 			reloadStory 'Level 1-1'
 		else
 			psycho:recreate()
@@ -135,7 +135,7 @@ local updateHelper = function(self, dt)
 end
 local drawHelper = function ( self )
 	graphics.setColor(ColorManager.getComposedColor(self.variance))
-	graphics.draw(base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, self.size*2)
+	graphics.draw(Base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, self.size*2)
 	--just draws a rectangle, no spriteBatch stuff
 end
 
@@ -224,7 +224,7 @@ resetDeathText = setDeathMessage
 function drawDeathScreen()
 	graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
 		if state == survival then
-			if cheats.wasdev then
+			if Cheats.wasdev then
 				graphics.setFont(getCoolFont(20))
 				graphics.print("Your scores didn't count, cheater!", 382, 215)
 			else

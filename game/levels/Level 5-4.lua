@@ -6,14 +6,14 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true
 	}
 	local f2 = formation {
 		type = 'around',
-		angle = base.toRadians(-45),
+		angle = Base.toRadians(-45),
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(90),
+		anglechange = Base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -54,7 +54,7 @@ function run()
 			printmethod = graphics.printf,
 			position = Vector:new{width/2 - 450, height/2 - 200},
 			limit = 900,
-			alphafollows = a,
+			alphaFollows = a,
 			align = 'center'
 		}:register()
 	end)

@@ -17,7 +17,7 @@ function Text:__init()
 end
 
 function Text:draw()
-	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect))
 	graphics.setFont(self.font)
  	self.printmethod(self.text, self.position[1], self.position[2], self.limit, self.align)
 end

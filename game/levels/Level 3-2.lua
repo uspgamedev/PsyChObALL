@@ -126,7 +126,7 @@ function run()
 	enemy(simple, 100, f)
 	wait(40)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 3-3' end
 		else
 			Text:new{

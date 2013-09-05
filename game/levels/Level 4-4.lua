@@ -18,14 +18,14 @@ function run()
 	registerTimer {
 		timelimit = .5,
 		funcToCall = function ( timer )
-			if not next(enemies.bossFour.bodies) then
+			if not next(Enemies.bossFour.bodies) then
 				Text:new {
 					text = 'The Journey wont last forever',
 					speed = Vector:new{v, v},
 					size = 40,
 					position = Vector:new{0,0},
 					handleDelete = function ()
-						if not levelselected then
+						if not Levels.currentLevel.wasSelected then
 							psycho:addLife()
 							psycho:addLife()
 							reloadStory 'Level 5-1' 

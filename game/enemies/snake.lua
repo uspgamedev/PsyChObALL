@@ -12,11 +12,11 @@ Body.makeClass(snake)
 function snake:draw()
 	if self.first <= self.last then
 		local s = self.segments[self.first]
-		local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect)
+		local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect)
 		graphics.setColor(color)
 		graphics.circle(self.mode, s.position[1], s.position[2], self.size)
 	end
-	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphafollows and self.alphafollows.var, ColorManager.noLSDEffect)
+	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, ColorManager.noLSDEffect)
 	graphics.setColor(unpack(color))
 	for i = self.first + 1, self.last, 1 do
 		local s = self.segments[i]

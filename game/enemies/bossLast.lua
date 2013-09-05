@@ -17,7 +17,7 @@ function bossLast:draw()
 	if not self.visible then return end
 	graphics.setPixelEffect()
 	graphics.push()
-	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphafollows.var, self.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows.var, self.coloreffect))
 	graphics.translate(self.x, self.y)
 	graphics.rotate(self.angle.var)
 	graphics.rectangle(self.mode, -self.width/2, -self.height/2, self.width, self.height)
@@ -64,7 +64,7 @@ function bossLast:__init()
 	self.position:set(width/2, height/2)
 	self.angle = VarTimer:new{var = 0}
 	self.visible = false
-	self.alphafollows = VarTimer:new{var = 0}
+	self.alphaFollows = VarTimer:new{var = 0}
 	self.health = bossLast.maxhealth
 	self.colorchange = VarTimer:new{var = 255}
 	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
@@ -85,7 +85,7 @@ function bossLast:__init()
 		local e = Enemies.grayball:new{}
 		e.coloreffect = Base.doNothing
 		e.variance = 5
-		e.alphafollows = ballsalpha
+		e.alphaFollows = ballsalpha
 		e.update = updateFunc
 		e:register()
 		components[math.floor((i-1)/40) + 1][((i-1) % 40) + 1] = e
@@ -128,7 +128,7 @@ function bossLast:__init()
 			if components[1][40].inBox then
 				timer:remove()
 				self.visible = true
-				self.alphafollows:setAndGo(0, 255, 60)
+				self.alphaFollows:setAndGo(0, 255, 60)
 				ballsalpha:setAndGo(255, 0, 30)
 				ballsalpha.alsoCall = function(timer)
 					timer.alsoCall = nil

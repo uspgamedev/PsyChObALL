@@ -1,25 +1,26 @@
-require "base"
-require "timer"
+require "Base"
+require "Body"
+require "Timer"
+require "VarTimer"
 require "ColorManager"
-require "body"
-require "formations"
-require "levels"
-require "userinterface"
-require "text"
-require "imagebody"
-require "circleEffect"
-require "effect"
-require "enemy"
-require "shot"
-require "vartimer"
-require "enemies"
-require "psychoball"
-require "warning"
-require "button"
-require "filemanager"
+require "FileManager"
+require "SoundManager"
+require "MenuManager"
 require "DeathManager"
-require "soundmanager"
-require "cheats"
+require "UI"
+require "Cheats"
+require "Enemies"
+require "CircleEffect"
+require "Psychoball"
+require "Levels"
+require "Button"
+require "Effect"
+require "Text"
+require "Formations"
+require "ImageBody"
+require "Enemy"
+require "Shot"
+require "Warning"
 
 function love.load()
 	initBase()
@@ -36,10 +37,10 @@ function initBase()
 	splashscreen = -1
 	mainmenu = 1 -- mainmenu
 	tutorialmenu = 2
+	levelselect = 3
 	achievmenu  = 0 -- Tela de achievements
 	survival = 10 -- modo de jogo survival
 	story = 11
-	levelselect = 20
 	state = mainmenu
 	sqrt2 = math.sqrt(2)
 	fonts = {}
@@ -60,7 +61,7 @@ function initBase()
 	Shot:paintOn(paintables)
 	Enemy:paintOn(paintables)
 	Effect:paintOn(paintables)
-	enemies:paintOn(paintables)
+	Enemies:paintOn(paintables)
 	Warning:paintOn(paintables)
 	CircleEffect:paintOn(paintables)
 	Text:paintOn(paintables)
@@ -86,10 +87,10 @@ function initBase()
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '1.0.1 indev'
-	latest = base.getLatestVersion() or version
+	latest = Base.getLatestVersion() or version
 	oldVersion = version < latest
 	SoundManager.init()
-	cheats.init()
+	Cheats.init()
 	--[[End of Loading Resources]]
 
 	screenshotnumber = 1
@@ -98,20 +99,10 @@ end
 
 function initGameVars()
 	-- [[Creating Persistent Timers]]
-	ColorManager.init()
-
-	DeathManager.init()
-
-	CircleEffect.init()
-
-	Enemy.init()
-
-	enemies.init()
-
-	Shot.init()
-
-	Psychoball.init()
-
+	for _, toBeInited in ipairs {ColorManager, MenuManager, DeathManager, CircleEffect, Enemy, Enemies, Shot, Psychoball} do
+		toBeInited.init()
+	end
+		
 	multtimer = Timer:new {
 		timelimit  = 2.2,
 		persistent = true,
@@ -146,18 +137,6 @@ function initGameVars()
 		self:funcToCall()
 	end
 
-	swypetimer = VarTimer:new { -- swypes the screen on menu change
-		var = 0,
-		speed = 3000,
-		pausable = false
-	}
-
-	alphatimer = VarTimer:new { --fades out and in the logo
-		var = 254,
-		speed = 500,
-		pausable = false
-	}
-
 	angle = VarTimer:new {
 		var = 0,
 		speed = 1,
@@ -173,15 +152,14 @@ function initGameVars()
 	keyspressed = {}
 	timefactor = 1.0
 
-	levels.loadAll()
-	levels.reloadPractice()
+	Levels.loadAll()
 end
 
 function resetVars()
-	if cheats.konamicode then
+	if Cheats.konamicode then
 		ultracounter = 30
 		if psycho.lives then psycho.lives = 30 end
-		cheats.konamicode = false
+		Cheats.konamicode = false
 	else
 		ultracounter = 3
 	end
@@ -193,12 +171,12 @@ function resetVars()
 	if notclearcircleeffect then notclearcircleeffect = false
 	else CircleEffect:clear() end
 	Enemy:clear()
-	enemies:clear()
+	Enemies:clear()
 	Warning:clear()
 	Text:clear()
 	ImageBody:clear()
 	--[[End of Resetting Paintables]]
-	base.clearTable(keyspressed)
+	Base.clearTable(keyspressed)
 
 	timefactor = 1.0
 	multiplier = 1
@@ -223,7 +201,7 @@ function reloadSurvival()
 	Timer.closenonessential()
 
 	SoundManager.restart()
-	enemies.restartSurvival()
+	Enemies.restartSurvival()
 	Enemy.addtimer:start(1.5)
 	Enemy.releasetimer:start(.7)
 
@@ -231,10 +209,7 @@ function reloadSurvival()
 end
 
 function reloadStory( name )
-	if name and name > lastLevel then lastLevel = name levels.reloadPractice() end
-	for _, but in pairs(paintables.levelselect) do
-		but:close()
-	end
+	if name and name > lastLevel then lastLevel = name end
 	if psycho.pseudoDied then
 		psycho.canbehit = true
 		psycho.pseudoDied = false
@@ -252,11 +227,11 @@ function reloadStory( name )
 		Timer.closenonessential()
 
 		SoundManager.restart()
-		enemies.restartStory()
+		Enemies.restartStory()
 
 		mouse.setGrab(true)
 	end
-	levels.runLevel(name)
+	Levels.runLevel(name)
 end
 
 
@@ -306,7 +281,6 @@ function love.draw()
 		return
 	end
 
-	graphics.translate(-swypetimer.var, 0)
 	--[[End of setting camera]]
 	for _, paintable in pairs(paintables) do
 		paintable:drawComponents()
@@ -316,14 +290,14 @@ function love.draw()
 	if onGame() then
 		drawShootingDirection()
 		--drawing psychoball
-		if not cheats.invisible then
+		if not Cheats.invisible then
 			psycho:draw()
 		end
 	end
 	--[[End of Drawing Game Objects]]
 
 	UI.draw()
-	graphics.translate(swypetimer.var, 0)
+	MenuManager.draw()
 end
 
 function drawBackground()
@@ -354,7 +328,7 @@ function drawShootingDirection()
 		local x = a2 > 0 and width or 0
 		graphics.line(psycho.x, psycho.y, a2*1200 + psycho.x, a1*1200 + psycho.y)
 	else
-		graphics.setPixelEffect(base.circleShader)
+		graphics.setPixelEffect(Base.circleShader)
 		graphics.circle("line", mouseX, mouseY, 5)
 		color[4] = 60 -- alpha
 		graphics.setColor(color)
@@ -362,14 +336,13 @@ function drawShootingDirection()
 		graphics.setPixelEffect()
 		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((mouseY - psycho.y)/(mouseX - psycho.x)))
 	end
-	graphics.setPixelEffect(base.circleShader)
+	graphics.setPixelEffect(Base.circleShader)
 end
 
 function love.update(dt)
 	if dt > 0.03333 then dt = 0.03333 end
 	totaltime = totaltime + dt
 	mouseX, mouseY = mouse.getPosition()
-	mouseX = mouseX + swypetimer.var
 	isPaused = (paused or onMenu())
 
 	Timer.updatetimers(dt, timefactor, isPaused, DeathManager.gameLost)
@@ -382,6 +355,7 @@ function love.update(dt)
 	end
 
 	updateBodies(dt)
+	MenuManager.update(dt)
 end
 
 function updateBodies( dt )
@@ -396,12 +370,12 @@ function love.mousepressed(x, y, btn)
 	if btn == 'l' and onGame() and not (DeathManager.gameLost or paused or psycho.pseudoDied) then
 		Shot.timer:start(Shot.timer.timelimit) --starts shooting already
 	end
-	UI.mousepressed(x + swypetimer.var, y, btn)
+	UI.mousepressed(x, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
 	x, y  = x/ratio, y/ratio		
-	UI.mousereleased(x + swypetimer.var, y, btn)
+	UI.mousereleased(x, y, btn)
 	if btn == 'l' and onGame() then
 		Shot.timer:stop()
 	end
@@ -443,7 +417,7 @@ function love.keypressed(key)
 	end
 
 	UI.keypressed(key)
-	cheats.keypressed(key)
+	Cheats.keypressed(key)
 	SoundManager.keypressed(key)
 end
 

@@ -14,7 +14,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(90),
+		anglechange = Base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -61,7 +61,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true,
 		adapt = false
 	}
@@ -70,7 +70,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/4},
-		anglechange = base.toRadians(360/20),
+		anglechange = Base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
 		distance = 40
@@ -113,7 +113,7 @@ function run()
 	wait(5)
 	enemy(divide1, 4, f1)
 	wait(4)
-	f1.anglechange = base.toRadians(45)
+	f1.anglechange = Base.toRadians(45)
 	enemy(divide1, 8, f1)
 	wait(4)
 	enemy(divide1, 20, vform)
@@ -130,22 +130,22 @@ function run()
 	f3.anglechange = 0
 	f3.shootattarget = true
 	f3.target = Vector:new{width/2,height/2}
-	f3.angle = base.toRadians(0)
+	f3.angle = Base.toRadians(0)
 	f3.center = Vector:new{width/2, height/2}
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(45)
+	f3.angle = Base.toRadians(45)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(90)
+	f3.angle = Base.toRadians(90)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(135)
+	f3.angle = Base.toRadians(135)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(180)
+	f3.angle = Base.toRadians(180)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(-45)
+	f3.angle = Base.toRadians(-45)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(-90)
+	f3.angle = Base.toRadians(-90)
 	enemy({simple,divide1}, 20, f3)
-	f3.angle = base.toRadians(-135)
+	f3.angle = Base.toRadians(-135)
 	enemy({simple,divide1}, 20, f3)
 	wait(9)
 	enemy({simple,divide1,simple}, 180, f)
@@ -154,14 +154,14 @@ function run()
 	f.func = function(x)
 			return math.sin(x*200)*(height/2-180)+height/2-180
 		end
-	enemy({divide1,simple,divide1}, 210, f)
+	enemy({divide1,simple}, 210, f) -- you shouldn't create them all at the same time, it makes the game slower
 	f.func = function(x)
 			return math.sin(x*200)*(height/2-180)+height/2+180
 	end
-	enemy({divide1,simple,divide1}, 210, f)
+	enemy({divide1,simple}, 210, f)
 	wait(30)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 3-4' end
 		else
 			Text:new{

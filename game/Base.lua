@@ -1,11 +1,11 @@
 width, height = 1080, 720
 require 'lux.object'
-require 'vector'
-require 'list'
-require 'stack'
+require 'Vector'
+require 'List'
+require 'Stack'
 
 --mythical stuff
-module('base', package.seeall)
+module('Base', package.seeall)
 
 math.atan = error --use math.atan2
 
@@ -50,12 +50,12 @@ local lineWidth = 1
 _G.graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
 	circle = function ( mode, x, y, r )
-		if cheats.image.enabled and (cheats.dkmode or mode == 'fill') then
-			if not cheats.image.painted then graphics.setColor(255, 255, 255) end
-			graphics.draw(cheats.image.image, x - r, y - r, 
-				0, 2*r / cheats.image.image:getWidth(), 2*r / cheats.image.image:getHeight())
+		if Cheats.image.enabled and (Cheats.dkmode or mode == 'fill') then
+			if not Cheats.image.painted then graphics.setColor(255, 255, 255) end
+			graphics.draw(Cheats.image.image, x - r, y - r, 
+				0, 2*r / Cheats.image.image:getWidth(), 2*r / Cheats.image.image:getHeight())
 		else
-			--assume base.circleShader is being used
+			--assume Base.circleShader is being used
 			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 			if mode == 'line' then
 				local min = lineWidth*ratio + 1
@@ -112,7 +112,7 @@ for k,v in pairs(love) do
 end
 
 function defaultDraw( obj )
-	graphics.setColor(ColorManager.getComposedColor(obj.variance, obj.alphafollows and obj.alphafollows.var or obj.alpha, obj.coloreffect))
+	graphics.setColor(ColorManager.getComposedColor(obj.variance, obj.alphaFollows and obj.alphaFollows.var or obj.alpha, obj.coloreffect))
 	graphics.circle(obj.mode, obj.position[1], obj.position[2], obj.size)
 end
 

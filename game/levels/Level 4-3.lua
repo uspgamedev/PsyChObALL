@@ -14,7 +14,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(90),
+		anglechange = Base.toRadians(90),
 		shootattarget = true
 	}
 
@@ -61,7 +61,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = base.toRadians(180),
+		anglechange = Base.toRadians(180),
 		shootattarget = true,
 		adapt = false
 	}
@@ -70,7 +70,7 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/4},
-		anglechange = base.toRadians(360/20),
+		anglechange = Base.toRadians(360/20),
 		shootattarget = true,
 		adapt = false,
 		distance = 40
@@ -134,7 +134,7 @@ function run()
 	enemy(sek, 6, horizontalr, 13, Vector:new{width/2, -30})
 	wait(19)
 	doNow( function(timer)
-		if not levelselected then
+		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then reloadStory 'Level 4-4' end
 		else
 			Text:new{
