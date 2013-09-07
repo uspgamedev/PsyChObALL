@@ -164,7 +164,7 @@ function bossOne.behaviors.third( self )
 		self.coloreffect = ColorManager.sinCityEffect
 		Timer:new {
 			running = true,
-			onceonly = true,
+			onceOnly = true,
 			timelimit = 1,
 			funcToCall = function() self.sizeGrowth = 230 end
 		}
@@ -220,7 +220,7 @@ function bossOne:update( dt )
 					--self.colors[1] is already correct
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
 							self.colors[2]:setAndGo(nil, d*255, 400)
 						end
@@ -231,7 +231,7 @@ function bossOne:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossOne.behaviors.second then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*255, 400)
@@ -243,7 +243,7 @@ function bossOne:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*255, 400)
@@ -256,7 +256,7 @@ function bossOne:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end

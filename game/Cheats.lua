@@ -3,7 +3,7 @@ module('Cheats', Base.globalize)
 devmode = false
 invisible = false
 imaegmode = false
-wasdev = false
+usedDevMode = false
 konamicode = false
 imagecheats = {}
 
@@ -70,7 +70,7 @@ function keypressed( key )
 			devmode = devpass(key)
 		else
 			devmode = devpass(key)
-			if devmode then wasdev = true return end
+			if devmode then usedDevMode = true return end
 		end
 
 		invisible = invisiblepass(key)

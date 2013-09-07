@@ -1,44 +1,58 @@
 module('FileManager', Base.globalize)
 
+local defaultRecords = {
+	survival = {
+		score = 0,
+		time = 0,
+		multiplier = 0
+	},
+	story = {
+		lastLevel = 'Level 1-1'
+	}
+}
+
 function init()
-	-- removing old stuff
-	--[[if filesystem.exists 'stats' then
+	if filesystem.exists 'stats' then
 		filesystem.remove 'stats'
-	end]]
+	end
+
+	for i = 1, Levels.worldsNumber do
+		for j = 1, 4 do
+			if i ~= 1 or j ~= 4 then
+				defaultRecords.story['Level ' .. i .. '-' .. j] = {
+					score = 0
+				}
+			end
+		end
+	end
 end
 
 function readStats()
-	-- CHANGE THIS
-	local stats = readTable "stats"
+	local stats = readTable "psycho.dat"
 
-	besttime  = stats.besttime  or 0
-	bestmult  = stats.bestmult  or 0
-	bestscore = stats.bestscore or 0
-	lastLevel = stats.lastLevel or 'Level 1-1'
+	global.records = stats.records or defaultRecords
+	-- use other stats here
 end
 
 function writeStats()
-	-- CHANGE THIS
-	if Cheats.wasdev then return end
-	besttime  = math.max(besttime, gametime)
-	bestmult  = math.max(bestmult, multiplier)
-	bestscore = math.max(bestscore, score)
+	if Cheats.usedDevMode then return end
+	local s = global.records.survival
+	if state == survival then
+		s.time  = math.max(s.time, gametime)
+		s.multiplier  = math.max(s.multiplier, multiplier)
+		s.score = math.max(s.score, score)
+	end
 	writeTable({
-		besttime  = besttime,
-		bestmult  = bestmult,
-		bestscore = bestscore,
-		lastLevel = lastLevel
-	}, "stats")
+		records = global.records
+	}, "psycho.dat")
 end
 
 function resetStats()
-	-- CHANGE THIS
-	besttime, bestmult, bestscore  = 0, 0, 0
+	global.records = defaultRecords
+	-- default other stuff
 	writeTable({
-		besttime  = 0,
-		bestmult  = 0,
-		bestscore = 0
-	}, "stats")
+		records = global.records
+	}, "psycho.dat")
 end
 
 function readConfig()
@@ -74,7 +88,7 @@ function openFile( name, method )
 	return file
 end
 
--- considers everything to be one-line strings, output is better
+-- considers everything to be one-line strings, output is better looking
 function writeCleanTable( t, filename )
 	local file = openFile(filename, 'w')
 	if not file then return end

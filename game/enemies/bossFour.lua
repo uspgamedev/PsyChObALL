@@ -57,7 +57,7 @@ function bossFour.behaviors.arriving( self )
 
 		Timer:new{
 			timelimit = 5,
-			onceonly = true,
+			onceOnly = true,
 			running = true,
 			funcToCall = function()
 				self.replacetimer:start()
@@ -112,7 +112,7 @@ function bossFour.behaviors.tocenter( self )
 		self.dontattack = true
 		Timer:new{
 			timelimit = 1.1,
-			onceonly = true,
+			onceOnly = true,
 			running = true,
 			funcToCall = function()
 				self.cage = {}
@@ -159,7 +159,7 @@ function bossFour.behaviors.tocenter( self )
 		}
 		Timer:new{
 			timelimit = 2.1,
-			onceonly = true,
+			onceOnly = true,
 			running = true,
 			funcToCall = function()
 				self.colors[1]:setAndGo(nil, 0, 100)
@@ -300,7 +300,7 @@ function bossFour:update( dt )
 		elseif self.y - self.height/2 < 0 then self.speed:set(nil,  math.abs(self.Vy)) end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end
@@ -317,7 +317,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					--self.colors[2] is already correct
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossFour.behaviors.first then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[3]:setAndGo(nil, d*255, 400)
@@ -329,7 +329,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossFour.behaviors.second then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*50, 400)
@@ -342,7 +342,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						if self.currentBehavior == bossFour.behaviors.third then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*122, 400)
@@ -355,7 +355,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 						self.colors[1]:setAndGo(nil, .59*225 + (1-d)*.41*255, 400)
 						self.colors[2]:setAndGo(nil, .44*255*d, 400)
 						self.colors[3]:setAndGo(nil, .9*255*d, 400)
@@ -398,7 +398,7 @@ function bossFour:grow( n )
 	Timer:new{ 
 		timelimit = 1,
 		running = true,
-		onceonly = true,
+		onceOnly = true,
 		funcToCall = function()
 			for _, e in ipairs(es) do
 				e.speed:set(self.position):sub(e.position):normalize():mult(self.basespeed)
@@ -480,7 +480,7 @@ function bossFour:__init()
 				end
 				Timer:new {
 					timelimit = 1.5,
-					onceonly = true,
+					onceOnly = true,
 					running = true,
 					funcToCall = function()
 					self.recharging = false

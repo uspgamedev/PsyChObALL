@@ -20,7 +20,7 @@ function init()
 		timelimit	 = .01,
 		running		 = false,
 		pausable		 = false,
-		timeaffected = false,
+		timeAffected = false,
 		persistent	 = true
 	}
 
@@ -36,7 +36,7 @@ function init()
 		timelimit	 = .03,
 		running		 = false,
 		pausable		 = false,
-		timeaffected = false,
+		timeAffected = false,
 		persistent	 = true
 	}
 

@@ -32,7 +32,7 @@ function ranged:__init()
 	}
 	self.timeout = Timer:new {
 		timelimit = self.timeout,
-		onceonly = true,
+		onceOnly = true,
 		funcToCall = function()
 			if self.shoottimer then self.shoottimer:stop() end
 			self.speed:set(self.exitposition):sub(self.position):normalize():mult(1.3*v, 1.3*v)
@@ -88,7 +88,7 @@ function ranged:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end

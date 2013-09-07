@@ -45,7 +45,7 @@ function Enemy.init()
 		Enemy.list:push(Enemy:new{})
 	end
 
-	function Enemy.addtimer:handlereset()
+	function Enemy.addtimer:handleReset()
 		self:stop()
 	end
 
@@ -61,7 +61,7 @@ function Enemy.init()
 		else print 'Enemy missing' end
 	end
 
-	function Enemy.releasetimer:handlereset()
+	function Enemy.releasetimer:handleReset()
 		self:stop()
 	end
 end

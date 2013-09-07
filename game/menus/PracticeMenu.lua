@@ -1,5 +1,5 @@
 PracticeMenu = Menu:new {}
-local levelNumber = 5
+local levelNumber = Levels.worldsNumber
 
 function PracticeMenu:open( levelN )
 	Menu.open(self)
@@ -18,7 +18,7 @@ function PracticeMenu:open( levelN )
 
 	local buttons = {back}
 
-	if 'Level ' .. levelN .. '-4' < lastLevel then
+	if 'Level ' .. levelN .. '-4' < records.story.lastLevel then
 		local nextB = Button:new{
 			size = 50,
 			position = Vector:new{width/2 + 100, 400},
@@ -55,7 +55,7 @@ function PracticeMenu:open( levelN )
 
 	for i = 1, 4 do
 		local levelName = 'Level ' .. levelN .. '-' .. i
-		if lastLevel < levelName or levelName == 'Level 1-4' then break end
+		if records.story.lastLevel < levelName or levelName == 'Level 1-4' then break end
 		local levelButton = Button:new {
 			size = 100,
 			position = Vector:new{156 + (i-1) * 256, height/2 - 100},

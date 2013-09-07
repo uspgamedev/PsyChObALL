@@ -64,7 +64,7 @@ function superball:__init()
 
 	self.timeout = Timer:new {
 		timelimit = self.timeout,
-		onceonly = true,
+		onceOnly = true,
 		funcToCall = function()
 			self.collides = false
 			self.speed:set(self.exitposition):sub(self.position):normalize():mult(1.1*v, 1.1*v)
@@ -109,7 +109,7 @@ function superball:update(dt)
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end

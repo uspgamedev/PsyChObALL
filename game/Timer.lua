@@ -1,9 +1,9 @@
 Timer = lux.object.new {
 	time			 = 0,
-	onceonly		 = false,
+	onceOnly		 = false,
 	pausable		 = true, -- If pause
 	running		 = false,
-	timeaffected = true,
+	timeAffected = true,
 	persistent	 = false, -- continues on death
 	delete		 = false,
 	works_on_gameLost = true,
@@ -17,7 +17,7 @@ end
 
 function Timer:update(dt, timefactor, paused)
 	if not self.running or (paused and self.pausable) or (DeathManager.gameLost and not self.works_on_gameLost) then return end
-	if self.timeaffected then dt = dt * timefactor end
+	if self.timeAffected then dt = dt * timefactor end
 	self.time = self.time + dt
 	if not self.timelimit and self.funcToCall then 
 		if self.extraelements then self:funcToCall(dt, unpack(self.extraelements))
@@ -30,7 +30,7 @@ function Timer:update(dt, timefactor, paused)
 			if self.extraelements then self:funcToCall(unpack(self.extraelements))
 			else self:funcToCall() end
 		end
-		if self.onceonly then self:remove() end
+		if self.onceOnly then self:remove() end
 	end
 end
 
@@ -56,12 +56,12 @@ function Timer.updatetimers(dt, timefactor, paused)
 	end
 end
 
-function Timer.closenonessential()
+function Timer.closeOldTimers()
 	for i = #ts, 1, -1 do
 		local v = ts[i]
 		if not v.persistent then v.delete = true
 		else 
-			if v.handlereset then v:handlereset() end 
+			if v.handleReset then v:handleReset() end 
 		end
 	end
 end

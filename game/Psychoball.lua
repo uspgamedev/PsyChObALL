@@ -6,17 +6,17 @@ local ultrablastcharging
 local ultrablastrelease
 
 Psychoball = CircleEffect:new {
-	size	 = 23 - psychoSizeDiff,
+	size   = 23 - psychoSizeDiff,
 	sizeDiff = psychoSizeDiff,
 	maxsize = width,
-	mode	 = 'fill',
+	mode   = 'fill',
 	variance = 0,
 	sizeGrowth = 0,
 	alpha = 255,
 	lives = 10,
 	index = false,
 	changesimage = true,
-	canbehit = true,
+	canBeHit = true,
 	pseudoDied = false,
 	spriteBatch = false,
 	__type = 'Psychoball'
@@ -40,7 +40,7 @@ function Psychoball.init()
 		end
 	end
 
-	function ultratimer:handlereset()
+	function ultratimer:handleReset()
 		self:stop()
 	end
 end
@@ -84,6 +84,7 @@ function Psychoball:update(dt)
 	CircleEffect.update(self, dt)
 end
 
+
 function Psychoball:startblast()
 	ultracounter = ultracounter - 1
 	ultrablast = 10
@@ -95,7 +96,7 @@ end
 function Psychoball:releaseblast()
 	ultratimer:stop()
 	self.sizeGrowth = -300
-	do_ultrablast()
+	doUltrablast()
 end
 
 function Psychoball:addLife()
@@ -145,10 +146,10 @@ function Psychoball:recreate()
 	Timer:new {
 		timelimit = 1,
 		running = true,
-		onceonly = true,
+		onceOnly = true,
 		funcToCall = function()
 			blink:remove()
-			self.canbehit = true
+			self.canBeHit = true
 			self.alpha = 255
 		end
 	}
@@ -198,7 +199,7 @@ function Psychoball:keyreleased( key )
 	end
 end
 
-function do_ultrablast()
+function doUltrablast()
 	for i=1, ultrablast do
 		Shot:new{
 			position = psycho.position:clone(),

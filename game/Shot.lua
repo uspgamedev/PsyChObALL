@@ -34,7 +34,7 @@ function Shot.init()
 		end
 	end
 
-	function Shot.timer:handlereset()
+	function Shot.timer:handleReset()
 		self:stop()
 	end
 end

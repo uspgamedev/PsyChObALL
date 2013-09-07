@@ -74,7 +74,7 @@ function bossTwo.behaviors.arriving( self )
 			e:register()
 		end
 
-		Timer:new{ timelimit = 2, running = true, onceonly = true, funcToCall = function()
+		Timer:new{ timelimit = 2, running = true, onceOnly = true, funcToCall = function()
 			local pos = {{90, 90},{width - 90, 90},  {width - 90, height - 90}, {90, height - 90}}
 				self.turretsoldpos = {0,0,0,0}
 				for i = 1, 4 do 
@@ -168,7 +168,7 @@ function bossTwo.behaviors.gathering( self )
 		Timer:new {
 			timelimit = 1,
 			running = true,
-			onceonly = true,
+			onceOnly = true,
 			funcToCall = function()
 				if self.currentBehavior ~= bossTwo.behaviors.third then return end
 				for i = 1, 4 do
@@ -185,7 +185,7 @@ function bossTwo.behaviors.gathering( self )
 		Timer:new{
 			timelimit = 3.5,
 			running = true,
-			onceonly = true,
+			onceOnly = true,
 			funcToCall = function()
 				for i = 1, 4 do
 					local c = self.ballscolors[i]
@@ -420,10 +420,10 @@ function bossTwo.behaviors.turretprotection( self )
 		alphaFollows = a
 	}
 	self.plead:register()
-	Timer:new{ timelimit = 4, onceonly = true, running = true, funcToCall = function ()
+	Timer:new{ timelimit = 4, onceOnly = true, running = true, funcToCall = function ()
 		a:setAndGo(255, 0, 100)
 	end}
-	Timer:new{ timelimit = 1, onceonly = true, running = true, funcToCall = function ()
+	Timer:new{ timelimit = 1, onceOnly = true, running = true, funcToCall = function ()
 		self.plead = nil
 		self.ballscolors[4][1]:setAndGo(nil, 0, 100)
 		self.ballscolors[4][2]:setAndGo(nil, 255, 100)
@@ -503,7 +503,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						--colors[3] is already correct
-						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 							local colors = self.ballscolors[n]
 							colors[1]:setAndGo(nil, (1-d)*255, 300)
 							colors[2]:setAndGo(nil, d*120, 300)
@@ -521,7 +521,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						colors[3]:setAndGo(0, 700)
-						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 							colors[1]:setAndGo(nil, (1-d)*255, 300)
 							colors[2]:setAndGo(nil, d*50, 300)
 							colors[3]:setAndGo(nil, d*140, 300)
@@ -539,7 +539,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						--colors[3]:setAndGo(0, 700)
-						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 							colors[1]:setAndGo(nil, 80 + (1-d)*(255 - 80), 300)
 							colors[2]:setAndGo(nil, d*90, 300)
 							--colors[3]:setAndGo(nil, d*255, 300)
@@ -559,7 +559,7 @@ function bossTwo:update( dt )
 						colors[1]:setAndGo(255, 700)
 						colors[2]:setAndGo(0, 700)
 						--colors[3]:setAndGo(0, 700)
-						Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+						Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 							colors[1]:setAndGo(nil, (1-d)*255, 300)
 							colors[2]:setAndGo(nil, d*240, 300)
 							--colors[3]:setAndGo(nil, d*255, 300)
@@ -573,7 +573,7 @@ function bossTwo:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and (self:collides(psycho, 1) or self:collides(psycho, 2) or self:collides(psycho, 3) or self:collides(psycho, 4)) then
+	if psycho.canBeHit and not DeathManager.gameLost and (self:collides(psycho, 1) or self:collides(psycho, 2) or self:collides(psycho, 3) or self:collides(psycho, 4)) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end
@@ -660,7 +660,7 @@ function bossTwo.turret:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end

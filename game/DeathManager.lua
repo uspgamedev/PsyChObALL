@@ -61,8 +61,8 @@ function beginGameRestart()
 	end
 	Timer:new {
 		timelimit = timeToRestart,
-		timeaffected = false,
-		onceonly = true,
+		timeAffected = false,
+		onceOnly = true,
 		running = true,
 		funcToCall = restartGame
 	}
@@ -190,13 +190,13 @@ function handlePsychoExplosion()
 			--handle stuff
 		else
 			psycho:removeLife()
-			psycho.canbehit = false
+			psycho.canBeHit = false
 			psycho.pseudoDied = true
 			Timer:new{
 				timelimit = 1,
 				running = true,
-				timeaffected = false,
-				onceonly = true,
+				timeAffected = false,
+				onceOnly = true,
 				funcToCall = beginGameRestart
 			}
 		end
@@ -224,19 +224,19 @@ resetDeathText = setDeathMessage
 function drawDeathScreen()
 	graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
 		if state == survival then
-			if Cheats.wasdev then
+			if Cheats.usedDevMode then
 				graphics.setFont(getCoolFont(20))
 				graphics.print("Your scores didn't count, cheater!", 382, 215)
 			else
-				if besttime == gametime then
+				if records.survival.time == gametime then
 					graphics.setFont(getFont(35))
 					graphics.print("You beat the best time!", 260, 100)
 				end	
-				if bestscore == score then
+				if records.survival.score == score then
 					graphics.setFont(getFont(35))
 					graphics.print("You beat the best score!", 290, 140)
 				end
-				if bestmult == multiplier then
+				if records.survival.multiplier == multiplier then
 					graphics.setFont(getFont(35))
 					graphics.print("You beat the best multiplier!", 320, 180)
 				end

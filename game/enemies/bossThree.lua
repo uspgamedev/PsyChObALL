@@ -89,9 +89,9 @@ function bossThree.behaviors.second( self )
 		local i, v = next(bossThree.food.bodies)
 		if not v.eaten then
 			self:trytofollow(v.position)
-		elseif psycho.canbehit then self:trytofollow(psycho.position) end
+		elseif psycho.canBeHit then self:trytofollow(psycho.position) end
 	else
-		if psycho.canbehit then self:trytofollow(psycho.position) end
+		if psycho.canBeHit then self:trytofollow(psycho.position) end
 	end
 
 	if self.first == self.last then
@@ -100,7 +100,7 @@ function bossThree.behaviors.second( self )
 		self.speed:reset()
 		Timer:new{
 			timelimit = 1.5,
-			onceonly = true,
+			onceOnly = true,
 			running = true,
 			funcToCall = function()
 				self.speed:set(self.speedbak)
@@ -166,9 +166,9 @@ function bossThree.behaviors.third( self )
 		local i, v = next(bossThree.food.bodies)
 		if not v.eaten then
 			self:trytofollow(v.position)
-		elseif psycho.canbehit then self:trytofollow(psycho.position) end
+		elseif psycho.canBeHit then self:trytofollow(psycho.position) end
 	else
-		if psycho.canbehit then self:trytofollow(psycho.position) end
+		if psycho.canBeHit then self:trytofollow(psycho.position) end
 	end
 	if self.health/bossThree.yellowguyhealth < .5 then
 		addscore(1000)
@@ -176,7 +176,7 @@ function bossThree.behaviors.third( self )
 		self.speed:reset()
 		self.currentBehavior = Base.doNothing
 		self.vulnerable = false
-		Timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
+		Timer:new{ timelimit = 1, running = true, onceOnly = true, funcToCall = function()
 				Base.clearTable(bossThree.food.bodies)
 				local t = self.yellowguytimer
 				t.increasing = true
@@ -219,9 +219,9 @@ function bossThree.behaviors.fourth( self )
 		local i, v = next(bossThree.food.bodies)
 		if not v.eaten then
 			self:trytofollow(v.position)
-		elseif psycho.canbehit then self:trytofollow(psycho.position) end
+		elseif psycho.canBeHit then self:trytofollow(psycho.position) end
 	else
-		if psycho.canbehit then self:trytofollow(psycho.position) end
+		if psycho.canBeHit then self:trytofollow(psycho.position) end
 	end
 
 	if self.health == 0 then
@@ -229,7 +229,7 @@ function bossThree.behaviors.fourth( self )
 		self.speed:reset()
 		self.currentBehavior = Base.doNothing
 		self.vulnerable = false
-		Timer:new{ timelimit = 1, running = true, onceonly = true, funcToCall = function()
+		Timer:new{ timelimit = 1, running = true, onceOnly = true, funcToCall = function()
 				Base.clearTable(bossThree.food.bodies)
 				local t = self.yellowguytimer
 				t.increasing = true
@@ -247,7 +247,7 @@ function bossThree.behaviors.fourth( self )
 					end
 					Timer:new{
 						running = true,
-						onceonly = true,
+						onceOnly = true,
 						timelimit = 2,
 						funcToCall = function()
 							local change = VarTimer:new{var = 0}
@@ -417,7 +417,7 @@ function bossThree:update( dt )
 			end
 		end
 
-		if psycho.canbehit and not DeathManager.gameLost and Base.collides(s.position, self.size, psycho.position, psycho.size) then
+		if psycho.canBeHit and not DeathManager.gameLost and Base.collides(s.position, self.size, psycho.position, psycho.size) then
 			psycho.diereason = "shot"
 			DeathManager.manageDeath()
 		end
@@ -485,7 +485,7 @@ function bossThree:defaultHealthLoss()
 		self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
-		Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+		Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 			self.colors[1]:setAndGo(nil , (1-d)*255, 300)
 			self.colors[2]:setAndGo(nil, d*255, 300)
 		end
@@ -501,7 +501,7 @@ function bossThree:yellowguyHealthLoss()
 		--self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
-		Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+		Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 			self.colors[2]:setAndGo(nil, d*255, 300)
 		end
 		}	
@@ -510,7 +510,7 @@ function bossThree:yellowguyHealthLoss()
 		self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		self.colors[3]:setAndGo(nil, 0, 1200)
-		Timer:new{timelimit = .05, onceonly = true, running = true, funcToCall = function()
+		Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
 			self.colors[1]:setAndGo(nil, .94*255 + (1-d)*.06*255, 300)
 			self.colors[2]:setAndGo(nil, d*.86*255, 300)
 			self.colors[3]:setAndGo(nil, d*.51*255, 300)
@@ -653,7 +653,7 @@ function bossThree.food:update( dt )
 			self.creationsize:setAndGo(0, b3.size, b3.size/t)
 			Timer:new{
 				timelimit = t,
-				onceonly = true,
+				onceOnly = true,
 				running = true,
 				funcToCall = function()
 					b3.last = b3.last + 1
@@ -692,7 +692,7 @@ function bossThree.food:update( dt )
 				b3.colors[4]:setAndGo(nil, 0, 100)
 				Timer:new{
 					timelimit = 2,
-					onceonly = true,
+					onceOnly = true,
 					running = true,
 					funcToCall = function ()
 						local d = b3.health/bossThree.yellowguyhealth
@@ -772,7 +772,7 @@ function bossThree.ghost:update( dt )
 	if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
 	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end

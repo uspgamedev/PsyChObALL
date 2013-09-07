@@ -50,7 +50,7 @@ function bossLast:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end
@@ -137,7 +137,7 @@ function bossLast:__init()
 							b.delete = true
 						end
 					end
-					timer:new{timelimit = 1.2, onceonly = true, running = true, funcToCall = function() 
+					timer:new{timelimit = 1.2, onceOnly = true, running = true, funcToCall = function() 
 						self.speed:set(v/7, 3*v)
 						self.shoottimer:start()
 					end}

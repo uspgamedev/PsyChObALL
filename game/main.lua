@@ -69,8 +69,7 @@ function initBase()
 	Button:paintOn(paintables)
 	table.sort(paintables, function(a, b) return a.ord < b.ord end)
 
-	bestscore, besttime, bestmult = 0, 0, 0
-	lastLevel = 'Level 1-1'
+	records = {}
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
@@ -82,7 +81,7 @@ function initBase()
 	-- [[Loading Resources]]
 	logo = graphics.newImage 'resources/LogoBeta.png'
 	splash = graphics.newImage 'resources/Marvellous Soft.png'
-	splashtimer = Timer:new{timelimit = 1.75, running = true, persistent = true, onceonly = true, pausable = false, 
+	splashtimer = Timer:new{timelimit = 1.75, running = true, persistent = true, onceOnly = true, pausable = false, 
 		funcToCall = function() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
@@ -114,7 +113,7 @@ function initGameVars()
 		self:stop()
 	end
 
-	function multtimer:handlereset()
+	function multtimer:handleReset()
 		self:funcToCall()
 	end
 
@@ -133,7 +132,7 @@ function initGameVars()
 		self:stop()
 	end
 
-	function inverttimer:handlereset()
+	function inverttimer:handleReset()
 		self:funcToCall()
 	end
 
@@ -198,7 +197,7 @@ function reloadSurvival()
 	state = survival
 	Enemy.addtimer:funcToCall()
 	resetVars()
-	Timer.closenonessential()
+	Timer.closeOldTimers()
 
 	SoundManager.restart()
 	Enemies.restartSurvival()
@@ -208,23 +207,25 @@ function reloadSurvival()
 	mouse.setGrab(true)
 end
 
-function reloadStory( name )
-	if name and name > lastLevel then lastLevel = name end
+function reloadStory( name, reloadEverything )
+	if name and name > records.story.lastLevel then records.story.lastLevel = name end
 	if psycho.pseudoDied then
-		psycho.canbehit = true
 		psycho.pseudoDied = false
 		paintables.deathEffects.bodies = nil
 		paintables.deathEffects = nil
 	end
+	if not psycho.canBeHit then
+		psycho.canBeHit = true
+		psycho.alpha = 255
+	end
 	Effect:clear()
-	if state == story and name ~= 'Level 1-1' then
-		Timer.closenonessential()
-	else
+	Timer.closeOldTimers()
+	if reloadEverything or name == 'Level 1-1' then
 		state = story
 		psycho.lives = Psychoball.lives
 		SoundManager.changeSong(SoundManager.limitlesssong)
 		resetVars()
-		Timer.closenonessential()
+		Timer.closeOldTimers()
 
 		SoundManager.restart()
 		Enemies.restartStory()

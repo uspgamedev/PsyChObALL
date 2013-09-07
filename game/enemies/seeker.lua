@@ -23,7 +23,7 @@ function seeker:start()
 	Body.start(self)
 	self.timeout = Timer:new{
 		timelimit = self.timeout,
-		onceonly = true,
+		onceOnly = true,
 		running = true,
 		funcToCall = function()
 			self.seek = false
@@ -81,7 +81,7 @@ function seeker:update( dt )
 		end
 	end
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end

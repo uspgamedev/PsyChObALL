@@ -17,7 +17,7 @@ function init()
 		self.timelimit = 30
 	end
 
-	function superball.addtimer:handlereset()
+	function superball.addtimer:handleReset()
 		self:stop()
 	end
 

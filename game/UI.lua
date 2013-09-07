@@ -8,7 +8,7 @@ end
 
 function restartMenu()
 	resetVars()
-	Timer.closenonessential()
+	Timer.closeOldTimers()
 	MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Fade)
 	if SoundManager.currentsong ~= SoundManager.menusong then
 		SoundManager.changeSong(SoundManager.menusong)
@@ -44,10 +44,8 @@ function keypressed( key )
 
 	if key == 'r' and paused then
 		if state == story then
-			if levelselected then
-				local n = Levels.currentLevelname
-				resetVars()
-				reloadStory(n)
+			if Levels.currentLevel.wasSelected then
+				reloadStory(Levels.currentLevel.name_, true)
 			else
 				reloadStory 'Level 1-1'
 			end
@@ -70,7 +68,7 @@ function keypressed( key )
 			Levels.closeLevel()
 		end
 		psycho.pseudoDied = false
-		psycho.canbehit = true
+		psycho.canBeHit = true
 
 		paused = false
 		restartMenu()
@@ -102,9 +100,9 @@ function draw()
 			graphics.setFont(getFont(12))
 			graphics.print("Time:", 25, 48)
 			graphics.print("Score:", 25, 24)
-			graphics.print(string.format("Best Score: %0.f", math.max(bestscore, score)),     25, 68)
-			graphics.print(string.format("Best Time: %.1fs", math.max(besttime,  gametime)), 25, 85)
-			graphics.print(string.format("Best Mult: x%.1f", math.max(bestmult,  multiplier)), width - 115, 83)
+			graphics.print(string.format("Best Score: %0.f", math.max(records.survival.score, score)),     25, 68)
+			graphics.print(string.format("Best Time: %.1fs", math.max(records.survival.time,  gametime)), 25, 85)
+			graphics.print(string.format("Best Mult: x%.1f", math.max(records.survival.multiplier,  multiplier)), width - 115, 83)
 			graphics.setFont(getFont(14))
 			graphics.print("ulTrAbLaST:", 25, 105)
 			graphics.setFont(getCoolFont(20))

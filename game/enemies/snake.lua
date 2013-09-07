@@ -38,7 +38,7 @@ function snake:update( dt )
 			end
 		end
 
-		if psycho.canbehit and not DeathManager.gameLost and Base.collides(s.position, self.size, psycho.position, psycho.size) then
+		if psycho.canBeHit and not DeathManager.gameLost and Base.collides(s.position, self.size, psycho.position, psycho.size) then
 			psycho.diereason = "shot"
 			DeathManager.manageDeath()
 		end

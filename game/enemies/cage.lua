@@ -69,7 +69,7 @@ function cage:doaction( actN )
 			Timer:new{
 				timelimit = act.wait,
 				running = true,
-				onceonly = true,
+				onceOnly = true,
 				funcToCall = function() self:doaction(actN + 1) end
 			}
 			act = nil

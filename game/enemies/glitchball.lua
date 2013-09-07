@@ -19,7 +19,7 @@ glitchball.draw = CircleEffect.draw
 function glitchball:update( dt )
 	Body.update(self, dt)
 
-	if psycho.canbehit and not DeathManager.gameLost and self:collidesWith(psycho) then
+	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end
