@@ -113,12 +113,12 @@ end
 setmetatable(levelEnv, {__index = _G})
 
 function runLevel( name )
-	local prevtitle = currentLevel and currentLevel.title
+	local prevTitle = currentLevel and currentLevel.title
 	closeLevel()
 	currentLevel = name and levels[name]
 	currentLevelname = name
 	currentLevel.reload()
-	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevtitle
+	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevTitle
 	local delay = changetitle and -5 or 0
 	for _, t in ipairs(currentLevel.timers_) do
 		t:register()

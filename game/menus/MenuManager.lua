@@ -1,5 +1,5 @@
-require "Menu"
-require "MenuTransitions"
+require "menus.Menu"
+require "menus.MenuTransitions"
 
 module('MenuManager', Base.globalize)
 
@@ -8,9 +8,10 @@ function init()
 	previousMenu = nil
 	currentTransition = nil
 
-	for _, file in ipairs(filesystem.enumerate 'menus') do
-		local name = file:sub(0,file:len() - 4)
-		require('menus.' .. name) -- get all menus
+	local menuList = {"Controls", "Main", "Practice"}
+
+	for _, menu in ipairs(menuList) do
+		require('menus.' .. menu .. 'Menu')
 	end
 end
 
