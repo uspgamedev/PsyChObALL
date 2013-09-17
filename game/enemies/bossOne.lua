@@ -26,7 +26,7 @@ function bossOne:__init()
 	bossOne.shot = Enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
+	self.coloreffect = ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	restrictToScreenThreshold = 10
 	restrictToScreenSpeed = nil
 	--bossOne.turret.bodies = Enemies.bossOne.bodies
@@ -266,6 +266,6 @@ bossOne.draw = Base.defaultDraw
 
 function bossOne:handleDelete()
 	self.size = 1
-	neweffects(self, 300)
+	Effect.createEffects(self, 300)
 	self.size = 0
 end

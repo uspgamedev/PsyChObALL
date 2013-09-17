@@ -120,7 +120,7 @@ function superball:manageShotCollision( shot )
 	shot.explosionEffects = false
 	local bakvariance = shot.variance
 	shot.variance = self.variance
-	neweffects(shot,10)
+	Effect.createEffects(shot,10)
 	shot.variance = bakvariance
 	self.life = self.life - 4
 	self.lifeCircle.size = self.size + self.life
@@ -133,7 +133,7 @@ end
 function superball:handleDelete()
 	Body.handleDelete(self)
 	if self.diereason == 'shot' then addscore(4*self.healthbak + 2*self.size) end
-	neweffects(self,100)
+	Effect.createEffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
 	self.shoottimer:remove()
 	self.timeout:remove()

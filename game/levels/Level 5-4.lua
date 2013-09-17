@@ -50,7 +50,7 @@ function run()
 		Text:new{
 			text = "Congratulation, you've reached the end. But not really, more is coming!\nThe next update of PsyChObALL will"
 			.. " include two whole new levels, including The End.",
-			font = getCoolFont(55),
+			font = Base.getCoolFont(55),
 			printmethod = graphics.printf,
 			position = Vector:new{width/2 - 450, height/2 - 200},
 			limit = 900,

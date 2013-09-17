@@ -12,7 +12,7 @@ Text = Body:new {
 Body.makeClass(Text)
 
 function Text:__init()
-	self.font = self.font or getFont(self.size)
+	self.font = self.font or Base.getFont(self.size)
 	self.variance = rawget(self, 'variance') or math.random(ColorManager.colorCycleTime*1000)/1000
 end
 

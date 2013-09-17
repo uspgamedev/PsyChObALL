@@ -1,4 +1,4 @@
-MainMenu = Menu:new {
+local MainMenu = Menu:new {
 	index = mainmenu
 }
 
@@ -15,7 +15,7 @@ function MainMenu:open()
 	function playbutton:pressed()
 		reloadSurvival()
 		self.visible = false
-		neweffects(self, 50)
+		Effect.createEffects(self, 50)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
 	end
 
@@ -30,7 +30,7 @@ function MainMenu:open()
 	function storybutton:pressed()
 		reloadStory 'Level 1-1'
 		self.visible = false
-		neweffects(self, 50)
+		Effect.createEffects(self, 50)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
 	end
 
@@ -40,7 +40,7 @@ function MainMenu:open()
 		position = Vector:new {width - 100, height - 100},
 		text = "Controls",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
+		pressed = function() MenuManager.changeToMenu(MenuManager.ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}
 
 	local testingbutton = Button:new {
@@ -48,7 +48,7 @@ function MainMenu:open()
 		position = Vector:new{width/2, height - 100},
 		text = "Practice",
 		fontsize = 15,
-		pressed = function() MenuManager.changeToMenu(PracticeMenus[1], MenuTransitions.Fade) end
+		pressed = function() MenuManager.changeToMenu(MenuManager.PracticeMenu[1], MenuTransitions.Slide:setDir('up/down', 1)) end
 	}
 
 	for _, component in ipairs {playbutton, testingbutton, storybutton, controlsbutton} do
@@ -60,7 +60,7 @@ function MainMenu:draw()
 	Menu.draw(self) -- draw buttons
 
 	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144, self.alphaFollows.var))
-	graphics.setFont(getFont(12))
+	graphics.setFont(Base.getFont(12))
 	graphics.print("v" .. version, width/2 - 10, 685)
 	graphics.print('Write "reset" to delete stats', 15, 10)
 	if UI.resetted then graphics.print("~~stats deleted~~", 25, 23) end
@@ -71,13 +71,15 @@ function MainMenu:draw()
 	end
 	graphics.print("A game by Marvellous Soft/USPGameDev", 14, 696)
 
-	graphics.setFont(getCoolFont(24))
+	graphics.setFont(Base.getCoolFont(24))
 	if Cheats.konamicode then
 		graphics.print("KONAMI CODE!", 450, 5)
 	end
-	graphics.setFont(getFont(30))
+	graphics.setFont(Base.getFont(30))
 
 	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 2.5 + 1, self.alphaFollows.var))
 	graphics.draw(logo, (width - logo:getWidth()/4)/2, 75, nil, 0.25, 0.20)
-	graphics.setFont(getFont(12))
+	graphics.setFont(Base.getFont(12))
 end
+
+return MainMenu

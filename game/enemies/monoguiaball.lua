@@ -2,7 +2,7 @@ monoguiaball = Body:new {
 	size =  25,
 	divideN = 3,
 	args = {},
-	coloreffect = ColorManager.ColorManager.getColorEffect(20, 140, 0),
+	coloreffect = ColorManager.getColorEffect(20, 140, 0),
 	spriteBatch = graphics.newSpriteBatch(Base.pixel, 150, 'dynamic'),
 	spriteMaxNum = 150,
 	spriteSafety = 10,
@@ -43,7 +43,7 @@ end
 
 function monoguiaball:handleDelete()
 	Body.handleDelete(self)
-	neweffects(self, 20)
+	Effect.createEffects(self, 20)
 	if self.diereason ~= "shot" then return end
 	addscore(100)
 	local speed = self.speed:length()

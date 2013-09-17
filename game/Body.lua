@@ -1,3 +1,12 @@
+-- dependencies
+local lux, graphics = lux, graphics
+local rawget, rawset, unpack, getmetatable, pairs = rawget, rawset, unpack, getmetatable, pairs
+local width, height = width, height
+local Base, Vector, ColorManager = Base, Vector, ColorManager
+local global = _G
+local Body
+setfenv(1, {})
+
 Body = lux.object.new {
 	size = 0,
 	mode = 'fill',
@@ -104,20 +113,20 @@ end
 Body.collidesWith = Base.collides
 
 function Body:getWarning()
-	self.warning = Warning:new {
+	self.warning = global.Warning:new {
 		based_on = self
 	}
-	Warning.bodies[self] = self.warning
+	global.Warning.bodies[self] = self.warning
 	return self.warning
 end
 
 function Body:freeWarning()
-	Warning.bodies[self] = nil
+	global.Warning.bodies[self] = nil
 	self.warning = nil
 end
 
 function Body:paintOn( p )
-	table.insert(p, self)
+	p[#p + 1] = self
 end
 
 function Body:drawComponents()
@@ -135,7 +144,7 @@ function Body:updateComponents( dt )
 	for k, body in pairs(self.bodies) do
 		body:update(dt)
 		if body.delete then
-			table.insert(todelete, k)
+			todelete[#todelete + 1] = k
 		end
 	end
 
@@ -158,9 +167,11 @@ end
 function Body:register(...)
 	self:freeWarning()
 	self:start(...)
-	table.insert(self.bodies, self)
+	self.bodies[#self.bodies + 1] = self
 	if self.positionfollows then
 		self.initialtime = gametime
 		self.initialpos  = self.position:clone()
 	end
 end
+
+return Body

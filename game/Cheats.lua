@@ -1,4 +1,8 @@
-module('Cheats', Base.globalize)
+local lux = lux
+local type, print, pairs = type, print, pairs
+local global = _G
+local Cheats = {}
+setfenv(1, Cheats)
 
 devmode = false
 invisible = false
@@ -11,7 +15,7 @@ function password( pass )
 	if type(pass) == 'string' then
 		local str = pass
 		pass = {}
-		for char in str:gmatch '.' do table.insert(pass,char) end
+		for char in str:gmatch '.' do pass[#pass + 1] = char end
 	end
 	local progress = 0
 	return function ( key )
@@ -46,25 +50,25 @@ function init()
 	
 	image:new {
 		pass = 'pizza',
-		image = 	graphics.newImage("resources/pizza.png"),
+		image = 	global.graphics.newImage("resources/pizza.png"),
 		painted = false
 	}
 	image:new {
 		pass = 'yan',
-		image = graphics.newImage("resources/yan.png")
+		image = global.graphics.newImage("resources/yan.png")
 	}
 	image:new {
 		pass = 'rica',
-		image = graphics.newImage("resources/rica.png")
+		image = global.graphics.newImage("resources/rica.png")
 	}
 	image:new {
 		pass = 'rika',
-		image = graphics.newImage("resources/rika.png")
+		image = global.graphics.newImage("resources/rika.png")
 	}
 end
 
 function keypressed( key )
-	if onGame() then
+	if global.onGame() then
 		
 		if devmode then
 			devmode = devpass(key)
@@ -75,44 +79,44 @@ function keypressed( key )
 
 		invisible = invisiblepass(key)
 		dkmode = allimagespass(key)
-		CircleEffect.changesimage = dkmode
+		global.CircleEffect.changesimage = dkmode
 		image.processCheats(key)
 
 		if tiltmode then
 			tiltmode = tiltpass(key)
-			if not tiltmode then angle:setAndGo(nil, 0, 1) end
+			if not tiltmode then global.angle:setAndGo(nil, 0, 1) end
 		else
 			tiltmode = tiltpass(key)
-			if tiltmode then angle:setAndGo(nil, math.pi/25, 1) end
+			if tiltmode then global.angle:setAndGo(nil, math.pi/25, 1) end
 		end
 
 		if devmode then
-			if not esc and key == 'k' then DeathManager.manageDeath() end
-			if 	 key == '0' then multiplier = multiplier + 2
-			elseif key == '9' then multiplier = multiplier - 2
-			elseif key == '8' then addscore(100)
-			elseif key == '7' then addscore(-100)
-			elseif key == '6' then v = v + 10
-			elseif key == '5' then v = v - 10
-			elseif key == '4' then timefactor = timefactor * 1.1
-			elseif key == '3' then timefactor = timefactor * 0.9
-			elseif key == '2' then psycho:addLife()
-			elseif key == '1' then psycho:removeLife()
-			elseif key == 'l' and not DeathManager.gameLost then DeathManager.getDeathText(1) DeathManager.manageDeath()
-			elseif key == 'x' then ultracounter = ultracounter + 1
-			elseif key == 'g' then godmode = not godmode
+			if not global.isPaused and key == 'k' then global.DeathManager.manageDeath() end
+			if 	 key == '0' then global.multiplier = global.multiplier + 2
+			elseif key == '9' then global.multiplier = global.multiplier - 2
+			elseif key == '8' then global.addscore(100)
+			elseif key == '7' then global.addscore(-100)
+			elseif key == '6' then global.v = global.v + 10
+			elseif key == '5' then global.v = global.v - 10
+			elseif key == '4' then global.timefactor = global.timefactor * 1.1
+			elseif key == '3' then global.timefactor = global.timefactor * 0.9
+			elseif key == '2' then global.psycho:addLife()
+			elseif key == '1' then global.psycho:removeLife()
+			elseif key == 'l' and not global.DeathManager.gameLost then global.DeathManager.getDeathText(1) global.DeathManager.manageDeath()
+			elseif key == 'x' then global.ultracounter = global.ultracounter + 1
+			elseif key == 'g' then global.godmode = not global.godmode
 			elseif key == 'e' then 
 				local effectCount = 0
-				for _, __ in pairs(Effect.bodies) do effectCount = effectCount + 1 end
+				for _, __ in pairs(global.Effect.bodies) do effectCount = effectCount + 1 end
 				print(effectCount)
-			elseif key == 'r' then timefactor = 1
-			elseif key == 'j' then Shot.shotnum = Shot.shotnum == 1 and 10 or 1
+			elseif key == 'r' then global.timefactor = 1
+			elseif key == 'j' then global.Shot.shotnum = global.Shot.shotnum == 1 and 10 or 1
 			end
 		end
 		
 	end
 
-	if onMenu() then
+	if global.onMenu() then
 		konamicode = konamipass(key)
 	end
 end
@@ -125,13 +129,15 @@ image = lux.object.new {
 }
 
 function image:__init()
-	table.insert(imagecheats, self)
+	imagecheats[#imagecheats + 1] = self
 	self.passcheck = password(self.pass)
 	self.painted = self.painted == nil and true or self.painted
 end
 
 function image.processCheats( key )
-	for _, icheat in ipairs(imagecheats) do
+	local icheat
+	for i = 1, #imagecheats do
+		icheat = imagecheats[i]
 		if icheat.passcheck(key) then
 			if image.image == icheat.image then
 				image.enabled = false
@@ -145,3 +151,5 @@ function image.processCheats( key )
 		end
 	end
 end
+
+return Cheats

@@ -1,3 +1,8 @@
+-- dependencies
+local Timer = Timer
+local VarTimer
+setfenv(1, {})
+
 --use this to change variables with time
 VarTimer = Timer:new {
 	persistent = true,
@@ -45,3 +50,5 @@ function VarTimer:setAndGo( ... )
 	self:set(...)
 	self:start()
 end
+
+return VarTimer

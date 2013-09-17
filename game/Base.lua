@@ -1,25 +1,34 @@
 width, height = 1080, 720
 require 'lux.object'
-require 'Vector'
-require 'List'
-require 'Stack'
-
---mythical stuff
-module('Base', package.seeall)
+Vector = require 'Vector'
+List = require 'List'
+Stack = require 'Stack'
 
 math.atan = error --use math.atan2
 
---[[
-	"Localizes" Love2D tables
-]]
+-- dependencies
+local lux = lux
+local love = love
+local Stack, Vector = Stack, Vector
+local pairs, type, setmetatable, require = pairs, type, setmetatable, require
+local rawset = rawset
+local pi, floor, abs = math.pi, math.floor, math.abs
+local width, height = width, height
+local global = _G
+local Base = {}
+setfenv(1, Base) -- Restricts access to other stuff
+--mythical stuff
+
+gameSpeed = 240
+
 local function fixPosIgnoreOne( func )
 	return function ( first, x, y, ... )
-		func(first, x*ratio, y*ratio, ...)
+		func(first, x*global.ratio, y*global.ratio, ...)
 	end
 end
 local function fixPosIgnoreNone( func )
 	return function ( x, y, ... )
-		func(x*ratio, y*ratio, ...)
+		func(x*global.ratio, y*global.ratio, ...)
 	end
 end
 
@@ -47,18 +56,18 @@ local translateStack = Stack:new{}
 translateStack:push(Vector:new{0, 0})
 
 local lineWidth = 1
-_G.graphics = {
+global.graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
 	circle = function ( mode, x, y, r )
-		if Cheats.image.enabled and (Cheats.dkmode or mode == 'fill') then
-			if not Cheats.image.painted then graphics.setColor(255, 255, 255) end
-			graphics.draw(Cheats.image.image, x - r, y - r, 
-				0, 2*r / Cheats.image.image:getWidth(), 2*r / Cheats.image.image:getHeight())
+		if global.Cheats.image.enabled and (global.Cheats.dkmode or mode == 'fill') then
+			if not global.Cheats.image.painted then graphics.setColor(255, 255, 255) end
+			graphics.draw(global.Cheats.image.image, x - r, y - r, 
+				0, 2*r / global.Cheats.image.image:getWidth(), 2*r / global.Cheats.image.image:getHeight())
 		else
 			--assume Base.circleShader is being used
-			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
+			local xFixed, yFixed, rFixed = x*global.ratio, y*global.ratio, r*global.ratio
 			if mode == 'line' then
-				local min = lineWidth*ratio + 1
+				local min = lineWidth*global.ratio + 1
 				min = (((rFixed - min)/(rFixed))^2)/4
 				if love.graphics.getLineWidth() > 1 then print 'asd' end
 				circleShader:send('min', min)
@@ -69,13 +78,13 @@ _G.graphics = {
 			end
 		end
 	end,
-	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or sx or 1)*ratio, ...) end,
-	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.drawq(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or sx or 1)*ratio, ...) end,
+	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*global.ratio, y*global.ratio, r, (sx or 1)*global.ratio, (sy or sx or 1)*global.ratio, ...) end,
+	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.drawq(i, q, x*global.ratio, y*global.ratio, r, (sx or 1)*global.ratio, (sy or sx or 1)*global.ratio, ...) end,
 	point = fixPosIgnoreNone(love.graphics.point),
 	print = fixPosIgnoreOne(love.graphics.print),
-	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,
+	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*global.ratio, y*global.ratio, limit*global.ratio, a) end,
 	translate = function(x, y) 
-		local tx, ty = sign(x)*math.floor(math.abs(x)*ratio), sign(y)*math.floor(math.abs(y)*ratio)
+		local tx, ty = sign(x)*floor(abs(x)*global.ratio), sign(y)*floor(abs(y)*global.ratio)
 		translateStack:peek():add(tx or 0, ty or 0)
 		love.graphics.translate(tx, ty)
 	end,
@@ -87,33 +96,49 @@ _G.graphics = {
 		translateStack:pop()
 		love.graphics.pop()
 	end,
-	rectangle = function (mode, x, y, width, height) love.graphics.rectangle(mode, x*ratio, y*ratio, width*ratio, height*ratio) end,
-	line = function(x1,y1,x2,y2) love.graphics.line(x1*ratio, y1*ratio, x2*ratio, y2*ratio) end,
+	rectangle = function (mode, x, y, width, height) love.graphics.rectangle(mode, x*global.ratio, y*global.ratio, width*global.ratio, height*global.ratio) end,
+	line = function(x1,y1,x2,y2) love.graphics.line(x1*global.ratio, y1*global.ratio, x2*global.ratio, y2*global.ratio) end,
 	setLineWidth = function(l) lineWidth = l love.graphics.setLineWidth(l) end
 }
 
-_G.mouse = {
+global.mouse = {
 	getPosition = function()
 		local x, y = love.mouse.getPosition()
-		return x/ratio, y/ratio
+		return x/global.ratio, y/global.ratio
 	end,
-	getX = function() return love.mouse.getX()/ratio end,
-	getY = function() return love.mouse.getY()/ratio end
+	getX = function() return love.mouse.getX()/global.ratio end,
+	getY = function() return love.mouse.getY()/global.ratio end
 }
 
 for k,v in pairs(love) do
 	if type(v) == 'table' then
-		if _G[k] then
-			setmetatable(_G[k], { __index = v})
+		if global[k] then
+			setmetatable(global[k], { __index = v})
 		else
-			_G[k] = v
+			global[k] = v
 		end
 	end
 end
 
 function defaultDraw( obj )
-	graphics.setColor(ColorManager.getComposedColor(obj.variance, obj.alphaFollows and obj.alphaFollows.var or obj.alpha, obj.coloreffect))
-	graphics.circle(obj.mode, obj.position[1], obj.position[2], obj.size)
+	global.graphics.setColor(global.ColorManager.getComposedColor(obj.variance, obj.alphaFollows and obj.alphaFollows.var or obj.alpha, obj.coloreffect))
+	global.graphics.circle(obj.mode, obj.position[1], obj.position[2], obj.size)
+end
+
+local fonts = {}
+function Base.getFont(size)
+	size = floor(size * global.ratio)
+	if fonts[size] then return fonts[size] end
+	fonts[size] = love.graphics.newFont(size)
+	return fonts[size]
+end
+
+local coolfonts = {}
+function Base.getCoolFont(size)
+	size = floor(size * global.ratio)
+	if coolfonts[size] then return coolfonts[size] end
+	coolfonts[size] = love.graphics.newFont('resources/Nevis.ttf', size)
+	return coolfonts[size]
 end
 
 --[[
@@ -123,15 +148,15 @@ end
 	otherwise, it will be created on the table
 ]]
 function globalize( t )
-	t.global = _G
+	t.global = global
 	t.self = { __index = t, __newindex = function ( nt, k, v )
 		rawset(t, k, v)
 	end}
 	setmetatable(t.self, t.self)
 	setmetatable(t, {
-		__index = _G,
+		__index = global,
 		__newindex = function ( t, k, v )
-			if _G[k] ~= nil then _G[k] = v
+			if global[k] ~= nil then global[k] = v
 			else rawset(t, k, v) end
 		end
 		})
@@ -167,7 +192,7 @@ function sign(a)
 	return a == 0 and 0 or a > 0 and 1 or -1 
 end
 
-local constDegreeToRadians = math.pi/180
+local constDegreeToRadians = pi/180
 function toRadians( degree )
 	return degree*constDegreeToRadians
 end
@@ -186,3 +211,5 @@ function collides( p1, r1, p2, r2 )
 	end
 	return (r1 + r2)^2 >= (p1[1] - p2[1])^2 + (p1[2] - p2[2])^2
 end
+
+return Base

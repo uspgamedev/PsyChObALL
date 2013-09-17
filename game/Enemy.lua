@@ -70,7 +70,7 @@ function Enemy:handleDelete()
 	Body.handleDelete(self)
 	if self.diereason == "shot" then
 		addscore((self.size / 3) * multiplier)
-		neweffects(self, 23)
+		Effect.createEffects(self, 23)
 		multiplier = multiplier + (self.size / 30)
 
 		if not  multtimer.running then  multtimer:start()
@@ -95,7 +95,7 @@ function Enemy:handleDelete()
 			} 
 		end
 	else
-		neweffects(self, 4)
+		Effect.createEffects(self, 4)
 	end
 
 	if self.size >= 10 then

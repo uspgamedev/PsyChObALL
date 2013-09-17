@@ -1,4 +1,6 @@
-PracticeMenu = Menu:new {}
+local PracticeMenus = {}
+local PracticeMenu = Menu:new {}
+local ColorManager, Levels = ColorManager, Levels
 local levelNumber = Levels.worldsNumber
 
 function PracticeMenu:open( levelN )
@@ -9,10 +11,12 @@ function PracticeMenu:open( levelN )
 		position = Vector:new{width - 160, 580},
 		text = "back",
 		fontsize = 20,
-		pressed = function(self)
-			self.visible = false
-			neweffects(self, 26)
-			MenuManager.changeToMenu(MainMenu, MenuTransitions.Fade)
+		pressed = function(but)
+			if levelN > 1 then
+				MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Slide:setDir('diagonal1', -1))
+			else
+				MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Slide:setDir('up/down', -1))
+			end
 		end
 	}
 
@@ -47,7 +51,7 @@ function PracticeMenu:open( levelN )
 
 	local goToLevelFunc = function (self)
 		self.visible = false
-		neweffects(self, 40)
+		Effect.createEffects(self, 40)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
 		reloadStory(self.levelName)
 		Levels.currentLevel.wasSelected = true
@@ -73,11 +77,10 @@ end
 function PracticeMenu:draw()
 	Menu.draw(self)
 	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows.var, self.coloreffect))
-	graphics.setFont(getCoolFont(70))
+	graphics.setFont(Base.getCoolFont(70))
 	graphics.printf("Practice", 0, 30, width, 'center')
 end
 
-PracticeMenus = {}
 
 for i = 1, levelNumber do
 	local menu = PracticeMenu:new{
@@ -86,3 +89,5 @@ for i = 1, levelNumber do
 	menu.open = function(self) PracticeMenu.open(self, i) end
 	PracticeMenus[i] = menu
 end
+
+return PracticeMenus

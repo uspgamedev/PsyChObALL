@@ -22,7 +22,7 @@ function Button:__init()
 	}
 
 	function self.effectsBurst.funcToCall()
-		neweffects(self, 1)
+		Effect.createEffects(self, 1)
 	end
 
 	self.hoverring = CircleEffect:new {
@@ -42,7 +42,7 @@ function Button:draw()
 	if not self.visible or self.alphaFollows.var == 0 then return end
 	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect)
 	graphics.setColor(ColorManager.invertEffect(color))
-	graphics.setFont(getCoolFont(self.fontsize))
+	graphics.setFont(Base.getCoolFont(self.fontsize))
 	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')
 end
 
@@ -66,7 +66,7 @@ end
 
 function Button:setText( t )
 	self.text = t or self.text
-	local font = getFont(self.fontsize/ratio)
+	local font = Base.getFont(self.fontsize/ratio)
 	local dx, dy = font:getWrap(self.text, self.size*2)
 	self.ox, self.oy = 
 		self.x - self.size,

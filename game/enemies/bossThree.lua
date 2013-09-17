@@ -153,7 +153,7 @@ function bossThree.behaviors.second( self )
 			local g = bossThree.ghost:new{}
 			Enemy.__init(g)
 			g.speed:set(Base.sign(math.random()-.5)*math.random(v*.7, v), Base.sign(math.random()-.5)*math.random(v*.7, v))
-			g.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(color))
+			g.coloreffect = ColorManager.getColorEffect(unpack(color))
 			table.insert(bossThree.bodies, g)
 		end
 		
@@ -251,7 +251,7 @@ function bossThree.behaviors.fourth( self )
 						timelimit = 2,
 						funcToCall = function()
 							local change = VarTimer:new{var = 0}
-							local c = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, change)
+							local c = ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, change)
 							change:setAndGo(0, 255, 80)
 							for _, g in pairs(bossThree.bodies) do
 								if g.__type == 'bossThreeghost' then
@@ -469,7 +469,7 @@ function bossThree:defaultHealthLoss()
 	if self.health == 0 then
 		s.coloreffect = ColorManager.sinCityEffect
 		s.size = self.size
-		neweffects(s, 50)
+		Effect.createEffects(s, 50)
 		self.health = bossThree.maxhealth
 		self.segments[self.first] = nil
 		self.first = self.first + 1
@@ -530,7 +530,7 @@ function bossThree:__init()
 	self.segments = {}
 	self.speedvalue = spd
 	self.colors = {VarTimer:new{var = 0}, VarTimer:new{var = 255}, VarTimer:new{var = 0}, VarTimer:new{var = 70}, VarTimer:new{var = 50}}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
+	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))
 	local speed = Vector:new(Base.clone(self.path[1])):sub(self.position):normalize()
 	local diff = speed * (self.size*2)
 	speed:mult(bossThree.basespeed)
@@ -583,7 +583,7 @@ function bossThree:handleDelete()
 	paintables.food = nil
 	self.spawnfood:remove()
 	self.yellowguytimer:remove()
-	neweffects(self, 200)
+	Effect.createEffects(self, 200)
 end
 
 bossThree.food = CircleEffect:new{
@@ -602,7 +602,7 @@ function bossThree.food:__init()
 	if bossThree.bodies[1].guy then
 		self.mode = 'fill'
 		self.coloreffect = bossThree.bodies[1].guy.onRage and
-			ColorManager.ColorManager.getColorEffect(240, 0, 120, 40) or ColorManager.ColorManager.getColorEffect(255, 255, 255, 40)
+			ColorManager.getColorEffect(240, 0, 120, 40) or ColorManager.getColorEffect(255, 255, 255, 40)
 	end
 
 	self.normalsize = 25
@@ -792,7 +792,7 @@ end
 
 function bossThree.ghost:handleDelete()
 	addscore(250)
-	neweffects(self, 30)
+	Effect.createEffects(self, 30)
 	self.ring.delete = true
 	self.shoottimer:remove()
 	for _, g in pairs(bossThree.bodies) do

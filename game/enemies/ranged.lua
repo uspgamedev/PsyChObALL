@@ -45,7 +45,7 @@ function ranged:onInit( num, target, pos, exitpos, shot, initialcolor, angle, ti
 	self.angle = angle or 0
 	self.basecolor = initialcolor or {0, 255, 0}
 	self.colorvars = {VarTimer:new{var = self.basecolor[1]}, VarTimer:new{var = self.basecolor[2]}, VarTimer:new{var = self.basecolor[3]}}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colorvars))
+	self.coloreffect = ColorManager.getColorEffect(unpack(self.colorvars))
 	self.divideN = num or self.divideN
 	self.shot = shot and Enemies[shot] or Enemies.simpleball
 	if not pos then Enemy.__init(self)
@@ -120,7 +120,7 @@ end
 
 function ranged:handleDelete()
 	Body.handleDelete(self)
-	neweffects(self, 30)
+	Effect.createEffects(self, 30)
 	self.shotcircle.size = -1
 	self.timeout:remove()
 	if self.diereason == "shot" then

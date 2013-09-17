@@ -128,7 +128,7 @@ function runLevel( name )
 		local title = Text:new {
 			text = currentLevel.title,
 			alphaFollows = VarTimer:new{ var = 255 },
-			font = getCoolFont(100),
+			font = Base.getCoolFont(100),
 			position = Vector:new{50, 200},
 			limit = width - 100,
 			align = 'center',

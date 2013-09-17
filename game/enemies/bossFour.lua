@@ -435,7 +435,7 @@ function bossFour:__init()
 			elseif e.y - e.size < (e.ty or (self.y - self.height/2)) then e.speed:set(nil,  math.abs(e.Vy)) end
 		end
 	self.colors = {VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 10}}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
+	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))
 	self.shoottimer = Timer:new{
 		timelimit = .1,
 		funcToCall = function()
@@ -497,5 +497,5 @@ function bossFour:__init()
 end
 
 function bossFour:handleDelete()
-	neweffects(self, 200)
+	Effect.createEffects(self, 200)
 end

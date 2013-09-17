@@ -1,3 +1,7 @@
+local lux = lux
+local List
+setfenv(1, {}) -- Restricts access to other stuff
+
 List = lux.object.new {
 	first = 1,
 	last = 1,
@@ -11,7 +15,7 @@ function List:push(x)
 end
 
 function List:pop()
-	if self.first == self.last then print("List empty") return nil end
+	if self.first == self.last then return nil end
 	local x = self[self.first]
 	if x.freeWarning then x:freeWarning() end
 	self[self.first] = nil
@@ -27,3 +31,5 @@ function List:clear()
 	self.first = 1
 	self.last = 1
 end
+
+return List

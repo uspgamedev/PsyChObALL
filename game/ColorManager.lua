@@ -1,4 +1,8 @@
-module ('ColorManager', package.seeall)
+-- dependencies
+local Timer = Timer
+local type, min, max = type, math.min, math.max
+local ColorManager = {}
+setfenv(1, ColorManager)
 
 colorCycleTime = 10
 currentEffect = nil
@@ -83,16 +87,16 @@ function getColorEffect( r, g, b, change )
 		if type(change) ~= 'table' then change = {var = change} end
 		return function ( color )
 			color[1], color[2], color[3] = 
-					color[1]*change.var/255 + math.min(math.max(r.var - change.var/2, 0), 255 - change.var),
-					color[2]*change.var/255 + math.min(math.max(g.var - change.var/2, 0), 255 - change.var),
-					color[3]*change.var/255 + math.min(math.max(b.var - change.var/2, 0), 255 - change.var)
+					color[1]*change.var/255 + min(max(r.var - change.var/2, 0), 255 - change.var),
+					color[2]*change.var/255 + min(max(g.var - change.var/2, 0), 255 - change.var),
+					color[3]*change.var/255 + min(max(b.var - change.var/2, 0), 255 - change.var)
 			return color
 		end
 	else --conside all numbers
 		local consteffect = change/255
-		r = math.min(math.max(r - change/2, 0), 255 - change)
-		g = math.min(math.max(g - change/2, 0), 255 - change)
-		b = math.min(math.max(b - change/2, 0), 255 - change)
+		r = min(max(r - change/2, 0), 255 - change)
+		g = min(max(g - change/2, 0), 255 - change)
+		b = min(max(b - change/2, 0), 255 - change)
 		return function ( color )
 			color[1], color[2], color[3] = 
 					color[1]*consteffect + r,
@@ -102,3 +106,5 @@ function getColorEffect( r, g, b, change )
 		end
 	end
 end
+
+return ColorManager

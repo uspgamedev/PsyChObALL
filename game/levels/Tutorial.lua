@@ -15,7 +15,7 @@ function run()
 	local simple = 'simpleball'
 	local welcome = Text:new{
 		text = "Welcome to PsyChObALL",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -25,7 +25,7 @@ function run()
 
 	local wasd = Text:new{
 		text = "Use WASD or the directional keys to move\nHold shift to move slowly",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -34,7 +34,7 @@ function run()
 	}
 	local aim = Text:new{
 		text = "Use your mouse to aim and left click to shoot",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -43,7 +43,7 @@ function run()
 	}
 	local hit = Text:new{
 		text = "Hit enemies to increase your score\n If you get hit you will die",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -52,7 +52,7 @@ function run()
 	}
 	local space = Text:new{
 		text = "Hold space to charge ultrablast, and release to use it\nHold it longer for more balls",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -61,7 +61,7 @@ function run()
 	}
 	local pause = Text:new{
 		text = "Press P or ESC to pause the game",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -70,7 +70,7 @@ function run()
 	}
 	local music = Text:new{
 		text = "Press '<' or '>' to change the volume\n and press M to mute",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -79,7 +79,7 @@ function run()
 	}
 	local remember = Text:new{
 		text = "Remember, we all have psycho within ourselves\n Also you can replay this tutorial on the practice screen",
-		font = getCoolFont(50),
+		font = Base.getCoolFont(50),
 		printmethod = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
@@ -204,7 +204,7 @@ function run()
 	doNow( function(timer)
 			Text:new{
 				text = "Tutorial Completed. Press ESC or P and return to the menu.",
-				font = getCoolFont(50),
+				font = Base.getCoolFont(50),
 				printmethod = graphics.printf,
 				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,

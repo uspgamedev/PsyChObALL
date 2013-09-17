@@ -26,5 +26,5 @@ function glitchball:update( dt )
 end
 
 function glitchball:handleDelete()
-	neweffects(self, 40)
+	Effect.createEffects(self, 40)
 end

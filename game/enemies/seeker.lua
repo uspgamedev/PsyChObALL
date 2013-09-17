@@ -15,7 +15,7 @@ function seeker:__init()
 	self.speedN = self.speedN or math.random(v - 30, v)
 	self.exitposition = self.exitposition or self.position
 	self.colors = {VarTimer:new{var = .88*255}, VarTimer:new{var = .66*255}, VarTimer:new{var = .37*255}}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect(unpack(self.colors))
+	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))
 	self.acceleration = Vector:new{0, 0}
 end
 
@@ -111,5 +111,5 @@ end
 function seeker:handleDelete()
 	Body.handleDelete(self)
 	if self.diereason == 'shot'then addscore(100) end
-	neweffects(self, 40)
+	Effect.createEffects(self, 40)
 end

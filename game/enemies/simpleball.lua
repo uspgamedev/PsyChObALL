@@ -1,6 +1,6 @@
 simpleball = Body:new {
 	size = 20,
-	coloreffect = ColorManager.ColorManager.getColorEffect(0, 0, 255, 40),
+	coloreffect = ColorManager.getColorEffect(0, 0, 255, 40),
 	shader = Base.circleShader,
 	spriteBatch = graphics.newSpriteBatch(Base.pixel, 400, 'dynamic'),
 	spriteMaxNum = 400,
@@ -43,5 +43,5 @@ end
 function simpleball:handleDelete()
 	Body.handleDelete(self)
 	if self.diereason == 'shot' then addscore(25) end
-	neweffects(self, 40)
+	Effect.createEffects(self, 40)
 end

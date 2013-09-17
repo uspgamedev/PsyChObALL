@@ -47,7 +47,7 @@ function snake:update( dt )
 			(s.position.y + self.size < 0 and s.speed.y <= 0) or (s.position.y > height + self.size and s.speed.y >= 0) then
 			self.first = self.first + 1
 			s.size = self.size
-			neweffects(s, 20)
+			Effect.createEffects(s, 20)
 			if self.first > self.last then self.delete = true
 			else self.position = self.segments[self.first].position end
 		elseif s.target then
@@ -76,7 +76,7 @@ function snake:manageShotCollision( segmentN, shot )
 	if segmentN == self.first and self.vulnerable then
 		addscore(20)
 		s.size = self.size
-		neweffects(s, 20)
+		Effect.createEffects(s, 20)
 		self.segments[self.first] = nil
 		self.first = self.first + 1
 		if self.first > self.last then self.delete = true
@@ -100,7 +100,7 @@ function snake:onInit( n, spd, timeout, p1, p2, ... )
 	self.position = Vector:new(Base.clone(p1))
 	self.speedvalue = spd or v
 	self.leadchange = VarTimer:new{var = 130, alsoCall = function() self.vulnerable = true end}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
+	self.coloreffect = ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, self.leadchange)
 	local speed = Vector:new(Base.clone(p2)):sub(self.position):normalize()
 	self.considersize = self.considersize or self.size
 	local diff = speed * (self.considersize*2)

@@ -31,10 +31,10 @@ function bossTwo:__init()
 		{VarTimer:new{var = 0}, VarTimer:new{var = 120}, VarTimer:new{var = 0}}
 	}
 	self.ballscoloreffects = {
-		ColorManager.ColorManager.getColorEffect(self.ballscolors[1][1], self.ballscolors[1][2], self.ballscolors[1][3], 20),
-		ColorManager.ColorManager.getColorEffect(self.ballscolors[2][1], self.ballscolors[2][2], self.ballscolors[2][3], 20),
-		ColorManager.ColorManager.getColorEffect(self.ballscolors[3][1], self.ballscolors[3][2], self.ballscolors[3][3], 20),
-		ColorManager.ColorManager.getColorEffect(self.ballscolors[4][1], self.ballscolors[4][2], self.ballscolors[4][3], 20)
+		ColorManager.getColorEffect(self.ballscolors[1][1], self.ballscolors[1][2], self.ballscolors[1][3], 20),
+		ColorManager.getColorEffect(self.ballscolors[2][1], self.ballscolors[2][2], self.ballscolors[2][3], 20),
+		ColorManager.getColorEffect(self.ballscolors[3][1], self.ballscolors[3][2], self.ballscolors[3][3], 20),
+		ColorManager.getColorEffect(self.ballscolors[4][1], self.ballscolors[4][2], self.ballscolors[4][3], 20)
 	}
 	bossTwo.turrets = { 
 		bossTwo.turret:new{ position = Vector:new{ 0, -50 } }, 
@@ -357,12 +357,12 @@ function bossTwo.behaviors.fourth( self )
 			local c1, c2 = t.circles[1], t.circles[2]
 			if c1 then
 				c1.position:add(t.position):add(t.bossTwopos)
-				neweffects(c1, 30)
+				Effect.createEffects(c1, 30)
 				t.circles[1] = nil
 			end
 			if c2 then
 				c2.position:add(t.position):add(t.bossTwopos)
-				neweffects(c2, 30)
+				Effect.createEffects(c2, 30)
 				t.circles[2] = nil
 			end
 		end
@@ -386,7 +386,7 @@ function bossTwo.behaviors.imploding( self )
 			if self.size < t.size then 
 				self.delete = true 
 				t.position:set(self.position) 
-				neweffects(t, 100) 
+				Effect.createEffects(t, 100) 
 				t.shoottimer:remove() 
 				bossTwo.turrets[i] = nil
 				for _, tur in pairs(bossTwo.turrets) do tur.shoottimer.timelimit = tur.shoottimer.timelimit/1.5 end
@@ -415,7 +415,7 @@ function bossTwo.behaviors.turretprotection( self )
 	a:setAndGo(0, 255, 100)
 	self.plead = Text:new{
 		text = "Please don't kill me!",
-		font = getCoolFont(30),
+		font = Base.getCoolFont(30),
 		position = Vector:new{width/2 - 146, height/2 - 110},
 		alphaFollows = a
 	}
@@ -442,7 +442,7 @@ function bossTwo.behaviors.final( self )
 	if self.size < 10 then
 		addscore(2000)
 		self.delete = true
-		neweffects(self, 100)
+		Effect.createEffects(self, 100)
 	end
 end
 
@@ -589,7 +589,7 @@ bossTwo.turret = Body:new {
 	health = bossTwo.maxhealth/4,
 	variance = math.random(ColorManager.colorCycleTime*1000)/1000,
 	turretnum = 4,
-	ballscoloreffect = ColorManager.ColorManager.getColorEffect(175, 0, 0, 40),
+	ballscoloreffect = ColorManager.getColorEffect(175, 0, 0, 40),
 	coloreffect = ColorManager.noLSDEffect,
 	attached = true,
 	__type = 'bossTwoTurret'
@@ -683,7 +683,7 @@ end
 
 function bossTwo.turret:handleDelete()
 	self.shoottimer:remove()
-	neweffects(self, 50)
+	Effect.createEffects(self, 50)
 	for _, tur in pairs(bossTwo.bodies) do
 		tur.shoottimer.timelimit = tur.shoottimer.timelimit / 1.5
 	end

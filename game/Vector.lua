@@ -1,4 +1,10 @@
-require "lux.object"
+-- dependencies
+local sin, cos, sqrt = math.sin, math.cos, math.sqrt
+local lux = lux
+local type, rawset, rawget = type, rawset, rawget
+local getmetatable = getmetatable
+local Vector
+setfenv(1, {}) -- Restricts access to other stuff
 
 Vector = lux.object.new {
 	0,		-- x-axis
@@ -190,7 +196,7 @@ function Vector:distsqr(x, y)
 end
 
 function Vector:dist(x, y)
-	return math.sqrt(self:distsqr(x,y))
+	return sqrt(self:distsqr(x,y))
 end
 
 function Vector:unpack()
@@ -202,7 +208,7 @@ function Vector:lengthsqr()
 end
 
 function Vector:length()
-	return math.sqrt(self:lengthsqr())
+	return sqrt(self:lengthsqr())
 end
 
 function Vector:normalized()
@@ -220,13 +226,15 @@ function Vector:reset()
 end
 
 function Vector:rotate( rad )
-	local sin, cos = math.sin(rad), math.cos(rad)
+	local sin_, cos_ = sin(rad), cos(rad)
 	self[1], self[2] = 
-		cos*self[1] - sin*self[2],
-		sin*self[1] + cos*self[2]
+		cos_*self[1] - sin_*self[2],
+		sin_*self[1] + cos_*self[2]
 	return self
 end
 
 function Vector:rotated( rad )
 	return Vector:new{self[1], self[2]}:rotate()
 end
+
+return Vector

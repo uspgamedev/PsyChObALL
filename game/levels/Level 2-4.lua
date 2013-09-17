@@ -8,7 +8,7 @@ function run()
 			Enemy.__init(t)
 			t:register()
 		end
-		Text:new { text = "BOSS INCOMING", font = getFont(40), position = Vector:new{ -100, -30 }, speed = Vector:new{v,v} }:register()
+		Text:new { text = "BOSS INCOMING", font = Base.getFont(40), position = Vector:new{ -100, -30 }, speed = Vector:new{v,v} }:register()
 	end )
 	wait(5)
 	enemy 'bossTwo'
@@ -31,7 +31,7 @@ function run()
 						else
 							Text:new{
 								text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
-								font = getCoolFont(50),
+								font = Base.getCoolFont(50),
 								printmethod = graphics.printf,
 								position = Vector:new{width/2 - 400, height/2 + 20},
 								limit = 800,

@@ -2,7 +2,7 @@ multiball = Body:new {
 	size =  20,
 	divideN = 2,
 	args = {},
-	coloreffect = ColorManager.ColorManager.getColorEffect(255, 0, 0),
+	coloreffect = ColorManager.getColorEffect(255, 0, 0),
 	shader = Base.circleShader,
 	spriteBatch = graphics.newSpriteBatch(Base.pixel, 250, 'dynamic'),
 	spriteMaxNum = 250,
@@ -44,7 +44,7 @@ end
 
 function multiball:handleDelete()
 	Body.handleDelete(self)
-	neweffects(self, 20)
+	Effect.createEffects(self, 20)
 	if self.diereason ~= "shot" then return end
 	addscore(50)
 	local speed = self.speed:length()

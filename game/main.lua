@@ -1,20 +1,20 @@
-require "Base"
-require "Body"
-require "Timer"
-require "VarTimer"
-require "ColorManager"
-require "FileManager"
-require "SoundManager"
-require "menus.MenuManager"
-require "DeathManager"
-require "UI"
-require "Cheats"
+Base         = require "Base"
+Cheats       = require "Cheats"
+Timer        = require "Timer"
+VarTimer     = require "VarTimer"
+ColorManager = require "ColorManager"
+FileManager  = require "FileManager"
+SoundManager = require "SoundManager"
+MenuManager  = require "menus.MenuManager"
+Body         = require "Body"
+Effect       = require "Effect"
+DeathManager = require "DeathManager"
+require "Button"
+require "Levels"
+UI           = require "UI"
 require "Enemies"
 require "CircleEffect"
 require "Psychoball"
-require "Levels"
-require "Button"
-require "Effect"
 require "Text"
 require "Formations"
 require "ImageBody"
@@ -32,7 +32,7 @@ end
 
 function initBase()
 	-- [[Initing Variables]]
-	v = 240 --main velocity of everything
+	v = Base.gameSpeed --main velocity of everything
 	totaltime = 0
 	splashscreen = -1
 	mainmenu = 1 -- mainmenu
@@ -43,8 +43,6 @@ function initBase()
 	story = 11
 	state = mainmenu
 	sqrt2 = math.sqrt(2)
-	fonts = {}
-	coolfonts = {}
 	resetted = false
 	godmode = false
 	paused = false
@@ -97,11 +95,11 @@ function initBase()
 end
 
 function initGameVars()
-	-- [[Creating Persistent Timers]]
 	for _, toBeInited in ipairs {ColorManager, MenuManager, DeathManager, CircleEffect, Enemy, Enemies, Shot, Psychoball} do
 		toBeInited.init()
 	end
 		
+	-- [[Creating Persistent Timers]]
 	multtimer = Timer:new {
 		timelimit  = 2.2,
 		persistent = true,
@@ -251,27 +249,13 @@ function getStateClass(st)
 	elseif st == levelselect then return 3 end
 end
 
-function getFont(size)
-	size = math.floor(size*ratio)
-	if fonts[size] then return fonts[size] end
-	fonts[size] = graphics.newFont(size)
-	return fonts[size]
-end
-
-function getCoolFont(size)
-	size = math.floor(size*ratio)
-	if coolfonts[size] then return coolfonts[size] end
-	coolfonts[size] = graphics.newFont('resources/Nevis.ttf', size)
-	return coolfonts[size]
-end
-
 function love.draw()
 	-- [[Setting camera]]
 	graphics.translate(width/2, height/2)
 	graphics.rotate(angle.var)
 	graphics.translate(-width/2, -height/2)
 	graphics.setLineWidth(3)
-	graphics.setFont(getFont(12))
+	graphics.setFont(Base.getFont(12))
 
 	drawBackground()
 	

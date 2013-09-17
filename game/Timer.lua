@@ -1,3 +1,9 @@
+local lux = lux
+local unpack, tRemove = unpack, table.remove
+local global = _G
+local Timer
+setfenv(1, {})
+
 Timer = lux.object.new {
 	time			 = 0,
 	onceOnly		 = false,
@@ -16,7 +22,7 @@ function Timer:__init()
 end
 
 function Timer:update(dt, timefactor, paused)
-	if not self.running or (paused and self.pausable) or (DeathManager.gameLost and not self.works_on_gameLost) then return end
+	if not self.running or (paused and self.pausable) or (not self.works_on_gameLost and global.DeathManager.gameLost) then return end
 	if self.timeAffected then dt = dt * timefactor end
 	self.time = self.time + dt
 	if not self.timelimit and self.funcToCall then 
@@ -49,7 +55,7 @@ function Timer.updatetimers(dt, timefactor, paused)
 	for i = #ts, 1, -1 do
 		local v = ts[i]
 		if v.delete then
-			table.remove(ts, i)
+			tRemove(ts, i)
 		else
 			v:update(dt, timefactor, paused)
 		end
@@ -74,5 +80,7 @@ end
 
 function Timer.register( t )
 	if t.delete then t.delete = false end
-	table.insert(ts, t)
+	ts[#ts + 1] = t
 end
+
+return Timer

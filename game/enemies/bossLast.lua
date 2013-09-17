@@ -67,7 +67,7 @@ function bossLast:__init()
 	self.alphaFollows = VarTimer:new{var = 0}
 	self.health = bossLast.maxhealth
 	self.colorchange = VarTimer:new{var = 255}
-	self.coloreffect = ColorManager.ColorManager.getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
+	self.coloreffect = ColorManager.getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
 
 	local components = {{},{},{},{}}
 	local updateFunc =  function (e, dt)

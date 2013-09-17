@@ -41,8 +41,8 @@ end
 
 function Shot:handleDelete()
 	Body.handleDelete(self)
-	if self.explosionEffects then neweffects(self, 7) end
-	if not self.collides then neweffects(self, 7) end
+	if self.explosionEffects then Effect.createEffects(self, 7) end
+	if not self.collides then Effect.createEffects(self, 7) end
 end
 
 function Shot:update(dt)
