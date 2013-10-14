@@ -1,4 +1,4 @@
-local MainMenu = Menu:new {
+MainMenu = Menu:new {
 	index = mainmenu
 }
 
@@ -40,7 +40,7 @@ function MainMenu:open()
 		position = Vector:new {width - 100, height - 100},
 		text = "Controls",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(MenuManager.ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
+		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}
 
 	local testingbutton = Button:new {
@@ -48,7 +48,7 @@ function MainMenu:open()
 		position = Vector:new{width/2, height - 100},
 		text = "Practice",
 		fontsize = 15,
-		pressed = function() MenuManager.changeToMenu(MenuManager.PracticeMenu[1], MenuTransitions.Slide:setDir('up/down', 1)) end
+		pressed = function() MenuManager.changeToMenu(PracticeMenus[1], MenuTransitions.Slide:setDir('up/down', 1)) end
 	}
 
 	for _, component in ipairs {playbutton, testingbutton, storybutton, controlsbutton} do
@@ -81,5 +81,3 @@ function MainMenu:draw()
 	graphics.draw(logo, (width - logo:getWidth()/4)/2, 75, nil, 0.25, 0.20)
 	graphics.setFont(Base.getFont(12))
 end
-
-return MainMenu

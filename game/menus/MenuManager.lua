@@ -1,10 +1,7 @@
-local ipairs, require, print = ipairs, require, print
-local MenuManager = {}
-setfenv(1, MenuManager)
-
 require "menus.Menu"
 require "menus.MenuTransitions"
 
+module('MenuManager', Base.globalize)
 
 function init()
 	currentMenu = nil
@@ -12,7 +9,7 @@ function init()
 	currentTransition = nil
 
 	for _, menu in ipairs {"Controls", "Main", "Practice"} do
-		MenuManager[menu .. 'Menu'] = require('menus.' .. menu .. 'Menu')
+		require('menus.' .. menu .. 'Menu')
 	end
 end
 
@@ -38,5 +35,3 @@ function changeToMenu( menu, transition )
 	currentTransition = transition or MenuTransitions.Cut
 	currentTransition:begin()
 end
-
-return MenuManager

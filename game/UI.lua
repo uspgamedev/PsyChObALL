@@ -1,10 +1,4 @@
--- dependencies
-local Base, Cheats, Timer, MenuManager, MenuTransitions, SoundManager, Button, DeathManager, Levels, ColorManager, FileManager = Base, Cheats, Timer, MenuManager, MenuTransitions, SoundManager, Button, DeathManager, Levels, ColorManager, FileManager
-local graphics, mouse, timer, width, height, ipairs = graphics, mouse, timer, width, height, ipairs
-local random, max, formatString = math.random, math.max, string.format
-local global = _G
-local UI = {}
-setfenv(1, UI)
+module('UI', Base.globalize)
 
 function init()
 	resetpass = Cheats.password 'reset'
@@ -13,7 +7,7 @@ function init()
 end
 
 function restartMenu()
-	global.resetVars()
+	resetVars()
 	Timer.closeOldTimers()
 	MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Fade)
 	if SoundManager.currentsong ~= SoundManager.menusong then
@@ -25,7 +19,7 @@ local pauseTexts = {"to surrender","to go back","to give up","to admit defeat","
 local pauseMessage
 
 function pauseText()
-	pauseMessage = pauseMessage or pauseTexts[random(#pauseTexts)]
+	pauseMessage = pauseMessage or pauseTexts[math.random(#pauseTexts)]
 	return pauseMessage
 end
 
@@ -42,22 +36,21 @@ function mousereleased( x, y, btn )
 end
 
 function keypressed( key )
-	local state = global.state
-	if (key == 'escape' or key == 'p') and global.onGame() and not DeathManager.gameLost then
+	if (key == 'escape' or key == 'p') and onGame() and not DeathManager.gameLost then
 		resetPauseText()
 		paused = not paused --pauses or unpauses
 		mouse.setGrab(not paused) --releases the mouse if paused
 	end
 
 	if key == 'r' and paused then
-		if state == global.story then
+		if state == story then
 			if Levels.currentLevel.wasSelected then
-				global.reloadStory(Levels.currentLevel.name_, true)
+				reloadStory(Levels.currentLevel.name_, true)
 			else
-				global.reloadStory 'Level 1-1'
+				reloadStory 'Level 1-1'
 			end
-		elseif state == global.survival then
-			global.reloadSurvival()
+		elseif state == survival then
+			reloadSurvival()
 		end
 	end
 
@@ -66,15 +59,14 @@ function keypressed( key )
 	end
 
 	if (DeathManager.gameLost or paused) and key == 'b' then
-		if global.paintables.deathEffects then
-			for _, e in ipairs(global.paintables.deathEffects.bodies) do e:handleDelete() end
-			global.paintables.deathEffects = nil
+		if paintables.deathEffects then
+			for _, e in pairs(paintables.deathEffects.bodies) do e:handleDelete() end
+			paintables.deathEffects = nil
 		end
 
-		if state == global.story then
+		if state == story then
 			Levels.closeLevel()
 		end
-		local psycho = global.psycho
 		psycho.pseudoDied = false
 		psycho.canBeHit = true
 		psycho.alpha = 255
@@ -87,45 +79,43 @@ function keypressed( key )
 		resetted = false
 
 		SoundManager.reset()
-		global.timefactor = 1.0
+		timefactor = 1.0
 		ColorManager.currentEffect = nil
 	end
 
-	if state == global.mainmenu then
-		resetted = resetpass(key)
+	if state == mainmenu then
+		resetted = resetpass (key)
 		if resetted then FileManager.resetStats() end
 	end
 end
 
 function draw()
-	local state = global.state
-	local onGame = global.onGame
 	graphics.setPixelEffect()
 	--[[Drawing On-Game Info]]
 	if onGame() then
 		graphics.setColor(ColorManager.getComposedColor())
-		if state == global.survival then
+		if state == survival then
 			graphics.setFont(Base.getCoolFont(22))
-			graphics.print(formatString("%.0f", global.score), 68, 20)
-			graphics.print(formatString("%.1fs", global.gametime), 68, 42)
+			graphics.print(string.format("%.0f", score), 68, 20)
+			graphics.print(string.format("%.1fs", gametime), 68, 42)
 			graphics.setFont(Base.getFont(12))
 			graphics.print("Time:", 25, 48)
 			graphics.print("Score:", 25, 24)
-			graphics.print(formatString("Best Score: %0.f", max(global.records.survival.score, global.score)),     25, 68)
-			graphics.print(formatString("Best Time: %.1fs", max(global.records.survival.time,  global.gametime)), 25, 85)
-			graphics.print(formatString("Best Mult: x%.1f", max(global.records.survival.multiplier,  global.multiplier)), width - 115, 83)
+			graphics.print(string.format("Best Score: %0.f", math.max(records.survival.score, score)),     25, 68)
+			graphics.print(string.format("Best Time: %.1fs", math.max(records.survival.time,  gametime)), 25, 85)
+			graphics.print(string.format("Best Mult: x%.1f", math.max(records.survival.multiplier,  multiplier)), width - 115, 83)
 			graphics.setFont(Base.getFont(14))
 			graphics.print("ulTrAbLaST:", 25, 105)
 			graphics.setFont(Base.getCoolFont(20))
-			graphics.print(formatString("%d", global.ultracounter), 110, 100)
+			graphics.print(string.format("%d", ultracounter), 110, 100)
 			graphics.setFont(Base.getFont(20))
 			graphics.print("___________", 25, 106)
 			graphics.setFont(Base.getCoolFont(40))
-			graphics.print(formatString("x%.1f", global.multiplier), width - 130, 35)
-		elseif state == global.story then
+			graphics.print(string.format("x%.1f", multiplier), width - 130, 35)
+		elseif state == story then
 			graphics.setFont(Base.getCoolFont(30))
-			graphics.print(formatString("%.0f", global.score), 25, 48)
-			graphics.print(formatString("%.0f", global.psycho.lives), 25, 98)
+			graphics.print(string.format("%.0f", score), 25, 48)
+			graphics.print(string.format("%.0f", psycho.lives), 25, 98)
 			graphics.setFont(Base.getCoolFont(20))
 			graphics.print(Levels.currentLevel.chapter, 200, 40)
 			graphics.setFont(Base.getCoolFont(18))
@@ -133,7 +123,7 @@ function draw()
 			graphics.print("Lives:", 25, 80)
 			graphics.print("ulTrAbLaST:", 25, 130)
 			graphics.setFont(Base.getCoolFont(30))
-			graphics.print(formatString("%d", global.ultracounter), 140, 125)
+			graphics.print(string.format("%d", ultracounter), 140, 125)
 			graphics.setFont(Base.getFont(24))
 			graphics.print("___________", 25, 136)
 		end
@@ -149,7 +139,7 @@ function draw()
 		end
 		if Cheats.dkmode then graphics.print("DK mode on!", 448, 45) end
 		graphics.setFont(Base.getCoolFont(40))
-		if Cheats.tiltmode then graphics.print("*TILT*", 446, 80, -global.angle.var) end
+		if Cheats.tiltmode then graphics.print("*TILT*", 446, 80, -angle.var) end
 		graphics.setFont(Base.getFont(12))
 	end
 	--[[Drawing Things that how up on every page]]
@@ -157,8 +147,8 @@ function draw()
 
 	local color = ColorManager.getComposedColor()
 	graphics.setColor(color)
-	graphics.setFont(Base.getFont(12))
-	graphics.print(formatString("FPS:%.0f", timer.getFPS()), width - 80, 10)
+	graphics.setFont(Base.Base.getFont(12))
+	graphics.print(string.format("FPS:%.0f", love.timer.getFPS()), width - 80, 10)
 	color[4] = 70 --alpha
 	graphics.setColor(color)
 	SoundManager.drawSoundIcon(width - 50, height - 50)
@@ -189,9 +179,7 @@ function draw()
 	end
 	--[[End of Drawing Pause Menu]]
 
-	if state == global.levelselect then
+	if state == levelselect then
 
 	end
 end
-
-return UI

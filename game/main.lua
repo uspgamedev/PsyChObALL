@@ -1,20 +1,20 @@
-Base         = require "Base"
-Cheats       = require "Cheats"
-Timer        = require "Timer"
-VarTimer     = require "VarTimer"
-ColorManager = require "ColorManager"
-FileManager  = require "FileManager"
-SoundManager = require "SoundManager"
-MenuManager  = require "menus.MenuManager"
-Body         = require "Body"
-Effect       = require "Effect"
-DeathManager = require "DeathManager"
-require "Button"
-require "Levels"
-UI           = require "UI"
+require "Base"
+require "Body"
+require "Timer"
+require "VarTimer"
+require "Effect"
+require "ColorManager"
+require "FileManager"
+require "SoundManager"
+require "menus.MenuManager"
+require "DeathManager"
+require "UI"
+require "Cheats"
 require "Enemies"
 require "CircleEffect"
 require "Psychoball"
+require "Levels"
+require "Button"
 require "Text"
 require "Formations"
 require "ImageBody"
@@ -32,7 +32,7 @@ end
 
 function initBase()
 	-- [[Initing Variables]]
-	v = Base.gameSpeed --main velocity of everything
+	v = 240 --main velocity of everything
 	totaltime = 0
 	splashscreen = -1
 	mainmenu = 1 -- mainmenu

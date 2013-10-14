@@ -1,9 +1,4 @@
-local filesystem, safeCall, print, toNumber = filesystem, pcall, print, tonumber
-local floor, max, min, type, pairs, tostring = math.floor, math.max, math.min, type, pairs, tostring
-local Levels = Levels
-local global = _G
-local FileManager = {}
-setfenv(1, FileManager)
+module('FileManager', Base.globalize)
 
 local defaultRecords = {
 	survival = {
@@ -21,7 +16,7 @@ function init()
 		filesystem.remove 'stats'
 	end
 
-	for i = 1, global.Levels.worldsNumber do
+	for i = 1, Levels.worldsNumber do
 		for j = 1, 4 do
 			if i ~= 1 or j ~= 4 then
 				defaultRecords.story['Level ' .. i .. '-' .. j] = {
@@ -40,12 +35,12 @@ function readStats()
 end
 
 function writeStats()
-	if global.Cheats.usedDevMode then return end
+	if Cheats.usedDevMode then return end
 	local s = global.records.survival
-	if global.state == global.survival then
-		s.time  = max(s.time, global.gametime)
-		s.multiplier  = max(s.multiplier, global.multiplier)
-		s.score = max(s.score, global.score)
+	if state == survival then
+		s.time  = math.max(s.time, gametime)
+		s.multiplier  = math.max(s.multiplier, multiplier)
+		s.score = math.max(s.score, score)
 	end
 	writeTable({
 		records = global.records
@@ -63,30 +58,30 @@ end
 function readConfig()
 	local config = readCleanTable "config"
 
-	global.ratio = toNumber(config.screenratio) or 1
-	global.SoundManager.volume = toNumber(config.volume) or 100
-	global.SoundManager.muted  = config.muted == 'true'
-	config.version = config.version or global.version
+	global.ratio = tonumber(config.screenratio) or 1
+	SoundManager.volume = tonumber(config.volume) or 100
+	SoundManager.muted  = config.muted == 'true'
+	config.version = config.version or version
 
-	if global.version ~= config.version then
+	if version ~= config.version then
 		--handle something maybe
 	end
 	
-	if global.ratio ~= 1 then global.love.graphics.setMode(floor(global.width*global.ratio), floor(global.height*global.ratio), false, false, 0) end
+	if ratio ~= 1 then love.graphics.setMode(math.floor(width*ratio), math.floor(height*ratio), false, false, 0) end
 end
 
 function writeConfig()
 	writeCleanTable({
-		screenratio = global.ratio,
-		volume =	 global.SoundManager.volume,
-		muted =	 global.SoundManager.muted,
-		version = global.version
+		screenratio = ratio,
+		volume =	 SoundManager.volume,
+		muted =	 SoundManager.muted,
+		version = version
 	}, 'config')
 end
 
 function openFile( name, method )
 	local file = filesystem.newFile(name)
-	if not safeCall(file.open, file, method) then
+	if not pcall(file.open, file, method) then
 		print "some error ocurred"
 		return nil
 	end
@@ -143,7 +138,7 @@ local function writeObject( obj )
 	elseif t == 'boolean' then
 		return 'b' .. (obj and '1 ' or '0 ')
 	elseif t == 'function' then
-		local str = global.string.dump(obj)
+		local str = string.dump(obj)
 		return 'f' .. str:len() .. ' ' .. str
 	elseif t == 'string' then
 		return 's' .. obj:len() .. ' ' .. obj
@@ -167,7 +162,7 @@ end
 function readTable( filename )
 	if not filesystem.exists(filename) then return {} end
 	local file = filesystem.newFile(filename)
-	if not safeCall(file.open, file, 'r') then
+	if not pcall(file.open, file, 'r') then
 		print "some error hapenned"
 		return {}
 	end
@@ -179,14 +174,14 @@ local readTableFromStringUnsafe
 
 local function readObject( str, curPos )
 	local newPos
-	if not curPos then global.error() end
+	if not curPos then error()return nil, nil end
 	local info = str:sub(curPos + 1, curPos + 1)
 	if info == 'b' then -- it's a boolean
 		return str:sub(curPos + 2, curPos + 2) == '1', curPos + 3
 	end
 	newPos = str:find(' ', curPos + 2)
 	if not newPos then return nil, nil end
-	local size = toNumber(str:sub(curPos + 2, newPos - 1))
+	local size = tonumber(str:sub(curPos + 2, newPos - 1))
 	if info == 'n' then -- it's a number
 		return size, newPos
 	elseif info == 's' then -- it's a string
@@ -194,13 +189,13 @@ local function readObject( str, curPos )
 	elseif info == 't' then -- it's a table
 		return readTableFromStringUnsafe(str:sub(newPos + 1, newPos + size)), newPos + size
 	elseif info == 'f' then
-		return global.loadstring(str:sub(newPos + 1, newPos + size)), newPos + size
+		return loadstring(str:sub(newPos + 1, newPos + size)), newPos + size
 	end
 end
 
 function readTableFromString( str )
-	local ok, t = safeCall(readTableFromStringUnsafe, str)
-	if not ok then global.io.write("The table wasn't correct. (error: ", t, ')\n') return {} end
+	local ok, t = pcall(readTableFromStringUnsafe, str)
+	if not ok then io.write("The table wasn't correct. (error: ", t, ')\n') return {} end
 	return t
 end
 
@@ -217,5 +212,3 @@ function readTableFromStringUnsafe( str )
 	end
 	return t
 end
-
-return FileManager

@@ -1,9 +1,5 @@
-local audio, graphics = audio, graphics
-local ceil, random = math.ceil, math.random
-local Timer = Timer
-local global = _G
-local SoundManager = {}
-setfenv(1, SoundManager)
+module('SoundManager', package.seeall)
+require 'lux.functional'
 
 function init()
 	menusong = audio.newSource("resources/Flying Carrots 2.mp3")
@@ -45,12 +41,15 @@ function init()
 	}
 
 	function songfadein:funcToCall() -- song fades in
-		if muted or global.DeathManager.gameLost then return end
+		if muted or DeathManager.gameLost then return end
 		if currentsong:getVolume() >= (.98 * volume / 100) then 
 			currentsong:setVolume(volume / 100)
 			self:stop()
 		else currentsong:setVolume((currentsong:getVolume() + .02)) end
 	end
+
+	--fadein  = lux.functional.bindleft(songfadein.start,  songfadein)
+	fadeout  = lux.functional.bindleft(songfadeout.start, songfadeout)
 
 	soundimage = graphics.newImage("resources/SoundIcons.png")
 	soundquads = {
@@ -62,11 +61,7 @@ function init()
 		graphics.newQuad(0,   0, 40, 40, 300, 40),
 		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
-	soundquadindex = muted and 7 or ceil(volume/20) + 1
-end
-
-function fadeout()
-	songfadeout:start()
+	soundquadindex = muted and 7 or math.ceil(volume/20) + 1
 end
 
 function changeSong( to )
@@ -82,7 +77,7 @@ function setPitch( p )
 end
 
 function restart()
-	currentsong:seek(songsetpoints[currentsong][random(#songsetpoints[currentsong])])
+	currentsong:seek(songsetpoints[currentsong][math.random(#songsetpoints[currentsong])])
 	currentsong:setVolume(0)
 
 	if not muted then songfadein:start() end
@@ -101,20 +96,20 @@ function keypressed( key )
 	if muted then
 		if key == 'm' then
 			muted = false
-			soundquadindex = ceil(volume/20) + 1
-			if not global.DeathManager.gameLost then currentsong:setVolume(volume / 100) end
+			soundquadindex = math.ceil(volume/20) + 1
+			if not DeathManager.gameLost then currentsong:setVolume(volume / 100) end
 		end
 	else
 		if key == '.' and volume < 100 then
 			volume = volume + 10
-			soundquadindex = ceil(volume/20) + 1
-			if not global.DeathManager.gameLost then
+			soundquadindex = math.ceil(volume/20) + 1
+			if not DeathManager.gameLost then
 				currentsong:setVolume(volume / 100)
 			end
 		elseif key == ',' and volume > 0 then
 			volume = volume - 10
-			soundquadindex = ceil(volume/20) + 1
-			if not global.DeathManager.gameLost and not songfadein.running then
+			soundquadindex = math.ceil(volume/20) + 1
+			if not DeathManager.gameLost and not songfadein.running then
 				currentsong:setVolume(volume / 100)
 			end
 		elseif key == 'm' then
@@ -128,5 +123,3 @@ end
 function drawSoundIcon( x, y )
 	graphics.drawq(soundimage, soundquads[soundquadindex], x, y)
 end
-
-return SoundManager

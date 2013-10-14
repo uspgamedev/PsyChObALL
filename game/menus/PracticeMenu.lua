@@ -1,6 +1,4 @@
-local PracticeMenus = {}
-local PracticeMenu = Menu:new {}
-local ColorManager, Levels = ColorManager, Levels
+PracticeMenu = Menu:new {}
 local levelNumber = Levels.worldsNumber
 
 function PracticeMenu:open( levelN )
@@ -10,15 +8,14 @@ function PracticeMenu:open( levelN )
 		size = 50,
 		position = Vector:new{width - 160, 580},
 		text = "back",
-		fontsize = 20,
-		pressed = function(but)
-			if levelN > 1 then
-				MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Slide:setDir('diagonal1', -1))
-			else
-				MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Slide:setDir('up/down', -1))
-			end
-		end
+		fontsize = 20
 	}
+
+	if levelN > 1 then
+		back.pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('diagonal1', -1)) end
+	else
+		back.pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('up/down', -1)) end
+	end
 
 	local buttons = {back}
 
@@ -32,7 +29,7 @@ function PracticeMenu:open( levelN )
 				MenuManager.changeToMenu(PracticeMenus[levelN + 1], MenuTransitions.Slide:setDir('right/left', 1))
 			end
 		}
-		table.insert(buttons, nextB)
+		buttons[#buttons + 1] = nextB
 	end
 
 	if levelN > 1 then
@@ -45,7 +42,7 @@ function PracticeMenu:open( levelN )
 				MenuManager.changeToMenu(PracticeMenus[levelN - 1], MenuTransitions.Slide:setDir('right/left', -1))
 			end
 		}
-		table.insert(buttons, prevB)
+		buttons[#buttons + 1] = prevB
 	end
 
 
@@ -68,7 +65,7 @@ function PracticeMenu:open( levelN )
 			levelName = levelName,
 			pressed = goToLevelFunc
 		}
-		table.insert(buttons, levelButton)
+		buttons[#buttons + 1] = levelButton
 	end
 
 	for _, but in ipairs(buttons) do self:addComponent(but) end
@@ -81,6 +78,7 @@ function PracticeMenu:draw()
 	graphics.printf("Practice", 0, 30, width, 'center')
 end
 
+PracticeMenus = {}
 
 for i = 1, levelNumber do
 	local menu = PracticeMenu:new{
@@ -89,5 +87,3 @@ for i = 1, levelNumber do
 	menu.open = function(self) PracticeMenu.open(self, i) end
 	PracticeMenus[i] = menu
 end
-
-return PracticeMenus

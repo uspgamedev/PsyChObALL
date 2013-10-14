@@ -1,12 +1,4 @@
--- dependencies
-local Vector, ColorManager, FileManager, SoundManager, Body, Timer, Effect, Base, Cheats = Vector, ColorManager, FileManager, SoundManager, Body, Timer, Effect, Base, Cheats
-local mouse, graphics = mouse, graphics
-local random, tan, asin, exp, log10, pairs, formatString = math.random, math.tan, math.asin, math.exp, math.log10, pairs, string.format
-local baseSpeed = Base.gameSpeed
-local global = _G
-local DeathManager = {}
-setfenv(1, DeathManager)
-
+module('DeathManager', Base.globalize)
 local deathTexts, deathMessage
 local DeathEffect
 local handlePsychoExplosion
@@ -20,15 +12,15 @@ end
 local moarLSDchance = 3
 
 function manageDeath()
-	if gameLost or global.godmode then return end
-	local autorestart = global.state == global.story and global.psycho.lives > 0
+	if gameLost or godmode then return end
+	local autorestart = state == story and psycho.lives > 0
 	if not autorestart then
 		mouse.setGrab(false)
 		FileManager.writeStats()
 		SoundManager.fadeout()
 
 		if getDeathText() == "Supreme." then resetDeathText() end -- makes it much rarer
-		if global.state == global.story and getDeathText() == "The LSD wears off" then
+		if state == story and getDeathText() == "The LSD wears off" then
 			setDeathMessage "Why are you even doing this?" -- or something else
 		end
 
@@ -36,32 +28,32 @@ function manageDeath()
 			SoundManager.setPitch(.8)
 			deathTexts[1] = "MOAR LSD"
 			-- raises chance of getting "MOAR LSD"
-			for i = 1, moarLSDchance do deathTexts[#deathTexts + 1] = "MOAR LSD" end
+			for i = 1, moarLSDchance do table.insert(deathTexts, "MOAR LSD") end
 			ColorManager.currentEffect = ColorManager.noLSDEffect
 		elseif getDeathText() == "MOAR LSD" then
 			SoundManager.setPitch(1)
 			deathTexts[1] = "The LSD wears off"
 			-- removes the extra "MOAR LSD"
-			for i = 1, moarLSDchance do deathTexts[#deathTexts] = nil end
+			for i = 1, moarLSDchance do table.remove(deathTexts) end
 			ColorManager.currentEffect = nil
 		end
 
 		gameLost   = true
-		global.UI.resetPauseText()
+		UI.resetPauseText()
 	end
 	
-	global.timefactor = .05
+	timefactor = .05
 
-	global.psycho:handleDelete()
+	psycho:handleDelete()
 	handlePsychoExplosion()
-	timeOfDeath = global.totaltime
+	timeOfDeath = totaltime
 	isRestarting = false
 end
 
 function beginGameRestart()
 	if isRestarting then return end
 	isRestarting = true
-	timeOfRestart = global.totaltime
+	timeOfRestart = totaltime
 	local m = (timeOfRestart - timeOfDeath)/timeToRestart
 	for _, eff in pairs(DeathEffect.bodies) do
 		eff.speed:negate():mult(m, m)
@@ -76,35 +68,35 @@ function beginGameRestart()
 end
 
 function restartGame()
-	if global.state == global.story then 
-		if not global.psycho.pseudoDied then
+	if state == story then 
+		if not psycho.pseudoDied then
 			Levels.closeLevel()
-			global.reloadStory 'Level 1-1'
+			reloadStory 'Level 1-1'
 		else
-			global.psycho:recreate()
+			psycho:recreate()
 		end
-	elseif global.state == global.survival then
-		global.reloadSurvival()
+	elseif state == survival then
+		reloadSurvival()
 	end
 	DeathEffect.bodies = nil
-	global.paintables.deathEffects = nil
+	paintables.deathEffects = nil
 end
 
 local deathFunctions = {
 	function ( p1, p2, size ) return size end,
-	function ( p1, p2, size ) return 1/random() end,
+	function ( p1, p2, size ) return 1/math.random() end,
 	function ( p1, p2, size ) return p1:dist(p2) end,
 	function ( p1, p2, size ) return p1:distsqr(p2)/size end,
-	function ( p1, p2, size ) return (size - p1:dist(p2)) end,
+	function ( p1, p2, size ) return (size - p1:dist(p2))	end,
 	function ( p1, p2, size ) return (size^2 - p1:distsqr(p2))/size end,
 	function ( p1, p2, size ) return (size - p1:distsqr(p2))/size end,
-	function ( p1, p2, size ) return random()*size end,
-	function ( p1, p2, size ) return size/(random() + .3) end,
+	function ( p1, p2, size ) return math.random()*size end,
+	function ( p1, p2, size ) return size/(math.random() + .3) end,
 	function ( p1, p2, size ) return (size^1.6)/p1:dist(p2) end,
-	function ( p1, p2, size ) return tan(p1:distsqr(p2)) end,
-	function ( p1, p2, size ) return asin(p1:dist(p2) % 1)*size^.8 end,
-	function ( p1, p2, size ) return exp(p1:dist(p2) - size/1.3) end,
-	function ( p1, p2, size ) return log10(p1:dist(p2))*size^.7 end
+	function ( p1, p2, size ) return math.tan(p1:distsqr(p2)) end,
+	function ( p1, p2, size ) return math.asin(p1:dist(p2) % 1)*size^.8 end,
+	function ( p1, p2, size ) return math.exp(p1:dist(p2) - size/1.3) end,
+	function ( p1, p2, size ) return math.log10(p1:dist(p2))*size^.7 end
 }
 
 DeathEffect = Body:new{
@@ -134,16 +126,16 @@ end
 
 local auxVec = Vector:new{}
 function DeathEffect:update( dt )
-	self.position:add(auxVec:set(self.speed):mult(dt))	
+	self.position:add(auxVec:set(self.speed):mult(dt))  
 	--never be deleted
 end
 
 function handlePsychoExplosion()
-	local psycho = global.psycho
-	local Psychoball = global.Psychoball
+	local psycho, Psychoball = psycho, Psychoball
+
 	psycho.size = Psychoball.size + Psychoball.sizeDiff
 	local deathEffects = {}
-	local deathFunc = deathFunctions[random(#deathFunctions)]
+	local deathFunc = deathFunctions[math.random(#deathFunctions)]
 	for i = psycho.x - psycho.size, psycho.x + psycho.size, Effect.size * 1.3 do
 		for j = psycho.y - psycho.size, psycho.y + psycho.size, Effect.size * 1.3 do
 			-- checks if the position is inside psycho
@@ -153,7 +145,7 @@ function handlePsychoExplosion()
 					variance = psycho.variance
 				}
 				local distr = deathFunc(e.position, psycho.position, psycho.size)
-				e.speed:set(e.position):sub(psycho.position):normalize():mult(baseSpeed * distr)
+				e.speed:set(e.position):sub(psycho.position):normalize():mult(v * distr)
 				
 				deathEffects[#deathEffects + 1] = e
 			end
@@ -163,9 +155,9 @@ function handlePsychoExplosion()
 	psycho.size = Psychoball.size
 
 	DeathEffect.bodies = deathEffects
-	global.paintables.deathEffects = DeathEffect
+	paintables.deathEffects = DeathEffect
 
-	if global.state == global.story then
+	if state == story then
 		if psycho.lives == 0 then
 			--handle stuff
 		else
@@ -191,7 +183,7 @@ deathTexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "Requiescat in Pace", "Valar Morghulis", "What is dead may never die", "Mission Failed", "It's dead Jim", "Arrivederci", ""}
 
 function getDeathText( n )
-	deathMessage = n and deathTexts[n] or (deathMessage or deathTexts[random(#deathTexts)])
+	deathMessage = n and deathTexts[n] or (deathMessage or deathTexts[math.random(#deathTexts)])
 	return deathMessage
 end
 
@@ -202,22 +194,21 @@ end
 resetDeathText = setDeathMessage
 
 function drawDeathScreen()
-	local state, survival = global.state, global.survival
 	graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
 		if state == survival then
 			if Cheats.usedDevMode then
 				graphics.setFont(Base.getCoolFont(20))
 				graphics.print("Your scores didn't count, cheater!", 382, 215)
 			else
-				if global.records.survival.time == global.gametime then
+				if records.survival.time == gametime then
 					graphics.setFont(Base.getFont(35))
 					graphics.print("You beat the best time!", 260, 100)
 				end	
-				if global.records.survival.score == global.score then
+				if records.survival.score == score then
 					graphics.setFont(Base.getFont(35))
 					graphics.print("You beat the best score!", 290, 140)
 				end
-				if global.records.survival.multiplier == global.multiplier then
+				if records.survival.multiplier == multiplier then
 					graphics.setFont(Base.getFont(35))
 					graphics.print("You beat the best multiplier!", 320, 180)
 				end
@@ -225,7 +216,7 @@ function drawDeathScreen()
 		end
 		graphics.setFont(Base.getCoolFont(40))
 		graphics.print(getDeathText(), 270, 300)
-		if state == survival then graphics.print(formatString("You lasted %.1fsecs", global.gametime), 486, 450) end
+		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
 		graphics.setFont(Base.getCoolFont(23))
 		if state == survival then graphics.print("Press R to retry", 280, 640)
 		else graphics.print("Press R to start over", 280, 640) end
@@ -234,7 +225,5 @@ function drawDeathScreen()
 		else 	graphics.print("__________________", 280, 645) end
 		graphics.setFont(Base.getCoolFont(18))
 		graphics.print("Press B", 580, 650)
-		graphics.print(global.UI.pauseText(), 649, 650)
+		graphics.print(UI.pauseText(), 649, 650)
 end
-
-return DeathManager

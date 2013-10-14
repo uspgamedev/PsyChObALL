@@ -1,10 +1,4 @@
--- dependencies
-local sin, cos, sqrt = math.sin, math.cos, math.sqrt
-local lux = lux
-local type, rawset, rawget = type, rawset, rawget
-local getmetatable = getmetatable
-local Vector
-setfenv(1, {}) -- Restricts access to other stuff
+require "lux.object"
 
 Vector = lux.object.new {
 	0,		-- x-axis
@@ -16,18 +10,21 @@ function Vector:__tostring()
 	return ('['..self[1]..', '..self[2]..']')
 end
 
+local getmetatable = getmetatable
 function Vector:__index(n)
 	if n=='x' then return self[1]
 	elseif n=='y' then return self[2]
 	else return getmetatable(self)[n] end
 end
 
+local rawset = rawset
 function Vector:__newindex(i, v)
 	if i=='x' then self[1] = v
 	elseif i=='y' then self[2] = v
 	else rawset(self,i,v) end
 end
 
+local type = type
 --	returns first + second
 function Vector.__add( first, second )
 	if type(first) == 'number' then
@@ -196,7 +193,7 @@ function Vector:distsqr(x, y)
 end
 
 function Vector:dist(x, y)
-	return sqrt(self:distsqr(x,y))
+	return math.sqrt(self:distsqr(x,y))
 end
 
 function Vector:unpack()
@@ -207,6 +204,7 @@ function Vector:lengthsqr()
 	return self[1]^2 + self[2]^2
 end
 
+local sqrt = math.sqrt
 function Vector:length()
 	return sqrt(self:lengthsqr())
 end
@@ -225,16 +223,15 @@ function Vector:reset()
 	return self
 end
 
+local msin, mcos = math.sin, math.cos
 function Vector:rotate( rad )
-	local sin_, cos_ = sin(rad), cos(rad)
+	local sin, cos = msin(rad), mcos(rad)
 	self[1], self[2] = 
-		cos_*self[1] - sin_*self[2],
-		sin_*self[1] + cos_*self[2]
+		cos*self[1] - sin*self[2],
+		sin*self[1] + cos*self[2]
 	return self
 end
 
 function Vector:rotated( rad )
 	return Vector:new{self[1], self[2]}:rotate()
 end
-
-return Vector

@@ -10,9 +10,10 @@ Warning = Body:new {
 
 Body.makeClass(Warning)
 
+local arctan = math.atan2
 function Warning:__init()
 	if self.based_on then
-		self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
+		self.angle = arctan(self.based_on.Vy, self.based_on.Vx)
 		self.size = self.based_on.size*2
 		self.position = Base.restrainInScreen(self.based_on.position:clone())
 		self.variance = self.based_on.variance
@@ -23,7 +24,7 @@ function Warning:__init()
 end
 
 function Warning:recalc_angle()
-	self.angle = math.atan2(self.based_on.Vy, self.based_on.Vx)
+	self.angle = arctan(self.based_on.Vy, self.based_on.Vx)
 end
 
 function Warning:draw()

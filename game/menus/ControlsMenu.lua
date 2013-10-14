@@ -1,4 +1,4 @@
-local ControlsMenu = Menu:new {
+ControlsMenu = Menu:new {
 	index = tutorialmenu
 }
 
@@ -10,7 +10,7 @@ function ControlsMenu:open()
 		position = Vector:new {100, height - 100},
 		text = "Back",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
+		pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
 	self:addComponent(backbutton)
@@ -52,5 +52,3 @@ function ControlsMenu:draw()
 	graphics.circle("fill", 50, 263, 10)
 	graphics.setPixelEffect()
 end
-
-return ControlsMenu
