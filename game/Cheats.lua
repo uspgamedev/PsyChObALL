@@ -99,7 +99,7 @@ function keypressed( key )
 			elseif key == '2' then psycho:addLife()
 			elseif key == '1' then psycho:removeLife()
 			elseif key == 'l' and not DeathManager.gameLost then DeathManager.getDeathText(1) DeathManager.manageDeath()
-			elseif key == 'x' then ultracounter = ultracounter + 1
+			elseif key == 'x' then psycho.ultraCounter = psycho.ultraCounter + 1
 			elseif key == 'g' then godmode = not godmode
 			elseif key == 'e' then 
 				local effectCount = 0

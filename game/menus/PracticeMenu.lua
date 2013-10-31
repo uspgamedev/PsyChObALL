@@ -50,7 +50,7 @@ function PracticeMenu:open( levelN )
 		self.visible = false
 		Effect.createEffects(self, 40)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
-		reloadStory(self.levelName)
+		reloadStory(self.levelName, true)
 		Levels.currentLevel.wasSelected = true
 	end
 

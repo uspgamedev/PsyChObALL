@@ -65,7 +65,7 @@ function initBase()
 	Text:paintOn(paintables)
 	ImageBody:paintOn(paintables)
 	Button:paintOn(paintables)
-	table.sort(paintables, function(a, b) return a.ord < b.ord end)
+	table.sort(paintables, function(a, b) return a.ord < b.ord end) --sort by painting order
 
 	records = {}
 	-- [[End of Initing Variables]]
@@ -154,11 +154,11 @@ end
 
 function resetVars()
 	if Cheats.konamicode then
-		ultracounter = 30
+		psycho.ultraCounter = 30
 		if psycho.lives then psycho.lives = 30 end
 		Cheats.konamicode = false
 	else
-		ultracounter = 3
+		psycho.ultraCounter = 3
 	end
 	
 	Enemy.list:clear()
@@ -351,6 +351,7 @@ function updateBodies( dt )
 end
 
 function love.mousepressed(x, y, btn)
+	if splashtimer.running then return end
 	x, y  = x/ratio, y/ratio
 	if btn == 'l' and onGame() and not (DeathManager.gameLost or paused or psycho.pseudoDied) then
 		Shot.timer:start(Shot.timer.timelimit) --starts shooting already
@@ -359,6 +360,7 @@ function love.mousepressed(x, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
+	if splashtimer.running then return end
 	x, y  = x/ratio, y/ratio		
 	UI.mousereleased(x, y, btn)
 	if btn == 'l' and onGame() then
@@ -373,7 +375,7 @@ function addscore(x)
 		lifescore = lifescore + x
 		if blastscore >= (state == survival and 7000 or 2000) then
 			blastscore = blastscore - (state == survival and 7000 or 2000)
-			ultracounter = ultracounter + 1
+			psycho.ultraCounter = psycho.ultraCounter + 1
 		end
 		if state == story and lifescore >= 15000 then
 			lifescore = lifescore - 15000
@@ -384,21 +386,22 @@ end
 
 function love.joystickpressed( joynum, btn )
 	if not usingjoystick then return end
-	psycho:joystickpressed(joynum, btn)
+	psycho:joystickPressed(joynum, btn)
 end
 
 function love.joystickreleased( joynum, btn )
 	if not usingjoystick then return end
-	psycho:joystickreleased(joynum, btn)
+	psycho:joystickReleased(joynum, btn)
 end
 
 function love.keypressed(key)
+	if splashtimer.running then return end
 	keyspressed[key] = true
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
 
 	if not DeathManager.gameLost and onGame() then 
-		psycho:keypressed(key)
+		psycho:keyPressed(key)
 	end
 
 	UI.keypressed(key)
@@ -411,7 +414,7 @@ function love.keyreleased(key)
 	else keyspressed[key] = false end
 
 	if not DeathManager.gameLost and onGame() then
-		psycho:keyreleased(key)
+		psycho:keyReleased(key)
 	end
 	
 	if key == 'scrollock' then 

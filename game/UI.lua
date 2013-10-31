@@ -58,6 +58,10 @@ function keypressed( key )
 		DeathManager.beginGameRestart()
 	end
 
+	if DeathManager.gameLost and state == story and key == 'c' then
+		DeathManager.doGameContinue()
+	end
+
 	if (DeathManager.gameLost or paused) and key == 'b' then
 		if paintables.deathEffects then
 			for _, e in pairs(paintables.deathEffects.bodies) do e:handleDelete() end
@@ -70,6 +74,7 @@ function keypressed( key )
 		psycho.pseudoDied = false
 		psycho.canBeHit = true
 		psycho.alpha = 255
+		psycho.continuesUsed = 0
 
 		paused = false
 		restartMenu()
@@ -107,7 +112,7 @@ function draw()
 			graphics.setFont(Base.getFont(14))
 			graphics.print("ulTrAbLaST:", 25, 105)
 			graphics.setFont(Base.getCoolFont(20))
-			graphics.print(string.format("%d", ultracounter), 110, 100)
+			graphics.print(string.format("%d", psycho.ultraCounter), 110, 100)
 			graphics.setFont(Base.getFont(20))
 			graphics.print("___________", 25, 106)
 			graphics.setFont(Base.getCoolFont(40))
@@ -123,7 +128,7 @@ function draw()
 			graphics.print("Lives:", 25, 80)
 			graphics.print("ulTrAbLaST:", 25, 130)
 			graphics.setFont(Base.getCoolFont(30))
-			graphics.print(string.format("%d", ultracounter), 140, 125)
+			graphics.print(string.format("%d", psycho.ultraCounter), 140, 125)
 			graphics.setFont(Base.getFont(24))
 			graphics.print("___________", 25, 136)
 		end

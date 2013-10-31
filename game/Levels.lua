@@ -162,6 +162,9 @@ function closeLevel()
 		t:remove()
 	end
 	currentLevel.timers_ = nil
+	if not currentLevel.wasSelected then
+		records.story[currentLevel.name_].score = score
+	end
 	currentLevel = nil
 end
 
@@ -172,11 +175,11 @@ function loadLevel( levelFunc )
 				t:remove()
 			end
 		end
-		setfenv(levelFunc, level)
+		Base.setFunctionEnv(levelFunc, level)
 		levelFunc()
 		level.timers_ = {}
 		levelEnv.time = 0
-		setfenv(level.run, levelEnv)
+		Base.setFunctionEnv(level.run, levelEnv)
 		level.run()
 	end
 end
