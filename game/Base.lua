@@ -42,10 +42,6 @@ circleShader:send("min", 0)
 
 circleSpriteBatch = love.graphics.newSpriteBatch(pixel, 500, 'stream')
 
-
-local translateStack = Stack:new{}
-translateStack:push(Vector:new{0, 0})
-
 local lineWidth = 1
 _G.graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
@@ -55,7 +51,7 @@ _G.graphics = {
 			graphics.draw(Cheats.image.image, x - r, y - r, 
 				0, 2*r / Cheats.image.image:getWidth(), 2*r / Cheats.image.image:getHeight())
 		else
-			--assume Base.circleShader is being used
+			--assumes Base.circleShader is being used
 			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 			if mode == 'line' then
 				local min = lineWidth*ratio + 1
@@ -76,16 +72,7 @@ _G.graphics = {
 	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,
 	translate = function(x, y) 
 		local tx, ty = sign(x)*math.floor(math.abs(x)*ratio), sign(y)*math.floor(math.abs(y)*ratio)
-		translateStack:peek():add(tx or 0, ty or 0)
 		love.graphics.translate(tx, ty)
-	end,
-	push = function()
-		translateStack:push(Vector:new{}:set(translateStack:peek()))
-		love.graphics.push()
-	end,
-	pop = function()
-		translateStack:pop()
-		love.graphics.pop()
 	end,
 	rectangle = function (mode, x, y, width, height) love.graphics.rectangle(mode, x*ratio, y*ratio, width*ratio, height*ratio) end,
 	line = function(x1,y1,x2,y2) love.graphics.line(x1*ratio, y1*ratio, x2*ratio, y2*ratio) end,
@@ -156,6 +143,8 @@ function globalize( t )
 		end
 		})
 end
+
+setFunctionEnv = setfenv
 
 local http = require "socket.http"
 

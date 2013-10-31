@@ -1,9 +1,6 @@
 local psychoSizeDiff = 9
-local ultrablastmax
-local ultratimer
 
-local ultrablastcharging
-local ultrablastrelease
+local ultraTimer = nil
 
 Psychoball = CircleEffect:new {
 	size   = 23 - psychoSizeDiff,
@@ -19,19 +16,21 @@ Psychoball = CircleEffect:new {
 	canBeHit = true,
 	pseudoDied = false,
 	spriteBatch = false,
+	ultraCounter = 0,
+	continuesUsed = 0,
 	__type = 'Psychoball'
 }
 
 Body.makeClass(Psychoball)
 
 function Psychoball.init()
-	ultrablastmax = 42 -- maximum number of shots on ultrablast
-	ultratimer = Timer:new {
+	ultraTimer = Timer:new {
 		timelimit  = .02,
 		persistent = true
 	}
 
-	function ultratimer:funcToCall() -- adds more shots to ultrablast
+	local ultrablastmax = 42 -- maximum number of shots on ultrablast
+	function ultraTimer:funcToCall() -- adds more shots to ultrablast
 		if ultrablast < ultrablastmax then
 			ultrablast = ultrablast + 1
 		end
@@ -40,7 +39,7 @@ function Psychoball.init()
 		end
 	end
 
-	function ultratimer:handleReset()
+	function ultraTimer:handleReset()
 		self:stop()
 	end
 end
@@ -52,7 +51,7 @@ function Psychoball:update(dt)
 	blastime = blastime + dt
 	if blastime >= 30 and state == survival then
 		blastime = blastime - 30
-		ultracounter = ultracounter + 1
+		self.ultraCounter = self.ultraCounter + 1
 	end
 	if usingjoystick then
 		self.speed:set(joystick.getAxis(1, 1), joystick.getAxis(1, 2)):mult(v*1.3, v*1.3)
@@ -67,12 +66,12 @@ function Psychoball:update(dt)
 		max(self.size + psychoSizeDiff, min(height - self.size - psychoSizeDiff, self.position[2]))
 	)
 
-	if keyspressed[' '] and not ultratimer.running and ultracounter > 0 then
-		self:startblast()
+	if keyspressed[' '] and not ultraTimer.running and self.ultraCounter > 0 then
+		self:startBlast()
 	end
 
-	if not keyspressed[' '] and ultratimer.running then
-		self:releaseblast()
+	if not keyspressed[' '] and ultraTimer.running then
+		self:releaseBlast()
 	end
 
 	if self.sizeGrowth < 0 and self.size + psychoSizeDiff < 23 then
@@ -85,16 +84,16 @@ function Psychoball:update(dt)
 end
 
 
-function Psychoball:startblast()
-	ultracounter = ultracounter - 1
+function Psychoball:startBlast()
+	self.ultraCounter = self.ultraCounter - 1
 	ultrablast = 10
 	self.sizeGrowth = 17
 	self.linewidth = 6
-	ultratimer:start()
+	ultraTimer:start()
 end
 
-function Psychoball:releaseblast()
-	ultratimer:stop()
+function Psychoball:releaseBlast()
+	ultraTimer:stop()
 	self.sizeGrowth = -300
 	doUltrablast()
 end
@@ -155,7 +154,7 @@ function Psychoball:recreate()
 	}
 end
 
-function Psychoball:keypressed( key )
+function Psychoball:keyPressed( key )
 	auxspeed:add(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
 			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
@@ -173,15 +172,15 @@ function Psychoball:keypressed( key )
 	end
 end
 
-function Psychoball:joystickpressed( joynum, btn )
+function Psychoball:joystickPressed( joynum, btn )
 	
 end
 
-function Psychoball:joystickreleased( joynum, btn )
+function Psychoball:joystickReleased( joynum, btn )
 
 end
 
-function Psychoball:keyreleased( key )
+function Psychoball:keyReleased( key )
 	auxspeed:sub(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
 			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),

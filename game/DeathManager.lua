@@ -67,6 +67,15 @@ function beginGameRestart()
 	}
 end
 
+function doGameContinue()
+	if Levels.currentLevel.wasSelected then return end
+	DeathEffect.bodies = nil
+	paintables.deathEffects = nil
+	psycho.continuesUsed = psycho.continuesUsed + 1
+	Levels.currentLevel.title = nil
+	reloadStory(Levels.currentLevel.name_:sub(1, -2) .. '1', true)
+end
+
 function restartGame()
 	if state == story then 
 		if not psycho.pseudoDied then
@@ -219,7 +228,14 @@ function drawDeathScreen()
 		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
 		graphics.setFont(Base.getCoolFont(23))
 		if state == survival then graphics.print("Press R to retry", 280, 640)
-		else graphics.print("Press R to start over", 280, 640) end
+		else 
+			graphics.print("Press R to start over", 280, 640)
+			if not Levels.currentLevel.wasSelected then
+				graphics.print("Press C to use a continue\n    Continues Used: ", 630, 130)
+				graphics.setFont(Base.getCoolFont(40))
+				graphics.print(psycho.continuesUsed, 850, 157)
+			end
+		end
 		graphics.setFont(Base.getFont(30))
 		if state == survival then graphics.print("_____________", 280, 645)
 		else 	graphics.print("__________________", 280, 645) end
