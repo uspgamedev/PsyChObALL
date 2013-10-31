@@ -45,3 +45,10 @@ function Effect.createEffects(based_on, times)
 		effs[#effs + 1] = e
 	end
 end
+
+function Effect:handleTooMany()
+	local toDel = #effs / 4
+	for i = #effs - toDel, #effs, 1 do
+		effs[i] = nil
+	end
+end

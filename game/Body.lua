@@ -85,6 +85,10 @@ function Body:start()
 	if self.spriteBatch then self:addToBatch() end
 end
 
+function Body:handleTooMany()
+	-- do something about it!
+end
+
 function Body:addToBatch()
 	if self.spriteBatch then
 		if self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then
@@ -94,6 +98,7 @@ function Body:addToBatch()
 			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 			for _, p in pairs(self.bodies) do p:addToBatch() end
 			self.spriteBatch:unbind()
+			if self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then self:handleTooMany() end
 		else
 			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 			self:__super().spriteCount = self:__super().spriteCount + 1
