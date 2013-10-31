@@ -127,7 +127,7 @@ function runLevel( name )
 	if changetitle then
 		local title = Text:new {
 			text = currentLevel.title,
-			alphaFollows = VarTimer:new{ var = 255 },
+			alphaFollows = VarTimer:new{ var = 1 },
 			font = Base.getCoolFont(100),
 			position = Vector:new{50, 200},
 			limit = width - 100,
@@ -141,7 +141,15 @@ function runLevel( name )
 			running = true,
 			onceOnly = true,
 			funcToCall = function ( timer )
-				title.alphaFollows:setAndGo(255, 1, 100)
+				title.alphaFollows:setAndGo(1, 254, 80)
+			end
+		}
+		Timer:new{
+			timelimit = 253/80,
+			running = true,
+			onceOnly = true,
+			funcToCall = function ( timer )
+				title.alphaFollows:setAndGo(254, 1, 80)
 				title.alphaFollows.alsoCall = function() title.delete = true end
 			end
 		}

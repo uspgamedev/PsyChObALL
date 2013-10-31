@@ -2,7 +2,7 @@ seeker = Body:new {
 	size = 20,
 	timeout = 10,
 	seek = true,
-	health = 10,
+	health = 3,
 	spriteBatch = false,
 	shader = Base.circleShader,
 	__type = 'seeker'
@@ -12,7 +12,7 @@ Body.makeClass(seeker)
 
 function seeker:__init()
 	if not rawget(self.position, 1) then Enemy.__init(self) end
-	self.speedN = self.speedN or math.random(v - 30, v)
+	self.speedN = self.speedN or math.random(0.8*v - 30, 0.8*v)
 	self.exitposition = self.exitposition or self.position
 	self.colors = {VarTimer:new{var = .88*255}, VarTimer:new{var = .66*255}, VarTimer:new{var = .37*255}}
 	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))

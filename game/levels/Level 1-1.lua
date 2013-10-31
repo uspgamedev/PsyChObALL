@@ -37,14 +37,16 @@ function run()
 		from = 'right'
 	}
 
+
 	warnEnemies = true
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 
---	doNow( function(timer)
---		if not DeathManager.gameLost then reloadStory 'Tutorial' end
---	end)
+
+	doNow( function(timer)
+		if not DeathManager.gameLost then reloadStory 'Level 4-3' end
+	end)
 
 	wait(1)
 	enemy(simple, 1, { position = Vector:new{-20, height/2}, speed = Vector:new{v, 0} })

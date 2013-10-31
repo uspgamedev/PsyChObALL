@@ -88,11 +88,11 @@ function run()
 
 	wait(3)
 	enemy(sek, 1, nil, 7, Vector:new{width/2, -30})
-	wait(3)
-	enemy(sek, 1, nil, 15, Vector:new{width/2, -30})
-	enemy(sek, 1, nil, 15, Vector:new{width/2, height-30})
-	enemy(sek, 1, nil, 15, Vector:new{width + 30, height/2})
-	wait(4)
+	wait(8)
+	enemy(sek, 1, { position = Vector:new{-30, height/2} }, 15, Vector:new{width/2, -30})
+	enemy(sek, 1, { position = Vector:new{width+30, height/2} }, 15, Vector:new{width/2, height-30})
+	enemy(sek, 1, { position = Vector:new{width/2, height+30} }, 15, Vector:new{width + 30, height/2})
+	wait(5.5)
 	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{v, v}, life = 120, size = 90}, divide1, {width/2, height+30}, 12)
 	wait(3)
 	local t = {}
@@ -114,24 +114,29 @@ function run()
 		t = {}
 	end
 	wait(10)
-	enemy(sek, 1, nil, 25, Vector:new{width/2, -30})
-	enemy(sek, 1, nil, 25, Vector:new{width/2, height-30})
+	enemy(sek, 1, nil, 18, Vector:new{width/2, -30})
+	enemy(sek, 1, nil, 20, Vector:new{width/2, height-30})
 	wait(3.5)
 	enemy(nic, 1, nil, {width/2,height/2},
-		{size = 180, wait = 35, sizeGrowth = 300},
+		{size = 180, wait = 25, sizeGrowth = 300},
+		{size = 300, wait = 15, sizeGrowth = 300},
 		{size = 100, wait = 5, sizeGrowth = 32},
 		{destroy = true, sizeGrowth = 460}
 	)
-	wait(5)
-	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.5*v, v}, life = 140, size = 60}, mono, {width/2, height+30}, 22)
-	wait(6)
-	for i = 1,5 do
-		enemy(sek, 1, nil, 11-i, Vector:new{width/2, height-30})
-		wait(2)
-	end
 	wait(10)
-	enemy(sek, 6, horizontall, 13, Vector:new{width/2, -30})
-	enemy(sek, 6, horizontalr, 13, Vector:new{width/2, -30})
+	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.4*v, 0.75*v}, life = 140, size = 60}, mono, {width/2, height+30}, 19)
+	wait(6)
+	for i = 1,3 do
+		enemy(sek, 1, { speed = Vector:new{(0.8-0.1*i)*v - 30,(0.8-0.1*i)*v}}, 11-2*i, Vector:new{width/2, height-30})
+		wait(2.5)
+	end
+	wait(7)
+	enemy(sek, 1, { position = Vector:new{-30, 2*height/5}, speed = Vector:new{0.3*v, 0.3*v} }, 13, Vector:new{-30, 2*height/5})
+	enemy(sek, 1, { position = Vector:new{-30, 3*height/5}, speed = Vector:new{0.3*v, 0.3*v} }, 10, Vector:new{-30, 3*height/5})
+	enemy(sek, 1, { position = Vector:new{-30, 4*height/5}, speed = Vector:new{0.3*v, 0.3*v} }, 10, Vector:new{-30, 4*height/5})
+	enemy(sek, 1, { position = Vector:new{width+30, 2*height/5}, speed = Vector:new{0.3*v, 0.3*v} }, 7, Vector:new{width+30, 2*height/5})
+	enemy(sek, 1, { position = Vector:new{width+30, 3*height/5}, speed = Vector:new{0.3*v, 0.3*v} }, 7, Vector:new{width+30, 3*height/5})
+	enemy(sek, 1, { position = Vector:new{width+30, 4*height/5}, speed = Vector:new{0.3*v, 0.3*v} }, 7, Vector:new{width+30, 4*height/5})
 	wait(19)
 	doNow( function(timer)
 		if not Levels.currentLevel.wasSelected then
