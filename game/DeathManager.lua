@@ -51,9 +51,27 @@ function manageDeath()
 end
 
 function beginGameRestart()
+	startPsychoRevival(restartGame)
+end
+
+function doGameContinue()
+	if Levels.currentLevel.wasSelected then return end
+	startPsychoRevival(realContinue)
+end
+
+function realContinue()
+	DeathEffect.bodies = nil
+	paintables.deathEffects = nil
+	psycho.continuesUsed = psycho.continuesUsed + 1
+	Levels.currentLevel.title = nil
+	reloadStory(Levels.currentLevel.name_:sub(1, -2) .. '1', true)
+end
+
+function startPsychoRevival( funcToCall )
 	if isRestarting then return end
 	isRestarting = true
 	timeOfRestart = totaltime
+	-- this doesn't work for all effects, fix it
 	local m = (timeOfRestart - timeOfDeath)/timeToRestart
 	for _, eff in pairs(DeathEffect.bodies) do
 		eff.speed:negate():mult(m, m)
@@ -63,17 +81,8 @@ function beginGameRestart()
 		timeAffected = false,
 		onceOnly = true,
 		running = true,
-		funcToCall = restartGame
+		funcToCall = funcToCall
 	}
-end
-
-function doGameContinue()
-	if Levels.currentLevel.wasSelected then return end
-	DeathEffect.bodies = nil
-	paintables.deathEffects = nil
-	psycho.continuesUsed = psycho.continuesUsed + 1
-	Levels.currentLevel.title = nil
-	reloadStory(Levels.currentLevel.name_:sub(1, -2) .. '1', true)
 end
 
 function restartGame()

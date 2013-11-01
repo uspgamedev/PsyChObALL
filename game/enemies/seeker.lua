@@ -83,6 +83,7 @@ function seeker:update( dt )
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"
+		self.collides = true
 		DeathManager.manageDeath()
 	end
 

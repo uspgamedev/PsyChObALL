@@ -1,17 +1,25 @@
 bossLast = Body:new{
 	size = 100,
-	width = 200,
+	width = 400,
 	height = 200,
 	variance = 5,
 	visible = true,
 	maxhealth = 10,
 	collides = true,
+	spriteBatch = false,
 	ord = 8,
 	angle = nil, --VarTimer
 	__type = 'bossLast'
 }
 
 Body.makeClass(bossLast)
+local abs, random = math.abs, math.random
+
+bossLast.behaviors = {}
+
+function bossLast.behaviors.first( self )
+	
+end
 
 function bossLast:draw()
 	if not self.visible then return end
@@ -30,11 +38,11 @@ function bossLast:update( dt )
 	if not self.visible then return end
 
 	if self.collides then
-		if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
-		elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
+		if self.x  + self.size > width then self.speed:set(-abs(self.Vx))
+		elseif self.x - self.size < 0  then self.speed:set( abs(self.Vx)) end
 
-		if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
-		elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
+		if self.y + self.size > height then self.speed:set(nil, -abs(self.Vy))
+		elseif self.y - self.size < 0  then self.speed:set(nil,  abs(self.Vy)) end
 	end
 
 	for _, s in pairs(Shot.bodies) do
@@ -54,6 +62,8 @@ function bossLast:update( dt )
 		psycho.diereason = "shot"
 		DeathManager.manageDeath()
 	end
+
+	self:currentBehavior()
 end
 
 function bossLast.getShot()
@@ -68,17 +78,18 @@ function bossLast:__init()
 	self.health = bossLast.maxhealth
 	self.colorchange = VarTimer:new{var = 255}
 	self.coloreffect = ColorManager.getColorEffect({var = 255}, {var = 0}, {var = 0}, self.colorchange)
+	self.currentBehavior = Base.doNothing
 
 	local components = {{},{},{},{}}
 	local updateFunc =  function (e, dt)
 			Enemies.grayball.update(e, dt)
 			if not e.inBox and Base.collides(e, self) then e.inBox = true end
 			if not e.inBox then return end
-			if e.x  + e.size > width/2 + 120 then e.speed:set(-math.abs(e.Vx))
-			elseif e.x - e.size < width/2 - 120 then e.speed:set( math.abs(e.Vx)) end
+			if e.x  + e.size > width/2 + self.width/2 + 20 then e.speed:set(-abs(e.Vx))
+			elseif e.x - e.size < width/2 - self.width/2 - 20 then e.speed:set( abs(e.Vx)) end
 
-			if e.y + e.size > height/2 + 120 then e.speed:set(nil, -math.abs(e.Vy))
-			elseif e.y - e.size < height/2 - 120 then e.speed:set(nil,  math.abs(e.Vy)) end
+			if e.y + e.size > height/2 + self.height/2 + 20 then e.speed:set(nil, -abs(e.Vy))
+			elseif e.y - e.size < height/2 - self.height/2 - 20 then e.speed:set(nil,  abs(e.Vy)) end
 		end
 	local ballsalpha = VarTimer:new{var = 255}
 	for i = 1, 160 do
@@ -113,10 +124,10 @@ function bossLast:__init()
 		works_on_gameLost = false,
 		funcToCall = function()
 			local e = self.getShot()
-			e.position = self.position:clone()
+			e.position:set(self.position)
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = (pos:sub(self.position)):normalize():add(math.random()/3, math.random()/3):normalize():mult(2 * v, 2 * v)
+			e.speed = (pos:sub(self.position)):normalize():add(random()/3, random()/3):normalize():mult(2 * v, 2 * v)
 			e:register()
 		end
 	}
@@ -140,6 +151,7 @@ function bossLast:__init()
 					timer:new{timelimit = 1.2, onceOnly = true, running = true, funcToCall = function() 
 						self.speed:set(v/7, 3*v)
 						self.shoottimer:start()
+						self.currentBehavior = bossLast.behaviors.first
 					end}
 				end
 			end
@@ -149,7 +161,7 @@ end
 
 local auxVec = Vector:new{}
 local auxVec2 = Vector:new{}
-
+local min, max = math.min, math.max
 function bossLast:collidesWith( pos, size ) --rectangle with circle
 	if not size then
 		size = pos.size
@@ -158,8 +170,8 @@ function bossLast:collidesWith( pos, size ) --rectangle with circle
 
 	auxVec:set(pos):sub(self.position):rotate(-self.angle.var):add(self.position)
 	auxVec2:set(
-		math.max(math.min(auxVec[1], self.position[1] + self.width/2), self.position[1] - self.width/2),
-		math.max(math.min(auxVec[2], self.position[2] + self.height/2), self.position[2] - self.height/2)
+		max(min(auxVec[1], self.position[1] + self.width/2), self.position[1] - self.width/2),
+		max(min(auxVec[2], self.position[2] + self.height/2), self.position[2] - self.height/2)
 	)
 	return Base.collides(auxVec, 0, auxVec2, size)
 end

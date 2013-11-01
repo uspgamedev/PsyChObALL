@@ -45,7 +45,7 @@ function run()
 
 
 	doNow( function(timer)
-		if not DeathManager.gameLost then reloadStory 'Level 4-3' end
+		Psychoball.turnLightsOff = true
 	end)
 
 	wait(1)

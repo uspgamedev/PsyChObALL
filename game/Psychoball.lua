@@ -198,6 +198,16 @@ function Psychoball:keyReleased( key )
 	end
 end
 
+function Psychoball.additionalDrawing()
+	if Psychoball.turnLightsOff then
+		Base.turnLightsOffShader:send('psychoRelativePos', {psycho.x/width, psycho.y/width})
+		graphics.setPixelEffect(Base.turnLightsOffShader)
+		graphics.setColor(0, 0, 0, 255)
+		graphics.draw(Base.pixel, 0, 0, 0, width, width)
+		graphics.setPixelEffect(Base.circleShader)
+	end
+end
+
 function doUltrablast()
 	for i=1, ultrablast do
 		Shot:new{

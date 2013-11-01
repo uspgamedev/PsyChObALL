@@ -3,11 +3,12 @@ Important
 	- Refactor EVERYTHING
 		- Redo score/level/allotherstats saving -- Almost done
 	- Change 4-3 ending
+	- Add consequences for using continues
 
 Bugs
 	- Error "AL lib: ReleaseALC: 1 device not closed" ?
+	- Death Effects sometimes do not reassemble correctly
 
 Maybe's
-	- Do a continue system
 	- Kill all enemies close to you when you die
 	- Change how ultrablast works

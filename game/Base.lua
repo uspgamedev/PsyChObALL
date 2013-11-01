@@ -26,15 +26,24 @@ end
 pixel = love.graphics.newImage 'resources/pixel.png'
 pixel:setFilter('linear','linear', 0)
 
+turnLightsOffShader = love.graphics.newPixelEffect [[
+	extern vec2 psychoRelativePos;
+	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
+		number dist = (tc[0] - psychoRelativePos[0])*(tc[0] - psychoRelativePos[0]) + (tc[1] - psychoRelativePos[1])*(tc[1] - psychoRelativePos[1]);
+		if(dist < .07) color[3] = pow(dist/.07, .4);
+		return color;
+	}
+]]
+
 circleShader = love.graphics.newPixelEffect [[
 	extern number min;
 	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
 		number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
 		if(min == 0) {
-		   if(dist > .25) return vec4(0,0,0,0);
+		   if(dist > .25) color[3] = 0;
 			return color;
 		}
-		if(dist > .25	|| dist < min) return vec4(0,0,0,0);
+		if(dist > .25	|| dist < min) color[3] = 0;
 		return color;
 	}
 ]]

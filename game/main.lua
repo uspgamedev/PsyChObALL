@@ -283,20 +283,26 @@ function love.draw()
 
 	UI.draw()
 	MenuManager.draw()
+	Psychoball.additionalDrawing()
 end
 
 function drawBackground()
-	local color = ColorManager.getRawColor(-ColorManager.timer.time*.35)
-	color[1] = color[1] / 3
-	color[2] = color[2] / 3
-	color[3] = color[3] / 3
-	ColorManager.applyEffect(nil, color)
-	color[1] = color[1] / 4
-	color[2] = color[2] / 4
-	color[3] = color[3] / 4
-	graphics.setColor(color)
+	if not Psychoball.turnLightsOff then
+		local color = ColorManager.getRawColor(-ColorManager.timer.time*.35)
+		color[1] = color[1] / 3
+		color[2] = color[2] / 3
+		color[3] = color[3] / 3
+		ColorManager.applyEffect(nil, color)
+		color[1] = color[1] / 4
+		color[2] = color[2] / 4
+		color[3] = color[3] / 4
+		graphics.setColor(color)
+	else
+		graphics.setColor(100, 100, 100)
+	end
 
-	graphics.rectangle("fill", 0, 0, width, height) --background color
+	graphics.setPixelEffect()
+	graphics.draw(Base.pixel, 0, 0, 0, width, height) --background color
 end
 
 function drawShootingDirection()
