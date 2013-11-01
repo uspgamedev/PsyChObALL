@@ -4,6 +4,8 @@ Shot = Body:new {
 	variance = 0,
 	explosionEffects = true,
 	shader = Base.circleShader,
+	spriteBatch = graphics.newSpriteBatch(Base.pixel, 130, 'dynamic'),
+	spriteMaxNum = 130,
 	shotnum = 1,
 	bodies = {},
 	__type   = 'Shot'
@@ -46,6 +48,6 @@ function Shot:handleDelete()
 end
 
 function Shot:update(dt)
-    Body.update(self, dt)
-    self.delete = self.delete or self.collides
+	Body.update(self, dt)
+	self.delete = self.delete or self.collides
 end

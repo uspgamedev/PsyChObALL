@@ -3,6 +3,8 @@ Enemy = Body:new {
 	diereason = 'leftscreen',
 	size = 16,
 	shader = Base.circleShader,
+	spriteBatch = graphics.newSpriteBatch(Base.pixel, 130, 'dynamic'),
+	spriteMaxNum = 130,
 	bodies = {},
 	__type = 'Enemy'
 }

@@ -4,6 +4,7 @@ Button = Body:new {
 	onHover = false,
 	__type = 'Button',
 	visible = true,
+	spriteBatch = false,
 	bodies = {},
 	allbuttons = {}
 }

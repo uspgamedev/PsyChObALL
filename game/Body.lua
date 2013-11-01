@@ -5,6 +5,7 @@ Body = lux.object.new {
 	changesimage = true,
 	positionfollows = nil, --function
 	ord = 5,
+	inBatch = false,
 	__type = 'unnamed Body'
 }
 
@@ -44,6 +45,7 @@ function Body.makeClass( subclass )
 	if subclass.spriteBatch == nil then
 		subclass.spriteBatch = graphics.newSpriteBatch(Base.pixel, 200, 'dynamic')
 		subclass.spriteMaxNum = 200
+		print(subclass.__type)
 	end
 	if subclass.spriteBatch then
 		subclass.spriteCount = 0
@@ -72,7 +74,7 @@ function Body:draw()
 end
 
 function Body:handleDelete()
-	if self.spriteBatch then
+	if self.spriteBatch and self.id then
 		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0) 
 	end
 end
@@ -86,23 +88,37 @@ function Body:start()
 end
 
 function Body:handleTooMany()
+	io.write('Warning! Maximum number of ', self.__type, ' sprites almost being reached!\n')
 	-- do something about it!
 end
 
+local onRebatch = false
 function Body:addToBatch()
 	if self.spriteBatch then
-		if self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then
+		if not onRebatch and self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then
+			onRebatch = true
+			--io.write('clearing ', self.__type, ' (', self.spriteCount, ' sprites out of ', self.spriteMaxNum, ') \t---\t')
 			self:__super().spriteCount = 1
 			self.spriteBatch:bind()
 			self.spriteBatch:clear()
+			for _, p in pairs(self.bodies) do if p.inBatch then p:addToBatch() end end
+			--print('new sprite count: ', self.spriteCount)
+			if self.spriteCount >= self.spriteMaxNum - 2*(self.spriteSafety or 10) then 
+				print("critical situation")
+				self:handleTooMany()
+				self:__super().spriteCount = 1
+				self.spriteBatch:clear()
+				for _, p in pairs(self.bodies) do if p.inBatch then p:addToBatch() end end
+			end
 			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
-			for _, p in pairs(self.bodies) do p:addToBatch() end
 			self.spriteBatch:unbind()
-			if self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then self:handleTooMany() end
+			--print('finished clearing')
+			onRebatch = false
 		else
 			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 			self:__super().spriteCount = self:__super().spriteCount + 1
 		end
+		self.inBatch = true
 	end
 end
 
@@ -131,7 +147,7 @@ function Body:drawComponents()
 	for _, body in pairs(self.bodies) do
 		body:draw()
 	end
-	if self.spriteBatch then self.spriteBatch:unbind()	graphics.draw(self.spriteBatch, 0, 0) end
+	if self.spriteBatch then graphics.draw(self.spriteBatch, 0, 0)	self.spriteBatch:unbind() end
 	if self.shader then graphics.setPixelEffect() end
 end
 

@@ -591,6 +591,7 @@ bossTwo.turret = Body:new {
 	turretnum = 4,
 	ballscoloreffect = ColorManager.getColorEffect(175, 0, 0, 40),
 	coloreffect = ColorManager.noLSDEffect,
+	spriteBatch = false,
 	attached = true,
 	__type = 'bossTwoTurret'
 }
