@@ -114,7 +114,9 @@ local deathFunctions = {
 	function ( p1, p2, size ) return math.tan(p1:distsqr(p2)) end,
 	function ( p1, p2, size ) return math.asin(p1:dist(p2) % 1)*size^.8 end,
 	function ( p1, p2, size ) return math.exp(p1:dist(p2) - size/1.3) end,
-	function ( p1, p2, size ) return math.log10(p1:dist(p2))*size^.7 end
+	function ( p1, p2, size ) return math.log10(p1:dist(p2))*size^.7 end,
+	function ( p1, p2, size ) return .095/(math.cos(p1:distsqr(p2)*size*3)/size) end, -- awesome death function
+	function ( p1, p2, size ) return 20*math.cos(math.sin(math.cos(p1:dist(p2) % 1))) end -- weird one (mudando os cos e tan deixa ela mais bizarra)
 }
 
 DeathEffect = Body:new{
