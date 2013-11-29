@@ -13,10 +13,15 @@ function MainMenu:open()
 	}
 
 	function playbutton:pressed()
-		reloadSurvival()
 		self.visible = false
 		Effect.createEffects(self, 50)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
+		if not filesystem.exists 'config' then
+			FileManager.writeConfig()
+			reloadStory('Tutorial', true)
+		else
+			reloadSurvival()
+		end
 	end
 
 
@@ -28,10 +33,15 @@ function MainMenu:open()
 	}
 
 	function storybutton:pressed()
-		reloadStory 'Level 1-1'
 		self.visible = false
 		Effect.createEffects(self, 50)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
+		if not filesystem.exists 'config' then
+			FileManager.writeConfig()
+			reloadStory('Tutorial', true)
+		else
+			reloadStory 'Level 1-1'
+		end
 	end
 
 

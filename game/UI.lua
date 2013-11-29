@@ -119,12 +119,14 @@ function draw()
 			graphics.print(string.format("x%.1f", multiplier), width - 130, 35)
 		elseif state == story then
 			graphics.setFont(Base.getCoolFont(30))
-			graphics.print(string.format("%.0f", score), 25, 48)
+			graphics.print(string.format("%.0f", score), 25, 38)
 			graphics.print(string.format("%.0f", psycho.lives), 25, 98)
 			graphics.setFont(Base.getCoolFont(20))
 			graphics.print(Levels.currentLevel.chapter, 200, 40)
+			graphics.setFont(Base.getCoolFont(10))
+			graphics.print(string.format("High Score: %.0f", records.story[Levels.currentLevel.name_].score), 25, 70)
 			graphics.setFont(Base.getCoolFont(18))
-			graphics.print("Score:", 25, 30)
+			graphics.print("Score:", 25, 20)
 			graphics.print("Lives:", 25, 80)
 			graphics.print("ulTrAbLaST:", 25, 130)
 			graphics.setFont(Base.getCoolFont(30))
@@ -147,9 +149,9 @@ function draw()
 		if Cheats.tiltmode then graphics.print("*TILT*", 446, 80, -angle.var) end
 		graphics.setFont(Base.getFont(12))
 	end
-	--[[Drawing Things that how up on every page]]
 	--[[End of Drawing On-Game Info]]
 
+	--[[Drawing Things that show up on every page]]
 	local color = ColorManager.getComposedColor()
 	graphics.setColor(color)
 	graphics.setFont(Base.Base.getFont(12))
@@ -185,6 +187,6 @@ function draw()
 	--[[End of Drawing Pause Menu]]
 
 	if state == levelselect then
-
+		--[[maybe some additional drawing here]]
 	end
 end

@@ -7,7 +7,8 @@ local defaultRecords = {
 		multiplier = 0
 	},
 	story = {
-		lastLevel = 'Level 1-1'
+		lastLevel = 'Level 1-1',
+		['Tutorial'] = { score = 0 }
 	}
 }
 
@@ -82,7 +83,7 @@ end
 function openFile( name, method )
 	local file = filesystem.newFile(name)
 	if not pcall(file.open, file, method) then
-		print "some error ocurred"
+		io.write('Could not open file \"', name, "\"(", method, ')\n') 
 		return nil
 	end
 	return file

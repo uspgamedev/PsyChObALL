@@ -43,11 +43,6 @@ function run()
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
 
-
-	doNow( function(timer)
-		Psychoball.turnLightsOff = true
-	end)
-
 	wait(1)
 	enemy(simple, 1, { position = Vector:new{-20, height/2}, speed = Vector:new{v, 0} })
 	wait(3)

@@ -32,6 +32,14 @@ function PracticeMenu:open( levelN )
 		buttons[#buttons + 1] = nextB
 	end
 
+	local goToLevelFunc = function (self)
+		self.visible = false
+		Effect.createEffects(self, 40)
+		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
+		reloadStory(self.levelName, true)
+		Levels.currentLevel.wasSelected = true
+	end
+
 	if levelN > 1 then
 		local prevB = Button:new{
 			size = 50,
@@ -43,15 +51,16 @@ function PracticeMenu:open( levelN )
 			end
 		}
 		buttons[#buttons + 1] = prevB
-	end
-
-
-	local goToLevelFunc = function (self)
-		self.visible = false
-		Effect.createEffects(self, 40)
-		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
-		reloadStory(self.levelName, true)
-		Levels.currentLevel.wasSelected = true
+	else
+		local tut = Button:new{
+			size = 60,
+			position = Vector:new{width/2 - 30, height - 120},
+			text = "Tutorial",
+			levelName = "Tutorial",
+			fontsize = 20,
+			pressed = goToLevelFunc
+		}
+		buttons[#buttons + 1] = tut
 	end
 
 	for i = 1, 4 do

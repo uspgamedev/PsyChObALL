@@ -11,7 +11,7 @@ function password( pass )
 	if type(pass) == 'string' then
 		local str = pass
 		pass = {}
-		for char in str:gmatch '.' do table.insert(pass,char) end
+		for char in str:gmatch '.' do pass[#pass + 1] = char end
 	end
 	local progress = 0
 	return function ( key )

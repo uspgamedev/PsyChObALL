@@ -94,7 +94,7 @@ end
 function Button:hover(hovering)
 	if hovering then
 		self.effectsBurst:start()
-		self.hoverring.size = 0
+		self.hoverring.size = math.max(0, self.hoverring.size)
 		self.hoverring.sizeGrowth = 350
 		self.hoverring.delete = false
 		CircleEffect.bodies[self] = self.hoverring
