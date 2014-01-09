@@ -5,6 +5,7 @@ simpleball = Body:new {
 	spriteBatch = graphics.newSpriteBatch(Base.pixel, 400, 'dynamic'),
 	spriteMaxNum = 400,
 	spriteSafety = 10,
+	score = 25,
 	__type = "simpleball"
 }
 
@@ -42,6 +43,5 @@ end
 
 function simpleball:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == 'shot' then addscore(25) end
 	Effect.createEffects(self, 40)
 end

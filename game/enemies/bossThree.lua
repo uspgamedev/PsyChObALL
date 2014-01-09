@@ -1,3 +1,5 @@
+local max, min, abs, random, pairs, unpack, next, ipairs = math.max, math.min, math.abs, math.random, pairs, unpack, next, ipairs
+
 bossThree = Body:new{
 	size = 50,
 	yellowguysize = 80,
@@ -40,42 +42,42 @@ function bossThree.behaviors.first( self )
 		local x = self.x + s*2
 		local t = self.segments[self.first].target
 		for i = t, 4, 1 do self.path[i] = nil end
-		table.insert(self.path, {x, self.y})
+		self.path[#self.path + 1] = {x, self.y}
 		for i = self.first, self.last, 1 do
 			local s = self.segments[i]
-			s.prevdist = math.abs(x - s.position.x)
+			s.prevdist = abs(x - s.position.x)
 		end
 		local y = self.y
 		local dir = x > self.x and bossThree.goright or bossThree.goleft
 		for i = 1, 10 do
 			y = y - 144
 			if y < 0 then y = y + height end
-			table.insert(self.path, {x, y, onDeparture = bossThree.goup})
+			self.path[#self.path + 1] = {x, y, onDeparture = bossThree.goup}
 			x = x + s*216
 			if x >= width then x = x - width end
 			if x < 0 then x = x + width end
-			table.insert(self.path, {x, y, onDeparture = dir})
+			self.path[#self.path + 1] = {x, y, onDeparture = dir}
 		end
 		self.path[#self.path].onArrival = function(s)
 			if s ~= self.segments[self.first] then return end
 			local s1 = s
 			local foodpos = s1.speed:normalized():mult(width/8, width/8):add(s1.position):set(nil, height/2)
 			bossThree.food:new{ position = foodpos }:register()
-			table.insert(self.path, {foodpos.x, self.y})
-			table.insert(self.path, {foodpos.x, foodpos.y})
+			self.path[#self.path + 1] = {foodpos.x, self.y}
+			self.path[#self.path + 1] = {foodpos.x, foodpos.y}
 			self.path[#self.path].onArrival = function ( s )
 				self.currentBehavior = bossThree.behaviors.second
 			end
 			self.currentBehavior = Base.doNothing
 			self.spawnfood = Timer:new{
-				timelimit = math.random()*7 + 9,
+				timelimit = random()*7 + 9,
 				running = true,
 				funcToCall = function(timer)
-					timer.timelimit = math.random()*7 + 9
+					timer.timelimit = random()*7 + 9
 					if #self.segments >= 7 then return end
-					local pos = self.position + {math.random(width/4, 3*width/4), math.random(height/4, 3*height/4)}
-					pos.x = math.max(math.min(pos.x % width, width-100), 100)
-					pos.y = math.max(math.min(pos.y % height, height-100), 100)
+					local pos = self.position + {random(width/4, 3*width/4), random(height/4, 3*height/4)}
+					pos.x = max(min(pos.x % width, width-100), 100)
+					pos.y = max(min(pos.y % height, height-100), 100)
 					bossThree.food:new{position = pos}:register()
 				end
 			}
@@ -152,9 +154,9 @@ function bossThree.behaviors.second( self )
 		for _, color in ipairs(cs) do
 			local g = bossThree.ghost:new{}
 			Enemy.__init(g)
-			g.speed:set(Base.sign(math.random()-.5)*math.random(v*.7, v), Base.sign(math.random()-.5)*math.random(v*.7, v))
+			g.speed:set(Base.sign(random()-.5)*random(v*.7, v), Base.sign(random()-.5)*random(v*.7, v))
 			g.coloreffect = ColorManager.getColorEffect(unpack(color))
-			table.insert(bossThree.bodies, g)
+			bossThree.bodies[#bossThree.bodies + 1] = g
 		end
 		
 		self.currentBehavior = bossThree.behaviors.third
@@ -272,7 +274,7 @@ function bossThree:defaulttrytofollow( pos )
 	local s1 = self.segments[self.first]
 	if s1.target <= #self.path then return end
 	if s1.speed.x ~= 0 then
-		if math.abs(pos.x - self.x) < 9 then
+		if abs(pos.x - self.x) < 9 then
 			local dist = pos.y - self.y
 			local gd, gu = bossThree.godown, bossThree.goup
 			local newf = dist > 0 and (dist > height/2 and gu or gd) or (dist < -height/2 and gd or gu)
@@ -286,12 +288,12 @@ function bossThree:defaulttrytofollow( pos )
 			for i = self.first, self.last, 1 do
 				local s = self.segments[i]
 				if s.target == s1.target then
-					s.prevdist = math.abs(s.position[1] - p[1])
+					s.prevdist = abs(s.position[1] - p[1])
 				end
 			end
 		end
 	else
-		if math.abs(pos.y - self.y) < 9 then
+		if abs(pos.y - self.y) < 9 then
 			local dist = pos.x - self.x
 			local gr, gl = bossThree.goright, bossThree.goleft
 			local newf = dist > 0 and (dist > width/2 and gl or gr) or (dist < -width/2 and gr or gl)
@@ -305,7 +307,7 @@ function bossThree:defaulttrytofollow( pos )
 			for i = self.first, self.last, 1 do
 				local s = self.segments[i]
 				if s.target == s1.target then
-					s.prevdist = math.abs(s.position[2] - p[2])
+					s.prevdist = abs(s.position[2] - p[2])
 				end
 			end
 		end
@@ -314,7 +316,7 @@ end
 
 function  bossThree:yellowguytrytofollow( pos )
 	if self.Vx ~= 0 then
-		if math.abs(pos.x - self.x) < 9 then
+		if abs(pos.x - self.x) < 9 then
 			local dist = pos.y - self.y
 			if (dist > 0 and dist < height/2) or (dist < 0 and dist < -height/2) then
 				self.speed:set(0, bossThree.basespeed)
@@ -326,7 +328,7 @@ function  bossThree:yellowguytrytofollow( pos )
 			end
 		end
 	else
-		if math.abs(pos.y - self.y) < 9 then
+		if abs(pos.y - self.y) < 9 then
 			local dist = pos.x - self.x
 			if (dist > 0 and dist < width/2) or (dist < 0 and dist < -width/2) then
 					self.guyangle.var = self.Vy > 0 and Base.toRadians(90) or Base.toRadians(-90)
@@ -497,7 +499,7 @@ function bossThree:yellowguyHealthLoss()
 	self.health = self.health - 1
 	local d = self.health/bossThree.yellowguyhealth
 	if self.currentBehavior == bossThree.behaviors.third then
-		d = (math.max(d, .5) - .5)*2
+		d = (max(d, .5) - .5)*2
 		--self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
@@ -555,7 +557,7 @@ function bossThree:__init()
 			local prev = nil
 			for i = self.first, self.last, 1 do
 				local s = self.segments[i]
-				if prev and prev.target == s.target and math.abs(prev.position:distsqr(s.position) - 10000) < 100000 then
+				if prev and prev.target == s.target and abs(prev.position:distsqr(s.position) - 10000) < 100000 then
 					s.position:set(prev.position):sub(prev.speed:normalized():mult(100,100))
 				end
 				prev = s
@@ -573,7 +575,7 @@ function bossThree:__init()
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-		e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(2 * v, 2 * v)
+		e.speed = (pos:sub(self.position)):normalize():add(random()/10, random()/10):normalize():mult(2 * v, 2 * v)
 		e:register()
 	end
 end
@@ -712,7 +714,7 @@ end
 
 function bossThree.food:handleDelete()
 	if self.explode then
-		local ang = math.random() * math.pi * 2
+		local ang = random() * math.pi * 2
 		local n = 16
 		for i = 1, n do
 			local e = self.explodeShot:new{}
@@ -752,7 +754,7 @@ function bossThree.ghost:__init()
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-		e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(1.5 * v, 1.5 * v)
+		e.speed = (pos:sub(self.position)):normalize():add(random()/10, random()/10):normalize():mult(1.5 * v, 1.5 * v)
 		e:register()
 	end
 end
@@ -766,11 +768,11 @@ end
 
 function bossThree.ghost:update( dt )
 	Body.update(self, dt)
-	if self.x  + self.size > width then self.speed:set(-math.abs(self.Vx))
-	elseif self.x - self.size < 0  then self.speed:set( math.abs(self.Vx)) end
+	if self.x  + self.size > width then self.speed:set(-abs(self.Vx))
+	elseif self.x - self.size < 0  then self.speed:set( abs(self.Vx)) end
 
-	if self.y + self.size > height then self.speed:set(nil, -math.abs(self.Vy))
-	elseif self.y - self.size < 0  then self.speed:set(nil,  math.abs(self.Vy)) end
+	if self.y + self.size > height then self.speed:set(nil, -abs(self.Vy))
+	elseif self.y - self.size < 0  then self.speed:set(nil,  abs(self.Vy)) end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.diereason = "shot"

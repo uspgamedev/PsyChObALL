@@ -6,6 +6,7 @@ monoguiaball = Body:new {
 	spriteBatch = graphics.newSpriteBatch(Base.pixel, 150, 'dynamic'),
 	spriteMaxNum = 150,
 	spriteSafety = 10,
+	score = 100,
 	shader = Base.circleShader,
 	__type = 'monoguiaball'
 }
@@ -45,10 +46,10 @@ function monoguiaball:handleDelete()
 	Body.handleDelete(self)
 	Effect.createEffects(self, 20)
 	if self.diereason ~= "shot" then return end
-	addscore(100)
 	local speed = self.speed:length()
 	for i = 1, self.divideN do
 		local e = (self.divideType or Enemies.multiball):new(lux.object.clone(self.args))
+		if not self.score then e.score = false end
 		e.size = self.size - 6
 		e.position:set(self.position):add(math.random(self.size), math.random(self.size))
 		e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)

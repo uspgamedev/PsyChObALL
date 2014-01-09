@@ -81,7 +81,7 @@ end
 
 function superball:start( shot )
 	Body.start(self)
-	self.healthbak = self.life
+	self.originalHeath = self.life
 	self.lifeCircle.size = self.size + self.life
 	self.shoottimer:start()
 	self.timeout:start()
@@ -132,7 +132,7 @@ end
 
 function superball:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == 'shot' then addscore(4*self.healthbak + 2*self.size) end
+	if self.diereason == 'shot' then addscore(4*self.originalHeath + 2*self.size) end
 	Effect.createEffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
 	self.shoottimer:remove()

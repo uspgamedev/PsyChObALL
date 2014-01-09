@@ -74,6 +74,7 @@ function Body:draw()
 end
 
 function Body:handleDelete()
+	if self.score and self.diereason == 'shot'then addscore(self.score) end
 	if self.spriteBatch and self.id then
 		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0) 
 	end

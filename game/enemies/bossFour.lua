@@ -1,3 +1,5 @@
+local random, max, floor, abs, ipairs, pairs, unpack = math.random, math.max, math.floor, math.abs, ipairs, pairs, unpack
+
 bossFour = Body:new{
 	size = 60,
 	width = 400,
@@ -21,13 +23,13 @@ bossFour.behaviors = {}
 function bossFour.behaviors.arriving( self )
 	local curdist = self.position:distsqr(width/2, height/2)
 	if curdist < 1 or curdist > self.prevdist then
-		self.speed:reset()
 		self.currentBehavior = bossFour.behaviors.first
+		self.speed:reset()
 		local components = {{},{},{},{}}
 		for i = 1, 48 do
 			local e = self:getShot()
 			self:prepare(e)
-			components[math.floor((i-1)/12) + 1][((i-1) % 12) + 1] = e
+			components[floor((i-1)/12) + 1][((i-1) % 12) + 1] = e
 		end
 		local f = Formations.around:new{
 			angle = 0,
@@ -76,9 +78,10 @@ end
 
 function bossFour.behaviors.first( self )
 	if self.health/bossFour.maxhealth < .75 then
+		addscore(500)
 		self.currentBehavior = bossFour.behaviors.second
 		self.collides = true
-		self.speed:set(1,1):normalize():mult(v/2, v/2):rotate(math.random()*2*math.pi)
+		self.speed:set(1,1):normalize():mult(v/2, v/2):rotate(random()*2*math.pi)
 		self.vulnerable = false
 		self.colors[1]:setAndGo(nil, 0, 100)
 		self.colors[2]:setAndGo(nil, 50, 100)
@@ -93,6 +96,7 @@ end
 
 function bossFour.behaviors.second( self )
 	if self.health/bossFour.maxhealth < .5 then
+		addscore(500)
 		self.currentBehavior = bossFour.behaviors.tocenter
 		self.speed:set(width/2, height/2):sub(self.position):normalize():mult(v*.5)
 		self.prevdist = self.position:distsqr(width/2, height/2)
@@ -119,7 +123,7 @@ function bossFour.behaviors.tocenter( self )
 				local angchange = Base.toRadians(360/30)
 				local pos = Vector:new{0, 200}
 				local possible = {}
-				for _, b in ipairs(self.pool) do if b.inBox then table.insert(possible, b) end end
+				for _, b in ipairs(self.pool) do if b.inBox then possible[#possible + 1] = b end end
 				if #possible < 30 then
 					local lim = 30 - #possible
 					for i = 1, lim do
@@ -128,7 +132,7 @@ function bossFour.behaviors.tocenter( self )
 						e.position:set(self.position)
 						self:prepare(e)
 						e.inBox = true
-						table.insert(possible, e)
+						possible[#possible + 1] = e
 					end
 				end
 				if #self.pool < 50 then
@@ -150,7 +154,7 @@ function bossFour.behaviors.tocenter( self )
 					s.speed:set(s.target):sub(s.position):normalize():mult(bossFour.basespeed)
 					s.inBox = true
 					pos:rotate(angchange)
-					table.insert(self.cage, s)
+					self.cage[#self.cage + 1] = s
 				end
 				self.poolN = self.poolN + 40
 				self.dontattack = false
@@ -204,6 +208,8 @@ function bossFour.behaviors.third( self )
 		end
 	end
 	if self.health/bossFour.maxhealth < .25 then
+		addscore(500)
+		self.currentBehavior = bossFour.behaviors.gathering
 		self.sizeGrowth = -20
 		self.desiredsize = 20
 		self.cage = nil
@@ -213,7 +219,6 @@ function bossFour.behaviors.third( self )
 			b.speed:set(self.position):sub(b.position):normalize():mult(bossFour.basespeed/2)
 			b.prevdist = b.position:distsqr(self.position)
 		end
-		self.currentBehavior = bossFour.behaviors.gathering
 		self.vulnerable = false
 		self.colors[1]:setAndGo(nil, 122, 100)
 		self.colors[2]:setAndGo(nil, 122, 100)
@@ -238,10 +243,11 @@ function bossFour.behaviors.gathering ( self )
 		end
 	end
 	if #self.pool == 0 and self.desiredsize == nil and not self.recharging then
+		addscore(500)
 		self.currentBehavior = bossFour.behaviors.final
 		self.pool = nil
 		self.form.radius = 3
-		self.getShot = function() return (math.random() < .5 and Enemies.monoguiaball or Enemies.grayball):new{} end
+		self.getShot = function() return (random() < .5 and Enemies.monoguiaball or Enemies.grayball):new{ score = false } end
 		self.colors[1]:setAndGo(nil, .59*225, 100)
 		self.colors[2]:setAndGo(nil, .44*255, 100)
 		self.colors[3]:setAndGo(nil, .9*255, 100)
@@ -254,13 +260,13 @@ function bossFour.behaviors.gathering ( self )
 			timelimit = 1,
 			running = true,
 			funcToCall = function ()
-				self.form.angle = math.random()*math.pi
-				local n = math.random(14, 22)
+				self.form.angle = random()*math.pi
+				local n = random(14, 22)
 				self.form.anglechange = Base.toRadians(360/n)
 				local es = {}
 				for i = 1, n do
 					local e = self:getShot()
-					table.insert(es, e)
+					es[#es + 1] = e
 					e:register()
 				end
 				self.form:applyOn(es)
@@ -271,6 +277,7 @@ end
 
 function bossFour.behaviors.final( self )
 	if self.health == 0 then
+		addscore(1000)
 		self.delete = true
 		self.shoottimer:remove()
 	end
@@ -293,11 +300,11 @@ function bossFour:update( dt )
 	self:currentBehavior()
 
 	if self.collides then
-		if self.x + self.width/2 > width then self.speed:set(-math.abs(self.Vx))
-		elseif self.x - self.width/2 < 0 then self.speed:set( math.abs(self.Vx)) end
+		if self.x + self.width/2 > width then self.speed:set(-abs(self.Vx))
+		elseif self.x - self.width/2 < 0 then self.speed:set( abs(self.Vx)) end
 
-		if self.y + self.height/2 > height then self.speed:set(nil, -math.abs(self.Vy))
-		elseif self.y - self.height/2 < 0 then self.speed:set(nil,  math.abs(self.Vy)) end
+		if self.y + self.height/2 > height then self.speed:set(nil, -abs(self.Vy))
+		elseif self.y - self.height/2 < 0 then  self.speed:set(nil,  abs(self.Vy)) end
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
@@ -313,7 +320,7 @@ function bossFour:update( dt )
 				self.health = self.health - 1
 				local d = self.health/bossFour.maxhealth
 				if self.currentBehavior == bossFour.behaviors.first then
-					d = (math.max(d,.75)-.75)*4
+					d = (max(d,.75)-.75)*4
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					--self.colors[2] is already correct
 					self.colors[3]:setAndGo(nil, 0, 1200)
@@ -325,7 +332,7 @@ function bossFour:update( dt )
 					end
 					}
 				elseif self.currentBehavior == bossFour.behaviors.second then
-					d = (math.max(d,.5)-.5)*4
+					d = (max(d,.5)-.5)*4
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
@@ -338,7 +345,7 @@ function bossFour:update( dt )
 					end
 					}
 				elseif self.currentBehavior == bossFour.behaviors.third then
-					d = (math.max(d,.25)-.25)/(.5 - .25)
+					d = (max(d,.25)-.25)/(.5 - .25)
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
@@ -351,7 +358,7 @@ function bossFour:update( dt )
 					end
 					}
 				elseif self.currentBehavior == bossFour.behaviors.final then
-					d = math.max(d, 0)*4
+					d = max(d, 0)*4
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
@@ -381,11 +388,11 @@ function bossFour:prepare( enemy )
 	enemy.spriteBatch = false
 	enemy.update = self.updateFunc
 	enemy:freeWarning()
-	table.insert(self.pool, enemy)
+	self.pool[#self.pool + 1] = enemy
 end
 
 function bossFour:getShot()
-	return (math.random() < .4 and Enemies.monoguiaball or Enemies.multiball):new{}
+	return (random() < .4 and Enemies.monoguiaball or Enemies.multiball):new{ score = false }
 end
 
 function bossFour:grow( n )
@@ -393,7 +400,7 @@ function bossFour:grow( n )
 	for i = 1, n do
 		local e = self:getShot()
 		e:getWarning()
-		table.insert(es, e)
+		es[#es + 1] = e
 	end
 	Timer:new{ 
 		timelimit = 1,
@@ -424,25 +431,25 @@ function bossFour:__init()
 			if e.ignoreBox then return end
 			if not e.inBox and Base.collides(e, self) then 
 				e.inBox = true
-				e.speed:set((math.random()*v*.3 + v*1.4)*Base.sign(math.random()-.5), (math.random()*v*.3 + v*1.4)*Base.sign(math.random()-.5))
+				e.speed:set((random()*v*.3 + v*1.4)*Base.sign(random()-.5), (random()*v*.3 + v*1.4)*Base.sign(random()-.5))
 				e.positionfollows = nil
 			end
 			if not e.inBox then return end
-			if e.x  + e.size > (e.rx or (self.x + self.width/2)) then e.speed:set(-math.abs(e.Vx))
-			elseif e.x - e.size < (e.lx or (self.x - self.width/2)) then e.speed:set( math.abs(e.Vx)) end
+			if e.x  + e.size > (e.rx or (self.x + self.width/2)) then e.speed:set(-abs(e.Vx))
+			elseif e.x - e.size < (e.lx or (self.x - self.width/2)) then e.speed:set( abs(e.Vx)) end
 
-			if e.y + e.size > (e.by or (self.y + self.height/2)) then e.speed:set(nil, -math.abs(e.Vy))
-			elseif e.y - e.size < (e.ty or (self.y - self.height/2)) then e.speed:set(nil,  math.abs(e.Vy)) end
+			if e.y + e.size > (e.by or (self.y + self.height/2)) then e.speed:set(nil, -abs(e.Vy))
+			elseif e.y - e.size < (e.ty or (self.y - self.height/2)) then e.speed:set(nil,  abs(e.Vy)) end
 		end
 	self.colors = {VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 10}}
 	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))
 	self.shoottimer = Timer:new{
 		timelimit = .1,
 		funcToCall = function()
-			if not self.recharging and math.random() < .1 then self:grow(1) end
-			if not self.recharging and not self.dontattack and math.random() < .4 then
+			if not self.recharging and random() < .1 then self:grow(1) end
+			if not self.recharging and not self.dontattack and random() < .4 then
 				local n = #self.pool
-				local p1 = math.random(n)
+				local p1 = random(n)
 				self.pool[n], self.pool[p1] = self.pool[p1], self.pool[n]
 				p1 = self.pool[n]
 				if (not p1.inBox) or p1.ignoreBox then return end
@@ -458,7 +465,7 @@ function bossFour:__init()
 				local es = {{},{},{},{},{},{}}
 				for i = 1, 72 do
 					local e = self:getShot()
-					es[math.floor((i-1)/12) + 1][((i-1) % 12) + 1] = e
+					es[floor((i-1)/12) + 1][((i-1) % 12) + 1] = e
 				end
 				self.recharging = true
 				self.form:applyOn(es[1])

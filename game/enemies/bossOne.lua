@@ -1,3 +1,5 @@
+local random, sin, cos, arctan, abs = math.random, math.sin, math.cos, math.atan2, math.abs
+
 bossOne = CircleEffect:new {
 	size = 80,
 	maxhealth = 160,
@@ -22,7 +24,7 @@ function bossOne:__init()
 	self.speed:set(v, v)
 	self.currentBehavior = bossOne.behaviors.arriving
 	self.health = bossOne.maxhealth
-	self.variance = math.random((ColorManager.colorCycleTime-3)*1000)/1000 + 3
+	self.variance = random((ColorManager.colorCycleTime-3)*1000)/1000 + 3
 	bossOne.shot = Enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
@@ -39,28 +41,33 @@ function bossOne.behaviors.arriving( self )
 		self.position:set(self.size + 10, self.size + 10)
 		self.speed:set(bossOne.basespeed, 0)
 		self.speedchange = Timer:new {
-			timelimit = 5 + math.random()*10,
+			timelimit = 5 + random()*10,
 			running = true,
 			funcToCall = function(timer )
-				timer.timelimit = 5 + math.random()*10
+				timer.timelimit = 5 + random()*10
 				self.speed:negate()
 			end
 		}
 		self.shoottimer = Timer:new {
 			timelimit = .5,
 			works_on_gameLost = false,
-			time = math.random(),
+			time = random(),
 			running = true
 		}
 
 		function self.shoottimer.funcToCall()
-			local e = (math.random() > .5 and Enemies.simpleball or Enemies.multiball):new{}
+			local e = self:getShot()
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*Base.toRadians(15))
+			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((random()-.5)*Base.toRadians(15))
 			e:register()
 		end
+
+		function self:getShot()
+			return (random() > .5 and Enemies.simpleball or Enemies.multiball):new{ score = false }
+		end
+
 		self.currentBehavior = bossOne.behaviors.first
 	end
 	self.prevdist = curdist
@@ -78,13 +85,8 @@ function bossOne.behaviors.first( self )
 		self.speedchange:remove()
 		self.speedchange = nil
 		self.health = bossOne.maxhealth * .75
-		function self.shoottimer.funcToCall()
-			local e = (Enemies.multiball):new{}
-			e.position = self.position:clone()
-			local pos = psycho.position:clone()
-			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = pos:sub(self.position):normalize():mult(2 * v, 2 * v):rotate((math.random()-.5)*Base.toRadians(15))
-			e:register()
+		function self:getShot()
+			return Enemies.multiball:new{ score = false }
 		end
 		self.colors[1]:setAndGo(nil, 0, 122)
 		self.colors[2]:setAndGo(nil, 255, 122)
@@ -94,7 +96,7 @@ end
 
 function bossOne.behaviors.second( self )
 	local mx, my = self:restrictToScreen()
-	if mx and math.random() < .43 then 
+	if mx and random() < .43 then 
 		self.speed:set(mx * (width - 2*self.size - 20), my * (height - 2*self.size - 20)):normalize():mult(bossOne.basespeed)
 	end
 	if self.health/bossOne.maxhealth < .5 then
@@ -116,9 +118,9 @@ function bossOne.behaviors.toTheMiddle( self )
 		self.shoottimer.time = 5
 		bossOne.shot = Enemies.simpleball
 		function self.shoottimer.funcToCall()
-			local side = math.random() < .5 and -1 or 1
-			self.circleshoot.angle = math.atan2(psycho.x - self.x, psycho.y - self.y)  + side*Base.toRadians(30)
-			self.circleshoot.anglechange = -math.abs(self.circleshoot.anglechange)*side
+			local side = random() < .5 and -1 or 1
+			self.circleshoot.angle = arctan(psycho.x - self.x, psycho.y - self.y)  + side*Base.toRadians(30)
+			self.circleshoot.anglechange = -abs(self.circleshoot.anglechange)*side
 			self.circleshoot.timescount = 0
 			self.circleshoot:start(self.circleshoot.timelimit)
 		end
@@ -128,14 +130,14 @@ function bossOne.behaviors.toTheMiddle( self )
 			times = 100,
 			angle = 0,
 			works_on_gameLost = false,
-			time = math.random()*2
+			time = random()*2
 		}
 		function self.circleshoot.funcToCall(timer)
-			local e = Enemies.multiball:new{}
-			e.position = self.position + {math.sin(timer.angle)*(bossOne.size-e.size), math.cos(timer.angle)*(bossOne.size-e.size)}
+			local e = self:getShot()
+			e.position = self.position + {sin(timer.angle)*(bossOne.size-e.size), cos(timer.angle)*(bossOne.size-e.size)}
 			e.speed:set(
-				bossOne.basespeed * math.sin(timer.angle),
-				bossOne.basespeed * math.cos(timer.angle))
+				bossOne.basespeed * sin(timer.angle),
+				bossOne.basespeed * cos(timer.angle))
 			e:register()
 			timer.angle = timer.angle + timer.anglechange
 			timer.timescount = timer.timescount + 1

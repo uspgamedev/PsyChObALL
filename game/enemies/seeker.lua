@@ -14,7 +14,7 @@ function seeker:__init()
 	if not rawget(self.position, 1) then Enemy.__init(self) end
 	self.speedN = self.speedN or math.random(0.8*v - 30, 0.8*v)
 	self.exitposition = self.exitposition or self.position
-	self.colors = {VarTimer:new{var = .88*255}, VarTimer:new{var = .66*255}, VarTimer:new{var = .37*255}}
+	self.colors = {{var = .88*255}, {var = .66*255}, {var = .37*255}}
 	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))
 	self.acceleration = Vector:new{0, 0}
 end
@@ -99,9 +99,9 @@ function seeker:manageShotCollision( shot )
 		self.diereason = "shot"
 	end
 	local d = self.health/seeker.health
-	self.colors[1]:setAndGo(nil, .88*255 + (1-d)*.22*255, 30)
-	self.colors[2]:setAndGo(nil, .66*255*d, 30)
-	self.colors[3]:setAndGo(nil, .37*255*d, 30)
+	self.colors[1].var = .88*255 + (1-d)*.22*255
+	self.colors[2].var = .66*255*d
+	self.colors[3].var = .37*255*d
 end
 
 function seeker:onInit( timeout, exitpos )
@@ -111,6 +111,5 @@ end
 
 function seeker:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == 'shot'then addscore(100) end
 	Effect.createEffects(self, 40)
 end

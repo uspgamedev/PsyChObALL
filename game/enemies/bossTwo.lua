@@ -1,3 +1,5 @@
+local max, random, abs, pairs = math.max, math.random, math.abs, pairs
+
 bossTwo = CircleEffect:new {
 	size = 80,
 	maxhealth = 35,
@@ -49,7 +51,7 @@ function bossTwo:__init()
 	self.prevdist = self.position:distsqr(width/2, height/2)
 	bossTwo.shot = Enemies.simpleball
 	function bossTwo:getTurretShot()
-		return Enemies.simpleball:new{}
+		return Enemies.simpleball:new{ score = false }
 	end
 end
 
@@ -61,7 +63,7 @@ function bossTwo.behaviors.arriving( self )
 		self.shoottimer = Timer:new {
 			timelimit = 1.6,
 			works_on_gameLost = false,
-			time = math.random(),
+			time = random(),
 			running = true
 		}
 
@@ -70,7 +72,7 @@ function bossTwo.behaviors.arriving( self )
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
 			if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
-			e.speed = (pos:sub(self.position)):normalize():add(math.random()/10, math.random()/10):normalize():mult(1.5 * v, 1.5 * v)
+			e.speed = (pos:sub(self.position)):normalize():add(random()/10, random()/10):normalize():mult(1.5 * v, 1.5 * v)
 			e:register()
 		end
 
@@ -116,7 +118,7 @@ function bossTwo.behaviors.first( self )
 		restrictToScreenThreshold = 20
 		restrictToScreenSpeed = v
 		self.currentBehavior = bossTwo.behaviors.second
-		self.getShot = function () return Enemies.multiball:new{} end
+		self.getShot = function () return Enemies.multiball:new{ score = false } end
 		bossTwo.getTurretShot = self.getShot
 		for i = 1, 4 do
 			self.healths[i] = bossTwo.maxhealth * .75
@@ -149,7 +151,7 @@ function bossTwo.behaviors.second( self )
 		end
 		self.vulnerable = false
 		self.currentBehavior = bossTwo.behaviors.gathering
-		self.getShot = function() return Enemies.glitchball:new{} end
+		self.getShot = function() return Enemies.glitchball:new{ score = false } end
 		bossTwo.getTurretShot = self.getShot
 		self.sizeGrowth = 30
 		self.ballspeed = 10
@@ -270,8 +272,8 @@ function bossTwo.behaviors.caging( self )
 		if c4 and c4.size <= 0 then t.circles[i == 3 and 1 or ((i % 4) + 2)] = nil end
 		if c1.size > 50 then c1.sizeGrowth = 0 c1.size = 50 end
 		if c2.size > 50 then c2.sizeGrowth = 0 c2.size = 50 end
-		if math.abs(c1.x + c1.y) > 80 then c1.speed:set(0,0) c1.position:normalize():mult(80) end
-		if math.abs(c2.x + c2.y) > 80 then c2.speed:set(0,0) c2.position:normalize():mult(80) end
+		if abs(c1.x + c1.y) > 80 then c1.speed:set(0,0) c1.position:normalize():mult(80) end
+		if abs(c2.x + c2.y) > 80 then c2.speed:set(0,0) c2.position:normalize():mult(80) end
 	end
 	if self.size == 60 and self.ballspos == 35 and self.sizeGrowth == 0 and self.ballspeed == 0 then
 		for i = 1, 4 do
@@ -332,7 +334,7 @@ function bossTwo.behaviors.fourth( self )
 				local c1c, c2c = s:collidesWith(c1), s:collidesWith(c2)
 				local c = c1c and c1 or c2
 				if c1c or c2c then
-					c.size = math.max(c.size - 3, 5)
+					c.size = max(c.size - 3, 5)
 					if c.growafter.running then c.growafter.time = 0
 					else c.growafter:start() end
 
@@ -470,7 +472,7 @@ function bossTwo:collides( v, n )
 end
 
 function bossTwo:getShot()
-	return (math.random() < .5 and Enemies.simpleball or Enemies.multiball):new{}
+	return (random() < .5 and Enemies.simpleball or Enemies.multiball):new{ score = false }
 end
 
 function bossTwo:update( dt )
@@ -493,7 +495,7 @@ function bossTwo:update( dt )
 				self.healths[n] = self.healths[n] - 1
 				local d = self.healths[n]/bossTwo.maxhealth
 				if self.currentBehavior == bossTwo.behaviors.arriving or self.currentBehavior == bossTwo.behaviors.first then
-					d = (math.max(d,.75)-.75)*4
+					d = (max(d,.75)-.75)*4
 					local colors = self.ballscolors[n]
 					if d == 0 then
 						colors[1]:setAndGo(nil, 122, 100)
@@ -511,7 +513,7 @@ function bossTwo:update( dt )
 						}
 					end
 				elseif self.currentBehavior == bossTwo.behaviors.second then
-					d = (math.max(d,.5)-.5)*4
+					d = (max(d,.5)-.5)*4
 					local colors = self.ballscolors[n]
 					if d == 0 then
 						colors[1]:setAndGo(nil, 122, 100)
@@ -529,7 +531,7 @@ function bossTwo:update( dt )
 						}
 					end
 				elseif self.currentBehavior == bossTwo.behaviors.third then
-					d = (math.max(d,.25)-.25)*4
+					d = (max(d,.25)-.25)*4
 					local colors = self.ballscolors[n]
 					if d == 0 then
 						colors[1]:setAndGo(nil, 122, 100)
@@ -547,9 +549,9 @@ function bossTwo:update( dt )
 						}
 					end
 				elseif self.currentBehavior == bossTwo.behaviors.fourth then
-					self.healths[n] = math.max(self.healths[n] - 2, 0)
+					self.healths[n] = max(self.healths[n] - 2, 0)
 					d = self.healths[n]/bossTwo.maxhealth
-					d = math.max(d,0)*4
+					d = max(d,0)*4
 					local colors = self.ballscolors[n]
 					if d == 0 then
 						colors[1]:setAndGo(nil, 122, 100)
@@ -580,14 +582,14 @@ function bossTwo:update( dt )
 end
 
 function bossTwo:__index( key )
-	if key == 'health' then return math.max(unpack(self.healths))
+	if key == 'health' then return max(unpack(self.healths))
 	else return bossTwo:__super().__index(self, key) end
 end
 
 bossTwo.turret = Body:new {
 	size = 60,
 	health = bossTwo.maxhealth/4,
-	variance = math.random(ColorManager.colorCycleTime*1000)/1000,
+	variance = random(ColorManager.colorCycleTime*1000)/1000,
 	turretnum = 4,
 	ballscoloreffect = ColorManager.getColorEffect(175, 0, 0, 40),
 	coloreffect = ColorManager.noLSDEffect,
