@@ -1,4 +1,4 @@
-bossLast = Body:new{
+bossLast = Body:new {
 	size = 100,
 	width = 400,
 	height = 200,

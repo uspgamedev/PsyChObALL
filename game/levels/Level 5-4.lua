@@ -2,6 +2,10 @@ title = 'V - Renato please add level'
 chapter = 'Part 4 - The boss is here. Just write all of him up until tomorrow. Thanks'
 
 function run()
+	enemy 'bossFive'
+	wait(10000)
+
+
 	local f1 = formation {
 		type = 'around',
 		angle = 0,

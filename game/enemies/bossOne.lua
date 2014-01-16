@@ -29,7 +29,7 @@ function bossOne:__init()
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
 	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
 	self.coloreffect = ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
-	restrictToScreenThreshold = 10
+	self.restrictToScreenThreshold = 10
 	restrictToScreenSpeed = nil
 	--bossOne.turret.bodies = Enemies.bossOne.bodies
 end
@@ -181,11 +181,9 @@ function bossOne.behaviors.toExplode( self )
 	end
 end
 
-restrictToScreenThreshold = 10
-restrictToScreenSpeed = nil
 function bossOne:restrictToScreen()
-	local th = restrictToScreenThreshold
-	local sp = restrictToScreenSpeed or bossOne.basespeed
+	local th = self.restrictToScreenThreshold
+	local sp = self.restrictToScreenSpeed or bossOne.basespeed
 	if self.x > width - th - self.size then
 		self.x = width - th - self.size
 		self.speed:set(0, self.y > height/2 and -sp or sp)

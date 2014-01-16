@@ -206,7 +206,7 @@ function reloadSurvival()
 end
 
 function reloadStory( name, reloadEverything )
-	if name and name > records.story.lastLevel then records.story.lastLevel = name end
+	if name and name ~= 'Tutorial' and name > records.story.lastLevel then records.story.lastLevel = name end
 	if psycho.pseudoDied then
 		psycho.pseudoDied = false
 		paintables.deathEffects.bodies = nil

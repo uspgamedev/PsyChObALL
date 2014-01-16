@@ -115,12 +115,12 @@ function bossTwo.behaviors.first( self )
 		bossTwo.turrets[2].speed:set(0,  v)
 		bossTwo.turrets[3].speed:set(-v, 0)
 		bossTwo.turrets[4].speed:set(0, -v)
-		restrictToScreenThreshold = 20
-		restrictToScreenSpeed = v
 		self.currentBehavior = bossTwo.behaviors.second
 		self.getShot = function () return Enemies.multiball:new{ score = false } end
 		bossTwo.getTurretShot = self.getShot
 		for i = 1, 4 do
+			bossTwo.turrets[i].restrictToScreenThreshold = 20
+			bossTwo.turrets[i].restrictToScreenSpeed = v
 			self.healths[i] = bossTwo.maxhealth * .75
 			local c = self.ballscolors[i]
 			c[1]:setAndGo(nil, 0, 120)
