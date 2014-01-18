@@ -74,7 +74,7 @@ function snake:manageShotCollision( segmentN, shot )
 	shot.collides = true
 	shot.explosionEffect = segmentN ~= self.first
 	if segmentN == self.first and self.vulnerable then
-		addscore(20)
+		RecordsManager.addScore(20)
 		s.size = self.size
 		Effect.createEffects(s, 20)
 		self.segments[self.first] = nil

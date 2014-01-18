@@ -78,7 +78,7 @@ end
 
 function bossFour.behaviors.first( self )
 	if self.health/bossFour.maxhealth < .75 then
-		addscore(500)
+		RecordsManager.addScore(500)
 		self.currentBehavior = bossFour.behaviors.second
 		self.collides = true
 		self.speed:set(1,1):normalize():mult(v/2, v/2):rotate(random()*2*math.pi)
@@ -96,7 +96,7 @@ end
 
 function bossFour.behaviors.second( self )
 	if self.health/bossFour.maxhealth < .5 then
-		addscore(500)
+		RecordsManager.addScore(500)
 		self.currentBehavior = bossFour.behaviors.tocenter
 		self.speed:set(width/2, height/2):sub(self.position):normalize():mult(v*.5)
 		self.prevdist = self.position:distsqr(width/2, height/2)
@@ -208,7 +208,7 @@ function bossFour.behaviors.third( self )
 		end
 	end
 	if self.health/bossFour.maxhealth < .25 then
-		addscore(500)
+		RecordsManager.addScore(500)
 		self.currentBehavior = bossFour.behaviors.gathering
 		self.sizeGrowth = -20
 		self.desiredsize = 20
@@ -243,7 +243,7 @@ function bossFour.behaviors.gathering ( self )
 		end
 	end
 	if #self.pool == 0 and self.desiredsize == nil and not self.recharging then
-		addscore(500)
+		RecordsManager.addScore(500)
 		self.currentBehavior = bossFour.behaviors.final
 		self.pool = nil
 		self.form.radius = 3
@@ -277,7 +277,7 @@ end
 
 function bossFour.behaviors.final( self )
 	if self.health == 0 then
-		addscore(1000)
+		RecordsManager.addScore(1000)
 		self.delete = true
 		self.shoottimer:remove()
 	end

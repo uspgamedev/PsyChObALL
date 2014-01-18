@@ -31,7 +31,7 @@ function bossThree.behaviors.first( self )
 		end
 	end
 	if self.last - self.first < bossThree.segmentsN - 3 and ((self.y > height/2 and self.x < width/4) or (self.y <= height/2 and self.x > 3*width/4))  then
-		addscore(750)
+		RecordsManager.addScore(750)
 		local t = self.segments[self.first].target
 		for i = self.first + 1, self.last, 1 do
 			if self.segments[i].target ~= t then return end
@@ -97,7 +97,7 @@ function bossThree.behaviors.second( self )
 	end
 
 	if self.first == self.last then
-		addscore(1000)
+		RecordsManager.addScore(1000)
 		self.speedbak = self.speed:clone()
 		self.speed:reset()
 		Timer:new{
@@ -173,7 +173,7 @@ function bossThree.behaviors.third( self )
 		if psycho.canBeHit then self:trytofollow(psycho.position) end
 	end
 	if self.health/bossThree.yellowguyhealth < .5 then
-		addscore(1000)
+		RecordsManager.addScore(1000)
 		self.speedbak = self.speed:clone()
 		self.speed:reset()
 		self.currentBehavior = Base.doNothing
@@ -227,7 +227,7 @@ function bossThree.behaviors.fourth( self )
 	end
 
 	if self.health == 0 then
-		addscore(1500)
+		RecordsManager.addScore(1500)
 		self.speed:reset()
 		self.currentBehavior = Base.doNothing
 		self.vulnerable = false
@@ -793,7 +793,7 @@ function bossThree.ghost:update( dt )
 end
 
 function bossThree.ghost:handleDelete()
-	addscore(250)
+	RecordsManager.addScore(250)
 	Effect.createEffects(self, 30)
 	self.ring.delete = true
 	self.shoottimer:remove()

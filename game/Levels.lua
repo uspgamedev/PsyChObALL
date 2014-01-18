@@ -162,8 +162,8 @@ function closeLevel()
 		t:remove()
 	end
 	currentLevel.timers_ = nil
-	if not currentLevel.wasSelected then
-		records.story[currentLevel.name_].score = score
+	if not currentLevel.wasSelected and currentLevel.score > RecordsManager.records.story[currentLevel.name_].score then
+		RecordsManager.records.story[currentLevel.name_].score = currentLevel.score
 	end
 	currentLevel = nil
 end
@@ -178,6 +178,7 @@ function loadLevel( levelFunc )
 		Base.setFunctionEnv(levelFunc, level)
 		levelFunc()
 		level.timers_ = {}
+		level.score = 0
 		levelEnv.time = 0
 		Base.setFunctionEnv(level.run, levelEnv)
 		level.run()

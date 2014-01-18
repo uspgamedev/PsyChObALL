@@ -12,7 +12,7 @@ function init()
 
 	local possiblePositions = {Vector:new{30, 30}, Vector:new{width - 30, 30}, Vector:new{width - 30, height - 30}, Vector:new{30, height - 30}}
 	function superball.addtimer:funcToCall()
-		if #superball.bodies > math.floor(gametime/90) then self.timelimit = 2 return end
+		if #superball.bodies > math.floor(RecordsManager.getGameTime()/90) then self.timelimit = 2 return end
 		superball.list:push(superball:new{ position = possiblePositions[math.random(4)]:clone() })
 		self.timelimit = 30
 	end

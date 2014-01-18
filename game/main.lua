@@ -4,6 +4,7 @@ require "Timer"
 require "VarTimer"
 require "Effect"
 require "ColorManager"
+require "RecordsManager"
 require "FileManager"
 require "SoundManager"
 require "menus.MenuManager"
@@ -33,14 +34,17 @@ end
 function initBase()
 	-- [[Initing Variables]]
 	v = 240 --main velocity of everything
-	totaltime = 0
+	totalRunningTime = 0
+
+	-- state 'constants'
 	splashscreen = -1
-	mainmenu = 1 -- mainmenu
+	recordsmenu  = 0 
+	mainmenu = 1
 	tutorialmenu = 2
 	levelselect = 3
-	achievmenu  = 0 -- Tela de achievements
-	survival = 10 -- modo de jogo survival
+	survival = 10
 	story = 11
+
 	state = mainmenu
 	sqrt2 = math.sqrt(2)
 	resetted = false
@@ -56,18 +60,13 @@ function initBase()
 			end
 		end
 		})
-	Shot:paintOn(paintables)
-	Enemy:paintOn(paintables)
-	Effect:paintOn(paintables)
-	Enemies:paintOn(paintables)
-	Warning:paintOn(paintables)
-	CircleEffect:paintOn(paintables)
-	Text:paintOn(paintables)
-	ImageBody:paintOn(paintables)
-	Button:paintOn(paintables)
+
+	for _, bodyType in ipairs {Shot, Enemy, Effect, Enemies, Warning, CircleEffect, Text, ImageBody, Button} do
+		bodyType:paintOn(paintables)
+	end
+
 	table.sort(paintables, function(a, b) return a.ord < b.ord end) --sort by painting order
 
-	records = {}
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
@@ -95,44 +94,11 @@ function initBase()
 end
 
 function initGameVars()
-	for _, toBeInited in ipairs {ColorManager, MenuManager, DeathManager, CircleEffect, Enemy, Enemies, Shot, Psychoball} do
+	for _, toBeInited in ipairs {RecordsManager, ColorManager, MenuManager, DeathManager, CircleEffect, Enemy, Enemies, Shot, Psychoball} do
 		toBeInited.init()
 	end
 		
 	-- [[Creating Persistent Timers]]
-	multtimer = Timer:new {
-		timelimit  = 2.2,
-		persistent = true,
-		works_on_gameLost = false
-	}
-
-	function multtimer:funcToCall() -- resets multiplier
-		multiplier = 1
-		self:stop()
-	end
-
-	function multtimer:handleReset()
-		self:funcToCall()
-	end
-
-	inverttimer = Timer:new {
-		timelimit  = 2.2,
-		persistent = true,
-		works_on_gameLost = false
-	}
-
-	function inverttimer:funcToCall() -- disinverts the screen color
-		if ColorManager.currentEffect ~= ColorManager.noLSDEffect then 
-			SoundManager.setPitch(1)
-			timefactor = 1.0
-			ColorManager.currentEffect = nil
-		end
-		self:stop()
-	end
-
-	function inverttimer:handleReset()
-		self:funcToCall()
-	end
 
 	angle = VarTimer:new {
 		var = 0,
@@ -141,17 +107,17 @@ function initGameVars()
 	}
 	-- [[End of Creating Persistent Timers]]
 
-	psycho = Psychoball:new{
+	psycho = Psychoball:new {
 		position = Vector:new{width/2,height/2}
 	}
 	
-	auxspeed = Vector:new {}
 	keyspressed = {}
 	timefactor = 1.0
 
 	Levels.loadAll()
 end
 
+local blastscore, lifescore
 function resetVars()
 	if Cheats.konamicode then
 		psycho.ultraCounter = 30
@@ -162,7 +128,11 @@ function resetVars()
 	end
 	
 	Enemy.list:clear()
-	auxspeed:reset()
+
+	for _, toReset in ipairs {psycho, RecordsManager} do
+		toReset:reset()
+	end
+
 	--[[Resetting Paintables]]
 	Shot:clear()
 	if notclearcircleeffect then notclearcircleeffect = false
@@ -176,12 +146,6 @@ function resetVars()
 	Base.clearTable(keyspressed)
 
 	timefactor = 1.0
-	multiplier = 1
-	gametime = 0
-	blastime = 0
-	score = 0
-	blastscore = 0 --Variavel que dá ultrablast points por pontos
-	lifescore = 0
 
 	DeathManager.gameLost = false
 	paused = false
@@ -206,7 +170,7 @@ function reloadSurvival()
 end
 
 function reloadStory( name, reloadEverything )
-	if name and name ~= 'Tutorial' and name > records.story.lastLevel then records.story.lastLevel = name end
+	if name and name ~= 'Tutorial' and name > RecordsManager.records.story.lastLevel then RecordsManager.records.story.lastLevel = name end
 	if psycho.pseudoDied then
 		psycho.pseudoDied = false
 		paintables.deathEffects.bodies = nil
@@ -240,13 +204,6 @@ end
 
 function onGame()
 	return state >= 10 and state < 20
-end
-
-function getStateClass(st)
-	st = st or state
-	if st < 10 then return 1
-	elseif st >= 10 and st < 20 then return 2
-	elseif st == levelselect then return 3 end
 end
 
 function love.draw()
@@ -332,7 +289,7 @@ end
 
 function love.update(dt)
 	if dt > 0.03333 then dt = 0.03333 end
-	totaltime = totaltime + dt
+	totalRunningTime = totalRunningTime + dt
 	mouseX, mouseY = mouse.getPosition()
 	isPaused = (paused or onMenu())
 
@@ -371,22 +328,6 @@ function love.mousereleased(x, y, btn)
 	UI.mousereleased(x, y, btn)
 	if btn == 'l' and onGame() then
 		Shot.timer:stop()
-	end
-end
-
-function addscore(x)
-	if not DeathManager.gameLost then
-		score = score + x
-		blastscore = blastscore + x
-		lifescore = lifescore + x
-		if blastscore >= (state == survival and 7000 or 2000) then
-			blastscore = blastscore - (state == survival and 7000 or 2000)
-			psycho.ultraCounter = psycho.ultraCounter + 1
-		end
-		if state == story and lifescore >= 15000 then
-			lifescore = lifescore - 15000
-			psycho:addLife()
-		end
 	end
 end
 

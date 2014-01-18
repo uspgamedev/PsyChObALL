@@ -55,7 +55,7 @@ end
 
 function Body:update( dt )
 	if self.positionfollows then
-		self.position:set(self.positionfollows(gametime - self.initialtime)):add(self.initialpos)
+		self.position:set(self.positionfollows(RecordsManager.getGameTime() - self.initialtime)):add(self.initialpos)
 	else
 		self.position:add(auxVec:set(self.speed):mult(dt))
 	end
@@ -74,7 +74,7 @@ function Body:draw()
 end
 
 function Body:handleDelete()
-	if self.score and self.diereason == 'shot'then addscore(self.score) end
+	if self.score and self.diereason == 'shot'then RecordsManager.addScore(self.score) end
 	if self.spriteBatch and self.id then
 		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0) 
 	end
@@ -182,7 +182,7 @@ function Body:register(...)
 	self:start(...)
 	table.insert(self.bodies, self)
 	if self.positionfollows then
-		self.initialtime = gametime
+		self.initialtime = RecordsManager.getGameTime()
 		self.initialpos  = self.position:clone()
 	end
 end

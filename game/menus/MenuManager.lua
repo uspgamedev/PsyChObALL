@@ -8,7 +8,7 @@ function init()
 	previousMenu = nil
 	currentTransition = nil
 
-	for _, menu in ipairs {"Controls", "Main", "Practice"} do
+	for _, menu in ipairs {"Controls", "Main", "Practice", "Records"} do
 		require('menus.' .. menu .. 'Menu')
 	end
 end

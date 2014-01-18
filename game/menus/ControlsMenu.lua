@@ -5,7 +5,7 @@ ControlsMenu = Menu:new {
 function ControlsMenu:open()
 	Menu.open(self)
 
-	local backbutton = Button:new {
+	local backButton = Button:new {
 		size = 80,
 		position = Vector:new {100, height - 100},
 		text = "Back",
@@ -13,7 +13,7 @@ function ControlsMenu:open()
 		pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
-	self:addComponent(backbutton)
+	self:addComponent(backButton)
 end
 
 function ControlsMenu:draw()

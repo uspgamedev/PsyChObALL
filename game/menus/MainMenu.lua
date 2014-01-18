@@ -5,14 +5,14 @@ MainMenu = Menu:new {
 function MainMenu:open()
 	Menu.open(self)
 
-	local playbutton = Button:new{
+	local playButton = Button:new{
 		size = 120,
 		position = Vector:new {width/2 + 200, 430},
 		text = 'Survival',
 		fontsize = 40
 	}
 
-	function playbutton:pressed()
+	function playButton:pressed()
 		self.visible = false
 		Effect.createEffects(self, 50)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
@@ -25,14 +25,14 @@ function MainMenu:open()
 	end
 
 
-	local storybutton = Button:new {
+	local storyButton = Button:new {
 		size = 120,
 		position = Vector:new {width/2 - 200, 430},
 		text = 'Adventure',
 		fontsize = 40
 	}
 
-	function storybutton:pressed()
+	function storyButton:pressed()
 		self.visible = false
 		Effect.createEffects(self, 50)
 		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
@@ -45,7 +45,7 @@ function MainMenu:open()
 	end
 
 
-	local controlsbutton = Button:new {
+	local controlsButton = Button:new {
 		size = 80,
 		position = Vector:new {width - 100, height - 100},
 		text = "Controls",
@@ -53,7 +53,7 @@ function MainMenu:open()
 		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}
 
-	local testingbutton = Button:new {
+	local testingButton = Button:new {
 		size = 50,
 		position = Vector:new{width/2, height - 100},
 		text = "Practice",
@@ -61,7 +61,15 @@ function MainMenu:open()
 		pressed = function() MenuManager.changeToMenu(PracticeMenus[1], MenuTransitions.Slide:setDir('up/down', 1)) end
 	}
 
-	for _, component in ipairs {playbutton, testingbutton, storybutton, controlsbutton} do
+	local recordsButton = Button:new {
+		size = 80,
+		position = Vector:new {100, height - 100},
+		text = "Stats",
+		fontsize = 20,
+		pressed = function() MenuManager.changeToMenu(RecordsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
+	}
+
+	for _, component in ipairs {playButton, testingButton, storyButton, controlsButton, recordsButton} do
 		self:addComponent(component)
 	end
 end

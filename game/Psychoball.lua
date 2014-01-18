@@ -47,12 +47,15 @@ end
 local max, min = math.max, math.min
 function Psychoball:update(dt)
 	if self.pseudoDied or DeathManager.gameLost then return end
-	gametime = gametime + dt
-	blastime = blastime + dt
-	if blastime >= 30 and state == survival then
-		blastime = blastime - 30
+	RecordsManager.update(dt)
+
+	self.blastTime = self.blastTime + dt
+
+	if self.blastTime >= 30 and state == survival then
+		self.blastTime = self.blastTime - 30
 		self.ultraCounter = self.ultraCounter + 1
 	end
+
 	if usingjoystick then
 		self.speed:set(joystick.getAxis(1, 1), joystick.getAxis(1, 2)):mult(v*1.3, v*1.3)
 		if not Shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then Shot.timer:start(Shot.timer.timelimit) end
@@ -154,16 +157,22 @@ function Psychoball:recreate()
 	}
 end
 
+local auxSpeed = Vector:new {0, 0}
+function Psychoball:reset()
+	auxSpeed:reset()
+	self.blastTime = 0
+end
+
 function Psychoball:keyPressed( key )
-	auxspeed:add(
+	auxSpeed:add(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
 			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
 		((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v*1.3 or 0) 
 			+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v*1.3 or 0)
 	)
-	self.speed:set(auxspeed)
+	self.speed:set(auxSpeed)
 
-	if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
+	if auxSpeed.x ~= 0 and auxSpeed.y ~= 0 then 
 		self.speed:div(sqrt2)
 	end
 
@@ -181,15 +190,15 @@ function Psychoball:joystickReleased( joynum, btn )
 end
 
 function Psychoball:keyReleased( key )
-	auxspeed:sub(
+	auxSpeed:sub(
 		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
 			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
 		((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v * 1.3 or 0) 
 			+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v * 1.3 or 0)
 	)
-	self.speed:set(auxspeed)
+	self.speed:set(auxSpeed)
 
-	if auxspeed.x ~= 0 and auxspeed.y ~= 0 then 
+	if auxSpeed.x ~= 0 and auxSpeed.y ~= 0 then 
 		self.speed:div(sqrt2)
 	end
 

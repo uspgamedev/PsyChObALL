@@ -88,10 +88,8 @@ function keypressed( key )
 
 		if devmode then
 			if not esc and key == 'k' then DeathManager.manageDeath() end
-			if 	 key == '0' then multiplier = multiplier + 2
-			elseif key == '9' then multiplier = multiplier - 2
-			elseif key == '8' then addscore(100)
-			elseif key == '7' then addscore(-100)
+			if     key == '8' then RecordsManager.addScore(100)
+			elseif key == '7' then RecordsManager.addScore(-100)
 			elseif key == '6' then v = v + 10
 			elseif key == '5' then v = v - 10
 			elseif key == '4' then timefactor = timefactor * 1.1

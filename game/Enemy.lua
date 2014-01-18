@@ -71,21 +71,9 @@ end
 function Enemy:handleDelete()
 	Body.handleDelete(self)
 	if self.diereason == "shot" then
-		addscore((self.size / 3) * multiplier)
+		RecordsManager.addScore(self.size / 3)
 		Effect.createEffects(self, 23)
-		multiplier = multiplier + (self.size / 30)
-
-		if not  multtimer.running then  multtimer:start()
-		else  multtimer.time = 0 end
-
-		if not DeathManager.gameLost and multiplier >= 10 and ColorManager.currentEffect ~= ColorManager.noLSDEffect then
-			if not inverttimer.running then
-				inverttimer:start()
-				SoundManager.setPitch(1.0)
-				timefactor = 1.1
-				ColorManager.currentEffect = ColorManager.invertEffect
-			else inverttimer.time = 0 end
-		end
+		RecordsManager.addMultiplier(self.size / 30)
 
 		if self.size >= 15 then 
 			CircleEffect:new{

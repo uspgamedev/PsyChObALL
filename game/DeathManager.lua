@@ -2,6 +2,7 @@ module('DeathManager', Base.globalize)
 local deathTexts, deathMessage
 local DeathEffect
 local handlePsychoExplosion
+local deathDuration
 
 
 function init()
@@ -16,6 +17,7 @@ function manageDeath()
 	local autorestart = state == story and psycho.lives > 0
 	if not autorestart then
 		mouse.setGrab(false)
+		RecordsManager.manageHighScore()
 		FileManager.writeStats()
 		SoundManager.fadeout()
 
@@ -46,7 +48,7 @@ function manageDeath()
 
 	psycho:handleDelete()
 	handlePsychoExplosion()
-	timeOfDeath = totaltime
+	deathDuration = 0
 	isRestarting = false
 end
 
@@ -63,16 +65,15 @@ function realContinue()
 	DeathEffect.bodies = nil
 	paintables.deathEffects = nil
 	psycho.continuesUsed = psycho.continuesUsed + 1
-	Levels.currentLevel.title = nil
+	Levels.currentLevel.title = nil -- Forces it to show the title again
 	reloadStory(Levels.currentLevel.name_:sub(1, -2) .. '1', true)
 end
 
 function startPsychoRevival( funcToCall )
 	if isRestarting then return end
 	isRestarting = true
-	timeOfRestart = totaltime
 	-- this doesn't work for all effects, fix it
-	local m = (timeOfRestart - timeOfDeath)/timeToRestart
+	local m = deathDuration/(timeToRestart * timefactor)
 	for _, eff in pairs(DeathEffect.bodies) do
 		eff.speed:negate():mult(m, m)
 	end
@@ -100,23 +101,24 @@ function restartGame()
 	paintables.deathEffects = nil
 end
 
+local random, tan, asin, exp, log10, cos, sin = math.random, math.tan, math.asin, math.exp, math.log10, math.cos, math.sin
 local deathFunctions = {
 	function ( p1, p2, size ) return size end,
-	function ( p1, p2, size ) return 1/math.random() end,
+	function ( p1, p2, size ) return 1/random() end,
 	function ( p1, p2, size ) return p1:dist(p2) end,
 	function ( p1, p2, size ) return p1:distsqr(p2)/size end,
 	function ( p1, p2, size ) return (size - p1:dist(p2))	end,
 	function ( p1, p2, size ) return (size^2 - p1:distsqr(p2))/size end,
 	function ( p1, p2, size ) return (size - p1:distsqr(p2))/size end,
-	function ( p1, p2, size ) return math.random()*size end,
-	function ( p1, p2, size ) return size/(math.random() + .3) end,
+	function ( p1, p2, size ) return random()*size end,
+	function ( p1, p2, size ) return size/(random() + .3) end,
 	function ( p1, p2, size ) return (size^1.6)/p1:dist(p2) end,
-	function ( p1, p2, size ) return math.tan(p1:distsqr(p2)) end,
-	function ( p1, p2, size ) return math.asin(p1:dist(p2) % 1)*size^.8 end,
-	function ( p1, p2, size ) return math.exp(p1:dist(p2) - size/1.3) end,
-	function ( p1, p2, size ) return math.log10(p1:dist(p2))*size^.7 end,
-	function ( p1, p2, size ) return .095/(math.cos(p1:distsqr(p2)*size*3)/size) end, -- awesome death function
-	function ( p1, p2, size ) return 20*math.cos(math.sin(math.cos(p1:dist(p2) % 1))) end -- weird one (mudando os cos e tan deixa ela mais bizarra)
+	function ( p1, p2, size ) return tan(p1:distsqr(p2)) end,
+	function ( p1, p2, size ) return asin(p1:dist(p2) % 1)*size^.8 end,
+	function ( p1, p2, size ) return exp(p1:dist(p2) - size/1.3) end,
+	function ( p1, p2, size ) return log10(p1:dist(p2))*size^.7 end,
+	function ( p1, p2, size ) return .095/(cos(p1:distsqr(p2)*size*3)/size) end, -- awesome death function
+	function ( p1, p2, size ) return 20*cos(sin(cos(p1:dist(p2) % 1))) end -- weird one (mudando os cos e tan deixa ela mais bizarra)
 }
 
 DeathEffect = Body:new{
@@ -127,19 +129,20 @@ DeathEffect = Body:new{
 Body.makeClass(DeathEffect)
 
 function DeathEffect:updateComponents( dt )
+	deathDuration = deathDuration + dt
 	for i = #self.bodies, 1, -1 do
 		self.bodies[i]:update(dt)
 	end
 end
 
 function DeathEffect:drawComponents()
+	graphics.setColor(ColorManager.getComposedColor(psycho.variance)) -- all of them have the same color
 	for i = #self.bodies, 1, -1 do
 		self.bodies[i]:draw()
 	end
 end
 
 function DeathEffect:draw()
-	graphics.setColor(ColorManager.getComposedColor(self.variance))
 	graphics.draw(Base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, self.size*2)
 	--just draws a rectangle, no spriteBatch stuff
 end
@@ -161,8 +164,7 @@ function handlePsychoExplosion()
 			-- checks if the position is inside psycho
 			if (i - psycho.x)^2 + (j - psycho.y)^2 <= psycho.size^2 then
 				local e = DeathEffect:new{
-					position = Vector:new{i, j},
-					variance = psycho.variance
+					position = Vector:new{i, j}
 				}
 				local distr = deathFunc(e.position, psycho.position, psycho.size)
 				e.speed:set(e.position):sub(psycho.position):normalize():mult(v * distr)
@@ -215,42 +217,24 @@ resetDeathText = setDeathMessage
 
 function drawDeathScreen()
 	graphics.setColor(ColorManager.getComposedColor(- ColorManager.colorCycleTime / 2))
-		if state == survival then
-			if Cheats.usedDevMode then
-				graphics.setFont(Base.getCoolFont(20))
-				graphics.print("Your scores didn't count, cheater!", 382, 215)
-			else
-				if records.survival.time == gametime then
-					graphics.setFont(Base.getFont(35))
-					graphics.print("You beat the best time!", 260, 100)
-				end	
-				if records.survival.score == score then
-					graphics.setFont(Base.getFont(35))
-					graphics.print("You beat the best score!", 290, 140)
-				end
-				if records.survival.multiplier == multiplier then
-					graphics.setFont(Base.getFont(35))
-					graphics.print("You beat the best multiplier!", 320, 180)
-				end
-			end
+	RecordsManager.drawRecords()
+	graphics.setFont(Base.getCoolFont(40))
+	graphics.print(getDeathText(), 270, 300)
+	if state == survival then graphics.print(string.format("You lasted %.1fsecs", RecordsManager.getGameTime()), 486, 450) end
+	graphics.setFont(Base.getCoolFont(23))
+	if state == survival then graphics.print("Press R to retry", 280, 640)
+	else 
+		graphics.print("Press R to start over", 280, 640)
+		if not Levels.currentLevel.wasSelected then
+			graphics.print("Press C to use a continue\n    Continues Used: ", 630, 130)
+			graphics.setFont(Base.getCoolFont(40))
+			graphics.print(psycho.continuesUsed, 850, 157)
 		end
-		graphics.setFont(Base.getCoolFont(40))
-		graphics.print(getDeathText(), 270, 300)
-		if state == survival then graphics.print(string.format("You lasted %.1fsecs", gametime), 486, 450) end
-		graphics.setFont(Base.getCoolFont(23))
-		if state == survival then graphics.print("Press R to retry", 280, 640)
-		else 
-			graphics.print("Press R to start over", 280, 640)
-			if not Levels.currentLevel.wasSelected then
-				graphics.print("Press C to use a continue\n    Continues Used: ", 630, 130)
-				graphics.setFont(Base.getCoolFont(40))
-				graphics.print(psycho.continuesUsed, 850, 157)
-			end
-		end
-		graphics.setFont(Base.getFont(30))
-		if state == survival then graphics.print("_____________", 280, 645)
-		else 	graphics.print("__________________", 280, 645) end
-		graphics.setFont(Base.getCoolFont(18))
-		graphics.print("Press B", 580, 650)
-		graphics.print(UI.pauseText(), 649, 650)
+	end
+	graphics.setFont(Base.getFont(30))
+	if state == survival then graphics.print("_____________", 280, 645)
+	else 	graphics.print("__________________", 280, 645) end
+	graphics.setFont(Base.getCoolFont(18))
+	graphics.print("Press B", 580, 650)
+	graphics.print(UI.pauseText(), 649, 650)
 end

@@ -124,7 +124,7 @@ function ranged:handleDelete()
 	self.shotcircle.size = -1
 	self.timeout:remove()
 	if self.diereason == "shot" then
-		addscore(25 * self.divideN)
+		RecordsManager.addScore(25 * self.divideN)
 		self.divideN = self.divideN + 3	
 		self.anglechange = Base.toRadians(360/self.divideN)
 		self:shoot()

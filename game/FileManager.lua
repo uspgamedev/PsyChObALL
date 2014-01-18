@@ -8,7 +8,8 @@ local defaultRecords = {
 	},
 	story = {
 		lastLevel = 'Level 1-1',
-		['Tutorial'] = { score = 0 }
+		['Tutorial'] = { score = 0 },
+		bestRuns = {} -- 5 best runs
 	}
 }
 
@@ -31,28 +32,23 @@ end
 function readStats()
 	local stats = readTable "psycho.dat"
 
-	global.records = stats.records or defaultRecords
+	RecordsManager.records = stats.records or defaultRecords
 	-- use other stats here
 end
 
 function writeStats()
 	if Cheats.usedDevMode then return end
-	local s = global.records.survival
-	if state == survival then
-		s.time  = math.max(s.time, gametime)
-		s.multiplier  = math.max(s.multiplier, multiplier)
-		s.score = math.max(s.score, score)
-	end
+	
 	writeTable({
-		records = global.records
+		records = RecordsManager.records
 	}, "psycho.dat")
 end
 
 function resetStats()
-	global.records = defaultRecords
+	RecordsManager.records = defaultRecords
 	-- default other stuff
 	writeTable({
-		records = global.records
+		records = RecordsManager.records
 	}, "psycho.dat")
 end
 

@@ -7,30 +7,33 @@ Important
 
 Bugs
 	- Error "AL lib: ReleaseALC: 1 device not closed" ?
-	- Death Effects sometimes do not reassemble correctly
-	-Tutorial does not initiate correctly the first time
-		-Has to save "played it before" >>when you enter the tutorial the first time<<
-		-Tutorial has to appear the first time whether you choose survival or adventure mode
+	- Death Effects sometimes do not reassemble correctly -- possibly fixed
+	- Survival
+		- When you kill a ball, sometimes its image does not disappear for some time
+	- Tutorial does not initiate correctly the first time
+		- Has to save "played it before" >>when you enter the tutorial the first time<<
+		- Tutorial has to appear the first time whether you choose survival or adventure mode
+
 
 
 TODO for next version:
 
-	-New music (on the way)
-	-On death special kind of ultrablast(if its not your final life):
-		-Circle expands x pixels from psycho, killing everything (or damaging in case of bosses) and then retreats.
-		-Balance x
-	-HIGHSCORE MENU
-		-New menu that shows your adventure highscore for each part --btw awesome highscore stuff so far yan, well done
-		-Shows your best total score on survival and how far you went on that run
-		-Shows survival highscore
-		-I cant rearrange the design later, just trie to show everything if possible
-		-In survival mode, on highscore shows only Total highscore
-		-On practice mode change "Score" text to "Area Score" and "High Score" to "Area High Score" and then shows your best socre for that area.
-		-For now, lets make practice not save your area highscore, its just for practice.
-	-Continues
-		-Can use how many continues you can (for now)
-		-If you use 1 or more continues you cant go to the final level
-		-If you use 2(maybe 3) or more continues you cant go in the 5th level
-		-They reset your score and bring you the beggining of the level -- done actually
+	- New music (on the way)
+	- On death special kind of ultrablast(if its not your final life):
+		- Circle expands x pixels from psycho, killing everything (or damaging in case of bosses) and then retreats.
+		- Balance x
+	- HIGHSCORE MENU
+		- New menu that shows your adventure highscore for each part -- btw awesome highscore stuff so far yan, well done
+		- Shows your best total score on survival and how far you went on that run
+		- Shows survival highscore
+		- I cant rearrange the design later, just trie to show everything if possible
+		- In survival mode, on highscore shows only Total highscore
+		- On practice mode change "Score" text to "Area Score" and "High Score" to "Area High Score" and then shows your best socre for that area.
+		- For now, lets make practice not save your area highscore, its just for practice.
+	- Continues
+		- Can use how many continues you can (for now)
+		- If you use 1 or more continues you cant go to the final level
+		- If you use 2(maybe 3) or more continues you cant go in the 5th level
+		- They reset your score and bring you the beggining of the level -- done actually
 
 
