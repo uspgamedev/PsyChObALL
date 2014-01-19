@@ -42,9 +42,9 @@ local auxVec = Vector:new{0, 0}
 function bossFive:update( dt )
 	self.position:add(auxVec:set(self.speed):mult(dt))
 	self:bounceInScreen()
-	self.irisPosition:set(psycho.position):sub(self.position):div(7)
+	self.irisPosition:set(psycho.position):sub(self.position):div(5)
 	local l = self.irisPosition:length()
-	if l > 33 then self.irisPosition:normalize():mult(33) end
+	if l > 35 then self.irisPosition:mult(35/l) end
 
 	for _, v in pairs(Shot.bodies) do
 		if self:collidesWith(v) then

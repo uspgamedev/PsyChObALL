@@ -51,7 +51,7 @@ function manageHighScore()
 	if not onGame() then return end
 	if state == survival then
 		RecordsManager.update(0)
-	elseif psycho.continuesUsed == 0 and Levels.currentLevel.name_ ~= 'Tutorial' then
+	elseif psycho.continuesUsed == 0 and Levels.currentLevel.name_ ~= 'Tutorial' and not Levels.currentLevel.wasSelected then
 		local br = records.story.bestRuns
 		if #br < 5 or br[5].score < currentScore then
 			local i = 1
@@ -63,7 +63,7 @@ function manageHighScore()
 				score = currentScore,
 				level = Levels.currentLevel.name_
 			})
-			br[6] = nil -- in case it was alreayd full
+			br[6] = nil -- in case it was already full
 		end
 	end
 end

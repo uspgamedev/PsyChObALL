@@ -22,7 +22,7 @@ function PracticeMenu:open( levelN )
 	if 'Level ' .. levelN .. '-4' < RecordsManager.records.story.lastLevel then
 		local nextB = Button:new{
 			size = 50,
-			position = Vector:new{width/2 + 100, 400},
+			position = Vector:new{width/2 + 100, 550},
 			text = ">",
 			fontsize = 55,
 			pressed = function ()
@@ -43,7 +43,7 @@ function PracticeMenu:open( levelN )
 	if levelN > 1 then
 		local prevB = Button:new{
 			size = 50,
-			position = Vector:new{width/2 - 100, 400},
+			position = Vector:new{width/2 - 100, 550},
 			text = "<",
 			fontsize = 55,
 			pressed = function ()
@@ -54,7 +54,7 @@ function PracticeMenu:open( levelN )
 	else
 		local tut = Button:new{
 			size = 60,
-			position = Vector:new{width/2 - 30, height - 120},
+			position = Vector:new{width/2 - 30, height - 80},
 			text = "Tutorial",
 			levelName = "Tutorial",
 			fontsize = 20,
@@ -67,8 +67,8 @@ function PracticeMenu:open( levelN )
 		local levelName = 'Level ' .. levelN .. '-' .. i
 		if RecordsManager.records.story.lastLevel < levelName or levelName == 'Level 1-4' then break end
 		local levelButton = Button:new {
-			size = 100,
-			position = Vector:new{156 + (i-1) * 256, height/2 - 100},
+			size = 70,
+			position = Vector:new{156 + (i-1) * 256, height/2 + 50},
 			fontsize = 20,
 			text = levelName,
 			levelName = levelName,
@@ -80,11 +80,20 @@ function PracticeMenu:open( levelN )
 	for _, but in ipairs(buttons) do self:addComponent(but) end
 end
 
-function PracticeMenu:draw()
+local format = string.format
+function PracticeMenu:draw( levelN )
 	Menu.draw(self)
 	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows.var, self.coloreffect))
 	graphics.setFont(Base.getCoolFont(70))
 	graphics.printf("Practice", 0, 30, width, 'center')
+	for i = 1, 4 do
+		local levelName = 'Level ' .. levelN .. '-' .. i
+		if RecordsManager.records.story.lastLevel < levelName or levelName == 'Level 1-4' then break end
+		graphics.setFont(Base.getFont(15))
+		graphics.print("Area High Score:", 90 + (i-1) * 256, height/2 - 100)
+		graphics.setFont(Base.getCoolFont(35))
+		graphics.print(format("%.0f", RecordsManager.records.story[levelName].score), 120 + (i-1) * 256, height/2 - 85)
+	end
 end
 
 PracticeMenus = {}
@@ -94,5 +103,6 @@ for i = 1, levelNumber do
 		index = levelselect - 1 + i
 	}
 	menu.open = function(self) PracticeMenu.open(self, i) end
+	menu.draw = function(self) PracticeMenu.draw(self, i) end
 	PracticeMenus[i] = menu
 end
