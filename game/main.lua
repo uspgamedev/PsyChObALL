@@ -156,6 +156,7 @@ end
 
 function reloadSurvival()
 	SoundManager.changeSong(SoundManager.survivalsong)
+	ColorManager.currentEffect = nil
 	if state == survival then Effect:clear() end
 	state = survival
 	Enemy.addtimer:funcToCall()

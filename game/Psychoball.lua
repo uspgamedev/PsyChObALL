@@ -1,5 +1,5 @@
 local psychoSizeDiff = 9
-
+local ultraShots
 local ultraTimer = nil
 
 Psychoball = CircleEffect:new {
@@ -29,17 +29,19 @@ function Psychoball.init()
 		persistent = true
 	}
 
-	local ultrablastmax = 42 -- maximum number of shots on ultrablast
+	local maxShots = 42 -- maximum number of shots on ultrablast
 	function ultraTimer:funcToCall() -- adds more shots to ultrablast
-		if ultrablast < ultrablastmax then
-			ultrablast = ultrablast + 1
+		if ultraShots < maxShots then
+			ultraShots = ultraShots + 1
 		end
-		if ultrablast == ultrablastmax - 1 then
+		if ultraShots == maxShots then
+			self:stop()
 			psycho.sizeGrowth = 0
 		end
 	end
 
 	function ultraTimer:handleReset()
+		psycho.sizeGrowth = 0
 		self:stop()
 	end
 end
@@ -69,11 +71,11 @@ function Psychoball:update(dt)
 		max(self.size + psychoSizeDiff, min(height - self.size - psychoSizeDiff, self.position[2]))
 	)
 
-	if keyspressed[' '] and not ultraTimer.running and self.ultraCounter > 0 then
+	if keyspressed[' '] and not self.chargingUltrablast and self.ultraCounter > 0 then
 		self:startBlast()
 	end
 
-	if not keyspressed[' '] and ultraTimer.running then
+	if not keyspressed[' '] and self.chargingUltrablast then
 		self:releaseBlast()
 	end
 
@@ -89,7 +91,8 @@ end
 
 function Psychoball:startBlast()
 	self.ultraCounter = self.ultraCounter - 1
-	ultrablast = 10
+	self.chargingUltrablast = true
+	ultraShots = 10
 	self.sizeGrowth = 17
 	self.linewidth = 6
 	ultraTimer:start()
@@ -97,6 +100,7 @@ end
 
 function Psychoball:releaseBlast()
 	ultraTimer:stop()
+	self.chargingUltrablast = false
 	self.sizeGrowth = -300
 	doUltrablast()
 end
@@ -161,6 +165,7 @@ local auxSpeed = Vector:new {0, 0}
 function Psychoball:reset()
 	auxSpeed:reset()
 	self.blastTime = 0
+	self.chargingUltrablast = false
 end
 
 function Psychoball:keyPressed( key )
@@ -218,10 +223,10 @@ function Psychoball.additionalDrawing()
 end
 
 function doUltrablast()
-	for i=1, ultrablast do
+	for i=1, ultraShots do
 		Shot:new{
 			position = psycho.position:clone(),
-			speed = Vector:new{math.cos(math.pi * 2 * i / ultrablast), math.sin(math.pi * 2 * i / ultrablast)}:normalize():mult(3*v, 3*v),
+			speed = Vector:new{math.cos(math.pi * 2 * i / ultraShots), math.sin(math.pi * 2 * i / ultraShots)}:normalize():mult(3*v, 3*v),
 			isUltraShot = true
 		}:register()
 	end

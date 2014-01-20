@@ -72,7 +72,6 @@ end
 function startPsychoRevival( funcToCall )
 	if isRestarting then return end
 	isRestarting = true
-	-- this doesn't work for all effects, fix it
 	local m = deathDuration/(timeToRestart * timefactor)
 	for _, eff in pairs(DeathEffect.bodies) do
 		eff.speed:negate():mult(m, m)

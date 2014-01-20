@@ -5,12 +5,7 @@ Important
 	- Refactor Continues
 
 Bugs
-	- Stat Screen/adventure screen
-		-game crashes on entering both
 	- Error "AL lib: ReleaseALC: 1 device not closed" ?
-	- Death Effects sometimes do not reassemble correctly -- possibly fixed
-	- Survival
-		- When you kill a ball, sometimes its image does not disappear for some time (something to do with it not being 'removed' from the spriteBatch)
 	- Tutorial does not initiate correctly the first time
 		- Has to save "played it before" >>when you enter the tutorial the first time<<
 		- Tutorial has to appear the first time whether you choose survival or adventure mode

@@ -76,7 +76,7 @@ end
 function Body:handleDelete()
 	if self.score and self.diereason == 'shot'then RecordsManager.addScore(self.score) end
 	if self.spriteBatch and self.id then
-		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0) 
+		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0)
 	end
 end
 
@@ -115,7 +115,7 @@ function Body:addToBatch()
 			self.spriteBatch:unbind()
 			--print('finished clearing')
 			onRebatch = false
-		else
+		elseif not self.delete then
 			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
 			self:__super().spriteCount = self:__super().spriteCount + 1
 		end
