@@ -16,9 +16,10 @@ end
 function draw()
 	if currentTransition then
 		if previousMenu then currentTransition:drawPrevious() end
-		if currentTransition and currentMenu then currentTransition:drawCurrent() end
+		if currentMenu and currentTransition then currentTransition:drawCurrent() end
+		if currentTransition then currentTransition:drawExtra() end
 	else
-		if currentMenu then currentMenu:draw() end
+		if currentMenu then currentMenu:completeDraw() end
 	end
 end
 

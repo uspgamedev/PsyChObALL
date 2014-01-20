@@ -46,6 +46,7 @@ function keypressed( key )
 		if state == story then
 			if Levels.currentLevel.wasSelected then
 				reloadStory(Levels.currentLevel.name_, true)
+				Levels.currentLevel.wasSelected = true
 			else
 				reloadStory 'Level 1-1'
 			end

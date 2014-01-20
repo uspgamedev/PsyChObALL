@@ -4,6 +4,7 @@ Menu = lux.object.new {
 
 Menu.__init = {
 	components = {},
+	drawableParts = {},
 	alphaFollows = VarTimer:new{var = 255, pausable = false}
 }
 
@@ -14,10 +15,21 @@ function Menu:addComponent( component )
 	table.insert(self.components, component)
 end
 
-function Menu:draw()
+function Menu:completeDraw()
+	self:drawComponents()
+	for drawFunc in pairs(self.drawableParts) do
+		drawFunc()
+	end
+end
+
+function Menu:drawComponents()
 	for i = #self.components, 1, -1 do
 		self.components[i]:draw()
 	end
+end
+
+function Menu:addDrawablePart( drawFunc )
+	self.drawableParts[drawFunc] = true
 end
 
 function Menu:update( dt )

@@ -13,15 +13,26 @@ function ControlsMenu:open()
 		pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
+	local forwardButton = Button:new {
+		size = 50,
+		fontsize = 55,
+		text = '>',
+		position = Vector:new {width/2 + 150, height - 100},
+		pressed = function() MenuManager.changeToMenu(ControlsMenu2, MenuTransitions.Slide:setDir('right/left', 1)) end
+	}
+
 	self:addComponent(backButton)
+	self:addComponent(forwardButton)
 end
 
-function ControlsMenu:draw()
-	Menu.draw(self)
-
+function ControlsMenu.drawTitle()
 	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time*.25 + 3))
 	graphics.setFont(Base.getCoolFont(50))
-	graphics.print("CONTROLS", 380, 36)
+	graphics.printf("Controls", 0, 36, width, 'center')
+end
+
+function ControlsMenu.drawControls()
+	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time*.25 + 3))
 	graphics.setFont(Base.getCoolFont(40))
 	graphics.print("Survival Mode:", 170, 350)
 	graphics.setColor(ColorManager.getComposedColor(1))
@@ -52,3 +63,26 @@ function ControlsMenu:draw()
 	graphics.circle("fill", 50, 263, 10)
 	graphics.setPixelEffect()
 end
+
+ControlsMenu:addDrawablePart(ControlsMenu.drawTitle)
+ControlsMenu:addDrawablePart(ControlsMenu.drawControls)
+
+ControlsMenu2 = Menu:new { 
+	index = tutorialmenu2
+}
+
+function ControlsMenu2:open()
+	Menu.open(self)
+
+	local backButton = Button:new {
+		size = 50,
+		fontsize = 55,
+		text = '<',
+		position = Vector:new {width/2 - 150, height - 100},
+		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
+	}
+
+	self:addComponent(backButton)
+end
+
+ControlsMenu2:addDrawablePart(ControlsMenu.drawTitle)

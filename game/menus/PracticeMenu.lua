@@ -7,7 +7,7 @@ function PracticeMenu:open( levelN )
 	local back = Button:new{
 		size = 50,
 		position = Vector:new{width - 160, 580},
-		text = "back",
+		text = "   ", -- actual text 'back' is displayed in drawTitleAndBack
 		fontsize = 20
 	}
 
@@ -23,13 +23,14 @@ function PracticeMenu:open( levelN )
 		local nextB = Button:new{
 			size = 50,
 			position = Vector:new{width/2 + 100, 550},
-			text = ">",
+			text = " ", -- actual text '>' is displayed in drawRightArrow
 			fontsize = 55,
 			pressed = function ()
 				MenuManager.changeToMenu(PracticeMenus[levelN + 1], MenuTransitions.Slide:setDir('right/left', 1))
 			end
 		}
 		buttons[#buttons + 1] = nextB
+		self:addDrawablePart(PracticeMenu.drawRightArrow)
 	end
 
 	local goToLevelFunc = function (self)
@@ -44,13 +45,14 @@ function PracticeMenu:open( levelN )
 		local prevB = Button:new{
 			size = 50,
 			position = Vector:new{width/2 - 100, 550},
-			text = "<",
+			text = " ", -- actual text '<' is displayed in drawLeftArrow
 			fontsize = 55,
 			pressed = function ()
 				MenuManager.changeToMenu(PracticeMenus[levelN - 1], MenuTransitions.Slide:setDir('right/left', -1))
 			end
 		}
 		buttons[#buttons + 1] = prevB
+		self:addDrawablePart(PracticeMenu.drawLeftArrow)
 	else
 		local tut = Button:new{
 			size = 60,
@@ -75,26 +77,58 @@ function PracticeMenu:open( levelN )
 			pressed = goToLevelFunc
 		}
 		buttons[#buttons + 1] = levelButton
+		self:addDrawablePart(PracticeMenu.areaDraws[i])
 	end
 
 	for _, but in ipairs(buttons) do self:addComponent(but) end
 end
 
+function PracticeMenu:close()
+	Menu.close(self)
+	self.drawableParts[PracticeMenu.drawRightArrow] = nil
+	self.drawableParts[PracticeMenu.drawLeftArrow] = nil
+end
+
 local format = string.format
-function PracticeMenu:draw( levelN )
-	Menu.draw(self)
-	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows.var, self.coloreffect))
-	graphics.setFont(Base.getCoolFont(70))
-	graphics.printf("Practice", 0, 30, width, 'center')
+function PracticeMenu.drawMenu( levelN )
+	graphics.setColor(ColorManager.getComposedColor(PracticeMenu.variance, PracticeMenu.alphaFollows.var, PracticeMenu.coloreffect))
 	for i = 1, 4 do
 		local levelName = 'Level ' .. levelN .. '-' .. i
 		if RecordsManager.records.story.lastLevel < levelName or levelName == 'Level 1-4' then break end
-		graphics.setFont(Base.getFont(15))
-		graphics.print("Area High Score:", 90 + (i-1) * 256, height/2 - 100)
 		graphics.setFont(Base.getCoolFont(35))
 		graphics.print(format("%.0f", RecordsManager.records.story[levelName].score), 120 + (i-1) * 256, height/2 - 85)
 	end
 end
+
+function PracticeMenu.drawTitleAndBack()
+	graphics.setColor(ColorManager.getComposedColor(PracticeMenu.variance, PracticeMenu.alphaFollows.var, PracticeMenu.coloreffect))
+	graphics.setFont(Base.getCoolFont(70))
+	graphics.printf("Practice", 0, 30, width, 'center')
+	graphics.setFont(Base.getCoolFont(20))
+	graphics.print("back", width - 182, 568)
+end
+
+function PracticeMenu.drawRightArrow()
+	graphics.setColor(ColorManager.getComposedColor(PracticeMenu.variance, PracticeMenu.alphaFollows.var, PracticeMenu.coloreffect))
+	graphics.setFont(Base.getCoolFont(55))
+	graphics.print('>', width/2 + 85, 518)
+end
+
+function PracticeMenu.drawLeftArrow()
+	graphics.setColor(ColorManager.getComposedColor(PracticeMenu.variance, PracticeMenu.alphaFollows.var, PracticeMenu.coloreffect))
+	graphics.setFont(Base.getCoolFont(55))
+	graphics.print('<', width/2 - 115, 518)
+end
+
+local function getAreaDrawFunc( i ) -- gambs? Maybe
+	return function()
+		graphics.setColor(ColorManager.getComposedColor(PracticeMenu.variance, PracticeMenu.alphaFollows.var, PracticeMenu.coloreffect))
+		graphics.setFont(Base.getFont(15))
+		graphics.print("Area High Score:", 90 + (i-1) * 256, height/2 - 100)
+	end
+end
+
+PracticeMenu.areaDraws = { getAreaDrawFunc(1), getAreaDrawFunc(2), getAreaDrawFunc(3), getAreaDrawFunc(4) }
 
 PracticeMenus = {}
 
@@ -103,6 +137,7 @@ for i = 1, levelNumber do
 		index = levelselect - 1 + i
 	}
 	menu.open = function(self) PracticeMenu.open(self, i) end
-	menu.draw = function(self) PracticeMenu.draw(self, i) end
+	menu:addDrawablePart(function() PracticeMenu.drawMenu(i) end)
+	menu:addDrawablePart(PracticeMenu.drawTitleAndBack)
 	PracticeMenus[i] = menu
 end

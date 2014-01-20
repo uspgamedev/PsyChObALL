@@ -74,10 +74,8 @@ function MainMenu:open()
 	end
 end
 
-function MainMenu:draw()
-	Menu.draw(self) -- draw buttons
-
-	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144, self.alphaFollows.var))
+function MainMenu.drawMenu()
+	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144, MainMenu.alphaFollows.var))
 	graphics.setFont(Base.getFont(12))
 	graphics.print("v" .. version, width/2 - 10, 685)
 	graphics.print('Write "reset" to delete stats', 15, 10)
@@ -95,7 +93,9 @@ function MainMenu:draw()
 	end
 	graphics.setFont(Base.getFont(30))
 
-	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 2.5 + 1, self.alphaFollows.var))
+	graphics.setColor(ColorManager.getComposedColor(ColorManager.timer.time * 2.5 + 1, MainMenu.alphaFollows.var))
 	graphics.draw(logo, (width - logo:getWidth()/4)/2, 75, nil, 0.25, 0.20)
 	graphics.setFont(Base.getFont(12))
 end
+
+MainMenu:addDrawablePart(MainMenu.drawMenu)

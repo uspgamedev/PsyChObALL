@@ -17,8 +17,7 @@ function RecordsMenu:open()
 end
 
 local format = string.format
-function RecordsMenu:draw()
-	Menu.draw(self)
+function RecordsMenu:drawMenu()
 
 	graphics.setFont(Base.getCoolFont(60))
 	graphics.setColor(ColorManager.getComposedColor(8))
@@ -49,3 +48,5 @@ function RecordsMenu:draw()
 		graphics.print(r[i].level, 150, 60 + 120*i)
 	end
 end
+
+RecordsMenu:addDrawablePart(RecordsMenu.drawMenu)

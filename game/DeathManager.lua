@@ -89,8 +89,12 @@ end
 function restartGame()
 	if state == story then 
 		if not psycho.pseudoDied then
-			Levels.closeLevel()
-			reloadStory 'Level 1-1'
+			if Levels.currentLevel.wasSelected then
+				reloadStory(Levels.currentLevel.name_, true)
+				Levels.currentLevel.wasSelected = true
+			else
+				reloadStory 'Level 1-1'
+			end
 		else
 			psycho:recreate()
 		end

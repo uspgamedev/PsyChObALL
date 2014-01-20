@@ -41,7 +41,6 @@ function run()
 	warnEnemiesTime = 0.7
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
-	
 	wait(1)
 	doNow( function(timer)
 		reloadStory 'Level 5-2'

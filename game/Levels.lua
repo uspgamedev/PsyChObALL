@@ -179,6 +179,7 @@ function loadLevel( levelFunc )
 		levelFunc()
 		level.timers_ = {}
 		level.score = 0
+		level.wasSelected = false
 		levelEnv.time = 0
 		Base.setFunctionEnv(level.run, levelEnv)
 		level.run()

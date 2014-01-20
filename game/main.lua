@@ -41,7 +41,8 @@ function initBase()
 	recordsmenu  = 0 
 	mainmenu = 1
 	tutorialmenu = 2
-	levelselect = 3
+	tutorialmenu2 = 3
+	levelselect = 4
 	survival = 10
 	story = 11
 

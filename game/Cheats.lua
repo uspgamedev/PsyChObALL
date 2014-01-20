@@ -88,7 +88,8 @@ function keypressed( key )
 
 		if devmode then
 			if not esc and key == 'k' then DeathManager.manageDeath() end
-			if     key == '8' then RecordsManager.addScore(100)
+			if     key == '9' then RecordsManager.records.story.lastLevel = 'Level 5-4'
+			elseif key == '8' then RecordsManager.addScore(100)
 			elseif key == '7' then RecordsManager.addScore(-100)
 			elseif key == '6' then v = v + 10
 			elseif key == '5' then v = v - 10

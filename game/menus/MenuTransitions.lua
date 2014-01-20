@@ -1,14 +1,40 @@
 MenuTransition = lux.object.new {
-	begin = Base.doNothing,
 	__type = 'MenuTransition'
 }
 
+function MenuTransition:begin()
+	self.inCommonDrawables = {}
+	if not MenuManager.previousMenu or not MenuManager.currentMenu then return end
+	for drawable in pairs(MenuManager.previousMenu.drawableParts) do
+		if MenuManager.currentMenu.drawableParts[drawable] then
+			self.inCommonDrawables[drawable] = true
+		end
+	end
+end
+
 function MenuTransition:drawPrevious()
-	MenuManager.previousMenu:draw() -- just draw it
+	MenuManager.previousMenu:drawComponents()
+	for drawFunc in pairs(MenuManager.previousMenu.drawableParts) do
+		if not self.inCommonDrawables[drawFunc] then drawFunc() end
+	end
 end
 
 function MenuTransition:drawCurrent()
-	MenuManager.currentMenu:draw() -- just draw it
+	MenuManager.currentMenu:drawComponents()
+	for drawFunc in pairs(MenuManager.currentMenu.drawableParts) do
+		if not self.inCommonDrawables[drawFunc] then drawFunc() end
+	end
+end
+
+function MenuTransition:drawExtra()
+	for drawFunc in pairs(self.inCommonDrawables) do
+		drawFunc()
+	end
+end
+
+function MenuTransition:close()
+	MenuManager.currentTransition = nil
+	self.inCommonDrawables = nil
 end
 
 MenuTransitions = {} -- list of transitions
@@ -29,6 +55,7 @@ MenuTransitions.Fade = MenuTransition:new{
 }
 
 function MenuTransitions.Fade:begin()
+	MenuTransition.begin(self)
 	if MenuManager.previousMenu then MenuManager.previousMenu.alphaFollows:setAndGo(255, 1, self.fadeSpeed) end
 	if MenuManager.currentMenu then MenuManager.currentMenu.alphaFollows:setAndGo(0, 254, self.fadeSpeed) end
 end
@@ -38,16 +65,15 @@ function MenuTransitions.Fade:drawPrevious()
 		MenuManager.previousMenu:close()
 		--delete it when it completely fades out
 		MenuManager.previousMenu = nil
-		MenuManager.currentTransition = nil
 	else 
-		MenuManager.previousMenu:draw()
+		MenuTransition.drawPrevious(self)
 	end
 end
 
 function MenuTransitions.Fade:drawCurrent()
-	MenuManager.currentMenu:draw()
+	MenuTransition.drawCurrent(self)
 	if not MenuManager.previousMenu and MenuManager.currentMenu.alphaFollows.var == 254 then
-		MenuManager.currentTransition = nil
+		self:close()
 	end
 end
 
@@ -64,25 +90,26 @@ local translateFuncs = {
 }
 
 function MenuTransitions.Slide:begin()
+	MenuTransition.begin(self)
 	self.slideTimer = VarTimer:new{var = 0, pausable = false}
 	self.slideTimer:setAndGo(0, Base.sign(self.slideSpeed) * width, math.abs(self.slideSpeed))
 	self.translateFunc = translateFuncs[self.direction]
 	self.slideTimer.alsoCall = function() 
 		self.slideTimer = nil
 		self.translateFunc = nil
-		MenuManager.currentTransition = nil
+		self:close()
 	end
 end
 
 function MenuTransitions.Slide:drawPrevious()
 	self.translateFunc(-self.slideTimer.var, 0)
-	MenuManager.previousMenu:draw()
+	MenuTransition.drawPrevious(self)
 	self.translateFunc(self.slideTimer.var, 0)
 end
 
 function MenuTransitions.Slide:drawCurrent()
 	self.translateFunc(-self.slideTimer.var + Base.sign(self.slideTimer.var) * width, 0)
-	MenuManager.currentMenu:draw()
+	MenuTransition.drawCurrent(self)
 	self.translateFunc(self.slideTimer.var - Base.sign(self.slideTimer.var) * width, 0)
 end
 
