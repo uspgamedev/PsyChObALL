@@ -2,10 +2,11 @@ Important
 	- Finish last 2 levels
 	- Refactor EVERYTHING
 		- Redo score/level/allotherstats saving -- Almost done
-	- Change 4-3 ending -- Almost Done
 	- Refactor Continues
 
 Bugs
+	- Stat Screen/adventure screen
+		-game crashes on entering both
 	- Error "AL lib: ReleaseALC: 1 device not closed" ?
 	- Death Effects sometimes do not reassemble correctly -- possibly fixed
 	- Survival
@@ -14,19 +15,30 @@ Bugs
 		- Has to save "played it before" >>when you enter the tutorial the first time<<
 		- Tutorial has to appear the first time whether you choose survival or adventure mode
 
-Maybe's
+Probable's
 	- On death special kind of ultrablast(if its not your final life):
 		- Circle expands x pixels from psycho, killing everything (or damaging in case of bosses) and then retreats.
-		- Balance x
+			- Balance x
 	
 
 TODO for next version:
 	- Brainstorm about
 		- New enemies, formations, boss behaviors for Levels 5 and 6
-	- New music (on the way)
+	- New main music (on the way)
+	- New secundary music (aka boss music(aka my secret project I was doing))
+		-Make possible to play a different song when a boss comes, possibly a sound effect when the exclamations are flying (will be a mp3 file as well) and resume main music on next level 
+	-MENU SCROLLING
+		-Make someway that text that remains from one menu to the other doesnt scroll (i knwo this will be a bit hard, but its worth it)
+			-Example:on practice, if you scroll to the side, the title practice and ht ebutton back should remain stationary
+			-Where to do this for now:
+				-Practice screen:title,"back", possibly the arrows (I know it will be harder since each has a different "command", but try, I believe in you and your magical programming skills)
+					-(make so that once you click it already becomes the next "set of arrows")
 	- Continues
-		- No limits for number of continues (for now)
+		- No limits for number of continues
 		- If you use 1 or more continues you cant go to the final level
 		- If you use 2(maybe 3) or more continues you cant go in the 5th level
+	-Implement a code to activate quickly all stages on practice while we are developing...
+	-Concentrate mode (holding shift) makes Psycho smaller (to the size of the actual hitbox)
+	-On practice, on the end the ability to press "r" and restar the area (for quickreload)
 
 

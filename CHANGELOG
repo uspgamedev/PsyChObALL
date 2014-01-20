@@ -1,23 +1,26 @@
-﻿=========================
+=========================
 THE HISTORY OF PSYCHOBALL
 =========================
 
 *************************************************
-(xx/xx/2013) Version 1.1.0    -  PsyChO Fixed
+(xx/xx/2014) Version 1.1.0    -  Through PsyChO
 *************************************************
 
 -Added Tutorial
+-Improved Highscores
+	-New highscore screen
+	-Highscore for each area
 -Adventure mode rebalanced
 	-Lots of changes to balance difficulty
 	-Changes on ultrablasts/lives per score
+	-Enemies spawned by bosses don't give score
+-Ultrablast reworked
 -Fixed lots of bugs
 	-Text bugging
 	-Fixes on cheats
 	-Fixes on rare crashes
 	-Fixes on Snakes
 	-Fixes on levels
-	-Fixes on Menu
-	-Saves fixes
 -Total refactoring!
 	-"Cleaner" code
 	-Less instability on FPS
