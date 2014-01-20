@@ -192,7 +192,7 @@ end
 
 function readTableFromString( str )
 	local ok, t = pcall(readTableFromStringUnsafe, str)
-	if not ok then io.write("The table wasn't correct. (error: ", t, ')\n') return {} end
+	if not ok then io.write("The table wasn't correct. (error: ", t or 'Unknown Error', ')\n') return {} end
 	return t
 end
 
