@@ -76,7 +76,7 @@ function addScore( score )
 		currentScore = currentScore + score
 
 		blastScore = blastScore + score
-		while blastScore >= (onStory and 2000 or 7000) do
+		while blastScore >= (onStory and 4000 or 7000) do
 			blastScore = blastScore - (onStory and 2000 or 7000)
 			psycho.ultraCounter = psycho.ultraCounter + 1
 		end

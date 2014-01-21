@@ -5,6 +5,7 @@ Important
 	- Refactor Continues
 
 Bugs
+	-	When cooshing a level on practice, fading out of the main is weird and sudden
 	- Error "AL lib: ReleaseALC: 1 device not closed" ?
 	- Tutorial does not initiate correctly the first time
 		- Has to save "played it before" >>when you enter the tutorial the first time<<
@@ -17,6 +18,8 @@ Probable's
 	
 
 TODO for next version:
+	- Add scrolling text to "Area High Score" on practice
+	- On boss 1, instead of an exclamation mark to sinalize the change between his phase 1 and 2, just make him grow and reduce a bit (while doing that becomes invunerable, maybe with shades of gray that then 		go out to be the next color)
 	- Brainstorm about
 		- New enemies, formations, boss behaviors for Levels 5 and 6
 	- New main music (on the way)
