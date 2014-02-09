@@ -40,7 +40,7 @@ function MainMenu:open()
 			FileManager.writeConfig()
 			reloadStory('Tutorial', true)
 		else
-			reloadStory 'Level 1-1'
+			reloadStory('Tutorial', true)
 		end
 	end
 

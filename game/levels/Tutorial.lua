@@ -201,6 +201,11 @@ function run()
 		end
 	}
 	wait(5.5)
+
+	doNow( function(timer)
+		reloadStory 'Level 1-1' end
+		)
+
 	doNow( function(timer)
 			Text:new{
 				text = "Tutorial Completed. Press ESC or P and return to the menu.",

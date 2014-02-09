@@ -2,7 +2,7 @@ title = 'V - Renato please add level'
 chapter = 'Part 4 - The boss is here. Just write all of him up until tomorrow. Thanks'
 
 function run()
-	enemy 'bossFive'
+	enemy 'bossLast'
 	wait(10000)
 
 

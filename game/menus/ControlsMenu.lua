@@ -19,7 +19,7 @@ function ControlsMenu:open()
 		text = '>',
 		position = Vector:new {width/2 + 150, height - 100},
 		pressed = function() MenuManager.changeToMenu(ControlsMenu2, MenuTransitions.Slide:setDir('right/left', 1)) end
-	}
+	}	
 
 	self:addComponent(backButton)
 	self:addComponent(forwardButton)
