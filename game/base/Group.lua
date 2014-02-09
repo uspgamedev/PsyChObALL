@@ -1,0 +1,91 @@
+require 'base.Basic'
+
+Group = Basic:new {
+	length = 0,
+	class = Basic, -- class of objects it contains
+	__type = 'Group'
+}
+
+function Group:add( obj )
+	self.length = self.length + 1
+	self[self.length] = obj
+end
+
+function Group:update( dt )
+	for i = self.length, 1, -1 do
+		if self[i].alive then
+			self[i]:update(dt)
+		end
+	end
+end
+
+function Group:draw()
+	for i = self.length, 1, -1 do
+		if self[i].alive then
+			self[i]:draw()
+		end
+	end
+end
+
+function Group:kill()
+	for i = self.length, 1, -1 do
+		if self[i].alive then
+			self[i]:kill()
+		end
+	end
+end
+
+function Group:getFirstAvailable()
+	for i = 1, self.length, 1 do
+		if not self[i].alive then
+			self[i].alive = true
+			return self[i]
+		end
+	end
+end
+
+function Group:getObjects( n )
+	local basics = {}
+	local count = 0
+
+	for i = 1, self.length, 1 do -- recycling objects that are already dead
+		if not self[i].alive then
+			count = count + 1
+			self[i].alive = true
+			basics[count] = self[i]
+		end
+	end
+
+	while count < n do -- creating new objects if necessary
+		count = count + 1
+		basics[count] = self.class:new{}
+		self:add(basics[count])
+	end
+
+	return basics
+end
+
+function Group:clearAll() -- clears the group, doesn't kill any bodies
+	for i = self.length, 1, -1 do
+		self[i] = nil
+	end
+
+	self.length = 0
+end
+
+function Group:clearDead()
+	local newSize = 0
+
+	for i = 1, self.length, 1 do -- moving alive ones to the beginning
+		if self[i].alive then
+			newSize = newSize + 1
+			self[newSize] = self[i]
+		end
+	end
+
+	for i = newSize + 1, self.length, 1 do -- clearing the rest
+		self[i] = nil
+	end
+
+	self.length = newSize
+end

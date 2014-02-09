@@ -198,5 +198,9 @@ function loadAll()
 		level.name_ = file:sub(0, file:len() - 4)
 		level.reload_ = loadLevel(lev)
 		levels[level.name_] = level
+
+		Base.setFunctionEnv(lev, level)
+		lev() -- getting chapter name and stuff
+		level.run = nil
 	end
 end

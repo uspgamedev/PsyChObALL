@@ -12,7 +12,6 @@ Psychoball = CircleEffect:new {
 	alpha = 255,
 	lives = 10,
 	index = false,
-	changesimage = true,
 	canBeHit = true,
 	pseudoDied = false,
 	spriteBatch = false,
@@ -118,8 +117,7 @@ end
 function Psychoball:draw()
 	if self.pseudoDied or DeathManager.gameLost then return end
 	self.size = self.size + psychoSizeDiff
-	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows and self.alphaFollows.var or self.alpha, self.coloreffect))
-	graphics.circle(self.mode, self.position[1], self.position[2], self.size)
+	Base.defaultDraw(self)
 	self.size = self.size - psychoSizeDiff
 end
 

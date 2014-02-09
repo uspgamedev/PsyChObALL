@@ -2,7 +2,6 @@ module('Cheats', Base.globalize)
 
 devmode = false
 invisible = false
-imaegmode = false
 usedDevMode = false
 konamicode = false
 imagecheats = {}
@@ -41,7 +40,6 @@ function init()
 	devpass = passwordtoggle 'psycho'
 	invisiblepass = passwordtoggle 'ghost'
 	tiltpass = passwordtoggle 'tilt'
-	allimagespass = passwordtoggle 'bighead'
 	konamipass = password {'up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'}
 	
 	image:new {
@@ -74,8 +72,6 @@ function keypressed( key )
 		end
 
 		invisible = invisiblepass(key)
-		dkmode = allimagespass(key)
-		CircleEffect.changesimage = dkmode
 		image.processCheats(key)
 
 		if tiltmode then

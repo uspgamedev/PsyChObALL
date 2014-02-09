@@ -1,30 +1,32 @@
-Menu = lux.object.new {
+require 'base.Group'
+
+Menu = Group:new {
+	index = nil,
 	__type = 'Menu'
 }
 
 Menu.__init = {
-	components = {},
 	drawableParts = {},
 	alphaFollows = VarTimer:new{var = 255, pausable = false}
 }
 
-function Menu:addComponent( component )
+function Menu:add( component )
 	component.alphaFollows = self.alphaFollows
 	component:start()
 	component.menu = self.index
-	table.insert(self.components, component)
+	Group.add(self, component)
 end
 
 function Menu:completeDraw()
-	self:drawComponents()
+	self:draw()
 	for drawFunc in pairs(self.drawableParts) do
 		drawFunc()
 	end
 end
 
-function Menu:drawComponents()
-	for i = #self.components, 1, -1 do
-		self.components[i]:draw()
+function Menu:draw()
+	for i = self.length, 1, -1 do
+		self[i]:draw()
 	end
 end
 
@@ -32,20 +34,12 @@ function Menu:addDrawablePart( drawFunc )
 	self.drawableParts[drawFunc] = true
 end
 
-function Menu:update( dt )
-	for i = #self.components, 1, -1 do
-		self.components[i]:update(dt)
-	end
-end
-
-function Menu:open()
+function Menu:load()
 	self.alphaFollows.var = 255
 	state = self.index
 end
 
 function Menu:close()
-	for k, component in ipairs(self.components) do
-		if component.close then component:close() end
-		self.components[k] = nil
-	end
+	self:kill()
+	self:clearAll()
 end

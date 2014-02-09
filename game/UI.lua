@@ -153,7 +153,6 @@ function draw()
 			elseif Cheats.image.pass == 'rica' then graphics.print("Richard mode on!", 433, 32)
 			elseif Cheats.image.pass == 'rika' then graphics.print("Detective mode on!", 428, 32) end
 		end
-		if Cheats.dkmode then graphics.print("DK mode on!", 448, 45) end
 		graphics.setFont(Base.getCoolFont(40))
 		if Cheats.tiltmode then graphics.print("*TILT*", 446, 80, -angle.var) end
 		graphics.setFont(Base.getFont(12))

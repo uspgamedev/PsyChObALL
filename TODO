@@ -3,6 +3,7 @@ Important
 	- Refactor EVERYTHING
 		- Redo score/level/allotherstats saving -- Almost done
 	- Refactor Continues
+	- Make game easier (but still hard...)
 
 Bugs
 	-	When cooshing a level on practice, fading out of the main is weird and sudden
@@ -19,7 +20,6 @@ Probable's
 
 TODO for next version:
 	-CONTROLLER SUPPORT
-	- Add scrolling text to "Area High Score" on practice
 	- On boss 1, instead of an exclamation mark to sinalize the change between his phase 1 and 2, just make him grow and reduce a bit (while doing that becomes invunerable, maybe with shades of gray that then 		go out to be the next color)
 	- Brainstorm about
 		- New enemies, formations, boss behaviors for Levels 5 and 6

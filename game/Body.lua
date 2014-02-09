@@ -1,8 +1,9 @@
-Body = lux.object.new {
+require 'base.Basic'
+
+Body = Basic:new {
 	size = 0,
 	mode = 'fill',
 	variance = 0,
-	changesimage = true,
 	positionfollows = nil, --function
 	ord = 5,
 	inBatch = false,
@@ -67,6 +68,10 @@ function Body:update( dt )
 end
 
 function Body:draw()
+	if Cheats.image.enabled then
+		Base.defaultDraw(self)
+		return
+	end
 	if self.linewidth then graphics.setLineWidth(self.linewidth) end
 	local color = ColorManager.getComposedColor(self.variance, self.alphaFollows and self.alphaFollows.var or self.alpha, self.coloreffect)
 	self.spriteBatch:setColor(unpack(color))
@@ -143,13 +148,13 @@ function Body:paintOn( p )
 end
 
 function Body:drawComponents()
-	if self.shader then graphics.setPixelEffect(self.shader) end
-	if self.spriteBatch then self.spriteBatch:bind() end
+	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect(self.shader) end
+	if self.spriteBatch and not Cheats.image.enabled then self.spriteBatch:bind() end
 	for _, body in pairs(self.bodies) do
 		body:draw()
 	end
-	if self.spriteBatch then graphics.draw(self.spriteBatch, 0, 0)	self.spriteBatch:unbind() end
-	if self.shader then graphics.setPixelEffect() end
+	if self.spriteBatch and not Cheats.image.enabled then graphics.draw(self.spriteBatch, 0, 0)	self.spriteBatch:unbind() end
+	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect() end
 end
 
 local todelete = {}

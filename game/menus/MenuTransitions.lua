@@ -13,14 +13,14 @@ function MenuTransition:begin()
 end
 
 function MenuTransition:drawPrevious()
-	MenuManager.previousMenu:drawComponents()
+	MenuManager.previousMenu:draw()
 	for drawFunc in pairs(MenuManager.previousMenu.drawableParts) do
 		if not self.inCommonDrawables[drawFunc] then drawFunc() end
 	end
 end
 
 function MenuTransition:drawCurrent()
-	MenuManager.currentMenu:drawComponents()
+	MenuManager.currentMenu:draw()
 	for drawFunc in pairs(MenuManager.currentMenu.drawableParts) do
 		if not self.inCommonDrawables[drawFunc] then drawFunc() end
 	end

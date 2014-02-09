@@ -16,6 +16,7 @@
 		{
 			"name": "LOVE2D",
 			"working_dir": "${project_path}",
+			"path": "${PATH}",
 			"cmd": ["love", "game"]
 		}
 	]

@@ -55,12 +55,13 @@ local lineWidth = 1
 _G.graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
 	circle = function ( mode, x, y, r )
-		if Cheats.image.enabled and (Cheats.dkmode or mode == 'fill') then
-			if not Cheats.image.painted then graphics.setColor(255, 255, 255) end
+		if Cheats.image.enabled then
+			local _, __, __, a = graphics.getColor()
+			if not Cheats.image.painted then graphics.setColor(255, 255, 255, a) end
 			graphics.draw(Cheats.image.image, x - r, y - r, 
 				0, 2*r / Cheats.image.image:getWidth(), 2*r / Cheats.image.image:getHeight())
 		else
-			--assumes Base.circleShader is being used
+			-- assumes Base.circleShader is being used
 			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 			if mode == 'line' then
 				local min = lineWidth*ratio + 1

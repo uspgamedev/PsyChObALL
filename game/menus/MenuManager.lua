@@ -1,7 +1,7 @@
 require "menus.Menu"
 require "menus.MenuTransitions"
 
-module('MenuManager', Base.globalize)
+module('MenuManager', package.seeall)
 
 function init()
 	currentMenu = nil
@@ -32,7 +32,7 @@ function changeToMenu( menu, transition )
 	if previousMenu then previousMenu:close() end
 	previousMenu = currentMenu
 	currentMenu = menu
-	if menu then menu:open() end
+	if menu then menu:load() end
 	currentTransition = transition or MenuTransitions.Cut
 	currentTransition:begin()
 end

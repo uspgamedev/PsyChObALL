@@ -52,7 +52,7 @@ function Button:update( dt )
 		self.hoverring.size = self.size
 		self.hoverring.sizeGrowth = 0
 	end
-	if self.menu ~= state then
+	if self.menu ~= state or MenuManager.currentTransition then
 		if self.onHover then 
 			self.onHover = false
 			self:hover(false)
@@ -105,7 +105,7 @@ function Button:hover(hovering)
 end
 
 function Button:isClicked(x, y)
-	return self.menu == state and ((x-self.x)^2 + (y-self.y)^2) < self.size^2
+	return self.menu == state and not MenuManager.currentTransition and ((x-self.x)^2 + (y-self.y)^2) < self.size^2
 end
 
 function Button.mousepressed( x, y, btn )

@@ -61,6 +61,7 @@ function readConfig()
 	config.version = config.version or version
 
 	if version ~= config.version then
+		config.version = version
 		--handle something maybe
 	end
 	

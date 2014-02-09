@@ -2,8 +2,8 @@ MainMenu = Menu:new {
 	index = mainmenu
 }
 
-function MainMenu:open()
-	Menu.open(self)
+function MainMenu:load()
+	Menu.load(self)
 
 	local playButton = Button:new{
 		size = 120,
@@ -70,7 +70,7 @@ function MainMenu:open()
 	}
 
 	for _, component in ipairs {playButton, testingButton, storyButton, controlsButton, recordsButton} do
-		self:addComponent(component)
+		self:add(component)
 	end
 end
 

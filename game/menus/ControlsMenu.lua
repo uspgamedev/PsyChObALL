@@ -2,8 +2,8 @@ ControlsMenu = Menu:new {
 	index = tutorialmenu
 }
 
-function ControlsMenu:open()
-	Menu.open(self)
+function ControlsMenu:load()
+	Menu.load(self)
 
 	local backButton = Button:new {
 		size = 80,
@@ -21,8 +21,8 @@ function ControlsMenu:open()
 		pressed = function() MenuManager.changeToMenu(ControlsMenu2, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}	
 
-	self:addComponent(backButton)
-	self:addComponent(forwardButton)
+	self:add(backButton)
+	self:add(forwardButton)
 end
 
 function ControlsMenu.drawTitle()
@@ -71,8 +71,8 @@ ControlsMenu2 = Menu:new {
 	index = tutorialmenu2
 }
 
-function ControlsMenu2:open()
-	Menu.open(self)
+function ControlsMenu2:load()
+	Menu.load(self)
 
 	local backButton = Button:new {
 		size = 50,
@@ -82,7 +82,7 @@ function ControlsMenu2:open()
 		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
-	self:addComponent(backButton)
+	self:add(backButton)
 end
 
 ControlsMenu2:addDrawablePart(ControlsMenu.drawTitle)

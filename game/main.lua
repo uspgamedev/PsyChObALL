@@ -261,7 +261,7 @@ function drawBackground()
 	end
 
 	graphics.setPixelEffect()
-	graphics.draw(Base.pixel, 0, 0, 0, width, height) --background color
+	graphics.draw(Base.pixel, 0, 0, 0, width, height) -- background color
 end
 
 function drawShootingDirection()
@@ -276,9 +276,10 @@ function drawShootingDirection()
 		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
 		if a1 == 0 and a2 == 0 then return end
 		local x = a2 > 0 and width or 0
-		graphics.line(psycho.x, psycho.y, a2*1200 + psycho.x, a1*1200 + psycho.y)
+		-- Lazyness Warning: drawing a huge line to avoid having to think about the exact calculations!
+		graphics.line(psycho.x, psycho.y, a2 * 1200 + psycho.x, a1 * 1200 + psycho.y) 
 	else
-		graphics.setPixelEffect(Base.circleShader)
+		if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
 		graphics.circle("line", mouseX, mouseY, 5)
 		color[4] = 60 -- alpha
 		graphics.setColor(color)
@@ -286,7 +287,7 @@ function drawShootingDirection()
 		graphics.setPixelEffect()
 		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((mouseY - psycho.y)/(mouseX - psycho.x)))
 	end
-	graphics.setPixelEffect(Base.circleShader)
+	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
 end
 
 function love.update(dt)

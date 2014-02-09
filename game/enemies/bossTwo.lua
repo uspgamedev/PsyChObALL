@@ -9,7 +9,6 @@ bossTwo = CircleEffect:new {
 	ballspos = 49,
 	alpha = 255,
 	mode = 'fill',
-	changesimage = true,
 	sizeGrowth = 0,
 	vulnerable = true,
 	spriteBatch = false,

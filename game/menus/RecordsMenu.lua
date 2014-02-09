@@ -2,8 +2,8 @@ RecordsMenu = Menu:new {
 	index = recordsmenu
 }
 
-function RecordsMenu:open()
-	Menu.open(self)
+function RecordsMenu:load()
+	Menu.load(self)
 
 	local backButton = Button:new {
 		size = 80,
@@ -13,7 +13,7 @@ function RecordsMenu:open()
 		pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}
 
-	self:addComponent(backButton)
+	self:add(backButton)
 end
 
 local format = string.format

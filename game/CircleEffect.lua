@@ -3,7 +3,6 @@ CircleEffect = Body:new {
 	maxsize = width / 1.9,
 	mode = 'line',
 	__type = 'CircleEffect',
-	changesimage = false,
 	linewidth = 4,
 	spriteBatch = false,
 	shader = Base.circleShader,
