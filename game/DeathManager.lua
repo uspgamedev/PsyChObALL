@@ -22,7 +22,7 @@ function manageDeath()
 		SoundManager.fadeout()
 
 		if getDeathText() == "Supreme." then resetDeathText() end -- makes it much rarer
-		if state == story and getDeathText() == "The LSD wears off" then
+		if state == story and getDeathText() == deathTexts[1] then
 			setDeathMessage "Why are you even doing this?" -- or something else
 		end
 
@@ -125,7 +125,6 @@ local deathFunctions = {
 }
 
 DeathEffect = Body:new{
-	spriteBatch = false,
 	size = Effect.size,
 	__type = 'DeathEffect'
 }
@@ -147,7 +146,6 @@ end
 
 function DeathEffect:draw()
 	graphics.draw(Base.pixel, self.position[1] - self.size, self.position[2] - self.size, 0, self.size*2)
-	--just draws a rectangle, no spriteBatch stuff
 end
 
 local auxVec = Vector:new{}
@@ -205,7 +203,7 @@ deathTexts = {"The LSD wears off", "Game Over", "No one will\n      miss you", "
 "You wake up and\n     realize it was all a nightmare", "MIND BLOWN", "Just one more", "USPGameDev Rulez", "A winner is not you", "Have a nice death",
 "There is no cake\n   also you died", "You have died of\n      dysentery", "You failed", "Epic fail", "BAD END", "Supreme.", "Embrace your defeat",
 "Balls have no mercy", "You have no balls left", "Nevermore...", "Rest in Peace", "Die in shame", "You've found your end", "KIA", "Status: Deceased",
-"Requiescat in Pace", "Valar Morghulis", "What is dead may never die", "Mission Failed", "It's dead Jim", "Arrivederci", ""}
+"Requiescat in Pace", "Valar Morghulis", "What is dead may never die", "Mission Failed", "It's dead Jim", "Arrivederci", "FRANKIE SAYS RELAX"}
 
 function getDeathText( n )
 	deathMessage = n and deathTexts[n] or (deathMessage or deathTexts[math.random(#deathTexts)])

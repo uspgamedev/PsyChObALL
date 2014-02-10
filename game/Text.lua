@@ -4,7 +4,6 @@ Text = Body:new {
 	ord = 6,
 	printmethod = graphics.print,
 	__type = 'Text',
-	spriteBatch = false,
 	mode = 'none',
 	bodies = {}
 }

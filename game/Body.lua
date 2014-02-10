@@ -6,7 +6,6 @@ Body = Basic:new {
 	variance = 0,
 	positionfollows = nil, --function
 	ord = 5,
-	inBatch = false,
 	__type = 'unnamed Body'
 }
 
@@ -43,15 +42,6 @@ end
 function Body.makeClass( subclass )
 	subclass.__newindex = newindex
 	subclass.__index = index
-	if subclass.spriteBatch == nil then
-		subclass.spriteBatch = graphics.newSpriteBatch(Base.pixel, 200, 'dynamic')
-		subclass.spriteMaxNum = 200
-		print(subclass.__type)
-	end
-	if subclass.spriteBatch then
-		subclass.spriteCount = 0
-
-	end
 end
 
 function Body:update( dt )
@@ -68,21 +58,12 @@ function Body:update( dt )
 end
 
 function Body:draw()
-	if Cheats.image.enabled then
-		Base.defaultDraw(self)
-		return
-	end
 	if self.linewidth then graphics.setLineWidth(self.linewidth) end
-	local color = ColorManager.getComposedColor(self.variance, self.alphaFollows and self.alphaFollows.var or self.alpha, self.coloreffect)
-	self.spriteBatch:setColor(unpack(color))
-	self.spriteBatch:set(self.id, self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
+	Base.defaultDraw(self)
 end
 
 function Body:handleDelete()
 	if self.score and self.diereason == 'shot'then RecordsManager.addScore(self.score) end
-	if self.spriteBatch and self.id then
-		self.spriteBatch:set(self.id, 0, 0, 0, 0, 0)
-	end
 end
 
 function Body:onInit()
@@ -90,42 +71,7 @@ function Body:onInit()
 end
 
 function Body:start()
-	if self.spriteBatch then self:addToBatch() end
-end
 
-function Body:handleTooMany()
-	io.write('Warning! Maximum number of ', self.__type, ' sprites almost being reached!\n')
-	-- do something about it!
-end
-
-local onRebatch = false
-function Body:addToBatch()
-	if self.spriteBatch then
-		if not onRebatch and self.spriteCount > self.spriteMaxNum - (self.spriteSafety or 10) then
-			onRebatch = true
-			--io.write('clearing ', self.__type, ' (', self.spriteCount, ' sprites out of ', self.spriteMaxNum, ') \t---\t')
-			self:__super().spriteCount = 1
-			self.spriteBatch:bind()
-			self.spriteBatch:clear()
-			for _, p in pairs(self.bodies) do if p.inBatch then p:addToBatch() end end
-			--print('new sprite count: ', self.spriteCount)
-			if self.spriteCount >= self.spriteMaxNum - 2*(self.spriteSafety or 10) then 
-				print("critical situation")
-				self:handleTooMany()
-				self:__super().spriteCount = 1
-				self.spriteBatch:clear()
-				for _, p in pairs(self.bodies) do if p.inBatch then p:addToBatch() end end
-			end
-			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
-			self.spriteBatch:unbind()
-			--print('finished clearing')
-			onRebatch = false
-		elseif not self.delete then
-			self.id = self.spriteBatch:add(self.position[1] - self.size, self.position[2] - self.size, 0, 2*self.size)
-			self:__super().spriteCount = self:__super().spriteCount + 1
-		end
-		self.inBatch = true
-	end
 end
 
 Body.collidesWith = Base.collides
@@ -149,11 +95,9 @@ end
 
 function Body:drawComponents()
 	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect(self.shader) end
-	if self.spriteBatch and not Cheats.image.enabled then self.spriteBatch:bind() end
 	for _, body in pairs(self.bodies) do
 		body:draw()
 	end
-	if self.spriteBatch and not Cheats.image.enabled then graphics.draw(self.spriteBatch, 0, 0)	self.spriteBatch:unbind() end
 	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect() end
 end
 
@@ -162,7 +106,7 @@ function Body:updateComponents( dt )
 	for k, body in pairs(self.bodies) do
 		body:update(dt)
 		if body.delete then
-			table.insert(todelete, k)
+			todelete[#todelete + 1] = k
 		end
 	end
 

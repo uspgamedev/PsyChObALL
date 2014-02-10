@@ -3,7 +3,6 @@ local abs, random = math.abs, math.random
 bossFive = Body:new {
 	size = 125,
 	irisSize = 55,
-	spriteBatch = false,
 	ord = 8,
 	variance = 4,
 	maxHealth = 100,

@@ -4,9 +4,6 @@ multiball = Body:new {
 	args = {},
 	coloreffect = ColorManager.getColorEffect(255, 0, 0),
 	shader = Base.circleShader,
-	spriteBatch = graphics.newSpriteBatch(Base.pixel, 250, 'dynamic'),
-	spriteMaxNum = 250,
-	spriteSafety = 10,
 	score = 50,
 	__type = 'multiball'
 }

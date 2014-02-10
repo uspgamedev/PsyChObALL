@@ -2,9 +2,6 @@ grayball = Body:new {
 	size = 20,
 	coloreffect = ColorManager.noLSDEffect,
 	shader = Base.circleShader,
-	spriteBatch = graphics.newSpriteBatch(Base.pixel, 300, 'dynamic'),
-	spriteMaxNum = 300,
-	spriteSafety = 10,
 	__type = "grayball"
 }
 

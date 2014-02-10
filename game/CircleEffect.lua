@@ -4,7 +4,6 @@ CircleEffect = Body:new {
 	mode = 'line',
 	__type = 'CircleEffect',
 	linewidth = 4,
-	spriteBatch = false,
 	shader = Base.circleShader,
 	ord = 3,
 	bodies = {}

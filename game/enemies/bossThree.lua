@@ -9,9 +9,9 @@ bossThree = Body:new{
 	yellowguyhealth = 60,
 	vulnerable = true,
 	segmentsN = 9,
+	shader = Base.circleShader,
 	maxsize = width,
 	visible = true,
-	spriteBatch = false,
 	ord = 6,
 	__type = 'bossThree'
 }
@@ -74,8 +74,8 @@ function bossThree.behaviors.first( self )
 				running = true,
 				funcToCall = function(timer)
 					timer.timelimit = random()*7 + 9
-					if #self.segments >= 7 then return end
-					local pos = self.position + {random(width/4, 3*width/4), random(height/4, 3*height/4)}
+					if self.last - self.first + 1 >= 7 then return end
+					local pos = self.position + {width/2, width/2}
 					pos.x = max(min(pos.x % width, width-100), 100)
 					pos.y = max(min(pos.y % height, height-100), 100)
 					bossThree.food:new{position = pos}:register()
@@ -150,13 +150,14 @@ function bossThree.behaviors.second( self )
 			}
 			self.invertedstencil = function() graphics.arc('fill', self.x, self.y, self.size, self.guyangle.var - ang, self.guyangle.var + ang) end
 		end
+
 		local cs = {{255, 0, 0},{255,255,255},{230, 143, 172}, {205, 140, 0}}
 		for _, color in ipairs(cs) do
 			local g = bossThree.ghost:new{}
+			g:register()
 			Enemy.__init(g)
 			g.speed:set(Base.sign(random()-.5)*random(v*.7, v), Base.sign(random()-.5)*random(v*.7, v))
 			g.coloreffect = ColorManager.getColorEffect(unpack(color))
-			bossThree.bodies[#bossThree.bodies + 1] = g
 		end
 		
 		self.currentBehavior = bossThree.behaviors.third
@@ -172,6 +173,7 @@ function bossThree.behaviors.third( self )
 	else
 		if psycho.canBeHit then self:trytofollow(psycho.position) end
 	end
+
 	if self.health/bossThree.yellowguyhealth < .5 then
 		RecordsManager.addScore(1000)
 		self.speedbak = self.speed:clone()
@@ -353,7 +355,7 @@ bossThree.goup = bossThree.setspeed {0, -bossThree.basespeed}
 
 function bossThree:draw()
 	if not self.visible then return end
-	graphics.setPixelEffect(Base.circleShader)
+	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
 
 	if self.first <= self.last then
 		local s = self.segments[self.first]
@@ -379,7 +381,7 @@ function bossThree:draw()
 		
 		if self.guy then 
 			graphics.setInvertedStencil()
-			graphics.setPixelEffect(Base.circleShader)
+			if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
 		end
 	end
 
@@ -523,6 +525,7 @@ end
 
 function bossThree:__init()
 	paintables.food = bossThree.food
+	paintables.ghosts = bossThree.ghost
 	self.trytofollow = self.defaulttrytofollow
 	self.handleHealthLoss = self.defaultHealthLoss
 
@@ -571,6 +574,7 @@ function bossThree:__init()
 	}
 
 	function self.shoottimer.funcToCall()
+		if not psycho.canBeHit then return end
 		local e = Enemies.grayball:new{}
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
@@ -582,7 +586,9 @@ end
 
 function bossThree:handleDelete()
 	Base.clearTable(bossThree.food.bodies)
+	Base.clearTable(bossThree.ghost.bodies)
 	paintables.food = nil
+	paintables.ghosts = nil
 	self.spawnfood:remove()
 	self.yellowguytimer:remove()
 	Effect.createEffects(self, 200)
@@ -592,8 +598,8 @@ bossThree.food = CircleEffect:new{
 	size = 1,
 	sizeGrowth = 20,
 	variance = 4,
+	shader = Base.circleShader,
 	bodies = {},
-	spriteBatch = false,
 	index = false,
 	__type = 'bossThreefood'
 }
@@ -614,13 +620,11 @@ function bossThree.food:__init()
 end
 
 function bossThree.food:draw()
-	graphics.setPixelEffect(Base.circleShader)
 	CircleEffect.draw(self)
 	if self.creationsize.var > 0 then
 		graphics.setColor(ColorManager.getComposedColor(self.variance, nil, ColorManager.noLSDEffect))
 		graphics.circle('fill', self.position[1], self.position[2], self.creationsize.var)
 	end
-	graphics.setPixelEffect()
 end
 
 function bossThree.food:update( dt )
@@ -658,6 +662,9 @@ function bossThree.food:update( dt )
 				onceOnly = true,
 				running = true,
 				funcToCall = function()
+					self.sizeGrowth = -70
+					self.creationsize.var = 0
+					if b3.guy then return end
 					b3.last = b3.last + 1
 					b3.segments[b3.last] = {
 						position = self.position:clone(),
@@ -666,8 +673,6 @@ function bossThree.food:update( dt )
 						target = self.targettoset,
 						prevdist = self.prevdisttoset
 					}
-					self.sizeGrowth = -70
-					self.creationsize.var = 0
 				end
 			}
 			self.update = CircleEffect.update
@@ -729,8 +734,9 @@ end
 bossThree.ghost = Body:new {
 	size = 40,
 	health = 24,
+	bodies = {},
+	shader = Base.circleShader,
 	vulnerable = false,
-	spriteBatch = false,
 	__type = 'bossThreeghost'
 }
 
@@ -760,10 +766,8 @@ function bossThree.ghost:__init()
 end
 
 function bossThree.ghost:draw()
-	graphics.setPixelEffect(Base.circleShader)
 	graphics.setColor(ColorManager.getComposedColor(self.variance, nil, self.coloreffect))
 	graphics.circle('fill', self.position[1], self.position[2], self.size)
-	graphics.setPixelEffect()
 end
 
 function bossThree.ghost:update( dt )

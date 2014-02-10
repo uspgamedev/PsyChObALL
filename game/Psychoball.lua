@@ -14,7 +14,6 @@ Psychoball = CircleEffect:new {
 	index = false,
 	canBeHit = true,
 	pseudoDied = false,
-	spriteBatch = false,
 	ultraCounter = 0,
 	continuesUsed = 0,
 	__type = 'Psychoball'

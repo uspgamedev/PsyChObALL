@@ -1,7 +1,6 @@
 snake = Body:new {
 	size = 17,
 	segmentsN = 5,
-	spriteBatch = false,
 	shader = Base.circleShader,
 	vulnerable = true,
 	__type = 'snake'

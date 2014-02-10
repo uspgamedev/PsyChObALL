@@ -4,7 +4,6 @@ glitchball = Body:new {
 	mode = 'line',
 	linewidth = 10,
 	shader = Base.circleShader,
-	spriteBatch = false,
 	__type = "glitchball"
 }
 

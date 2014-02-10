@@ -8,7 +8,6 @@ bossOne = CircleEffect:new {
 	index = false,
 	alpha = 255,
 	mode = 'fill',
-	spriteBatch = false,
 	sizeGrowth = 0,
 	shader = Base.circleShader,
 	maxsize = width,

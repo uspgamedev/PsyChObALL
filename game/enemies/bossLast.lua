@@ -6,7 +6,6 @@ bossLast = Body:new {
 	visible = true,
 	maxhealth = 10,
 	collides = true,
-	spriteBatch = false,
 	ord = 8,
 	angle = nil, --VarTimer
 	__type = 'bossLast'

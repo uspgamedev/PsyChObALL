@@ -39,33 +39,30 @@ circleShader = love.graphics.newPixelEffect [[
 	extern number min;
 	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
 		number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
-		if(min == 0) {
-		   if(dist > .25) color[3] = 0;
-			return color;
-		}
 		if(dist > .25	|| dist < min) color[3] = 0;
 		return color;
 	}
 ]]
 circleShader:send("min", 0)
 
-circleSpriteBatch = love.graphics.newSpriteBatch(pixel, 500, 'stream')
 
 local lineWidth = 1
 _G.graphics = {
 	arc = fixPosIgnoreOne(love.graphics.arc),
 	circle = function ( mode, x, y, r )
+		local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 		if Cheats.image.enabled then
-			local _, __, __, a = graphics.getColor()
-			if not Cheats.image.painted then graphics.setColor(255, 255, 255, a) end
-			graphics.draw(Cheats.image.image, x - r, y - r, 
-				0, 2*r / Cheats.image.image:getWidth(), 2*r / Cheats.image.image:getHeight())
+			if not Cheats.image.painted then
+				local _, __, ___, a = graphics.getColor()
+				graphics.setColor(255, 255, 255, a)
+			end
+			love.graphics.draw(Cheats.image.image, xFixed - rFixed, yFixed - rFixed, 
+				0, 2 * rFixed / Cheats.image.image:getWidth(), 2 * rFixed / Cheats.image.image:getHeight())
 		else
 			-- assumes Base.circleShader is being used
-			local xFixed, yFixed, rFixed = x*ratio, y*ratio, r*ratio
 			if mode == 'line' then
 				local min = lineWidth*ratio + 1
-				min = (((rFixed - min)/(rFixed))^2)/4
+				min = (((rFixed - min)/(rFixed))*((rFixed - min)/(rFixed)))/4
 				if love.graphics.getLineWidth() > 1 then print 'asd' end
 				circleShader:send('min', min)
 				love.graphics.draw(pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)

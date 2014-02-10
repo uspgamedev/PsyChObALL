@@ -9,7 +9,6 @@ bossFour = Body:new{
 	basespeed = 1.5*v,
 	maxhealth = 60,
 	vulnerable = false,
-	spriteBatch = false,
 	shader = Base.circleShader,
 	linewidth = 1,
 	ord = 6,
@@ -385,7 +384,6 @@ end
 
 function bossFour:prepare( enemy )
 	if not self.pool then return end
-	enemy.spriteBatch = false
 	enemy.update = self.updateFunc
 	enemy:freeWarning()
 	self.pool[#self.pool + 1] = enemy

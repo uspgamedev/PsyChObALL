@@ -2,7 +2,6 @@ ImageBody = Body:new {
 	image = nil,
 	bodies = {},
 	scale = 1,
-	spriteBatch = false,
 	mode = 'none',
 	__type = 'ImageBody'
 }

@@ -3,8 +3,6 @@ seeker = Body:new {
 	timeout = 10,
 	seek = true,
 	health = 3,
-	spriteBatch = false,
-	shader = Base.circleShader,
 	__type = 'seeker'
 }
 

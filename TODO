@@ -3,7 +3,6 @@ Important
 	- Refactor EVERYTHING
 		- Redo score/level/allotherstats saving -- Almost done
 	- Refactor Continues
-	- Make game easier (but still hard...)
 
 Bugs
 	-	When cooshing a level on practice, fading out of the main is weird and sudden
@@ -11,6 +10,7 @@ Bugs
 	- Tutorial does not initiate correctly the first time
 		- Has to save "played it before" >>when you enter the tutorial the first time<<
 		- Tutorial has to appear the first time whether you choose survival or adventure mode
+	- No LSD mode not working
 
 Probable's
 	- On death special kind of ultrablast(if its not your final life):
@@ -20,6 +20,12 @@ Probable's
 
 TODO for next version:
 	-CONTROLLER SUPPORT
+	- Make game easier (but still hard...)
+	- Boss 3
+		- the boss shouldn't start shooting right away
+		- The 'food' should be easier to kill
+	- Boss 4
+		- Make sure it has suffered certain damage before 'reloading'
 	- On boss 1, instead of an exclamation mark to sinalize the change between his phase 1 and 2, just make him grow and reduce a bit (while doing that becomes invunerable, maybe with shades of gray that then 		go out to be the next color)
 	- Brainstorm about
 		- New enemies, formations, boss behaviors for Levels 5 and 6

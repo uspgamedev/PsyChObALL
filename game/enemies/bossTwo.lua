@@ -11,7 +11,7 @@ bossTwo = CircleEffect:new {
 	mode = 'fill',
 	sizeGrowth = 0,
 	vulnerable = true,
-	spriteBatch = false,
+	shader = Base.circleShader,
 	maxsize = width,
 	ord = 7,
 	__type = 'bossTwo'
@@ -448,7 +448,6 @@ function bossTwo.behaviors.final( self )
 end
 
 function bossTwo:draw()
-	graphics.setPixelEffect(Base.circleShader)
 	local xt, yt = self.position:unpack()
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
@@ -463,7 +462,6 @@ function bossTwo:draw()
 	graphics.circle(self.mode, xt - bp, yt + bp, self.size)
 	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.ballscoloreffects[4]))
 	graphics.circle(self.mode, xt + bp, yt + bp, self.size)
-	graphics.setPixelEffect()
 end
 
 function bossTwo:collides( v, n )
@@ -592,7 +590,6 @@ bossTwo.turret = Body:new {
 	turretnum = 4,
 	ballscoloreffect = ColorManager.getColorEffect(175, 0, 0, 40),
 	coloreffect = ColorManager.noLSDEffect,
-	spriteBatch = false,
 	attached = true,
 	__type = 'bossTwoTurret'
 }

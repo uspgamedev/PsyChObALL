@@ -230,6 +230,7 @@ function love.draw()
 		paintable:drawComponents()
 	end
 
+
 	--[[Drawing Game Objects]]
 	if onGame() then
 		drawShootingDirection()

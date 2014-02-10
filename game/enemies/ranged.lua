@@ -6,7 +6,6 @@ ranged = Body:new {
 	life = 5,
 	timeout = 10,
 	timeToShoot = 1,
-	spriteBatch = false,
 	shader = Base.circleShader,
 	ord = 6,
 	__type = 'ranged'

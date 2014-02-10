@@ -100,7 +100,7 @@ function keypressed( key )
 				local effectCount = 0
 				for _, __ in pairs(Effect.bodies) do effectCount = effectCount + 1 end
 				print(effectCount)
-			elseif key == 'r' then timefactor = 1
+			elseif key == 'o' then timefactor = 1
 			elseif key == 'j' then Shot.shotnum = Shot.shotnum == 1 and 10 or 1
 			end
 		end

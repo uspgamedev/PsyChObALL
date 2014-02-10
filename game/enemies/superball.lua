@@ -5,7 +5,6 @@ superball = Body:new {
 	timeout = 40,
 	collides = true,
 	shader = Base.circleShader,
-	spriteBatch = false,
 	ord = 6,
 	__type = 'superball'
 }

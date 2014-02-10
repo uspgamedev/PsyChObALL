@@ -3,7 +3,6 @@ Warning = Body:new {
 	piece = .15,
 	lineWidth = 1,
 	angle = 0,
-	spriteBatch = false,
 	bodies = {},
 	__type = 'Warning'
 }
