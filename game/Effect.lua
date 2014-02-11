@@ -3,49 +3,46 @@ Effect = Body:new {
 	size	 = 1.7,
 	__type   = 'Effect',
 	ord = 1,
-	bodies = {}
+	bodies = Group:new{}
 }
 
 Body.makeClass(Effect)
 
-function Effect:start()
-	Body.start(self)
-	self.etc = 0
-end
-
 function Effect:update(dt)
 	Body.update(self, dt)
-	self.etc = self.etc + dt
+	if not self.alive then return end
+	self.time = self.time + dt
 
-	self.delete = self.delete or self.etc > self.timetogo
-end
-
-local ceil, random = math.ceil, math.random
-function Effect.createEffects(based_on, times)
-	times = ceil(times/2)
-	--local speedinfluence = based_on.speed * .6
-	if (based_on.alpha or (based_on.alphaFollows and based_on.alphaFollows.var) or 1) == 0 then return end
-	local effs = Effect.bodies
-	for i = 1, times do
-		local e = Effect:new{
-			position = based_on.position + {based_on.size * (2 * random() - 1), based_on.size * (2 * random() - 1)},
-			variance = based_on.variance,
-			coloreffect = based_on.coloreffect,
-			alpha = based_on.alpha,
-			alphaFollows = based_on.alphaFollows
-		}
-
-		e.speed:set(e.position):sub(based_on.position):normalize():mult(random() * v, random() * v)
-
-		e.timetogo = random(300,1000) / 1000
-		e:start()
-		
-		effs[#effs + 1] = e
+	if self.time > self.expireTime then
+		self:kill()
 	end
 end
 
-function Effect:handleDelete()
-	Body.handleDelete(self)
+local ceil, random = math.ceil, math.random
+function Effect:recycle( based_on )
+	Body.recycle(self)
+
+	self.position:set(based_on.position):add(based_on.size * (2 * random() - 1), based_on.size * (2 * random() - 1))
+	self.variance = based_on.variance
+	self.coloreffect = based_on.coloreffect
+	self.alpha = based_on.alpha
+	self.alphaFollows = based_on.alphaFollows
+
+	self.size = Effect.size
+
+	self.speed:set(self.position):sub(based_on.position):normalize():mult(random() * v, random() * v)
+
+	self.expireTime = .3 + random() * .7
+	self.time = 0
+
+	return self
+end
+
+function Effect.createEffects( based_on, times )
+	times = ceil(times/2)
+	if (based_on.alpha or (based_on.alphaFollows and based_on.alphaFollows.var) or 1) == 0 then return end
+
+	Effect.bodies:recycleObjects(times, based_on)
 end
 
 function Effect:draw()

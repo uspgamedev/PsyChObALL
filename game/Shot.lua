@@ -1,11 +1,10 @@
 Shot = Body:new {
-	collides = false,
 	size 	 = 4,
 	variance = 0,
 	explosionEffects = true,
 	shader = Base.circleShader,
 	shotnum = 1,
-	bodies = {},
+	bodies = Group:new{},
 	__type   = 'Shot'
 }
 
@@ -19,19 +18,7 @@ function Shot.init()
 	}
 
 	function Shot.timer:funcToCall() -- continues shooting when you hold the mouse
-		for i = 1, Shot.shotnum do
-			if usingjoystick then
-				Shot:new {
-					position = psycho.position:clone(),
-					speed	 = Vector:new{joystick.getAxis(1, 5), joystick.getAxis(1, 4)}:normalize():mult(3*v, 3*v)
-					}:register()
-			else
-				Shot:new {
-					position = psycho.position:clone(),
-					speed	 = Vector:new {mouse.getPosition()}:sub(psycho.position):normalize():mult(3*v, 3*v)
-					}:register()
-			end
-		end
+		Shot.bodies:recycleObjects(Shot.shotnum)
 	end
 
 	function Shot.timer:handleReset()
@@ -39,13 +26,25 @@ function Shot.init()
 	end
 end
 
-function Shot:handleDelete()
-	Body.handleDelete(self)
-	if self.explosionEffects then Effect.createEffects(self, 7) end
-	if not self.collides then Effect.createEffects(self, 7) end
+function Shot:recycle()
+	Body.recycle(self)
+
+	self.position:set(psycho.position)
+	
+	self.explosionEffects = Shot.explosionEffects
+	self.size = Shot.size
+
+	if usingjoystick then
+		self.speed:set(joystick.getAxis(1, 5), joystick.getAxis(1, 4)):normalize():mult(3*v, 3*v)
+	else
+		self.speed:set(mouse.getPosition()):sub(psycho.position):normalize():mult(3*v, 3*v)
+	end
+
+	return self
 end
 
-function Shot:update(dt)
-	Body.update(self, dt)
-	self.delete = self.delete or self.collides
+function Shot:kill()
+	if not self.alive then return end
+	Body.kill(self)
+	if self.explosionEffects then Effect.createEffects(self, 7) end
 end

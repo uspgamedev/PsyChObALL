@@ -10,7 +10,7 @@ function RecordsMenu:load()
 		position = Vector:new {width - 100, height - 100},
 		text = "Back",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
+		pressed = function() MenuManager:changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}
 
 	self:add(backButton)

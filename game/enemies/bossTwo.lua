@@ -12,7 +12,7 @@ bossTwo = CircleEffect:new {
 	sizeGrowth = 0,
 	vulnerable = true,
 	shader = Base.circleShader,
-	maxsize = width,
+	maxSize = width,
 	ord = 7,
 	__type = 'bossTwo'
 }
@@ -573,7 +573,7 @@ function bossTwo:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and (self:collides(psycho, 1) or self:collides(psycho, 2) or self:collides(psycho, 3) or self:collides(psycho, 4)) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 end
@@ -660,7 +660,7 @@ function bossTwo.turret:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 	self.position:sub(self.bossTwopos)

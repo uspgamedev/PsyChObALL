@@ -1,15 +1,21 @@
+require 'menus.MainMenu'
+
 module('UI', Base.globalize)
 
 function init()
 	resetpass = Cheats.password 'reset'
 
-	restartMenu()
+	resetVars()
+	Timer.closeOldTimers()
+	if SoundManager.currentsong ~= SoundManager.menusong then
+		SoundManager.changeSong(SoundManager.menusong)
+	end
 end
 
 function restartMenu()
 	resetVars()
 	Timer.closeOldTimers()
-	MenuManager.changeToMenu(MenuManager.MainMenu, MenuTransitions.Fade)
+	Game.switchState(MenuManager)
 	if SoundManager.currentsong ~= SoundManager.menusong then
 		SoundManager.changeSong(SoundManager.menusong)
 	end
@@ -25,14 +31,6 @@ end
 
 function resetPauseText()
 	pauseMessage = nil
-end
-
-function mousepressed( x, y, btn )
-	Button.mousepressed(x, y, btn)
-end
-
-function mousereleased( x, y, btn )
-	Button.mousereleased(x, y, btn)
 end
 
 function keypressed( key )

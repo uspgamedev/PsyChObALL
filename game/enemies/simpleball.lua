@@ -24,7 +24,7 @@ function simpleball:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 
@@ -35,7 +35,7 @@ function simpleball:manageShotCollision( shot )
 	shot.collides = true
 	shot.explosionEffects = false
 	self.collides = true
-	self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
+	self.causeOfDeath = shot.isUltraShot and 'ultrashot' or 'shot'
 end
 
 function simpleball:handleDelete()

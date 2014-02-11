@@ -10,7 +10,7 @@ bossThree = Body:new{
 	vulnerable = true,
 	segmentsN = 9,
 	shader = Base.circleShader,
-	maxsize = width,
+	maxSize = width,
 	visible = true,
 	ord = 6,
 	__type = 'bossThree'
@@ -246,7 +246,7 @@ function bossThree.behaviors.fourth( self )
 					for _, g in pairs(bossThree.bodies) do
 						if g.__type == 'bossThreeghost' then
 							g.ring.sizeGrowth = 30
-							g.ring.desiredsize = g.size*3
+							g.ring.growToSize = g.size*3
 						end
 					end
 					Timer:new{
@@ -422,7 +422,7 @@ function bossThree:update( dt )
 		end
 
 		if psycho.canBeHit and not DeathManager.gameLost and Base.collides(s.position, self.size, psycho.position, psycho.size) then
-			psycho.diereason = "shot"
+			psycho.causeOfDeath = "shot"
 			DeathManager.manageDeath()
 		end
 
@@ -779,7 +779,7 @@ function bossThree.ghost:update( dt )
 	elseif self.y - self.size < 0  then self.speed:set(nil,  abs(self.Vy)) end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 

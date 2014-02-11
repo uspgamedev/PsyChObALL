@@ -1,5 +1,5 @@
 MainMenu = Menu:new {
-	index = mainmenu
+	index = 1
 }
 
 function MainMenu:load()
@@ -15,7 +15,7 @@ function MainMenu:load()
 	function playButton:pressed()
 		self.visible = false
 		Effect.createEffects(self, 50)
-		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
+		MenuManager:changeToMenu(nil, MenuTransitions.Fade)
 		if not filesystem.exists 'config' then
 			FileManager.writeConfig()
 			reloadStory('Tutorial', true)
@@ -35,7 +35,7 @@ function MainMenu:load()
 	function storyButton:pressed()
 		self.visible = false
 		Effect.createEffects(self, 50)
-		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
+		MenuManager:changeToMenu(nil, MenuTransitions.Fade)
 		if not filesystem.exists 'config' then
 			FileManager.writeConfig()
 			reloadStory('Tutorial', true)
@@ -50,7 +50,7 @@ function MainMenu:load()
 		position = Vector:new {width - 100, height - 100},
 		text = "Controls",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
+		pressed = function() MenuManager:changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}
 
 	local testingButton = Button:new {
@@ -58,7 +58,7 @@ function MainMenu:load()
 		position = Vector:new{width/2, height - 100},
 		text = "Practice",
 		fontsize = 15,
-		pressed = function() MenuManager.changeToMenu(PracticeMenus[1], MenuTransitions.Slide:setDir('up/down', 1)) end
+		pressed = function() MenuManager:changeToMenu(PracticeMenus[1], MenuTransitions.Slide:setDir('up/down', 1)) end
 	}
 
 	local recordsButton = Button:new {
@@ -66,7 +66,7 @@ function MainMenu:load()
 		position = Vector:new {100, height - 100},
 		text = "Stats",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(RecordsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
+		pressed = function() MenuManager:changeToMenu(RecordsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
 	for _, component in ipairs {playButton, testingButton, storyButton, controlsButton, recordsButton} do
@@ -74,7 +74,8 @@ function MainMenu:load()
 	end
 end
 
-function MainMenu.drawMenu()
+function MainMenu:draw()
+	Menu.draw(self)
 	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144, MainMenu.alphaFollows.var))
 	graphics.setFont(Base.getFont(12))
 	graphics.print("v" .. version, width/2 - 10, 685)
@@ -97,5 +98,3 @@ function MainMenu.drawMenu()
 	graphics.draw(logo, (width - logo:getWidth()/4)/2, 75, nil, 0.25, 0.20)
 	graphics.setFont(Base.getFont(12))
 end
-
-MainMenu:addDrawablePart(MainMenu.drawMenu)

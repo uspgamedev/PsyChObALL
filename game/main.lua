@@ -22,6 +22,9 @@ require "ImageBody"
 require "Enemy"
 require "Shot"
 require "Warning"
+require "SplashState"
+require "base.Game"
+require "SurvivalState"
 
 function love.load()
 	initBase()
@@ -29,15 +32,15 @@ function love.load()
 	UI.init()
 
 	mouse.setGrab(false)
+	Game.switchState(SplashState)
 end
 
 function initBase()
 	-- [[Initing Variables]]
-	v = 240 --main velocity of everything
+	v = 240 -- main velocity of everything -- REMOVE THIS PLEASE IT IS UGLY
 	totalRunningTime = 0
 
 	-- state 'constants'
-	splashscreen = -1
 	recordsmenu  = 0 
 	mainmenu = 1
 	tutorialmenu = 2
@@ -78,9 +81,6 @@ function initBase()
 	
 	-- [[Loading Resources]]
 	logo = graphics.newImage 'resources/LogoBeta.png'
-	splash = graphics.newImage 'resources/Marvellous Soft.png'
-	splashtimer = Timer:new{timelimit = 1.75, running = true, persistent = true, onceOnly = true, pausable = false, 
-		funcToCall = function() end}
 
 	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
 	version = '1.0.1 indev'
@@ -139,7 +139,7 @@ function resetVars()
 	if notclearcircleeffect then notclearcircleeffect = false
 	else CircleEffect:clear() end
 	Enemy:clear()
-	Enemies:clear()
+	--Enemies:clear()
 	Warning:clear()
 	Text:clear()
 	ImageBody:clear()
@@ -155,23 +155,11 @@ function resetVars()
 end
 
 function reloadSurvival()
-	SoundManager.changeSong(SoundManager.survivalsong)
-	ColorManager.currentEffect = nil
-	if state == survival then Effect:clear() end
-	state = survival
-	Enemy.addtimer:funcToCall()
-	resetVars()
-	Timer.closeOldTimers()
-
-	SoundManager.restart()
-	Enemies.restartSurvival()
-	Enemy.addtimer:start(1.5)
-	Enemy.releasetimer:start(.7)
-
-	mouse.setGrab(true)
+	Game.switchState(SurvivalState)
 end
 
 function reloadStory( name, reloadEverything )
+	Game.switchState(nil)
 	if name and name ~= 'Tutorial' and name > RecordsManager.records.story.lastLevel then RecordsManager.records.story.lastLevel = name end
 	if psycho.pseudoDied then
 		psycho.pseudoDied = false
@@ -217,32 +205,15 @@ function love.draw()
 	graphics.setFont(Base.getFont(12))
 
 	drawBackground()
-	
-	if splashtimer.running then
-		graphics.setColor(255,255,255,255)
-		graphics.rectangle("fill", 0, 0, width, height) --background color
-		graphics.draw(splash, 100, 80, 0, .55, .55)
-		return
-	end
 
+	Game.draw()
+	
 	--[[End of setting camera]]
 	for _, paintable in pairs(paintables) do
 		paintable:drawComponents()
 	end
 
-
-	--[[Drawing Game Objects]]
-	if onGame() then
-		drawShootingDirection()
-		--drawing psychoball
-		if not Cheats.invisible then
-			psycho:draw()
-		end
-	end
-	--[[End of Drawing Game Objects]]
-
 	UI.draw()
-	MenuManager.draw()
 	Psychoball.additionalDrawing()
 end
 
@@ -265,37 +236,13 @@ function drawBackground()
 	graphics.draw(Base.pixel, 0, 0, 0, width, height) -- background color
 end
 
-function drawShootingDirection()
-	if DeathManager.gameLost or psycho.pseudoDied then return end
-
-	graphics.setLineWidth(1)
-	local color = ColorManager.getComposedColor(2)
-	graphics.setColor(color)
-	if usingjoystick then
-		color[4] = 60 -- alpha
-		graphics.setColor(color)
-		local a1, a2 = joystick.getAxis(1, 4), joystick.getAxis(1, 5)
-		if a1 == 0 and a2 == 0 then return end
-		local x = a2 > 0 and width or 0
-		-- Lazyness Warning: drawing a huge line to avoid having to think about the exact calculations!
-		graphics.line(psycho.x, psycho.y, a2 * 1200 + psycho.x, a1 * 1200 + psycho.y) 
-	else
-		if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
-		graphics.circle("line", mouseX, mouseY, 5)
-		color[4] = 60 -- alpha
-		graphics.setColor(color)
-		local x = mouseX > psycho.x and width or 0
-		graphics.setPixelEffect()
-		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((mouseY - psycho.y)/(mouseX - psycho.x)))
-	end
-	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
-end
-
 function love.update(dt)
 	if dt > 0.03333 then dt = 0.03333 end
 	totalRunningTime = totalRunningTime + dt
 	mouseX, mouseY = mouse.getPosition()
 	isPaused = (paused or onMenu())
+
+	Game.update(dt)
 
 	Timer.updatetimers(dt, timefactor, isPaused, DeathManager.gameLost)
 	
@@ -307,29 +254,25 @@ function love.update(dt)
 	end
 
 	updateBodies(dt)
-	MenuManager.update(dt)
 end
 
 function updateBodies( dt )
 	for i, v in pairs(paintables) do
-		if not v.updateComponents then print('error on ' .. i) table.foreach(v, print) error() end
 		v:updateComponents(dt)
 	end
 end
 
 function love.mousepressed(x, y, btn)
-	if splashtimer.running then return end
 	x, y  = x/ratio, y/ratio
+	Game.mousePressed(x, y, btn)
 	if btn == 'l' and onGame() and not (DeathManager.gameLost or paused or psycho.pseudoDied) then
 		Shot.timer:start(Shot.timer.timelimit) --starts shooting already
 	end
-	UI.mousepressed(x, y, btn)
 end
 
 function love.mousereleased(x, y, btn)
-	if splashtimer.running then return end
 	x, y  = x/ratio, y/ratio		
-	UI.mousereleased(x, y, btn)
+	Game.mouseReleased(x, y, btn)
 	if btn == 'l' and onGame() then
 		Shot.timer:stop()
 	end
@@ -346,10 +289,9 @@ function love.joystickreleased( joynum, btn )
 end
 
 function love.keypressed(key)
-	if splashtimer.running then return end
-	keyspressed[key] = true
+	Game.keyPressed(key)
 
-	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
+	if Game.keyboard.isPressed['lalt'] and Game.keyboard.isPressed['f4'] then event.push('quit') end
 
 	if not DeathManager.gameLost and onGame() then 
 		psycho:keyPressed(key)
@@ -361,8 +303,8 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
-	if not keyspressed[key] then return
-	else keyspressed[key] = false end
+	if not Game.keyboard.isPressed[key] then return end
+	Game.keyReleased(key)
 
 	if not DeathManager.gameLost and onGame() then
 		psycho:keyReleased(key)

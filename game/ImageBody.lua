@@ -1,6 +1,6 @@
 ImageBody = Body:new {
 	image = nil,
-	bodies = {},
+	bodies = Group:new{},
 	scale = 1,
 	mode = 'none',
 	__type = 'ImageBody'

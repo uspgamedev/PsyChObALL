@@ -12,9 +12,9 @@ function PracticeMenu:load( levelN )
 	}
 
 	if levelN > 1 then
-		back.pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('diagonal1', -1)) end
+		back.pressed = function() MenuManager:changeToMenu(MainMenu, MenuTransitions.Slide:setDir('diagonal1', -1)) end
 	else
-		back.pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('up/down', -1)) end
+		back.pressed = function() MenuManager:changeToMenu(MainMenu, MenuTransitions.Slide:setDir('up/down', -1)) end
 	end
 
 	self:add(back)
@@ -26,7 +26,7 @@ function PracticeMenu:load( levelN )
 			text = " ", -- actual text '>' is displayed in drawRightArrow
 			fontsize = 55,
 			pressed = function ()
-				MenuManager.changeToMenu(PracticeMenus[levelN + 1], MenuTransitions.Slide:setDir('right/left', 1))
+				MenuManager:changeToMenu(PracticeMenus[levelN + 1], MenuTransitions.Slide:setDir('right/left', 1))
 			end
 		}
 		self:add(nextB)
@@ -36,7 +36,7 @@ function PracticeMenu:load( levelN )
 	local goToLevelFunc = function (self)
 		self.visible = false
 		Effect.createEffects(self, 40)
-		MenuManager.changeToMenu(nil, MenuTransitions.Fade)
+		MenuManager:changeToMenu(nil, MenuTransitions.Fade)
 		reloadStory(self.levelName, true)
 		--Levels.currentLevel.wasSelected = true
 	end
@@ -48,7 +48,7 @@ function PracticeMenu:load( levelN )
 			text = " ", -- actual text '<' is displayed in drawLeftArrow
 			fontsize = 55,
 			pressed = function ()
-				MenuManager.changeToMenu(PracticeMenus[levelN - 1], MenuTransitions.Slide:setDir('right/left', -1))
+				MenuManager:changeToMenu(PracticeMenus[levelN - 1], MenuTransitions.Slide:setDir('right/left', -1))
 			end
 		}
 		self:add(prevB)

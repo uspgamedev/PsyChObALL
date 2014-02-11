@@ -10,7 +10,7 @@ function ControlsMenu:load()
 		position = Vector:new {100, height - 100},
 		text = "Back",
 		fontsize = 20,
-		pressed = function() MenuManager.changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
+		pressed = function() MenuManager:changeToMenu(MainMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
 	local forwardButton = Button:new {
@@ -18,7 +18,7 @@ function ControlsMenu:load()
 		fontsize = 55,
 		text = '>',
 		position = Vector:new {width/2 + 150, height - 100},
-		pressed = function() MenuManager.changeToMenu(ControlsMenu2, MenuTransitions.Slide:setDir('right/left', 1)) end
+		pressed = function() MenuManager:changeToMenu(ControlsMenu2, MenuTransitions.Slide:setDir('right/left', 1)) end
 	}	
 
 	self:add(backButton)
@@ -79,7 +79,7 @@ function ControlsMenu2:load()
 		fontsize = 55,
 		text = '<',
 		position = Vector:new {width/2 - 150, height - 100},
-		pressed = function() MenuManager.changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
+		pressed = function() MenuManager:changeToMenu(ControlsMenu, MenuTransitions.Slide:setDir('right/left', -1)) end
 	}
 
 	self:add(backButton)

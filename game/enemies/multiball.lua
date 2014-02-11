@@ -26,7 +26,7 @@ function multiball:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 
@@ -37,13 +37,13 @@ function multiball:manageShotCollision( shot )
 	shot.collides = true
 	shot.explosionEffects = false
 	self.collides = true
-	self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
+	self.causeOfDeath = shot.isUltraShot and 'ultrashot' or 'shot'
 end
 
 function multiball:handleDelete()
 	Body.handleDelete(self)
 	Effect.createEffects(self, 20)
-	if self.diereason ~= "shot" then return end
+	if self.causeOfDeath ~= "shot" then return end
 	local speed = self.speed:length()
 	for i = 1, self.divideN do
 		local e = (self.divideType or Enemies.simpleball):new(lux.object.clone(self.args))

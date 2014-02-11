@@ -1,34 +1,35 @@
 CircleEffect = Body:new {
 	alpha = 10,
-	maxsize = width / 1.9,
+	maxSize = width / 1.9,
 	mode = 'line',
 	__type = 'CircleEffect',
 	linewidth = 4,
 	shader = Base.circleShader,
 	ord = 3,
-	bodies = {}
+	bodies = Group:new{}
 }
 
 Body.makeClass(CircleEffect)
 
-function CircleEffect:__init()
-	if self.based_on then --circle to be based on
-		self.position = self.based_on.position:clone{}
-		self.size = self.based_on.size
-		self.variance = self.based_on.variance
-		self.based_on = nil
+function CircleEffect:recycle( based_on )
+	Body.recycle(self)
+
+	if based_on then
+		self.position:set(based_on.position)
+		self.size = based_on.size
+		self.variance = based_on.variance
 	end
+
+	self.alpha = CircleEffect.alpha
+	self.maxSize = CircleEffect.maxSize
+	self.mode = CircleEffect.mode
+	self.linewidth = CircleEffect.linewidth
+	self.growToSize = CircleEffect.growToSize -- nil
 	
-	self.sizeGrowth = self.sizeGrowth or math.random(120, 160)		
-	self.variance = self.variance or math.random(0, 100*ColorManager.colorCycleTime) / 100
-	if self.index ~= nil then
-		if self.index ~= false then
-			self:start()
-			CircleEffect.bodies[self.index] = self
-		end
-	else
-		self:register()
-	end
+	self.sizeGrowth = math.random(120, 160)
+	self.variance = math.random(0, 100*ColorManager.colorCycleTime) / 100
+
+	return self
 end
 
 function CircleEffect.init()
@@ -39,19 +40,15 @@ function CircleEffect.init()
 	}
 
 	function CircleEffect.timer:funcToCall() -- releases cirleEffects
-		if onGame() then
-			CircleEffect:new {
-				based_on = psycho
-			}
+		if onGame() and not DeathManager.gameLost then
+			CircleEffect.bodies:getFirstAvailable():recycle(psycho)
 		end
 		if state == survival then
-			for i,v in pairs(Enemy.bodies) do
-				if v.size >= 15 and math.random() < .5 --[[reducing chance]] then 
-					CircleEffect:new{
-						based_on = v
-					} 
+			Enemy.bodies:forEachAlive(function(enemy)
+				if enemy.size >= 15 and math.random() < .5 --[[reducing chance]] then
+					CircleEffect.bodies:getFirstAvailable():recycle(enemy)
 				end
-			end
+			end)
 		end
 	end
 end
@@ -63,20 +60,25 @@ end
 
 function CircleEffect:update(dt)
 	self.size = self.size + self.sizeGrowth * dt
-	if self.desiredsize then
+	if self.growToSize then
 		if self.sizeGrowth > 0 then
-			if self.size >= self.desiredsize then
-				self.size = self.desiredsize
+			if self.size >= self.growToSize then
+				self.size = self.growToSize
 				self.sizeGrowth = 0
-				self.desiredsize = nil
+				self.growToSize = nil
 			end
 		else
-			if self.size <= self.desiredsize then
-				self.size = self.desiredsize
+			if self.size <= self.growToSize then
+				self.size = self.growToSize
 				self.sizeGrowth = 0
-				self.desiredsize = nil
+				self.growToSize = nil
 			end
 		end
 	end
-	self.delete = self.delete or self.size < 0 or self.size > self.maxsize
+
+	if (self.size < 0 or self.size > self.maxSize) then self:kill() end
+end
+
+function CircleEffect:kill()
+	Body.kill(self)
 end

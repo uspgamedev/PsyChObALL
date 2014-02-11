@@ -5,7 +5,7 @@ Text = Body:new {
 	printmethod = graphics.print,
 	__type = 'Text',
 	mode = 'none',
-	bodies = {}
+	bodies = Group:new{}
 }
 
 Body.makeClass(Text)

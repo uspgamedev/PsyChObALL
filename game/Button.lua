@@ -4,10 +4,8 @@ Button = Body:new {
 	onHover = false,
 	__type = 'Button',
 	visible = true,
-	bodies = {},
-	allbuttons = {}
+	bodies = {}
 }
-setmetatable(Button.allbuttons, {__mode = 'v'})
 Body.makeClass(Button)
 
 function Button:__init()
@@ -25,17 +23,17 @@ function Button:__init()
 		Effect.createEffects(self, 1)
 	end
 
-	self.hoverring = CircleEffect:new {
-		size = .1,
-		sizeGrowth = 0,
-		alpha = 255,
-		linewidth = 3,
-		position = self.position,
-		alphaFollows = self.alphaFollows,
-		index = false
-	}
+	self.hoverring = CircleEffect.bodies:getFirstAvailable()
+	self.hoverring.size = .1
+	self.hoverring.sizeGrowth = 0
+	self.hoverring.alpha = 255
+	self.hoverring.linewidth = 3
+	self.hoverring.position:set(self.position)
+	self.hoverring.alphaFollows = self.alphaFollows
 
-	table.insert(Button.allbuttons, self)
+	self.hoverring.update = function(self, dt)
+		self.size = self.size + self.sizeGrowth * dt
+	end
 end
 
 function Button:draw()
@@ -43,14 +41,18 @@ function Button:draw()
 	local color = ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect)
 	graphics.setColor(ColorManager.invertEffect(color))
 	graphics.setFont(Base.getCoolFont(self.fontsize))
-	graphics.printf(self.text, self.ox, self.oy, self.size*2, 'center')
+	graphics.printf(self.text, self.ox, self.oy, self.size * 2, 'center')
 end
 
 function Button:update( dt )
 	if self.hoverring.size > self.size then
 		self.hoverring.size = self.size
 		self.hoverring.sizeGrowth = 0
+	elseif self.hoverring.size <= 0 then
+		self.hoverring.size = 0
+		self.hoverring.sizeGrowth = 0
 	end
+
 	if self.menu ~= state or MenuManager.currentTransition then
 		if self.onHover then 
 			self.onHover = false
@@ -58,6 +60,7 @@ function Button:update( dt )
 		end
 		return
 	end
+
 	if self.onHover ~= ((mouseX - self.x)^2 + (mouseY - self.y)^2 < self.size^2) then
 		self.onHover = not self.onHover
 		self:hover(self.onHover)
@@ -90,13 +93,11 @@ function Button:close()
 	self.effectsBurst:remove()
 end
 
-function Button:hover(hovering)
+function Button:hover( hovering )
 	if hovering then
 		self.effectsBurst:start()
 		self.hoverring.size = math.max(0, self.hoverring.size)
 		self.hoverring.sizeGrowth = 350
-		self.hoverring.delete = false
-		CircleEffect.bodies[self] = self.hoverring
 	else
 		self.effectsBurst:stop()
 		self.hoverring.sizeGrowth = -350
@@ -107,15 +108,22 @@ function Button:isClicked(x, y)
 	return self.menu == state and not MenuManager.currentTransition and ((x-self.x)^2 + (y-self.y)^2) < self.size^2
 end
 
-function Button.mousepressed( x, y, btn )
-	for k, b in pairs(Button.allbuttons) do
-		if b:isClicked(x, y) then
-			b:pressed()
-			return
-		end
+function Button:mousePressed( x, y, btn )
+	if btn == 'l' and self:isClicked(x, y) then
+		self:pressed()
 	end
 end
 
-function Button.mousereleased( x, y, btn )
+function Button:mouseReleased( x, y, btn )
 	
+end
+
+function Button:kill()
+	Body.kill(self)
+
+	self.hoverring.update = nil --restoring everything
+	self.hoverring:kill()
+	self.hoverring = nil
+
+	self.effectsBurst.delete = true
 end

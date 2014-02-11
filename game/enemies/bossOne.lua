@@ -10,7 +10,7 @@ bossOne = CircleEffect:new {
 	mode = 'fill',
 	sizeGrowth = 0,
 	shader = Base.circleShader,
-	maxsize = width,
+	maxSize = width,
 	ord = 7,
 	__type = 'bossOne'
 }
@@ -255,7 +255,7 @@ function bossOne:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 end

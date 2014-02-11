@@ -80,7 +80,7 @@ function seeker:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		self.collides = true
 		DeathManager.manageDeath()
 	end
@@ -94,7 +94,7 @@ function seeker:manageShotCollision( shot )
 	self.health = self.health - 1
 	if self.health == 0 then
 		self.collides = true
-		self.diereason = "shot"
+		self.causeOfDeath = "shot"
 	end
 	local d = self.health/seeker.health
 	self.colors[1].var = .88*255 + (1-d)*.22*255

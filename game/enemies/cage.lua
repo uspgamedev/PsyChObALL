@@ -1,7 +1,7 @@
 cage = CircleEffect:new {
 	size = width,
 	speedN = v*.4,
-	maxsize = width*2,
+	maxSize = width*2,
 	onLocation = true,
 	lastexecuted = 0,
 	alpha = 255,
@@ -17,11 +17,11 @@ function cage:update( dt )
 	CircleEffect.update(self, dt)
 	Body.update(self, dt)
 
-	if self.desiredsize and ((self.sizeGrowth > 0 and self.size > self.desiredsize) 
-		or (self.sizeGrowth < 0 and self.size < self.desiredsize)) then
-		self.size = self.desiredsize
+	if self.growToSize and ((self.sizeGrowth > 0 and self.size > self.growToSize) 
+		or (self.sizeGrowth < 0 and self.size < self.growToSize)) then
+		self.size = self.growToSize
 		self.sizeGrowth = 0
-		self.desiredsize = nil
+		self.growToSize = nil
 		if self.destroy then self.delete = true end
 	end
 
@@ -48,7 +48,7 @@ function cage:doaction( actN )
 	while act do
 		self.lastexecuted = actN
 		if act.size then
-			self.desiredsize = act.size
+			self.growToSize = act.size
 			self.sizeGrowth = math.abs(act.sizeGrowth or cage.sizeGrowth) * Base.sign(act.size - self.size)
 		end
 		if act.speed then
@@ -61,7 +61,7 @@ function cage:doaction( actN )
 			self.speed:set(self.target):sub(self.position):normalize():mult(self.speedN, self.speedN)
 		end
 		if act.destroy then
-			self.desiredsize = width
+			self.growToSize = width
 			self.sizeGrowth = act.sizeGrowth or cage.sizeGrowth
 			self.destroy = true
 		end

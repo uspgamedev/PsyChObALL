@@ -13,7 +13,7 @@ end
 
 function Group:update( dt )
 	for i = self.length, 1, -1 do
-		if self[i].alive then
+		if self[i].alive and self[i].active then
 			self[i]:update(dt)
 		end
 	end
@@ -21,7 +21,7 @@ end
 
 function Group:draw()
 	for i = self.length, 1, -1 do
-		if self[i].alive then
+		if self[i].alive and self[i].active then
 			self[i]:draw()
 		end
 	end
@@ -35,6 +35,22 @@ function Group:kill()
 	end
 end
 
+function Group:forEachAlive( func )
+	for i = 1, self.length, 1 do
+		if self[i].alive and self[i].active then
+			func(self[i])
+		end
+	end
+end
+
+function Group:forEachDead( func ) -- doesn't matter if it is active
+	for i = 1, self.length, 1 do
+		if not self[i].alive then
+			func(self[i])
+		end
+	end
+end
+
 function Group:getFirstAvailable()
 	for i = 1, self.length, 1 do
 		if not self[i].alive then
@@ -42,6 +58,9 @@ function Group:getFirstAvailable()
 			return self[i]
 		end
 	end
+	local obj = self.class:new{}
+	self:add(obj)
+	return obj
 end
 
 function Group:getObjects( n )
@@ -51,8 +70,8 @@ function Group:getObjects( n )
 	for i = 1, self.length, 1 do -- recycling objects that are already dead
 		if not self[i].alive then
 			count = count + 1
-			self[i].alive = true
 			basics[count] = self[i]
+			if count == n then return basics end
 		end
 	end
 
@@ -63,6 +82,25 @@ function Group:getObjects( n )
 	end
 
 	return basics
+end
+
+function Group:recycleObjects(n, ...)
+	local count = 0
+
+	for i = 1, self.length, 1 do -- recycling objects that are already dead
+		if not self[i].alive then
+			count = count + 1
+			self[i]:recycle(...)
+			if count == n then return end
+		end
+	end
+
+	while count < n do -- creating new objects if necessary
+		count = count + 1
+		local obj = self.class:new{}
+		obj:recycle(...)
+		self:add(obj)
+	end
 end
 
 function Group:clearAll() -- clears the group, doesn't kill any bodies
@@ -88,4 +126,10 @@ function Group:clearDead()
 	end
 
 	self.length = newSize
+end
+
+function Group:debug()
+	for i = 1, self.length, 1 do
+		io.write(i, ' -> ', tostring(self[i]), '\n')
+	end
 end

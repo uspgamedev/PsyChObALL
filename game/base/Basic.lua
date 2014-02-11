@@ -1,5 +1,6 @@
 Basic = lux.object.new {
 	alive = true,
+	active = true,
 	__type = 'Basic'
 }
 
@@ -13,4 +14,11 @@ end
 
 function Basic:draw()
 
+end
+
+function Basic:recycle()
+	self.active = true
+	self.alive = true
+	
+	return self
 end

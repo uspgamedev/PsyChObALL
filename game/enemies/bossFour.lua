@@ -5,7 +5,7 @@ bossFour = Body:new{
 	width = 400,
 	height = 300,
 	sizeGrowth = 0,
-	maxsize = width,
+	maxSize = width,
 	basespeed = 1.5*v,
 	maxhealth = 60,
 	vulnerable = false,
@@ -210,7 +210,7 @@ function bossFour.behaviors.third( self )
 		RecordsManager.addScore(500)
 		self.currentBehavior = bossFour.behaviors.gathering
 		self.sizeGrowth = -20
-		self.desiredsize = 20
+		self.growToSize = 20
 		self.cage = nil
 		self.shoottimer:remove()
 		self.replacetimer:remove()
@@ -241,7 +241,7 @@ function bossFour.behaviors.gathering ( self )
 			b.prevdist = b.position:distsqr(self.position)
 		end
 	end
-	if #self.pool == 0 and self.desiredsize == nil and not self.recharging then
+	if #self.pool == 0 and self.growToSize == nil and not self.recharging then
 		RecordsManager.addScore(500)
 		self.currentBehavior = bossFour.behaviors.final
 		self.pool = nil
@@ -307,7 +307,7 @@ function bossFour:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 

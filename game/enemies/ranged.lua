@@ -88,7 +88,7 @@ function ranged:update( dt )
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 
@@ -102,7 +102,7 @@ function ranged:manageShotCollision( shot )
 	self.colorvars[1].var = self.basecolor[1] - ((ranged.life - self.life) / ranged.life) * (self.basecolor[1] - 255)
 	self.colorvars[2].var = self.basecolor[2] - ((ranged.life - self.life) / ranged.life) * self.basecolor[2]
 	self.colorvars[3].var = self.basecolor[3] - ((ranged.life - self.life) / ranged.life) * self.basecolor[3]
-	self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
+	self.causeOfDeath = shot.isUltraShot and 'ultrashot' or 'shot'
 end
 
 function ranged:shoot()
@@ -122,7 +122,7 @@ function ranged:handleDelete()
 	Effect.createEffects(self, 30)
 	self.shotcircle.size = -1
 	self.timeout:remove()
-	if self.diereason == "shot" then
+	if self.causeOfDeath == "shot" then
 		RecordsManager.addScore(25 * self.divideN)
 		self.divideN = self.divideN + 3	
 		self.anglechange = Base.toRadians(360/self.divideN)

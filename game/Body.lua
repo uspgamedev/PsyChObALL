@@ -1,4 +1,5 @@
 require 'base.Basic'
+require 'base.Group'
 
 Body = Basic:new {
 	size = 0,
@@ -42,6 +43,9 @@ end
 function Body.makeClass( subclass )
 	subclass.__newindex = newindex
 	subclass.__index = index
+	if rawget(subclass, 'bodies') then
+		subclass.bodies.class = subclass
+	end
 end
 
 function Body:update( dt )
@@ -53,7 +57,7 @@ function Body:update( dt )
 
 	if (self.x + self.size < 0 and self.Vx <= 0) or (self.x > width + self.size and self.Vx >= 0) or
 		(self.y + self.size < 0 and self.Vy <= 0) or (self.y > height + self.size and self.Vy >= 0) then
-		self.delete = true
+		self:kill()
 	end 
 end
 
@@ -63,7 +67,7 @@ function Body:draw()
 end
 
 function Body:handleDelete()
-	if self.score and self.diereason == 'shot'then RecordsManager.addScore(self.score) end
+	if self.score and self.causeOfDeath == 'shot' then RecordsManager.addScore(self.score) end
 end
 
 function Body:onInit()
@@ -77,16 +81,16 @@ end
 Body.collidesWith = Base.collides
 
 function Body:getWarning()
-	self.warning = Warning:new {
-		based_on = self
-	}
-	Warning.bodies[self] = self.warning
+	if self.warning then self:freeWarning() end
+	self.warning = Warning.bodies:getFirstAvailable():recycle(self)
 	return self.warning
 end
 
 function Body:freeWarning()
-	Warning.bodies[self] = nil
-	self.warning = nil
+	if self.warning then
+		self.warning:kill()
+		self.warning = nil
+	end
 end
 
 function Body:paintOn( p )
@@ -94,42 +98,24 @@ function Body:paintOn( p )
 end
 
 function Body:drawComponents()
+	if not self.bodies.draw then return end -- temporary
 	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect(self.shader) end
-	for _, body in pairs(self.bodies) do
-		body:draw()
-	end
+	self.bodies:draw()
 	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect() end
 end
 
-local todelete = {}
 function Body:updateComponents( dt )
-	for k, body in pairs(self.bodies) do
-		body:update(dt)
-		if body.delete then
-			todelete[#todelete + 1] = k
-		end
-	end
-
-	local n
-	for k = #todelete, 1, -1 do
-		n = todelete[k]
-		self.bodies[n]:handleDelete()
-		self.bodies[n] = nil
-		todelete[k] = nil
-	end
+	if not self.bodies.update then return end -- temporary
+	self.bodies:update(dt)
 end
 
 function Body:clear()
-	for k, b in pairs(self.bodies) do
-		Body.handleDelete(b)
-		self.bodies[k] = nil
-	end
+	self.bodies:clearAll()
 end
 
 function Body:register(...)
 	self:freeWarning()
 	self:start(...)
-	table.insert(self.bodies, self)
 	if self.positionfollows then
 		self.initialtime = RecordsManager.getGameTime()
 		self.initialpos  = self.position:clone()

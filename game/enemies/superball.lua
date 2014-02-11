@@ -109,7 +109,7 @@ function superball:update(dt)
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.diereason = "shot"
+		psycho.causeOfDeath = "shot"
 		DeathManager.manageDeath()
 	end
 end
@@ -124,14 +124,14 @@ function superball:manageShotCollision( shot )
 	self.life = self.life - 4
 	self.lifeCircle.size = self.size + self.life
 	if self.life <= 0 then
-		self.diereason = shot.isUltraShot and 'ultrashot' or 'shot'
+		self.causeOfDeath = shot.isUltraShot and 'ultrashot' or 'shot'
 		self.delete = true
 	end
 end
 
 function superball:handleDelete()
 	Body.handleDelete(self)
-	if self.diereason == 'shot' then RecordsManager.addScore(4*self.originalHeath + 2*self.size) end
+	if self.causeOfDeath == 'shot' then RecordsManager.addScore(4*self.originalHeath + 2*self.size) end
 	Effect.createEffects(self,100)
 	self.lifeCircle.sizeGrowth = -300
 	self.shoottimer:remove()

@@ -24,12 +24,6 @@ function Menu:completeDraw()
 	end
 end
 
-function Menu:draw()
-	for i = self.length, 1, -1 do
-		self[i]:draw()
-	end
-end
-
 function Menu:addDrawablePart( drawFunc )
 	self.drawableParts[drawFunc] = true
 end
@@ -42,4 +36,8 @@ end
 function Menu:close()
 	self:kill()
 	self:clearAll()
+end
+
+function Menu:mousePressed( x, y, btn )
+	self:forEachAlive(function(c) c:mousePressed(x, y, btn) end)
 end
