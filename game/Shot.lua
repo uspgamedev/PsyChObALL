@@ -3,6 +3,7 @@ Shot = Body:new {
 	variance = 0,
 	explosionEffects = true,
 	shader = Base.circleShader,
+	isUltraShot = false,
 	shotnum = 1,
 	bodies = Group:new{},
 	__type   = 'Shot'
@@ -18,7 +19,7 @@ function Shot.init()
 	}
 
 	function Shot.timer:funcToCall() -- continues shooting when you hold the mouse
-		Shot.bodies:recycleObjects(Shot.shotnum)
+		Shot.bodies:reviveObjects(Shot.shotnum)
 	end
 
 	function Shot.timer:handleReset()
@@ -26,13 +27,14 @@ function Shot.init()
 	end
 end
 
-function Shot:recycle()
-	Body.recycle(self)
+function Shot:revive()
+	Body.revive(self)
 
 	self.position:set(psycho.position)
 	
 	self.explosionEffects = Shot.explosionEffects
 	self.size = Shot.size
+	self.isUltraShot = Shot.isUltraShot
 
 	if usingjoystick then
 		self.speed:set(joystick.getAxis(1, 5), joystick.getAxis(1, 4)):normalize():mult(3*v, 3*v)

@@ -19,8 +19,8 @@ function Effect:update(dt)
 end
 
 local ceil, random = math.ceil, math.random
-function Effect:recycle( based_on )
-	Body.recycle(self)
+function Effect:revive( based_on )
+	Body.revive(self)
 
 	self.position:set(based_on.position):add(based_on.size * (2 * random() - 1), based_on.size * (2 * random() - 1))
 	self.variance = based_on.variance
@@ -42,7 +42,7 @@ function Effect.createEffects( based_on, times )
 	times = ceil(times/2)
 	if (based_on.alpha or (based_on.alphaFollows and based_on.alphaFollows.var) or 1) == 0 then return end
 
-	Effect.bodies:recycleObjects(times, based_on)
+	Effect.bodies:reviveObjects(times, based_on)
 end
 
 function Effect:draw()

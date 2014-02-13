@@ -35,6 +35,15 @@ function Group:kill()
 	end
 end
 
+function Group:countAlive()
+	local count = 0
+	for i = self.length, 1, -1 do
+		if self[i].alive then count = count + 1 end
+	end
+
+	return count
+end
+
 function Group:forEachAlive( func )
 	for i = 1, self.length, 1 do
 		if self[i].alive and self[i].active then
@@ -84,13 +93,13 @@ function Group:getObjects( n )
 	return basics
 end
 
-function Group:recycleObjects(n, ...)
+function Group:reviveObjects(n, ...)
 	local count = 0
 
 	for i = 1, self.length, 1 do -- recycling objects that are already dead
 		if not self[i].alive then
 			count = count + 1
-			self[i]:recycle(...)
+			self[i]:revive(...)
 			if count == n then return end
 		end
 	end
@@ -98,7 +107,7 @@ function Group:recycleObjects(n, ...)
 	while count < n do -- creating new objects if necessary
 		count = count + 1
 		local obj = self.class:new{}
-		obj:recycle(...)
+		obj:revive(...)
 		self:add(obj)
 	end
 end

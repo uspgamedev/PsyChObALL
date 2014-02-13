@@ -11,8 +11,8 @@ Body.makeClass(Enemy)
 local sides = {top = 1, up = 1, bottom = 2, down = 2, left = 3, right = 4}
 
 local random = math.random
-function Enemy:recycle( randomize )
-	Body.recycle(self)
+function Enemy:revive( randomize )
+	Body.revive(self)
 
 	self.size = Enemy.size
 	self.causeOfDeath = Enemy.causeOfDeath
@@ -42,46 +42,6 @@ function Enemy:recycle( randomize )
 	return self
 end
 
-function Enemy.init()
-	Enemy.list = List:new{}
-
-	Enemy.addtimer = Timer:new {
-		timelimit = 2,
-		persistent = true
-	}
-	local first = 0
-	function Enemy.addtimer:funcToCall() --adds the enemies to a list
-		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		local e = Enemy.bodies:getFirstAvailable():recycle()
-		e.active = false
-		Enemy.list:push(e)
-	end
-
-	function Enemy.addtimer:handleReset()
-		self:stop()
-	end
-
-	Enemy.releasetimer = Timer:new {
-		timelimit = 2,
-		persistent = true
-	}
-
-	function Enemy.releasetimer:funcToCall() -- actually releases the enemies on screen
-		self.timelimit = .8 + (self.timelimit - .8) / 1.09
-		local e = Enemy.list:pop()
-		if e then
-			e:register()
-			e.active = true
-		else 
-			print 'Enemy missing' 
-		end
-	end
-
-	function Enemy.releasetimer:handleReset()
-		self:stop()
-	end
-end
-
 function Enemy:kill()
 	Body.kill(self)
 
@@ -91,7 +51,7 @@ function Enemy:kill()
 		RecordsManager.addMultiplier(self.size / 30)
 
 		if self.size >= 15 then
-			local c = CircleEffect.bodies:getFirstAvailable():recycle(self)
+			local c = CircleEffect.bodies:getFirstAvailable():revive(self)
 			c.linewidth = 7
 			c.alpha = 80
 			c.sizeGrowth = 600
@@ -103,7 +63,7 @@ function Enemy:kill()
 			local size  = self.size >= 15 and self.size/3 + 5 or 6
 			local enemies = Enemy.bodies:getObjects(times)
 			for i = 1, times do
-				local e = enemies[i]:recycle(false)
+				local e = enemies[i]:revive(false)
 				e.size = size
 				
 				e.position:set(self.position):add(random(self.size), random(self.size))

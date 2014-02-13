@@ -10,8 +10,8 @@ Warning = Body:new {
 Body.makeClass(Warning)
 
 local arctan = math.atan2
-function Warning:recycle( based_on )
-	Body.recycle(self)
+function Warning:revive( based_on )
+	Body.revive(self)
 
 	self.based_on = based_on
 	self.angle = arctan(self.based_on.Vy, self.based_on.Vx)

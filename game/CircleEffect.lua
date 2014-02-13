@@ -11,8 +11,8 @@ CircleEffect = Body:new {
 
 Body.makeClass(CircleEffect)
 
-function CircleEffect:recycle( based_on )
-	Body.recycle(self)
+function CircleEffect:revive( based_on )
+	Body.revive(self)
 
 	if based_on then
 		self.position:set(based_on.position)
@@ -41,12 +41,12 @@ function CircleEffect.init()
 
 	function CircleEffect.timer:funcToCall() -- releases cirleEffects
 		if onGame() and not DeathManager.gameLost then
-			CircleEffect.bodies:getFirstAvailable():recycle(psycho)
+			CircleEffect.bodies:getFirstAvailable():revive(psycho)
 		end
 		if state == survival then
 			Enemy.bodies:forEachAlive(function(enemy)
 				if enemy.size >= 15 and math.random() < .5 --[[reducing chance]] then
-					CircleEffect.bodies:getFirstAvailable():recycle(enemy)
+					CircleEffect.bodies:getFirstAvailable():revive(enemy)
 				end
 			end)
 		end
@@ -77,8 +77,4 @@ function CircleEffect:update(dt)
 	end
 
 	if (self.size < 0 or self.size > self.maxSize) then self:kill() end
-end
-
-function CircleEffect:kill()
-	Body.kill(self)
 end

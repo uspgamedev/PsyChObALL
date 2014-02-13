@@ -95,7 +95,7 @@ function initBase()
 end
 
 function initGameVars()
-	for _, toBeInited in ipairs {RecordsManager, ColorManager, MenuManager, DeathManager, CircleEffect, Enemy, Enemies, Shot, Psychoball} do
+	for _, toBeInited in ipairs {RecordsManager, ColorManager, MenuManager, DeathManager, CircleEffect, Enemies, Shot, Psychoball} do
 		toBeInited.init()
 	end
 		
@@ -128,8 +128,6 @@ function resetVars()
 		psycho.ultraCounter = 3
 	end
 	
-	Enemy.list:clear()
-
 	for _, toReset in ipairs {psycho, RecordsManager} do
 		toReset:reset()
 	end
@@ -139,7 +137,7 @@ function resetVars()
 	if notclearcircleeffect then notclearcircleeffect = false
 	else CircleEffect:clear() end
 	Enemy:clear()
-	--Enemies:clear()
+	Enemies:clear()
 	Warning:clear()
 	Text:clear()
 	ImageBody:clear()
@@ -180,7 +178,6 @@ function reloadStory( name, reloadEverything )
 		Timer.closeOldTimers()
 
 		SoundManager.restart()
-		Enemies.restartStory()
 
 		mouse.setGrab(true)
 	end

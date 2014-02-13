@@ -16,9 +16,17 @@ function Basic:draw()
 
 end
 
-function Basic:recycle()
-	self.active = true
+function Basic:revive()
+	if not self.active then self:activate() end
 	self.alive = true
 	
 	return self
+end
+
+function Basic:activate()
+	self.active = true
+end
+
+function Basic:deactivate()
+	self.active = false
 end
