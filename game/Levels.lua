@@ -4,18 +4,17 @@ levels = {} -- list of all levels
 currentLevel = nil
 worldsNumber = 5 -- for now
 
-function pushEnemies(timer, enemies)
+local function pushEnemies( enemies )
 	for _, enemy in ipairs(enemies) do
 		enemy:getWarning()
 	end
-	timer.running = false
 end
 
-function registerEnemies(timer, enemies)
+local function registerEnemies( enemies )
 	for _, enemy in ipairs(enemies) do
 		enemy:register()
+		enemy:activate()
 	end
-	timer.running = false
 end
 
 
@@ -25,42 +24,53 @@ local enemycreator, enemycreatorwarning = {}, {}
 function levelEnv.enemy( name, n, format, ... )
 	name = name or 'simpleball'
 	n = n or 1
-	local initInfo = select('#', ...) > 0  and {...} or nil
-	local enemylist = {}
-	local cp
-	if format and format.applyOn then cp = format.copy or {}
-	else cp = format or {} end
-	cp.side = cp.side or format and format.side
-	cp.onInitInfo = initInfo
+	local enemyList
+	local copy
+	if format and format.__type == 'formation' then
+		copy = format.copy
+	else
+		copy = format
+	end
 
 	if type(name) == 'string' then
-		local enemy = Enemies[name]
-		for i = 1, n do
-			enemylist[i] = enemy:new(Base.clone(cp))
-		end
+		enemyList = Enemies[name].bodies:getObjects(n)
 	else
+		enemyList = {}
 		local k, s = 1, #name
 		for i = 1, n do
-			enemylist[i] = Enemies[name[k]]:new(Base.clone(cp))
+			enemyList[i] = Enemies[name[k]].bodies:getFirstAvailable()
 			k = k + 1
 			if k > s then k = 1 end
 		end
 	end
-	
-	if format then
-		if format.applyOn then
-			format:applyOn(enemylist)
+
+	for i = 1, n do
+		local e = enemyList[i]
+		e:revive(...)
+		e:deactivate()
+		if copy then
+			for k, v in pairs(copy) do
+				e[k] = Base.clone(v)
+			end
 		end
 	end
+	
+	if format and format.__type == 'formation' then
+		format:applyOn(enemyList)
+	end
 
-	local extraelements = {enemylist}
 
 	if levelEnv.warnEnemies then
 		-- warns about the enemy
-		local warn = Timer:new{timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1), funcToCall = pushEnemies, 
-			extraelements = extraelements, onceOnly = true, registerSelf = false}
+		local warn = Timer:new {
+			timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
+			funcToCall = function() pushEnemies(enemyList) end, 
+			onceOnly = true,
+			registerSelf = false
+		}
 		table.insert(currentLevel.timers_, warn)
-		if format and format.shootattarget then
+
+		if format and format.shootAtTarget then
 			-- follows the target with the warnings
 			local speed = format.speed or v
 			table.insert(currentLevel.timers_, Timer:new {
@@ -69,21 +79,25 @@ function levelEnv.enemy( name, n, format, ... )
 				registerSelf = false,
 				funcToCall = function(self)
 					if self.timelimit then self.timelimit = nil return end
-					if not enemylist[1].warning then self:remove() return end
+					if not enemyList[1].warning then self:remove() return end
 					if self.prevtarget == format.target then return end
 					for i = 1, n do
-						enemylist[i].speed:set(format.target):sub(enemylist[i].position):normalize():mult(speed, speed)
-						enemylist[i].warning:recalc_angle()
+						enemyList[i].speed:set(format.target):sub(enemyList[i].position):normalize():mult(speed, speed)
+						enemyList[i].warning:recalc_angle()
 					end
-					self.prevtarget:set(target)
+					self.prevtarget:set(format.target)
 				end
 			})
 		end
 	end
 
 	-- release the enemy onscreen
-	local t = Timer:new{timelimit = levelEnv.time, funcToCall = registerEnemies, 
-		extraelements = extraelements, onceOnly = true, registerSelf = false}
+	local t = Timer:new {
+		timelimit = levelEnv.time,
+		funcToCall = function() registerEnemies(enemyList) end, 
+		onceOnly = true,
+		registerSelf = false
+	}
 	table.insert(currentLevel.timers_, t)
 end
 
@@ -111,6 +125,23 @@ function levelEnv.doNow( func )
 	}
 end
 
+function levelEnv.changeToLevel( levelName )
+	levelEnv.doNow(function()
+		if not Levels.currentLevel.wasSelected then
+			if not DeathManager.gameLost then AdventureState:runLevel(levelName) end
+		else
+			local t = Text.bodies:getFirstAvailable():revive() 
+			t.text = currentLevel.name_ .. " Completed. Press ESC or P and return to the menu."
+			t.font = Base.getCoolFont(50)
+			t.printFunction = graphics.printf
+			t.position:set(width/2 - 400, height/2 + 20)
+			t.limit = 800
+			t.align = 'center'
+			t:register()
+		end
+	end)
+end
+
 setmetatable(levelEnv, {__index = _G})
 
 function runLevel( name )
@@ -118,39 +149,44 @@ function runLevel( name )
 	closeLevel()
 	currentLevel = name and levels[name]
 	currentLevel:reload_()
+
 	local changetitle = currentLevel.title and currentLevel.title ~= "" and currentLevel.title ~= prevTitle
 	local delay = changetitle and -4 or 0
+
 	for _, t in ipairs(currentLevel.timers_) do
 		t:register()
 		t:start(t.time + delay)
 	end
+
 	if changetitle then
-		local title = Text:new {
-			text = currentLevel.title,
-			alphaFollows = VarTimer:new{ var = 1 },
-			font = Base.getCoolFont(100),
-			position = Vector:new{50, 200},
-			limit = width - 100,
-			align = 'center',
-			printmethod = graphics.printf,
-			variance = 0
-		}
+		local title = Text.bodies:getFirstAvailable():revive()
+		title.text = currentLevel.title
+		title.alphaFollows = VarTimer:new{ var = 1 }
+		title.alpha = nil
+		title.font = Base.getCoolFont(100)
+		title.position:set(50, 200)
+		title.limit = width - 100
+		title.align = 'center'
+		title.printFunction = graphics.printf
+		title.variance = 0
 		title:register()
+
 		Timer:new{
-			timelimit = 2,
+			timelimit = .5,
 			running = true,
 			onceOnly = true,
 			funcToCall = function ( timer )
-				title.alphaFollows:setAndGo(1, 254, 80)
+				title.alphaFollows:setAndGo(0, 255, 255/1.75)
 			end
 		}
+
 		Timer:new{
-			timelimit = 253/80,
+			timelimit = .5 + 1.75,
 			running = true,
 			onceOnly = true,
 			funcToCall = function ( timer )
-				title.alphaFollows:setAndGo(254, 1, 80)
-				title.alphaFollows.alsoCall = function() title.delete = true end
+				title.alphaFollows:setAndGo(255, 0, 255/1.75)
+				title.alphaFollows.alsoCall = function() title.alphaFollows:remove() title:kill() end
 			end
 		}
 	end 

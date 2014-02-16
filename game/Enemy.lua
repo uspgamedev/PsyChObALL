@@ -19,27 +19,32 @@ function Enemy:revive( randomize )
 
 	if randomize ~= false then -- nil defaults to true
 		self.variance = random() * ColorManager.colorCycleTime
-		self.speed:set(0, 0)
-
-		local side = self.side and sides[self.side] or random(4)
-		if	side == 1 or side == 2 then -- top or bottom
-			self.x = random(self.size, width - self.size)
-			self.y = side == 1 and 0 or height
-			self.Vy = random(v, v + 50) * (side == 1 and 1 or -1)
-			local n = -1
-			if self.x < width / 2 then n = 1 end
-			self.Vx = n * random(0, v)
-		elseif side == 3 or side == 4 then -- left or right
-			self.x = side == 3 and 0 or width
-			self.y = random(self.size, height - self.size)
-			self.Vx = random(v, v + 50) * (side == 3 and 1 or -1)
-			local n = -1
-			if self.y < height / 2 then n = 1 end
-			self.Vy = n * random(0, v)
-		end
+		self:randomizePosition()
 	end
 
 	return self
+end
+
+function Enemy:randomizePosition()
+	self.variance = random() * ColorManager.colorCycleTime
+	self.speed:set(0, 0)
+
+	local side = self.side and sides[self.side] or random(4)
+	if	side == 1 or side == 2 then -- top or bottom
+		self.x = random(self.size, width - self.size)
+		self.y = side == 1 and 0 or height
+		self.Vy = random(v, v + 50) * (side == 1 and 1 or -1)
+		local n = -1
+		if self.x < width / 2 then n = 1 end
+		self.Vx = n * random(0, v)
+	elseif side == 3 or side == 4 then -- left or right
+		self.x = side == 3 and 0 or width
+		self.y = random(self.size, height - self.size)
+		self.Vx = random(v, v + 50) * (side == 3 and 1 or -1)
+		local n = -1
+		if self.y < height / 2 then n = 1 end
+		self.Vy = n * random(0, v)
+	end
 end
 
 function Enemy:kill()

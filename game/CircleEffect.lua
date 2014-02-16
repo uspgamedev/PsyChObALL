@@ -27,7 +27,7 @@ function CircleEffect:revive( based_on )
 	self.growToSize = CircleEffect.growToSize -- nil
 	
 	self.sizeGrowth = math.random(120, 160)
-	self.variance = math.random(0, 100*ColorManager.colorCycleTime) / 100
+	self.variance = math.random() * ColorManager.colorCycleTime
 
 	return self
 end

@@ -8,7 +8,17 @@ ImageBody = Body:new {
 
 Body.makeClass(ImageBody)
 
-function ImageBody:__init()
+function ImageBody:revive()
+	Body.revive(self)
+
+	self.image = ImageBody.image
+	self.scale = ImageBody.scale
+	self.coloreffect = nil
+
+	return self
+end
+
+function ImageBody:start()
 	assert(self.image, 'ImageBody needs an image!')
 	self.size = math.max(self.image:getWidth(), self.image:getHeight())*self.scale
 end

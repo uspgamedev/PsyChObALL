@@ -5,138 +5,101 @@ function run()
 	warnEnemies = true
 	warnEnemiesTime = 0.7
 
-	local simple = 'simpleball'
-	local divide1 = 'multiball'
-	local grey = 'grayball'
-	local super = 'superball'
-
-	local f2 = formation {
-		type = 'vertical',
-		from = 'top',
-		movetorwards = 'right',
-		distance = 42,
-		startsat = 20,
-		setspeedto = Vector:new{0, 300}
-	}
+	local sin, cos = math.sin, math.cos
 
 	local f = formation {
 		type = 'func',
 		func = function(x)
-			return math.sin(x*200)*(height/2-50)+height/2
+			return sin(x * 200) * (height/2 - 50) + height/2
 		end,
 		side = 'right',
-		setspeedto = Vector:new{-2.4*v,0},
+		setSpeed = Vector:new{-2.4 * v, 0},
 		distance = 30
-	}
-
-	local verticalt = formation {
-		type = 'vertical',
-		from = 'top'
-	}
-
-	local verticalb = formation {
-		type = 'vertical',
-		from = 'bottom'
-	}
-
-	local horizontall = formation {
-		type = 'horizontal',
-		from = 'left'
-	}
-
-	local horizontalr = formation {
-		type = 'horizontal',
-		from = 'right'
 	}
 
 	local simple = 'simpleball'
 	local divide1 = 'multiball'
-	local range = 'ranged'
-	local simple = 'simpleball'
-	local grey = 'grayball'
-	local snake = 'snake'
+	local super = 'superball'
 
 	wait(3)
 	enemy(simple, 60, f)
+
 	wait(2.5)
-	f.setspeedto = Vector:new{-1.6*v,0}
+	f.setSpeed = Vector:new{-1.6 * v, 0}
 	f.func = function(x)
-			return math.sin(x*200)*(height/2-180)+height/2-180
-		end
-	enemy(divide1, 80, f)
-	f.func = function(x)
-			return math.sin(x*200)*(height/2-180)+height/2+180
+		return sin(x * 200) * (height/2 - 180) + height/2 - 180
 	end
 	enemy(divide1, 80, f)
+
+	f.func = function(x)
+		return sin(x * 200) * (height/2 - 180) + height/2 + 180
+	end
+	enemy(divide1, 80, f)
+	
 	wait(8)
 	f.func = function(x)
-			return math.cos(x*200)*(height/2-50)+height/2+50
+		return cos(x * 200) * (height/2 - 50) + height/2 + 50
 	end
 	f.distance = 60
-	enemy({simple,divide1}, 100, f)
+	enemy({simple, divide1}, 100, f)
+
 	f.func = function(x)
-			return math.cos(x*200)*(height/2-50)+height/2-50
+		return cos(x * 200) * (height/2 - 50) + height/2 - 50
 	end
 	f.side = 'left'
-	f.setspeedto = Vector:new{1.6*v,0}
+	f.setSpeed = Vector:new{1.6 * v,0}
 	enemy({simple,divide1}, 100, f)
+	
 	wait(19)
 	f.distance = 30
 	f.side = 'bottom'
-	f.setspeedto = Vector:new{0,-0.7*v}
+	f.setSpeed = Vector:new{0, -0.7 * v}
 	f.func = function(x)
-			return -math.sin(x*200)*(width/2-30)+width/2
-		end
-	enemy(simple, 100, f)
-	f.setspeedto = Vector:new{0,0.7*v}
-	f.side = 'top'
-	f.func = function(x)
-			return math.sin(x*200)*(width/2-30)+width/2
+		return -sin(x * 200) * (width/2 - 30) + width/2
 	end
 	enemy(simple, 100, f)
+
+	f.setSpeed = Vector:new{0, 0.7 * v}
+	f.side = 'top'
+	f.func = function(x)
+		return sin(x * 200) * (width/2 - 30) + width/2
+	end
+	enemy(simple, 100, f)
+
 	wait(6)
-	enemy(super, 1, { position = Vector:new{width/2, height+30}, speed = Vector:new{0.6*v, v}, life = 180, size = 40}, divide1, {width/2, height+30}, 16)
-	wait(18)
+	enemy(super, 1, { position = Vector:new{width/2, height + 30}, speed = Vector:new{0.6 * v, v}, life = 180, size = 40}, divide1, {width/2, height + 30}, 16)
 	
+	wait(18)
 	f.distance = 60
 	f.side = 'bottom'
-	f.setspeedto = Vector:new{0,-0.7*v}
+	f.setSpeed = Vector:new{0, -0.7 * v}
 	f.func = function(x)
-			return math.cos(x*200)*(width/2-30)+width/2
-		end
-	enemy({simple,divide1}, 100, f)
-	f.setspeedto = Vector:new{0,0.7*v}
+		return cos(x * 200) * (width/2 - 30) + width/2
+	end
+	enemy({simple, divide1}, 100, f)
+	
+	f.setSpeed = Vector:new{0, 0.7 * v}
 	f.side = 'top'
 	f.func = function(x)
-			return math.cos(x*200)*(width/2-30)+width/2
+		return cos(x * 200) * (width/2 - 30) + width/2
 	end
-	enemy({simple,divide1}, 100, f)
+	enemy({simple, divide1}, 100, f)
+
 	f.func = function(x)
-			return math.cos(x*200)*(height/2-50)+height/2+50
+		return cos(x * 200) * (height/2 - 50) + height/2 + 50
 	end
 	f.side = 'right'
-	f.setspeedto = Vector:new{-0.7*v,0}
-	enemy({simple,divide1}, 100, f)
+	f.setSpeed = Vector:new{-0.7 * v, 0}
+	enemy({simple, divide1}, 100, f)
+	
 	f.func = function(x)
-			return math.cos(x*200)*(height/2-50)+height/2-50
+		return cos(x * 200) * (height/2 - 50) + height/2 - 50
 	end
 	f.side = 'left'
-	f.setspeedto = Vector:new{0.7*v,0}
+	f.setSpeed = Vector:new{0.7 * v, 0}
 	enemy({simple,divide1}, 100, f)
 	enemy(simple, 100, f)
+	
 	wait(40)
-	doNow( function(timer)
-		if not Levels.currentLevel.wasSelected then
-			if not DeathManager.gameLost then reloadStory 'Level 3-3' end
-		else
-			Text:new{
-				text = "Part Completed. Press ESC or P and return to the menu.", --ou algum outro texto
-				font = Base.getCoolFont(50),
-				printmethod = graphics.printf,
-				position = Vector:new{width/2 - 400, height/2 + 20},
-				limit = 800,
-				align = 'center'
-			}:register()
-		end
-	end)
+	changeToLevel('Level 3-3')
 end

@@ -2,6 +2,12 @@ require 'base.State'
 
 GameState = State:new {}
 
+function GameState:create()
+	State.create(self)
+
+	self:add(psycho)
+end
+
 local function drawShootingDirection()
 	if DeathManager.gameLost or psycho.pseudoDied then return end
 
@@ -25,20 +31,17 @@ local function drawShootingDirection()
 		graphics.setPixelEffect()
 		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((mouseY - psycho.y)/(mouseX - psycho.x)))
 	end
-	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
+	graphics.setPixelEffect()
 end
 
 function GameState:draw()
 	drawShootingDirection()
 
-
-	--[[Drawing Game Objects]]
-	--drawing psychoball
-	if not Cheats.invisible then
-		psycho:draw()
-	end
-	--[[End of Drawing Game Objects]]
-	graphics.setPixelEffect()
-
 	State.draw(self)
+end
+
+function GameState:update( dt)
+	if not paused then
+		State.update(self, dt)
+	end
 end

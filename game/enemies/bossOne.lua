@@ -5,7 +5,6 @@ bossOne = CircleEffect:new {
 	maxhealth = 160,
 	basespeed = 2*v,
 	basespeedsqrt = math.sqrt(2*v),
-	index = false,
 	alpha = 255,
 	mode = 'fill',
 	sizeGrowth = 0,
@@ -17,19 +16,30 @@ bossOne = CircleEffect:new {
 
 Body.makeClass(bossOne)
 
-function bossOne:__init()
+function bossOne:revive()
+	CircleEffect.revive(self)
+
+	self.sizeGrowth = bossOne.sizeGrowth
+	self.size = bossOne.size
+	self.mode = bossOne.mode
+	self.alpha = bossOne.alpha
+
 	self.position:set(-self.size, -self.size)
 	self.speed:set(v, v)
 	self.currentBehavior = bossOne.behaviors.arriving
 	self.health = bossOne.maxhealth
-	self.variance = random((ColorManager.colorCycleTime-3)*1000)/1000 + 3
+	self.variance = random() * (ColorManager.colorCycleTime - 6) + 3
+
 	bossOne.shot = Enemies.simpleball
 	bossOne.prevdist = self.position:distsqr(self.size + 10, self.size + 10)
+
 	self.colors = {VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0xFF, speed = 200}, VarTimer:new{var = 0, speed = 200}}
 	self.coloreffect = ColorManager.getColorEffect(self.colors[1], self.colors[2], self.colors[3], 30)
 	self.restrictToScreenThreshold = 10
+	
 	restrictToScreenSpeed = nil
-	--bossOne.turret.bodies = Enemies.bossOne.bodies
+
+	return self
 end
 
 bossOne.behaviors = {}
@@ -63,7 +73,9 @@ function bossOne.behaviors.arriving( self )
 		end
 
 		function self:getShot()
-			return (random() > .5 and Enemies.simpleball or Enemies.multiball):new{ score = false }
+			local e = (random() > .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstAvailable():revive()
+			e.score = false
+			return e
 		end
 
 		self.currentBehavior = bossOne.behaviors.first
@@ -84,7 +96,9 @@ function bossOne.behaviors.first( self )
 		self.speedchange = nil
 		self.health = bossOne.maxhealth * .75
 		function self:getShot()
-			return Enemies.multiball:new{ score = false }
+			local e = Enemies.multiball.bodies:getFirstAvailable():revive()
+			e.score = false
+			return e
 		end
 		self.colors[1]:setAndGo(nil, 0, 122)
 		self.colors[2]:setAndGo(nil, 255, 122)
@@ -118,13 +132,13 @@ function bossOne.behaviors.toTheMiddle( self )
 		function self.shoottimer.funcToCall()
 			local side = random() < .5 and -1 or 1
 			self.circleshoot.angle = arctan(psycho.x - self.x, psycho.y - self.y)  + side*Base.toRadians(30)
-			self.circleshoot.anglechange = -abs(self.circleshoot.anglechange)*side
+			self.circleshoot.angleDelta = -abs(self.circleshoot.angleDelta)*side
 			self.circleshoot.timescount = 0
 			self.circleshoot:start(self.circleshoot.timelimit)
 		end
 		self.circleshoot = Timer:new {
 			timelimit = .07,
-			anglechange = Base.toRadians(6),
+			angleDelta = Base.toRadians(6),
 			times = 100,
 			angle = 0,
 			works_on_gameLost = false,
@@ -137,7 +151,7 @@ function bossOne.behaviors.toTheMiddle( self )
 				bossOne.basespeed * sin(timer.angle),
 				bossOne.basespeed * cos(timer.angle))
 			e:register()
-			timer.angle = timer.angle + timer.anglechange
+			timer.angle = timer.angle + timer.angleDelta
 			timer.timescount = timer.timescount + 1
 			if timer.timescount >= timer.times then 
 				timer:stop()
@@ -157,7 +171,7 @@ function bossOne.behaviors.third( self )
 		self.shoottimer:remove()
 		self.shoottimer:funcToCall()
 		self.circleshoot:remove()
-		self.circleshoot.anglechange = Base.toRadians(15)
+		self.circleshoot.angleDelta = Base.toRadians(15)
 		self.circleshoot.times = 360/15
 		bossOne.shot = Enemies.simpleball
 		--change color or whatever
@@ -174,8 +188,9 @@ end
 
 function bossOne.behaviors.toExplode( self )
 	if self.size > width/2 + 100 or self.health <= 0 then
-		RecordsManager.addScore(500)
+		RecordsManager.addScore(1000)
 		self.sizeGrowth = -1300
+		self.currentBehavior = Base.doNothing
 	end
 end
 
@@ -201,20 +216,22 @@ function bossOne:restrictToScreen()
 	end
 end
 
+local max = math.max
 function bossOne:update( dt )
 	CircleEffect.update(self, dt)
 	Body.update(self, dt)
 	self:currentBehavior()
 
-	for _, v in pairs(Shot.bodies) do
-		if self:collidesWith(v) then
-			v.collides = true
-			v.explosionEffects = true
+	Shot.bodies:forEachAlive(function(shot)
+		if self.alive and self:collidesWith(shot) then
+			shot.explosionEffects = true
+			shot:kill()
+
 			if self.health > 0 then 
 				self.health = self.health - 1
 				local d = self.health/bossOne.maxhealth
 				if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
-					d = (math.max(d,.75)-.75)*4
+					d = (max(d,.75)-.75)*4
 					--self.colors[1] is already correct
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
@@ -225,7 +242,7 @@ function bossOne:update( dt )
 					end
 					}
 				elseif self.currentBehavior == bossOne.behaviors.second then
-					d = (math.max(d,.5)-.5)*4
+					d = (max(d,.5)-.5)*4
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
@@ -237,7 +254,7 @@ function bossOne:update( dt )
 					end
 					}
 				elseif self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
-					d = (math.max(d,.075)-.075)/(.5 - .075)
+					d = (max(d,.075)-.075)/(.5 - .075)
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
@@ -252,7 +269,7 @@ function bossOne:update( dt )
 				end
 			end
 		end
-	end
+	end)
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.causeOfDeath = "shot"
@@ -262,7 +279,9 @@ end
 
 bossOne.draw = Base.defaultDraw
 
-function bossOne:handleDelete()
+function bossOne:kill()
+	Body.kill(self)
+
 	self.size = 1
 	Effect.createEffects(self, 300)
 	self.size = 0

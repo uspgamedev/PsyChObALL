@@ -1,3 +1,5 @@
+require 'AdventureState'
+
 MainMenu = Menu:new {
 	index = 1
 }
@@ -18,9 +20,9 @@ function MainMenu:load()
 		MenuManager:changeToMenu(nil, MenuTransitions.Fade)
 		if not filesystem.exists 'config' then
 			FileManager.writeConfig()
-			reloadStory('Tutorial', true)
+			AdventureState:runLevel('Tutorial')
 		else
-			reloadSurvival()
+			Game.switchState(SurvivalState)
 		end
 	end
 
@@ -38,9 +40,9 @@ function MainMenu:load()
 		MenuManager:changeToMenu(nil, MenuTransitions.Fade)
 		if not filesystem.exists 'config' then
 			FileManager.writeConfig()
-			reloadStory('Tutorial', true)
+			AdventureState:runLevel('Tutorial')
 		else
-			reloadStory('Tutorial', true)
+			AdventureState:runLevel('Level 1-1')
 		end
 	end
 

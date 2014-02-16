@@ -7,8 +7,8 @@ function init()
 
 	resetVars()
 	Timer.closeOldTimers()
-	if SoundManager.currentsong ~= SoundManager.menusong then
-		SoundManager.changeSong(SoundManager.menusong)
+	if SoundManager.currentSong ~= SoundManager.music['Flying Carrots 2'] then
+		SoundManager.changeSong(SoundManager.music['Flying Carrots 2'])
 	end
 end
 
@@ -16,8 +16,8 @@ function restartMenu()
 	resetVars()
 	Timer.closeOldTimers()
 	Game.switchState(MenuManager)
-	if SoundManager.currentsong ~= SoundManager.menusong then
-		SoundManager.changeSong(SoundManager.menusong)
+	if SoundManager.currentSong ~= SoundManager.music['Flying Carrots 2'] then
+		SoundManager.changeSong(SoundManager.music['Flying Carrots 2'])
 	end
 end
 
@@ -41,15 +41,15 @@ function keypressed( key )
 	end
 
 	if key == 'r' and paused then
+		psycho.continuesUsed = 0
 		if state == story then
 			if Levels.currentLevel.wasSelected then
-				reloadStory(Levels.currentLevel.name_, true)
-				Levels.currentLevel.wasSelected = true
+				AdventureState:runLevel(Levels.currentLevel.name_, true, true)
 			else
-				reloadStory 'Level 1-1'
+				AdventureState:runLevel('Level 1-1', true)
 			end
 		elseif state == survival then
-			reloadSurvival()
+			Game.switchState(SurvivalState)
 		end
 	end
 
@@ -63,10 +63,8 @@ function keypressed( key )
 	end
 
 	if (DeathManager.gameLost or paused) and key == 'b' then
-		if paintables.deathEffects then
-			for _, e in pairs(paintables.deathEffects.bodies) do e:handleDelete() end
-			paintables.deathEffects = nil
-		end
+		DeathManager.DeathEffect.bodies:kill()
+		DeathManager.DeathEffect.bodies:clearAll()
 
 		if state == story then
 			Levels.closeLevel()

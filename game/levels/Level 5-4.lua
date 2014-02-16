@@ -2,64 +2,71 @@ title = 'V - Renato please add level'
 chapter = 'Part 4 - The boss is here. Just write all of him up until tomorrow. Thanks'
 
 function run()
-	enemy 'bossLast'
-	wait(10000)
+	doNow (function()
+		local img = graphics.newImage 'resources/warn.png'
+		local warns = ImageBody.bodies:getObjects(8)
+		for i = 1, 8 do
+			local t = warns[i]:revive()
+			t.coloreffect = ColorManager.sinCityEffect
+			t.image = img
+			t.scale = .3
+			Enemy.randomizePosition(t)
+			t:register()
+		end
 
+		local texts = Text.bodies:getObjects(6)
+		for i = 1, 6 do
+			local t = texts[i]:revive()
+			t.text = "BOSS"
+			t.font = Base.getFont(40)
+			Enemy.randomizePosition(t)
+			t:register()
+		end
 
-	local f1 = formation {
-		type = 'around',
-		angle = 0,
-		target = Vector:new{width/2, height/2},
-		anglechange = Base.toRadians(180),
-		shootattarget = true
-	}
-	local f2 = formation {
-		type = 'around',
-		angle = Base.toRadians(-45),
-		target = Vector:new{width/2, height/2},
-		anglechange = Base.toRadians(90),
-		shootattarget = true
-	}
-
-	local verticalt = formation {
-		type = 'vertical',
-		from = 'top'
-	}
-
-	local verticalb = formation {
-		type = 'vertical',
-		from = 'bottom'
-	}
-
-	local horizontall = formation {
-		type = 'horizontal',
-		from = 'left'
-	}
-
-	local horizontalr = formation {
-		type = 'horizontal',
-		from = 'right'
-	}
-
-	warnEnemies = true
-	warnEnemiesTime = 0.7
-	local simple = 'simpleball'
-	local divide1 = 'multiball'
-
-	wait(1)
-	
-	doNow( function(timer)
-		local a = VarTimer:new{var = 0}
-		a:setAndGo(0, 255, 70)
-		Text:new{
-			text = "Congratulation, you've reached the end. But not really, more is coming!\nThe next update of PsyChObALL will"
-			.. " include two whole new levels, including The End.",
-			font = Base.getCoolFont(55),
-			printmethod = graphics.printf,
-			position = Vector:new{width/2 - 450, height/2 - 200},
-			limit = 900,
-			alphaFollows = a,
-			align = 'center'
-		}:register()
+		local t = Text.bodies:getFirstAvailable():revive()
+		t.text = "TODO: Make better Boss introduction...."
+		t.font = Base.getCoolFont(50)
+		t.position:set(-100, -30)
+		t.speed:set(v, v)
+		t:register()
 	end)
+
+	wait(5)
+	enemy 'bossFive'
+
+	wait(15)
+	
+	registerTimer {
+		timelimit = 1,
+		funcToCall = function ( timer )
+			if Enemies.bossFive.bodies:countAlive() == 0 then
+				local t = Text.bodies:getFirstAvailable():revive()
+				t.text = 'Eye Have You\n  TODO: Create EndLevel screen with scores and stuff'
+				t.speed:set(v, v)
+				t.position:set(0, 0)
+				t.font = Base.getCoolFont(40)
+				t.kill = function(self)
+					Text.kill(self)
+
+					if not Levels.currentLevel.wasSelected then
+						psycho:addLife()
+						psycho:addLife()
+						--AdventureState:runLevel('Level 6-1') SOON
+					else
+						local te = Text.bodies:getFirstAvailable():revive()
+						te.text = "Level 5 boss killed. Press ESC or P and return to the menu."
+						te.font = Base.getCoolFont(50)
+						te.printFunction = graphics.printf
+						te.position:set(width/2 - 400, height/2 + 20)
+						te.limit = 800
+						te.align = 'center'
+						te:register()
+					end
+				end
+				t:register()
+
+				timer:remove()
+			end
+		end
+	}
 end

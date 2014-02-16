@@ -4,15 +4,15 @@ module ('Formations', package.seeall)
 
 formation = lux.object.new {
 	name = 'empty',
-	shootatplayer = false,
-	shootattarget = false,
+	shootAtPlayer = false,
+	shootAtTarget = false,
 	__type = 'formation'
 	-- add more stuff in here maybe
 }
 
 function formation:applyOn( enemies )
-	if self.shootatplayer then
-		self.shootattarget = true
+	if self.shootAtPlayer then
+		self.shootAtTarget = true
 		self.target = psycho.position
 	end
 end
@@ -24,7 +24,7 @@ function empty:applyOn( enemies )
 	local n = #enemies
 	local speed = self.speed or v
 	for i = 1, n do
-		if self.shootattarget then
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		end
 		if self.position then
@@ -63,13 +63,13 @@ function vertical:applyOn( enemies )
 	for i = 1, n do
 		enemies[i].position:set(transl + (i-1) * dist, y)
 
-		if self.shootattarget then
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto then
-				enemies[i].speed:set(self.setspeedto)
+			if self.setSpeed then
+				enemies[i].speed:set(self.setSpeed)
 			else
-				local l = self.speed or enemies[n].speed:length()
+				local l = self.speed or v * sqrt2
 				enemies[i].speed:set(0, y == 0 and l or -l)
 			end
 		end
@@ -89,8 +89,8 @@ function horizontal:applyOn( enemies )
 	local x = self.from == 'left' and 0 or width
 	local n = #enemies
 
-	if self.shootatplayer then
-		self.shootattarget = true
+	if self.shootAtPlayer then
+		self.shootAtTarget = true
 		self.target = psycho.position
 	end
 
@@ -107,11 +107,11 @@ function horizontal:applyOn( enemies )
 	local speed = self.speed or v
 	for i = 1, n do
 		enemies[i].position:set(x, transl + (i-1) * dist)
-		if self.shootattarget then
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto then
-				enemies[i].speed:set(self.setspeedto)
+			if self.setSpeed then
+				enemies[i].speed:set(self.setSpeed)
 			else
 				local l = self.speed or enemies[n].speed:length()
 				enemies[i].speed:set(x == 0 and l or -l, 0)
@@ -122,7 +122,7 @@ end
 
 line = formation:new {
 	name = 'line',
-	startpoint = nil, --Vector
+	startLocation = nil, --Vector
 	dx = 20, dy = 20,
 	distribute = false,
 	distribute_between = nil --Vector
@@ -134,17 +134,17 @@ function line:applyOn( enemies )
 
 	local transl = Vector:new{self.dx,self.dy}
 	if self.distribute then
-		transl:set(self.distribute_between):sub(self.startpoint):div(n, n)
+		transl:set(self.distribute_between):sub(self.startLocation):div(n, n)
 	end
 
 	local speed = self.speed or v
 	for i = 1, n do
-		enemies[i].position:set(self.startpoint):add((i-1)*transl)
-		if self.shootattarget then
+		enemies[i].position:set(self.startLocation):add((i-1)*transl)
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto then
-				enemies[i].speed:set(self.setspeedto)
+			if self.setSpeed then
+				enemies[i].speed:set(self.setSpeed)
 			end
 		end
 	end
@@ -166,7 +166,7 @@ function V:applyOn( enemies )
 	local transl = Vector:new{self.size/n, 2*self.growth/n}
 	if self.vertical then transl[1], transl[2] = transl[2], transl[1] end
 	local speed = self.speed or v
-	local prevp = self.startpoint - transl
+	local prevp = self.startLocation - transl
 	for i = 1, n do
 		enemies[i].position:set(prevp):add(transl)
 		prevp = enemies[i].position
@@ -185,11 +185,11 @@ function V:applyOn( enemies )
 			end
 		end
 
-		if self.shootattarget then
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto then
-				enemies[i].speed:set(self.setspeedto)
+			if self.setSpeed then
+				enemies[i].speed:set(self.setSpeed)
 			end
 		end
 	end
@@ -198,7 +198,7 @@ end
 around = formation:new {
 	name = 'around',
 	angle = 0,
-	anglechange = Base.toRadians(60),
+	angleDelta = Base.toRadians(60),
 	radius = width,
 	center = Vector:new{width/2, height/2},
 	adapt = true,
@@ -214,14 +214,14 @@ function around:applyOn( enemies )
 	for i = 1, n do
 		enemies[i].position:set(math.sin(angle)*(self.radius + d) + self.center.x, math.cos(angle)*(self.radius + d) + self.center.y)
 		if self.adapt then Base.restrainInScreen(enemies[i].position) end
-		angle = angle - self.anglechange
+		angle = angle - self.angleDelta
 		d = d + self.distance
 
-		if self.shootattarget then
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto then
-				enemies[i].speed:set(self.setspeedto)
+			if self.setSpeed then
+				enemies[i].speed:set(self.setSpeed)
 			end
 		end
 	end
@@ -252,11 +252,11 @@ function func:applyOn( enemies )
 		end
 		x = x + self.distance
 
-		if self.shootattarget then
+		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
-			if self.setspeedto then
-				enemies[i].speed:set(self.setspeedto)
+			if self.setSpeed then
+				enemies[i].speed:set(self.setSpeed)
 			end
 		end
 	end

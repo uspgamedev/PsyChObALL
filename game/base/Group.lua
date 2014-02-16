@@ -12,7 +12,7 @@ function Group:add( obj )
 end
 
 function Group:update( dt )
-	for i = self.length, 1, -1 do
+	for i = 1, self.length, 1 do
 		if self[i].alive and self[i].active then
 			self[i]:update(dt)
 		end
@@ -20,7 +20,7 @@ function Group:update( dt )
 end
 
 function Group:draw()
-	for i = self.length, 1, -1 do
+	for i = 1, self.length, 1 do
 		if self[i].alive and self[i].active then
 			self[i]:draw()
 		end
@@ -28,20 +28,34 @@ function Group:draw()
 end
 
 function Group:kill()
-	for i = self.length, 1, -1 do
+	for i = 1, self.length, 1 do
 		if self[i].alive then
 			self[i]:kill()
 		end
 	end
 end
 
+function Group:revive()
+	for i = 1, self.length, 1 do
+		if not self[i].alive then
+			self[i]:revive()
+		end
+	end
+end
+
 function Group:countAlive()
 	local count = 0
-	for i = self.length, 1, -1 do
+	for i = 1, self.length, 1 do
 		if self[i].alive then count = count + 1 end
 	end
 
 	return count
+end
+
+function Group:forEach( func )
+	for i = 1, self.length, 1 do
+		func(self[i])
+	end
 end
 
 function Group:forEachAlive( func )

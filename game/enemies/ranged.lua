@@ -2,7 +2,7 @@ ranged = Body:new {
 	size =  30,
 	divideN = 3,
 	angle = 0,
-	anglechange = nil,
+	angleDelta = nil,
 	life = 5,
 	timeout = 10,
 	timeToShoot = 1,
@@ -19,7 +19,7 @@ function ranged:__init()
 	self.speed:set(self.target):sub(self.position):normalize():mult(1.3*v, 1.3*v)
 	self.prevdist = self.position:distsqr(self.target)
 	self.onLocation = false
-	self.anglechange = self.anglechange or Base.toRadians(360/self.divideN)
+	self.angleDelta = self.angleDelta or Base.toRadians(360/self.divideN)
 	self.shotcircle = CircleEffect:new{
 		coloreffect = self.shot.coloreffect,
 		size = self.size + 4,
@@ -112,7 +112,7 @@ function ranged:shoot()
 		local e = self.shot:new{}
 		e.position = self.position:clone()
 		e.speed = Vector:new{math.sin(ang)*speed, math.cos(ang)*speed}
-		ang = ang + self.anglechange
+		ang = ang + self.angleDelta
 		e:register()
 	end
 end
@@ -125,7 +125,7 @@ function ranged:handleDelete()
 	if self.causeOfDeath == "shot" then
 		RecordsManager.addScore(25 * self.divideN)
 		self.divideN = self.divideN + 3	
-		self.anglechange = Base.toRadians(360/self.divideN)
+		self.angleDelta = Base.toRadians(360/self.divideN)
 		self:shoot()
 	end
 	if self.shoottimer then self.shoottimer:remove() end

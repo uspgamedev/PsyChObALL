@@ -3,9 +3,9 @@ Button = Body:new {
 	fontsize = 12,
 	onHover = false,
 	__type = 'Button',
-	visible = true,
-	bodies = {}
+	visible = true
 }
+
 Body.makeClass(Button)
 
 function Button:__init()
@@ -122,8 +122,10 @@ function Button:kill()
 	Body.kill(self)
 
 	self.hoverring.update = nil --restoring everything
+	self.hoverring.alphaFollows = nil
 	self.hoverring:kill()
 	self.hoverring = nil
+	self.alphaFollows = nil
 
-	self.effectsBurst.delete = true
+	self.effectsBurst:remove()
 end

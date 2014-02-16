@@ -37,8 +37,7 @@ function PracticeMenu:load( levelN )
 		self.visible = false
 		Effect.createEffects(self, 40)
 		MenuManager:changeToMenu(nil, MenuTransitions.Fade)
-		reloadStory(self.levelName, true)
-		--Levels.currentLevel.wasSelected = true
+		AdventureState:runLevel(self.levelName, true, true)
 	end
 
 	if levelN > 1 then

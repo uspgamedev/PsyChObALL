@@ -1,22 +1,29 @@
 module('SoundManager', package.seeall)
 require 'lux.functional'
 
+local setPoints
+local fadeOutTimer
+local fadeInTimer
+
 function init()
-	menusong = audio.newSource("resources/Flying Carrots 2.mp3")
-	limitlesssong = audio.newSource("resources/Limitless.mp3")
-	survivalsong = limitlesssong
-	currentsong = menusong
-	songsetpoints = {}
-	songsetpoints[survivalsong] = {0, 49, 95}
-	survivalsong:setLooping(true)
-	survivalsong:setVolume(muted and 0 or volume/100)
-	limitlesssong:setLooping(true)
-	limitlesssong:setVolume(muted and 0 or volume/100)
-	songsetpoints[limitlesssong] = {0}
-	menusong:setLooping(true)
-	menusong:setVolume(muted and 0 or volume/100)
-	menusong:play()
-	songfadeout = Timer:new{
+	music = {}
+
+	music['Flying Carrots 2'] = audio.newSource("resources/Flying Carrots 2.mp3")
+	music['Limitless'] = audio.newSource("resources/Limitless.mp3")
+
+
+	setPoints = {}
+	setPoints[music['Limitless']] = {0, 49, 95}
+	music['Limitless']:setLooping(true)
+	music['Limitless']:setVolume(muted and 0 or volume/100)
+
+	music['Flying Carrots 2']:setLooping(true)
+	music['Flying Carrots 2']:setVolume(muted and 0 or volume/100)
+
+	currentSong = music['Flying Carrots 2']
+	music['Flying Carrots 2']:play()
+
+	fadeOutTimer = Timer:new{
 		timelimit	 = .01,
 		running		 = false,
 		pausable		 = false,
@@ -24,15 +31,20 @@ function init()
 		persistent	 = true
 	}
 
-	function songfadeout:funcToCall() -- song fades out
-		if muted then return end
-		if currentsong:getVolume() <= (.02 * volume / 100) then 
-			currentsong:setVolume(0) 
-			self:stop()
-		else currentsong:setVolume(currentsong:getVolume() - .02) end
+	function fadeOutTimer:funcToCall() -- song fades out
+		if muted then self:remove() return end
+		if currentSong:getVolume() <= (.02 * volume / 100) then 
+			currentSong:setVolume(0) 
+			self:remove()
+		else currentSong:setVolume(currentSong:getVolume() - .02 * volume / 100) end
 	end
 
-	songfadein = Timer:new{
+	function fadeOutTimer:handleReset()
+		self:remove()
+		currentSong:setVolume(0)
+	end
+
+	fadeInTimer = Timer:new{
 		timelimit	 = .03,
 		running		 = false,
 		pausable		 = false,
@@ -40,16 +52,18 @@ function init()
 		persistent	 = true
 	}
 
-	function songfadein:funcToCall() -- song fades in
-		if muted or DeathManager.gameLost then return end
-		if currentsong:getVolume() >= (.98 * volume / 100) then 
-			currentsong:setVolume(volume / 100)
-			self:stop()
-		else currentsong:setVolume((currentsong:getVolume() + .02)) end
+	function fadeInTimer:funcToCall() -- song fades in
+		if muted or DeathManager.gameLost then self:remove() return end
+		if currentSong:getVolume() >= (.98 * volume / 100) then 
+			currentSong:setVolume(volume / 100)
+			self:remove()
+		else currentSong:setVolume((currentSong:getVolume() + .02 * volume / 100)) end
 	end
 
-	--fadein  = lux.functional.bindleft(songfadein.start,  songfadein)
-	fadeout  = lux.functional.bindleft(songfadeout.start, songfadeout)
+	function fadeInTimer:handleReset()
+		self:remove()
+		currentSong:setVolume(muted and 0 or volume / 100)
+	end
 
 	soundimage = graphics.newImage("resources/SoundIcons.png")
 	soundquads = {
@@ -61,65 +75,73 @@ function init()
 		graphics.newQuad(0,   0, 40, 40, 300, 40),
 		graphics.newQuad(240, 0, 40, 40, 300, 40)
 	}
-	soundquadindex = muted and 7 or math.ceil(volume/20) + 1
+
+	iconIndex = muted and 7 or math.ceil(volume/20) + 1
 end
 
-function changeSong( to )
-	currentsong:stop()
-	currentsong = to
-	to:setVolume(muted and 0 or volume/100)
-	to:setPitch(1)
-	to:play()
+function fadeOut()
+	fadeOutTimer:register()
+	fadeOutTimer:start(0)
+end
+
+function changeSong( newSong )
+	currentSong:stop()
+
+	currentSong = newSong
+	if newSong then
+		newSong:setVolume(muted and 0 or volume/100)
+		newSong:setPitch(1)
+		newSong:play()
+	end
 end
 
 function setPitch( p )
-	currentsong:setPitch(p)
+	currentSong:setPitch(p)
 end
 
 function restart()
-	currentsong:seek(songsetpoints[currentsong][math.random(#songsetpoints[currentsong])])
-	currentsong:setVolume(0)
+	currentSong:seek(setPoints[currentSong][math.random(#setPoints[currentSong])])
+	currentSong:setVolume(0)
 
-	if not muted then songfadein:start() end
+	if not muted then fadeInTimer:register() fadeInTimer:start(0) end
 end
 
 function reset()
 	if muted then
-		currentsong:setVolume(0)
+		currentSong:setVolume(0)
 	else
-		currentsong:setVolume(volume / 100)
+		currentSong:setVolume(volume / 100)
 	end
-	currentsong:setPitch(1.0)
+
+	currentSong:setPitch(1.0)
 end
 
 function keypressed( key )
 	if muted then
 		if key == 'm' then
 			muted = false
-			soundquadindex = math.ceil(volume/20) + 1
-			if not DeathManager.gameLost then currentsong:setVolume(volume / 100) end
+			if not DeathManager.gameLost then currentSong:setVolume(volume / 100) end
 		end
 	else
 		if key == '.' and volume < 100 then
 			volume = volume + 10
-			soundquadindex = math.ceil(volume/20) + 1
 			if not DeathManager.gameLost then
-				currentsong:setVolume(volume / 100)
+				currentSong:setVolume(volume / 100)
 			end
 		elseif key == ',' and volume > 0 then
 			volume = volume - 10
-			soundquadindex = math.ceil(volume/20) + 1
-			if not DeathManager.gameLost and not songfadein.running then
-				currentsong:setVolume(volume / 100)
+			if not DeathManager.gameLost and not fadeInTimer.running then
+				currentSong:setVolume(volume / 100)
 			end
 		elseif key == 'm' then
 			muted = true
-			soundquadindex = 7
-			currentsong:setVolume(0)
+			currentSong:setVolume(0)
 		end
 	end
+
+	iconIndex = muted and 7 or math.ceil(volume/20) + 1
 end
 
 function drawSoundIcon( x, y )
-	graphics.drawq(soundimage, soundquads[soundquadindex], x, y)
+	graphics.drawq(soundimage, soundquads[iconIndex], x, y)
 end

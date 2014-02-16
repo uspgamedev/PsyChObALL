@@ -15,13 +15,6 @@ local auxVec = Vector:new{}
 function Body:__init()
 	self.position = rawget(self, 'position') or Vector:new{}
 	self.speed = rawget(self, 'speed') or Vector:new{}
-	
-	if self.onInitInfo then
-		self:onInit(unpack(self.onInitInfo))
-		self.onInitInfo = nil
-	else
-		self:onInit()
-	end
 end
 
 local function index( self, key )
@@ -45,6 +38,13 @@ function Body.makeClass( subclass )
 	subclass.__index = index
 	if rawget(subclass, 'bodies') then
 		subclass.bodies.class = subclass
+		if subclass.shader then
+			subclass.bodies.draw = function(self)
+				graphics.setPixelEffect(subclass.shader)
+				Group.draw(self)
+				graphics.setPixelEffect()
+			end
+		end
 	end
 end
 
@@ -66,12 +66,9 @@ function Body:draw()
 	Base.defaultDraw(self)
 end
 
-function Body:handleDelete()
+function Body:kill()
+	Basic.kill(self)
 	if self.score and self.causeOfDeath == 'shot' then RecordsManager.addScore(self.score) end
-end
-
-function Body:onInit()
-	-- abstract
 end
 
 function Body:start()
@@ -93,19 +90,13 @@ function Body:freeWarning()
 	end
 end
 
-function Body:paintOn( p )
-	table.insert(p, self)
-end
-
 function Body:drawComponents()
-	if not self.bodies.draw then return end -- temporary
 	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect(self.shader) end
 	self.bodies:draw()
 	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect() end
 end
 
 function Body:updateComponents( dt )
-	if not self.bodies.update then return end -- temporary
 	self.bodies:update(dt)
 end
 

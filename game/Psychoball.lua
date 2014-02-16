@@ -16,6 +16,7 @@ Psychoball = CircleEffect:new {
 	pseudoDied = false,
 	ultraCounter = 0,
 	continuesUsed = 0,
+	visible = true,
 	__type = 'Psychoball'
 }
 
@@ -33,20 +34,20 @@ function Psychoball.init()
 			ultraShots = ultraShots + 1
 		end
 		if ultraShots == maxShots then
-			self:stop()
+			self:remove()
 			psycho.sizeGrowth = 0
 		end
 	end
 
 	function ultraTimer:handleReset()
 		psycho.sizeGrowth = 0
-		self:stop()
+		self:remove()
 	end
 end
 
 local max, min = math.max, math.min
 function Psychoball:update(dt)
-	if self.pseudoDied or DeathManager.gameLost then return end
+	if self.pseudoDied or DeathManager.gameLost or paused then return end
 	RecordsManager.update(dt)
 
 	self.blastTime = self.blastTime + dt
@@ -69,11 +70,11 @@ function Psychoball:update(dt)
 		max(self.size + psychoSizeDiff, min(height - self.size - psychoSizeDiff, self.position[2]))
 	)
 
-	if keyspressed[' '] and not self.chargingUltrablast and self.ultraCounter > 0 then
+	if Game.keyboard.isPressed[' '] and not self.chargingUltrablast and self.ultraCounter > 0 then
 		self:startBlast()
 	end
 
-	if not keyspressed[' '] and self.chargingUltrablast then
+	if not Game.keyboard.isPressed[' '] and self.chargingUltrablast then
 		self:releaseBlast()
 	end
 
@@ -93,11 +94,12 @@ function Psychoball:startBlast()
 	ultraShots = 10
 	self.sizeGrowth = 17
 	self.linewidth = 6
-	ultraTimer:start()
+	ultraTimer:register()
+	ultraTimer:start(0)
 end
 
 function Psychoball:releaseBlast()
-	ultraTimer:stop()
+	ultraTimer:remove()
 	self.chargingUltrablast = false
 	self.sizeGrowth = -300
 	doUltrablast()
@@ -114,7 +116,8 @@ function Psychoball:removeLife()
 end
 
 function Psychoball:draw()
-	if self.pseudoDied or DeathManager.gameLost then return end
+	if self.pseudoDied or not self.visible or Cheats.invisible then return end
+	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
 	self.size = self.size + psychoSizeDiff
 	Base.defaultDraw(self)
 	self.size = self.size - psychoSizeDiff
@@ -129,6 +132,8 @@ end
 function Psychoball:recreate()
 	timefactor = 1
 	self.pseudoDied = false
+	self.visible = true
+
 	if mouse.isDown('l') then Shot.timer:start() end
 	local blink = Timer:new {
 		timelimit = .4,
@@ -159,18 +164,37 @@ function Psychoball:recreate()
 end
 
 local auxSpeed = Vector:new {0, 0}
-function Psychoball:reset()
-	auxSpeed:reset()
+function Psychoball:revive()
+	Body.revive(self)
+
+	auxSpeed:set(0, 0)
+
 	self.blastTime = 0
 	self.chargingUltrablast = false
+	self.visible = true
+
+	self.lives = Psychoball.lives
+
+	if self.pseudoDied then
+		self.pseudoDied = false
+		paintables.deathEffects.bodies = nil
+		paintables.deathEffects = nil
+	end
+
+	if not self.canBeHit then
+		self.canBeHit = true
+		self.alpha = 255
+	end
+
+	return self
 end
 
 function Psychoball:keyPressed( key )
 	auxSpeed:add(
-		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v*1.3 or 0) 
-			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v*1.3 or 0),
-		((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v*1.3 or 0) 
-			+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v*1.3 or 0)
+		((key == 'left' and not Game.keyboard.isPressed['a'] or key == 'a' and not Game.keyboard.isPressed['left']) and -v*1.3 or 0) 
+			+ ((key == 'right' and not Game.keyboard.isPressed['d'] or key == 'd' and not Game.keyboard.isPressed['right']) and v*1.3 or 0),
+		((key == 'up' and not Game.keyboard.isPressed['w'] or key == 'w' and not Game.keyboard.isPressed['up']) and -v*1.3 or 0) 
+			+ ((key == 'down' and not Game.keyboard.isPressed['s'] or key == 's' and not Game.keyboard.isPressed['down']) and v*1.3 or 0)
 	)
 	self.speed:set(auxSpeed)
 
@@ -178,7 +202,7 @@ function Psychoball:keyPressed( key )
 		self.speed:div(sqrt2)
 	end
 
-	if keyspressed['lshift'] then
+	if Game.keyboard.isPressed['lshift'] then
 		self.speed:div(2)
 	end
 end
@@ -193,10 +217,10 @@ end
 
 function Psychoball:keyReleased( key )
 	auxSpeed:sub(
-		((key == 'left' and not keyspressed['a'] or key == 'a' and not keyspressed['left']) and -v * 1.3 or 0) 
-			+ ((key == 'right' and not keyspressed['d'] or key == 'd' and not keyspressed['right']) and v * 1.3 or 0),
-		((key == 'up' and not keyspressed['w'] or key == 'w' and not keyspressed['up']) and -v * 1.3 or 0) 
-			+ ((key == 'down' and not keyspressed['s'] or key == 's' and not keyspressed['down']) and v * 1.3 or 0)
+		((key == 'left' and not Game.keyboard.isPressed['a'] or key == 'a' and not Game.keyboard.isPressed['left']) and -v * 1.3 or 0) 
+			+ ((key == 'right' and not Game.keyboard.isPressed['d'] or key == 'd' and not Game.keyboard.isPressed['right']) and v * 1.3 or 0),
+		((key == 'up' and not Game.keyboard.isPressed['w'] or key == 'w' and not Game.keyboard.isPressed['up']) and -v * 1.3 or 0) 
+			+ ((key == 'down' and not Game.keyboard.isPressed['s'] or key == 's' and not Game.keyboard.isPressed['down']) and v * 1.3 or 0)
 	)
 	self.speed:set(auxSpeed)
 
@@ -204,7 +228,7 @@ function Psychoball:keyReleased( key )
 		self.speed:div(sqrt2)
 	end
 
-	if keyspressed['lshift'] then
+	if Game.keyboard.isPressed['lshift'] then
 		self.speed:div(2)
 	end
 end
@@ -219,12 +243,13 @@ function Psychoball.additionalDrawing()
 	end
 end
 
+local sin, cos, pi = math.sin, math.cos, math.pi
 function doUltrablast()
-	for i=1, ultraShots do
-		Shot:new{
-			position = psycho.position:clone(),
-			speed = Vector:new{math.cos(math.pi * 2 * i / ultraShots), math.sin(math.pi * 2 * i / ultraShots)}:normalize():mult(3*v, 3*v),
-			isUltraShot = true
-		}:register()
+	for i = 1, ultraShots do
+		local s = Shot.bodies:getFirstAvailable():revive()
+		s.position:set(psycho.position)
+		s.speed:set(cos(pi * 2 * i / ultraShots), sin(pi * 2 * i / ultraShots)):normalize():mult(3 * v, 3 * v)
+		s.isUltraShot = true
+		s:register()
 	end
 end

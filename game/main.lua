@@ -56,21 +56,6 @@ function initBase()
 	paused = false
 	usingjoystick = joystick.isOpen(1)
 
-	paintables = {}
-	setmetatable(paintables, {
-		__index = function ( self, index )
-			for _, p in pairs(self) do
-				if p.__type == index then return p end
-			end
-		end
-		})
-
-	for _, bodyType in ipairs {Shot, Enemy, Effect, Enemies, Warning, CircleEffect, Text, ImageBody, Button} do
-		bodyType:paintOn(paintables)
-	end
-
-	table.sort(paintables, function(a, b) return a.ord < b.ord end) --sort by painting order
-
 	-- [[End of Initing Variables]]
 	
 	-- [[Reading Files]]
@@ -95,7 +80,7 @@ function initBase()
 end
 
 function initGameVars()
-	for _, toBeInited in ipairs {RecordsManager, ColorManager, MenuManager, DeathManager, CircleEffect, Enemies, Shot, Psychoball} do
+	for _, toBeInited in ipairs {RecordsManager, ColorManager, MenuManager, DeathManager, Enemies, CircleEffect, Shot, Psychoball} do
 		toBeInited.init()
 	end
 		
@@ -112,7 +97,6 @@ function initGameVars()
 		position = Vector:new{width/2,height/2}
 	}
 	
-	keyspressed = {}
 	timefactor = 1.0
 
 	Levels.loadAll()
@@ -128,21 +112,14 @@ function resetVars()
 		psycho.ultraCounter = 3
 	end
 	
-	for _, toReset in ipairs {psycho, RecordsManager} do
-		toReset:reset()
-	end
+	RecordsManager:reset()
 
 	--[[Resetting Paintables]]
-	Shot:clear()
-	if notclearcircleeffect then notclearcircleeffect = false
-	else CircleEffect:clear() end
-	Enemy:clear()
-	Enemies:clear()
-	Warning:clear()
-	Text:clear()
-	ImageBody:clear()
+	for _, toClear in ipairs {Shot, CircleEffect, Enemy, Enemies, Warning, Text, ImageBody} do
+		toClear:clear()
+	end
 	--[[End of Resetting Paintables]]
-	Base.clearTable(keyspressed)
+	Base.clearTable(Game.keyboard.isPressed)
 
 	timefactor = 1.0
 
@@ -151,39 +128,6 @@ function resetVars()
 
 	DeathManager.resetDeathText()
 end
-
-function reloadSurvival()
-	Game.switchState(SurvivalState)
-end
-
-function reloadStory( name, reloadEverything )
-	Game.switchState(nil)
-	if name and name ~= 'Tutorial' and name > RecordsManager.records.story.lastLevel then RecordsManager.records.story.lastLevel = name end
-	if psycho.pseudoDied then
-		psycho.pseudoDied = false
-		paintables.deathEffects.bodies = nil
-		paintables.deathEffects = nil
-	end
-	if not psycho.canBeHit then
-		psycho.canBeHit = true
-		psycho.alpha = 255
-	end
-	Effect:clear()
-	Timer.closeOldTimers()
-	if reloadEverything or name == 'Level 1-1' then
-		state = story
-		psycho.lives = Psychoball.lives
-		SoundManager.changeSong(SoundManager.limitlesssong)
-		resetVars()
-		Timer.closeOldTimers()
-
-		SoundManager.restart()
-
-		mouse.setGrab(true)
-	end
-	Levels.runLevel(name)
-end
-
 
 function onMenu()
 	return state >= 0 and state < 10
@@ -204,11 +148,6 @@ function love.draw()
 	drawBackground()
 
 	Game.draw()
-	
-	--[[End of setting camera]]
-	for _, paintable in pairs(paintables) do
-		paintable:drawComponents()
-	end
 
 	UI.draw()
 	Psychoball.additionalDrawing()
@@ -239,24 +178,11 @@ function love.update(dt)
 	mouseX, mouseY = mouse.getPosition()
 	isPaused = (paused or onMenu())
 
-	Game.update(dt)
-
-	Timer.updatetimers(dt, timefactor, isPaused, DeathManager.gameLost)
+	Timer.updateTimers(dt, timefactor, isPaused, DeathManager.gameLost)
 	
 	dt = dt * timefactor
-	
-	if paused then return end
-	if onGame() then
-		psycho:update(dt)
-	end
 
-	updateBodies(dt)
-end
-
-function updateBodies( dt )
-	for i, v in pairs(paintables) do
-		v:updateComponents(dt)
-	end
+	Game.update(dt)
 end
 
 function love.mousepressed(x, y, btn)

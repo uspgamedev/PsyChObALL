@@ -6,21 +6,30 @@ bossFive = Body:new {
 	ord = 8,
 	variance = 4,
 	maxHealth = 100,
+	bodies= Group:new{},
 	--shader = Base.circleShader,
 	__type = 'bossFive'
 }
 Body.makeClass(bossFive)
 
-function bossFive:__init()
+function bossFive.bodies:update( dt )
+	Group.update(self, dt)
+end
+
+function bossFive:revive()
+	Body.revive(self)
+
 	self.position:set(-self.size - 10, -self.size - 10)
 	self.speed:set(v, v)
 	self.irisPosition = Vector:new{0, 0}
 	self.pupilSize = VarTimer:new{}
-	local funkShrink
+	local funcShrink
 	local funcGrow = function(timer) timer:setAndGo(27, 32, 1 + random()) timer.alsoCall = funcShrink end
 	funcShrink = function(timer) timer:setAndGo(32, 27, 1 + random()) timer.alsoCall = funcGrow end
 	funcGrow(self.pupilSize)
 	self.health = bossFive.maxHealth
+
+	return self
 end
 
 function bossFive:bounceInScreen()

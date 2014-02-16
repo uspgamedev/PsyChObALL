@@ -8,8 +8,10 @@ local createEnemyTimers
 function SurvivalState:create()
 	GameState.create(self)
 
-	SoundManager.changeSong(SoundManager.survivalsong)
+	SoundManager.changeSong(SoundManager.music['Limitless'])
 	ColorManager.currentEffect = nil
+	psycho:revive()
+
 	state = survival
 	resetVars()
 	Timer.closeOldTimers()
@@ -19,6 +21,10 @@ function SurvivalState:create()
 	createSuperballTimers()
 	createEnemyTimers()
 
+	for _, added in ipairs {Enemy, Enemies.superball, Shot, Effect, CircleEffect, DeathManager.DeathEffect, Warning} do
+		self:add(added.bodies)
+	end
+
 	mouse.setGrab(true)
 end
 
@@ -26,6 +32,8 @@ local superballAddTimer
 local superballReleaseTimer
 
 function createSuperballTimers() 
+	local superballList = List:new{}
+
 	superballAddTimer = Timer:new {
 		timelimit = 30,
 		works_on_gameLost = false
@@ -34,10 +42,11 @@ function createSuperballTimers()
 	local possiblePositions = {Vector:new{30, 30}, Vector:new{width - 30, 30}, Vector:new{width - 30, height - 30}, Vector:new{30, height - 30}}
 	function superballAddTimer:funcToCall()
 		if superball.bodies:countAlive() > RecordsManager.getGameTime()/90 then self.timelimit = 2 return end
-		local s = superball.bodies:getFirstAvailable():revive()
+		local s = superball.bodies:getFirstAvailable()
 		s.position:set(possiblePositions[math.random(4)])
+		s:revive()
 		s:deactivate()
-		superball.list:push(s)
+		superballList:push(s)
 		self.timelimit = 30
 		superballReleaseTimer:start(0)
 	end
@@ -49,7 +58,7 @@ function createSuperballTimers()
 	}
 
 	function superballReleaseTimer:funcToCall()
-		local s = superball.list:pop()
+		local s = superballList:pop()
 		s:activate()
 		s:register()
 		self:stop()

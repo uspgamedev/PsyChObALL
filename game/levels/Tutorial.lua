@@ -6,8 +6,8 @@ function run()
 		type = 'around',
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = Base.toRadians(180),
-		shootattarget = true
+		angleDelta = Base.toRadians(180),
+		shootAtTarget = true
 	}
 
 	warnEnemies = true
@@ -16,7 +16,7 @@ function run()
 	local welcome = Text:new{
 		text = "Welcome to PsyChObALL",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -26,7 +26,7 @@ function run()
 	local wasd = Text:new{
 		text = "Use WASD or the directional keys to move\nHold shift to move slowly",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -35,7 +35,7 @@ function run()
 	local aim = Text:new{
 		text = "Use your mouse to aim and left click to shoot",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -44,7 +44,7 @@ function run()
 	local hit = Text:new{
 		text = "Hit enemies to increase your score\n If you get hit you will die",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -53,7 +53,7 @@ function run()
 	local space = Text:new{
 		text = "Hold space to charge ultrablast, and release to use it\nHold it longer for more balls",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 0},
@@ -62,7 +62,7 @@ function run()
 	local pause = Text:new{
 		text = "Press P or ESC to pause the game",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -71,7 +71,7 @@ function run()
 	local music = Text:new{
 		text = "Press '<' or '>' to change the volume\n and press M to mute",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -80,7 +80,7 @@ function run()
 	local remember = Text:new{
 		text = "Remember, we all have psycho within ourselves\n Also you can replay this tutorial on the practice screen",
 		font = Base.getCoolFont(50),
-		printmethod = graphics.printf,
+		printFunction = graphics.printf,
 		position = Vector:new{width/2 - 400, height/2 - 20},
 		limit = 800,
 		alphaFollows = VarTimer:new{var = 1},
@@ -159,7 +159,7 @@ function run()
 		end
 	}
 	wait(3.5)
-	f1.anglechange = Base.toRadians(360/15)
+	f1.angleDelta = Base.toRadians(360/15)
 	f1.adapt = false
 	f1.speed = 1.4*v
 	f1.radius = 600
@@ -210,7 +210,7 @@ function run()
 			Text:new{
 				text = "Tutorial Completed. Press ESC or P and return to the menu.",
 				font = Base.getCoolFont(50),
-				printmethod = graphics.printf,
+				printFunction = graphics.printf,
 				position = Vector:new{width/2 - 400, height/2 + 20},
 				limit = 800,
 				align = 'center'

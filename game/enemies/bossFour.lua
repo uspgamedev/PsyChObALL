@@ -33,11 +33,11 @@ function bossFour.behaviors.arriving( self )
 		local f = Formations.around:new{
 			angle = 0,
 			target = Vector:new{width/2, height/2},
-			anglechange = Base.toRadians(30),
+			angleDelta = Base.toRadians(30),
 			distance = 0,
 			adapt = false,
 			speed = 1.1*v,
-			shootattarget = true
+			shootAtTarget = true
 		}
 		f:applyOn(components[1])
 		f.angle = Base.toRadians(7)
@@ -53,7 +53,7 @@ function bossFour.behaviors.arriving( self )
 		f.radius = width
 		f.angle = 0
 		f.target = self.position
-		f.shootattarget = true
+		f.shootAtTarget = true
 		self.form = f
 
 		Timer:new{
@@ -261,7 +261,7 @@ function bossFour.behaviors.gathering ( self )
 			funcToCall = function ()
 				self.form.angle = random()*math.pi
 				local n = random(14, 22)
-				self.form.anglechange = Base.toRadians(360/n)
+				self.form.angleDelta = Base.toRadians(360/n)
 				local es = {}
 				for i = 1, n do
 					local e = self:getShot()

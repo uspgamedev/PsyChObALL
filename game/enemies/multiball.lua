@@ -1,7 +1,6 @@
 multiball = Body:new {
 	size =  20,
 	divideN = 2,
-	args = {},
 	coloreffect = ColorManager.getColorEffect(255, 0, 0),
 	shader = Base.circleShader,
 	score = 50,
@@ -10,48 +9,42 @@ multiball = Body:new {
 
 Body.makeClass(multiball)
 
-function multiball:__init()
-	if not rawget(self.position, 1) then Enemy.__init(self) end
+function multiball:revive()
+	Body.revive(self)
+
+	self.size = multiball.size
+	self.divideN = multiball.divideN
+	self.divideType = Enemies.simpleball
+	self.score = multiball.score
+
+	return self
 end
 
 function multiball:update( dt )
-	Body.update(self, dt)
-
-	if self.position[1] < -self.size or self.position[1] > width + self.size or self.position[2] < -self.size or self.position[2] > width + self.size then return end
-	for _, v in pairs(Shot.bodies) do
-		if self:collidesWith(v) then
-			self:manageShotCollision(v)
-			break
-		end
-	end
-
-	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
-		psycho.causeOfDeath = "shot"
-		DeathManager.manageDeath()
-	end
-
-	self.delete = self.delete or self.collides
+	Enemies.simpleball.update(self, dt)
 end
 
 function multiball:manageShotCollision( shot )
-	shot.collides = true
-	shot.explosionEffects = false
-	self.collides = true
-	self.causeOfDeath = shot.isUltraShot and 'ultrashot' or 'shot'
+	Enemies.simpleball.manageShotCollision(self, shot)
 end
 
-function multiball:handleDelete()
-	Body.handleDelete(self)
+local random, abs = math.random, math.abs
+function multiball:kill()
+	Body.kill(self)
+
 	Effect.createEffects(self, 20)
+
 	if self.causeOfDeath ~= "shot" then return end
+
 	local speed = self.speed:length()
+	local objs = self.divideType.bodies:getObjects(self.divideN)
 	for i = 1, self.divideN do
-		local e = (self.divideType or Enemies.simpleball):new(lux.object.clone(self.args))
+		local e = objs[i]:revive()
 		if not self.score then e.score = false end
 		e.size = self.size - 6
-		e.position:set(self.position):add(math.random(self.size), math.random(self.size))
-		e.speed:set(self.speed):add((math.random() - .5)*v*1.9, (math.random() - .5)*v*1.9):normalize():mult(v + 40 ,v + 40)
-		if math.abs(e.Vy) + math.abs(e.Vx) then e.Vy = Base.sign(self.Vy) * math.random(3 * v / 4, v) end
+		e.position:set(self.position):add(random(self.size), random(self.size))
+		e.speed:set(self.speed):add((random() - .5) * v * 1.9, (random() - .5) * v * 1.9):normalize():mult(v + 40 ,v + 40)
+		if abs(e.Vy) + abs(e.Vx) < 40 then e.Vy = Base.sign(self.Vy) * random(3 * v / 4, v) end -- weird
 		e:register()
 	end
 end

@@ -103,16 +103,16 @@ function bossLast:__init()
 	local f = Formations.around:new{
 		angle = 0,
 		target = Vector:new{width/2, height/2},
-		anglechange = Base.toRadians(20),
+		angleDelta = Base.toRadians(20),
 		distance = 80,
 		adapt = false,
 		speed = 1.1*v,
-		shootattarget = true
+		shootAtTarget = true
 	}
 	f:applyOn(components[1])
 	f.angle = 3*math.pi/2
 	f:applyOn(components[2])
-	f.anglechange = - f.anglechange
+	f.angleDelta = - f.angleDelta
 	f.angle = math.pi
 	f:applyOn(components[3])
 	f.angle = math.pi/2

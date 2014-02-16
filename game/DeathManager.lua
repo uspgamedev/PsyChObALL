@@ -1,6 +1,5 @@
 module('DeathManager', Base.globalize)
 local deathTexts, deathMessage
-local DeathEffect
 local handlePsychoExplosion
 local deathDuration
 
@@ -19,7 +18,7 @@ function manageDeath()
 		mouse.setGrab(false)
 		RecordsManager.manageHighScore()
 		FileManager.writeStats()
-		SoundManager.fadeout()
+		SoundManager.fadeOut()
 
 		if getDeathText() == "Supreme." then resetDeathText() end -- makes it much rarer
 		if state == story and getDeathText() == deathTexts[1] then
@@ -40,7 +39,7 @@ function manageDeath()
 			ColorManager.currentEffect = nil
 		end
 
-		gameLost   = true
+		gameLost = true
 		UI.resetPauseText()
 	end
 	
@@ -48,7 +47,6 @@ function manageDeath()
 
 	psycho:handleDelete()
 	handlePsychoExplosion()
-	deathDuration = 0
 	isRestarting = false
 end
 
@@ -62,20 +60,20 @@ function doGameContinue()
 end
 
 function realContinue()
-	DeathEffect.bodies = nil
-	paintables.deathEffects = nil
+	DeathEffect.bodies:kill()
+	DeathEffect.bodies:clearAll()
+
 	psycho.continuesUsed = psycho.continuesUsed + 1
 	Levels.currentLevel.title = nil -- Forces it to show the title again
-	reloadStory(Levels.currentLevel.name_:sub(1, -2) .. '1', true)
+	AdventureState:runLevel(Levels.currentLevel.name_:sub(1, -2) .. '1', 1)
 end
 
 function startPsychoRevival( funcToCall )
 	if isRestarting then return end
 	isRestarting = true
 	local m = deathDuration/(timeToRestart * timefactor)
-	for _, eff in pairs(DeathEffect.bodies) do
-		eff.speed:negate():mult(m, m)
-	end
+	DeathManager.DeathEffect.bodies:forEach(function(eff) eff.speed:negate():mult(m, m) end)
+
 	Timer:new {
 		timelimit = timeToRestart,
 		timeAffected = false,
@@ -89,19 +87,19 @@ function restartGame()
 	if state == story then 
 		if not psycho.pseudoDied then
 			if Levels.currentLevel.wasSelected then
-				reloadStory(Levels.currentLevel.name_, true)
-				Levels.currentLevel.wasSelected = true
+				AdventureState:runLevel(Levels.currentLevel.name_, true, true)
 			else
-				reloadStory 'Level 1-1'
+				AdventureState:runLevel('Level 1-1', true)
 			end
 		else
 			psycho:recreate()
 		end
 	elseif state == survival then
-		reloadSurvival()
+		Game.switchState(SurvivalState)
 	end
-	DeathEffect.bodies = nil
-	paintables.deathEffects = nil
+	
+	DeathEffect.bodies:kill()
+	DeathEffect.bodies:clearAll()
 end
 
 local random, tan, asin, exp, log10, cos, sin = math.random, math.tan, math.asin, math.exp, math.log10, math.cos, math.sin
@@ -126,22 +124,19 @@ local deathFunctions = {
 
 DeathEffect = Body:new{
 	size = Effect.size,
+	bodies = Group:new{},
 	__type = 'DeathEffect'
 }
 Body.makeClass(DeathEffect)
 
-function DeathEffect:updateComponents( dt )
-	deathDuration = deathDuration + dt
-	for i = #self.bodies, 1, -1 do
-		self.bodies[i]:update(dt)
-	end
+function DeathEffect.bodies:update( dt )
+	if deathDuration then deathDuration = deathDuration + dt end
+	Group.update(self, dt)
 end
 
-function DeathEffect:drawComponents()
+function DeathEffect.bodies:draw()
 	graphics.setColor(ColorManager.getComposedColor(psycho.variance)) -- all of them have the same color
-	for i = #self.bodies, 1, -1 do
-		self.bodies[i]:draw()
-	end
+	Group.draw(self)
 end
 
 function DeathEffect:draw()
@@ -158,27 +153,45 @@ function handlePsychoExplosion()
 	local psycho, Psychoball = psycho, Psychoball
 
 	psycho.size = Psychoball.size + Psychoball.sizeDiff
-	local deathEffects = {}
+	DeathEffect.bodies:kill()
+	DeathEffect.bodies:clearAll()
+
 	local deathFunc = deathFunctions[math.random(#deathFunctions)]
-	for i = psycho.x - psycho.size, psycho.x + psycho.size, Effect.size * 1.3 do
-		for j = psycho.y - psycho.size, psycho.y + psycho.size, Effect.size * 1.3 do
+	local i, j = psycho.x - psycho.size, psycho.y - psycho.size
+	-- the timer divides the job of creating the effect in many small steps, this may prevent lag
+	Timer:new {
+		running = true,
+		funcToCall = function(timer)
 			-- checks if the position is inside psycho
-			if (i - psycho.x)^2 + (j - psycho.y)^2 <= psycho.size^2 then
-				local e = DeathEffect:new{
-					position = Vector:new{i, j}
-				}
-				local distr = deathFunc(e.position, psycho.position, psycho.size)
-				e.speed:set(e.position):sub(psycho.position):normalize():mult(v * distr)
-				
-				deathEffects[#deathEffects + 1] = e
+			for times = 1, 10 do
+				if (i - psycho.x)^2 + (j - psycho.y)^2 <= psycho.size^2 then
+					local e = DeathEffect:new{
+						position = Vector:new{i, j}
+					}
+					local distr = deathFunc(e.position, psycho.position, psycho.size)
+					e.speed:set(e.position):sub(psycho.position):normalize():mult(v * distr)
+					e:kill()
+					
+					DeathEffect.bodies:add(e)
+				end
+				j = j + Effect.size
+				if j > psycho.y + psycho.size then
+					j = psycho.y - psycho.size
+					i = i + Effect.size
+					if i > psycho.x + psycho.size then
+						-- When everything is finished
+						DeathEffect.bodies:revive()
+						psycho.visible = false
+						deathDuration = 0
+						timer:remove()
+						return
+					end
+				end
 			end
 		end
-	end
+	}
 
 	psycho.size = Psychoball.size
-
-	DeathEffect.bodies = deathEffects
-	paintables.deathEffects = DeathEffect
 
 	if state == story then
 		if psycho.lives == 0 then

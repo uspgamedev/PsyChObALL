@@ -11,6 +11,10 @@ function MenuManager.init()
 end
 
 function MenuManager:create()
+	for _, added in ipairs {CircleEffect, Text, Effect} do
+		self:add(added.bodies)
+	end
+
 	self:changeToMenu(MainMenu, MenuTransitions.Fade)
 end
 
@@ -46,6 +50,7 @@ function MenuManager:destroy()
 	self.currentMenu = nil
 	self.previousMenu = nil
 	self.currentTransition = nil
+	State.destroy(self)
 end
 
 function MenuManager:mousePressed( x, y, btn )
