@@ -16,6 +16,7 @@ function restartMenu()
 	resetVars()
 	Timer.closeOldTimers()
 	Game.switchState(MenuManager)
+	MenuManager:changeToMenu(MainMenu, MenuTransitions.Fade)
 	if SoundManager.currentSong ~= SoundManager.music['Flying Carrots 2'] then
 		SoundManager.changeSong(SoundManager.music['Flying Carrots 2'])
 	end

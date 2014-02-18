@@ -14,8 +14,6 @@ function MenuManager:create()
 	for _, added in ipairs {CircleEffect, Text, Effect} do
 		self:add(added.bodies)
 	end
-
-	self:changeToMenu(MainMenu, MenuTransitions.Fade)
 end
 
 function MenuManager:draw()

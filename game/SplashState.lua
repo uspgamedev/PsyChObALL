@@ -8,7 +8,7 @@ function SplashState:create()
 	image = graphics.newImage 'resources/Marvellous Soft.png'
 	Timer:new{ 
 		timelimit = 1.75,
-		funcToCall = function() Game.switchState(MenuManager) end, 
+		funcToCall = function() Game.switchState(MenuManager) MenuManager:changeToMenu(MainMenu, MenuTransitions.Cut) end, 
 		onceOnly = true, 
 		running = true,
 		pausable = false

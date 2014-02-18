@@ -7,9 +7,11 @@ grayball = Body:new {
 
 Body.makeClass(grayball)
 
-function grayball:__init()
-	if not rawget(self.position, 1) then Enemy.__init(self) end
+function grayball:revive()
+	Body.revive(self)
 	self.inScreen = false
+
+	return self
 end
 
 function grayball:update( dt )
@@ -18,12 +20,12 @@ function grayball:update( dt )
 		if self.position[1] < -self.size or self.position[1] > width + self.size or self.position[2] < -self.size or self.position[2] > width + self.size then return end
 		self.inScreen = true
 	end
-	for _, v in pairs(Shot.bodies) do
-		if self:collidesWith(v) then
-			v.collides = true
-			v.explosionEffects = true
+	Shot.bodies:forEachAlive(function(shot)
+		if self:collidesWith(shot) then
+			shot.explosionEffects = true
+			shot:kill()
 		end
-	end
+	end)
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.causeOfDeath = "shot"
@@ -35,7 +37,7 @@ function grayball:draw()
 	if self.inScreen then Body.draw(self) end
 end
 
-function grayball:handleDelete()
-	Body.handleDelete(self)
+function grayball:kill()
+	Body.kill(self)
 	Effect.createEffects(self, 40)
 end

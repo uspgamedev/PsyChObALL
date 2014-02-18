@@ -66,6 +66,18 @@ function Body:draw()
 	Base.defaultDraw(self)
 end
 
+function Body:revive()
+	Basic.revive(self)
+	local super = self:__super()
+	self.size = super.size
+	self.score = super.score
+	self.coloreffect = super.coloreffect
+	self.speed:set(0, 0)
+	self.positionfollows = nil
+
+	return self
+end
+
 function Body:kill()
 	Basic.kill(self)
 	if self.score and self.causeOfDeath == 'shot' then RecordsManager.addScore(self.score) end
@@ -88,16 +100,6 @@ function Body:freeWarning()
 		self.warning:kill()
 		self.warning = nil
 	end
-end
-
-function Body:drawComponents()
-	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect(self.shader) end
-	self.bodies:draw()
-	if self.shader and not Cheats.image.enabled then graphics.setPixelEffect() end
-end
-
-function Body:updateComponents( dt )
-	self.bodies:update(dt)
 end
 
 function Body:clear()

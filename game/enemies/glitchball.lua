@@ -9,10 +9,6 @@ glitchball = Body:new {
 
 Body.makeClass(glitchball)
 
-function glitchball:__init()
-	if not rawget(self.position, 1) then Enemy.__init(self) end
-end
-
 glitchball.draw = CircleEffect.draw
 
 function glitchball:update( dt )
@@ -24,6 +20,7 @@ function glitchball:update( dt )
 	end
 end
 
-function glitchball:handleDelete()
+function glitchball:kill()
+	Body.kill(self)
 	Effect.createEffects(self, 40)
 end

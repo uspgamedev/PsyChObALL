@@ -170,7 +170,7 @@ function handlePsychoExplosion()
 					}
 					local distr = deathFunc(e.position, psycho.position, psycho.size)
 					e.speed:set(e.position):sub(psycho.position):normalize():mult(v * distr)
-					e:kill()
+					e:deactivate()
 					
 					DeathEffect.bodies:add(e)
 				end
@@ -180,7 +180,7 @@ function handlePsychoExplosion()
 					i = i + Effect.size
 					if i > psycho.x + psycho.size then
 						-- When everything is finished
-						DeathEffect.bodies:revive()
+						DeathEffect.bodies:forEach(function(de) de:activate() end)
 						psycho.visible = false
 						deathDuration = 0
 						timer:remove()

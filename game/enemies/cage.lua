@@ -1,28 +1,26 @@
 cage = CircleEffect:new {
 	size = width,
-	speedN = v*.4,
-	maxSize = width*2,
+	speedN = v * .4,
+	maxSize = width * 2,
 	onLocation = true,
-	lastexecuted = 0,
 	alpha = 255,
 	sizeGrowth = 40,
 	linewidth = 8,
-	index = false,
 	__type = 'cage'
 }
 
 Body.makeClass(cage)
 
 function cage:update( dt )
-	CircleEffect.update(self, dt)
 	Body.update(self, dt)
+	self.size = self.size + self.sizeGrowth * dt
 
 	if self.growToSize and ((self.sizeGrowth > 0 and self.size > self.growToSize) 
 		or (self.sizeGrowth < 0 and self.size < self.growToSize)) then
 		self.size = self.growToSize
 		self.sizeGrowth = 0
 		self.growToSize = nil
-		if self.destroy then self.delete = true end
+		if self.destroy then self:kill() end
 	end
 
 	if not self.onLocation then
@@ -43,35 +41,40 @@ function cage:update( dt )
 	end
 end
 
-function cage:doaction( actN )
+local abs = math.abs
+function cage:doAction( actN )
 	local act = self.actions[actN]
 	while act do
-		self.lastexecuted = actN
 		if act.size then
 			self.growToSize = act.size
-			self.sizeGrowth = math.abs(act.sizeGrowth or cage.sizeGrowth) * Base.sign(act.size - self.size)
+			self.sizeGrowth = abs(act.sizeGrowth or cage.sizeGrowth) * Base.sign(act.size - self.size)
 		end
+
 		if act.speed then
 			self.speedN = act.speed
 		end
+
 		if act.moveto then
 			self.onLocation = false
 			self.target = Base.clone(act.moveto)
 			self.prevdist = self.position:distsqr(self.target)
 			self.speed:set(self.target):sub(self.position):normalize():mult(self.speedN, self.speedN)
 		end
+
 		if act.destroy then
 			self.growToSize = width
 			self.sizeGrowth = act.sizeGrowth or cage.sizeGrowth
 			self.destroy = true
 		end
+
 		if act.wait then
-			Timer:new{
+			self.waitTimer = self.waitTimer or Timer:new{
 				timelimit = act.wait,
-				running = true,
-				onceOnly = true,
-				funcToCall = function() self:doaction(actN + 1) end
+				onceOnly = true
 			}
+			self.waitTimer.funcToCall = function() self:doAction(actN + 1) end
+			self.waitTimer:register()
+			self.waitTimer:start(0)
 			act = nil
 		else
 			actN = actN + 1
@@ -80,14 +83,20 @@ function cage:doaction( actN )
 	end
 end
 
-function cage:onInit( pos1, ...)
-	self.variance = math.random()*6 + 2
-	self.position = Vector:new(Base.clone(pos1))
+function cage:revive( pos1, ... )
+	Body.revive(self)
+
+	self.variance = math.random() * 6 + 2
+	self.position:set(pos1)
 	self.actions = {...}
+
+	return self
 end
 
 function cage:start()
-	self:doaction(1)
+	Body.start(self)
+
+	self:doAction(1)
 end
 
 cage.getWarning = Base.doNothing

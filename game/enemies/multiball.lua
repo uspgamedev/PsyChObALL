@@ -12,10 +12,8 @@ Body.makeClass(multiball)
 function multiball:revive()
 	Body.revive(self)
 
-	self.size = multiball.size
 	self.divideN = multiball.divideN
 	self.divideType = Enemies.simpleball
-	self.score = multiball.score
 
 	return self
 end
