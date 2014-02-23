@@ -63,8 +63,8 @@ function levelEnv.enemy( name, n, format, ... )
 	if levelEnv.warnEnemies then
 		-- warns about the enemy
 		local warn = Timer:new {
-			timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
-			funcToCall = function() pushEnemies(enemyList) end, 
+			timeLimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
+			callback = function() pushEnemies(enemyList) end, 
 			onceOnly = true,
 			registerSelf = false
 		}
@@ -74,11 +74,11 @@ function levelEnv.enemy( name, n, format, ... )
 			-- follows the target with the warnings
 			local speed = format.speed or v
 			table.insert(currentLevel.timers_, Timer:new {
-				timelimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
+				timeLimit = levelEnv.time - (levelEnv.warnEnemiesTime or 1),
 				prevtarget = format.target:clone(),
 				registerSelf = false,
-				funcToCall = function(self)
-					if self.timelimit then self.timelimit = nil return end
+				callback = function(self)
+					if self.timeLimit then self.timeLimit = nil return end
 					if not enemyList[1].warning then self:remove() return end
 					if self.prevtarget == format.target then return end
 					for i = 1, n do
@@ -93,8 +93,8 @@ function levelEnv.enemy( name, n, format, ... )
 
 	-- release the enemy onscreen
 	local t = Timer:new {
-		timelimit = levelEnv.time,
-		funcToCall = function() registerEnemies(enemyList) end, 
+		timeLimit = levelEnv.time,
+		callback = function() registerEnemies(enemyList) end, 
 		onceOnly = true,
 		registerSelf = false
 	}
@@ -119,8 +119,8 @@ end
 
 function levelEnv.doNow( func )
 	levelEnv.registerTimer {
-		funcToCall = func,
-		timelimit = 0,
+		callback = func,
+		timeLimit = 0,
 		onceOnly = true
 	}
 end
@@ -172,19 +172,19 @@ function runLevel( name )
 		title:register()
 
 		Timer:new{
-			timelimit = .5,
+			timeLimit = .5,
 			running = true,
 			onceOnly = true,
-			funcToCall = function ( timer )
+			callback = function ( timer )
 				title.alphaFollows:setAndGo(0, 255, 255/1.75)
 			end
 		}
 
 		Timer:new{
-			timelimit = .5 + 1.75,
+			timeLimit = .5 + 1.75,
 			running = true,
 			onceOnly = true,
-			funcToCall = function ( timer )
+			callback = function ( timer )
 				title.alphaFollows:setAndGo(255, 0, 255/1.75)
 				title.alphaFollows.alsoCall = function() title.alphaFollows:remove() title:kill() end
 			end

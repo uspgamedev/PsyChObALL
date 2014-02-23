@@ -43,7 +43,7 @@ function manageDeath()
 		UI.resetPauseText()
 	end
 	
-	timefactor = .05
+	timeFactor = .05
 
 	psycho:handleDelete()
 	handlePsychoExplosion()
@@ -68,18 +68,18 @@ function realContinue()
 	AdventureState:runLevel(Levels.currentLevel.name_:sub(1, -2) .. '1', 1)
 end
 
-function startPsychoRevival( funcToCall )
+function startPsychoRevival( callback )
 	if isRestarting then return end
 	isRestarting = true
-	local m = deathDuration/(timeToRestart * timefactor)
+	local m = deathDuration/(timeToRestart * timeFactor)
 	DeathManager.DeathEffect.bodies:forEach(function(eff) eff.speed:negate():mult(m, m) end)
 
 	Timer:new {
-		timelimit = timeToRestart,
+		timeLimit = timeToRestart,
 		timeAffected = false,
 		onceOnly = true,
 		running = true,
-		funcToCall = funcToCall
+		callback = callback
 	}
 end
 
@@ -161,7 +161,7 @@ function handlePsychoExplosion()
 	-- the timer divides the job of creating the effect in many small steps, this may prevent lag
 	Timer:new {
 		running = true,
-		funcToCall = function(timer)
+		callback = function(timer)
 			-- checks if the position is inside psycho
 			for times = 1, 10 do
 				if (i - psycho.x)^2 + (j - psycho.y)^2 <= psycho.size^2 then
@@ -201,11 +201,11 @@ function handlePsychoExplosion()
 			psycho.canBeHit = false
 			psycho.pseudoDied = true
 			Timer:new{
-				timelimit = 1,
+				timeLimit = 1,
 				running = true,
 				timeAffected = false,
 				onceOnly = true,
-				funcToCall = beginGameRestart
+				callback = beginGameRestart
 			}
 		end
 	end

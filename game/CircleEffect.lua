@@ -3,7 +3,7 @@ CircleEffect = Body:new {
 	maxSize = width / 1.9,
 	mode = 'line',
 	__type = 'CircleEffect',
-	linewidth = 4,
+	lineWidth = 4,
 	shader = Base.circleShader,
 	ord = 3,
 	bodies = Group:new{}
@@ -23,7 +23,7 @@ function CircleEffect:revive( based_on )
 	self.alpha = CircleEffect.alpha
 	self.maxSize = CircleEffect.maxSize
 	self.mode = CircleEffect.mode
-	self.linewidth = CircleEffect.linewidth
+	self.lineWidth = CircleEffect.lineWidth
 	self.growToSize = CircleEffect.growToSize -- nil
 	
 	self.sizeGrowth = math.random(120, 160)
@@ -34,12 +34,12 @@ end
 
 function CircleEffect.init()
 	CircleEffect.timer = Timer:new{
-		timelimit = .2,
+		timeLimit = .2,
 		running = true,
 		persistent = true
 	}
 
-	function CircleEffect.timer:funcToCall() -- releases cirleEffects
+	function CircleEffect.timer:callback() -- releases cirleEffects
 		if onGame() and not DeathManager.gameLost then
 			CircleEffect.bodies:getFirstAvailable():revive(psycho)
 		end
@@ -54,7 +54,7 @@ function CircleEffect.init()
 end
 
 function CircleEffect:draw()
-	graphics.setLine(self.linewidth)
+	graphics.setLine(self.lineWidth)
 	Base.defaultDraw(self)
 end
 

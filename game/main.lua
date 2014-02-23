@@ -97,7 +97,7 @@ function initGameVars()
 		position = Vector:new{width/2,height/2}
 	}
 	
-	timefactor = 1.0
+	timeFactor = 1.0
 
 	Levels.loadAll()
 end
@@ -121,7 +121,7 @@ function resetVars()
 	--[[End of Resetting Paintables]]
 	Base.clearTable(Game.keyboard.isPressed)
 
-	timefactor = 1.0
+	timeFactor = 1.0
 
 	DeathManager.gameLost = false
 	paused = false
@@ -178,9 +178,9 @@ function love.update(dt)
 	mouseX, mouseY = mouse.getPosition()
 	isPaused = (paused or onMenu())
 
-	Timer.updateTimers(dt, timefactor, isPaused, DeathManager.gameLost)
+	Timer.updateTimers(dt, timeFactor, isPaused, DeathManager.gameLost)
 	
-	dt = dt * timefactor
+	dt = dt * timeFactor
 
 	Game.update(dt)
 end
@@ -189,7 +189,7 @@ function love.mousepressed(x, y, btn)
 	x, y  = x/ratio, y/ratio
 	Game.mousePressed(x, y, btn)
 	if btn == 'l' and onGame() and not (DeathManager.gameLost or paused or psycho.pseudoDied) then
-		Shot.timer:start(Shot.timer.timelimit) --starts shooting already
+		Shot.timer:start(Shot.timer.timeLimit) --starts shooting already
 	end
 end
 

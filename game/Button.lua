@@ -13,23 +13,25 @@ function Button:__init()
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
 	self.effectsBurst = Timer:new {
-		timelimit = .07,
+		timeLimit = .07,
 		pausable = false,
 		registerSelf = false,
 		persistent = true
 	}
 
-	function self.effectsBurst.funcToCall()
+	function self.effectsBurst.callback()
 		Effect.createEffects(self, 1)
 	end
 
-	self.hoverring = CircleEffect.bodies:getFirstAvailable()
-	self.hoverring.size = .1
-	self.hoverring.sizeGrowth = 0
-	self.hoverring.alpha = 255
-	self.hoverring.linewidth = 3
+	self.hoverring = Body.reviveAndCopy(CircleEffect.bodies:getFirstAvailable(), {
+		size = .1,
+		sizeGrowth = 0,
+		alpha = 255,
+		lineWidth = 3,
+		alphaFollows = self.alphaFollows
+	})
+
 	self.hoverring.position:set(self.position)
-	self.hoverring.alphaFollows = self.alphaFollows
 
 	self.hoverring.update = function(self, dt)
 		self.size = self.size + self.sizeGrowth * dt

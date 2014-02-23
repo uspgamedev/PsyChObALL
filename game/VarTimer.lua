@@ -16,7 +16,7 @@ function VarTimer:__init()
 	end
 end
 
-function VarTimer:funcToCall( dt )
+function VarTimer:callback( dt )
 	if self.backwards then
 		self.var = self.var - self.speed * dt
 		if self.var <= self.limit then 

@@ -62,20 +62,32 @@ function Body:update( dt )
 end
 
 function Body:draw()
-	if self.linewidth then graphics.setLineWidth(self.linewidth) end
+	if self.lineWidth then graphics.setLineWidth(self.lineWidth) end
 	Base.defaultDraw(self)
 end
 
 function Body:revive()
 	Basic.revive(self)
+
 	local super = self:__super()
 	self.size = super.size
 	self.score = super.score
 	self.coloreffect = super.coloreffect
 	self.speed:set(0, 0)
-	self.positionfollows = nil
+	self.positionfollows, self.alphaFollows = nil, nil
+
+	self.update, self.draw, self.kill = nil, nil, nil -- resetting functions in case they were changed
 
 	return self
+end
+
+function Body.reviveAndCopy(obj, copy)
+	obj:revive()
+	for k, v in pairs(copy) do
+		obj[k] = v
+	end
+
+	return obj
 end
 
 function Body:kill()

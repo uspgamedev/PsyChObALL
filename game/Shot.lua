@@ -13,12 +13,12 @@ Body.makeClass(Shot)
 
 function Shot.init()
 	Shot.timer = Timer:new{
-		timelimit = .18,
-		works_on_gameLost = false,
+		timeLimit = .18,
+		worksOnGameLost = false,
 		persistent = true
 	}
 
-	function Shot.timer:funcToCall() -- continues shooting when you hold the mouse
+	function Shot.timer:callback() -- continues shooting when you hold the mouse
 		Shot.bodies:reviveObjects(Shot.shotnum)
 	end
 

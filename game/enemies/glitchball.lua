@@ -2,7 +2,7 @@ glitchball = Body:new {
 	size = 20,
 	coloreffect = ColorManager.noLSDEffect,
 	mode = 'line',
-	linewidth = 10,
+	lineWidth = 10,
 	shader = Base.circleShader,
 	__type = "glitchball"
 }

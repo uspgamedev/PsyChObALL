@@ -61,7 +61,7 @@ function vertical:applyOn( enemies )
 
 	local speed = self.speed or v
 	for i = 1, n do
-		enemies[i].position:set(transl + (i-1) * dist, y)
+		enemies[i].position:set(transl + (i - 1) * dist, y)
 
 		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
@@ -69,8 +69,7 @@ function vertical:applyOn( enemies )
 			if self.setSpeed then
 				enemies[i].speed:set(self.setSpeed)
 			else
-				local l = self.speed or v * sqrt2
-				enemies[i].speed:set(0, y == 0 and l or -l)
+				enemies[i].speed:set(0, y == 0 and speed or -speed)
 			end
 		end
 	end
@@ -106,15 +105,14 @@ function horizontal:applyOn( enemies )
 
 	local speed = self.speed or v
 	for i = 1, n do
-		enemies[i].position:set(x, transl + (i-1) * dist)
+		enemies[i].position:set(x, transl + (i - 1) * dist)
 		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else
 			if self.setSpeed then
 				enemies[i].speed:set(self.setSpeed)
 			else
-				local l = self.speed or enemies[n].speed:length()
-				enemies[i].speed:set(x == 0 and l or -l, 0)
+				enemies[i].speed:set(x == 0 and speed or -speed, 0)
 			end
 		end
 	end
@@ -139,7 +137,7 @@ function line:applyOn( enemies )
 
 	local speed = self.speed or v
 	for i = 1, n do
-		enemies[i].position:set(self.startLocation):add((i-1)*transl)
+		enemies[i].position:set(self.startLocation):add((i - 1) * transl)
 		if self.shootAtTarget then
 			enemies[i].speed:set(self.target):sub(enemies[i].position):normalize():mult(speed, speed)
 		else

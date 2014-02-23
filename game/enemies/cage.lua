@@ -5,7 +5,7 @@ cage = CircleEffect:new {
 	onLocation = true,
 	alpha = 255,
 	sizeGrowth = 40,
-	linewidth = 8,
+	lineWidth = 8,
 	__type = 'cage'
 }
 
@@ -36,8 +36,8 @@ function cage:update( dt )
 		end
 	end
 	
-	if (self.size - psycho.size - psycho.sizeDiff - self.linewidth + 3)^2 < self.position:distsqr(psycho.position) then
-		psycho.position:sub(self.position):normalize():mult(self.size - psycho.size - psycho.sizeDiff - self.linewidth + 3):add(self.position)
+	if (self.size - psycho.size - psycho.sizeDiff - self.lineWidth + 3)^2 < self.position:distsqr(psycho.position) then
+		psycho.position:sub(self.position):normalize():mult(self.size - psycho.size - psycho.sizeDiff - self.lineWidth + 3):add(self.position)
 	end
 end
 
@@ -69,10 +69,10 @@ function cage:doAction( actN )
 
 		if act.wait then
 			self.waitTimer = self.waitTimer or Timer:new{
-				timelimit = act.wait,
+				timeLimit = act.wait,
 				onceOnly = true
 			}
-			self.waitTimer.funcToCall = function() self:doAction(actN + 1) end
+			self.waitTimer.callback = function() self:doAction(actN + 1) end
 			self.waitTimer:register()
 			self.waitTimer:start(0)
 			act = nil

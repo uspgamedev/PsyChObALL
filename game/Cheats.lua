@@ -89,8 +89,8 @@ function keypressed( key )
 			elseif key == '7' then RecordsManager.addScore(-100)
 			elseif key == '6' then v = v + 10
 			elseif key == '5' then v = v - 10
-			elseif key == '4' then timefactor = timefactor * 1.1
-			elseif key == '3' then timefactor = timefactor * 0.9
+			elseif key == '4' then timeFactor = timeFactor * 1.1
+			elseif key == '3' then timeFactor = timeFactor * 0.9
 			elseif key == '2' then psycho:addLife()
 			elseif key == '1' then psycho:removeLife()
 			elseif key == 'l' and not DeathManager.gameLost then DeathManager.getDeathText(1) DeathManager.manageDeath()
@@ -100,7 +100,7 @@ function keypressed( key )
 				local effectCount = 0
 				for _, __ in pairs(Effect.bodies) do effectCount = effectCount + 1 end
 				print(effectCount)
-			elseif key == 'o' then timefactor = 1
+			elseif key == 'o' then timeFactor = 1
 			elseif key == 'j' then Shot.shotnum = Shot.shotnum == 1 and 10 or 1
 			end
 		end

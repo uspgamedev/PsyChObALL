@@ -78,7 +78,7 @@ function MenuTransitions.Fade:drawCurrent()
 end
 
 MenuTransitions.Slide = MenuTransition:new{
-	slideSpeed = width/.6,
+	slideSpeed = width/.5,
 	direction = 1 -- 1 = left/rigth
 }
 

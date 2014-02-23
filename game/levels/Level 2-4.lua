@@ -37,8 +37,8 @@ function run()
 	wait(15)
 
 	registerTimer {
-		timelimit = 1,
-		funcToCall = function ( timer )
+		timeLimit = 1,
+		callback = function ( timer )
 			if Enemies.bossTwo.bodies:countAlive() == 0 then
 				local t = Text.bodies:getFirstAvailable():revive()
 				t.text = 'No turning back\n  TODO: Create EndLevel screen with scores and stuff'

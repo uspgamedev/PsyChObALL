@@ -36,7 +36,7 @@ function bossThree.behaviors.first( self )
 		for i = self.first + 1, self.last, 1 do
 			if self.segments[i].target ~= t then return end
 		end
-		self.shoottimer.timelimit = self.shoottimer.timelimit/1.4
+		self.shoottimer.timeLimit = self.shoottimer.timeLimit/1.4
 		self.currentBehavior = Base.doNothing
 		local s = Base.sign(self.segments[self.first].speed.x)
 		local x = self.x + s*2
@@ -70,10 +70,10 @@ function bossThree.behaviors.first( self )
 			end
 			self.currentBehavior = Base.doNothing
 			self.spawnfood = Timer:new{
-				timelimit = random()*7 + 9,
+				timeLimit = random()*7 + 9,
 				running = true,
-				funcToCall = function(timer)
-					timer.timelimit = random()*7 + 9
+				callback = function(timer)
+					timer.timeLimit = random()*7 + 9
 					if self.last - self.first + 1 >= 7 then return end
 					local pos = self.position + {width/2, width/2}
 					pos.x = max(min(pos.x % width, width-100), 100)
@@ -101,10 +101,10 @@ function bossThree.behaviors.second( self )
 		self.speedbak = self.speed:clone()
 		self.speed:reset()
 		Timer:new{
-			timelimit = 1.5,
+			timeLimit = 1.5,
 			onceOnly = true,
 			running = true,
-			funcToCall = function()
+			callback = function()
 				self.speed:set(self.speedbak)
 				self.speedbak = nil
 				self.health = bossThree.yellowguyhealth
@@ -132,13 +132,13 @@ function bossThree.behaviors.second( self )
 			local ang = 0
 			self.yellowguytimer = Timer:new{
 				running = true,
-				timelimit = nil,
+				timeLimit = nil,
 				timecount = 0,
 				increasing = true,
 				limit = .1,
 				change = Base.toRadians(20),
 				pause = false,
-				funcToCall = function(t, dt)
+				callback = function(t, dt)
 					t.timecount = t.timecount + dt
 					if t.timecount > t.limit then 
 						if t.pause then t:stop() t.alsoCall() return end
@@ -180,7 +180,7 @@ function bossThree.behaviors.third( self )
 		self.speed:reset()
 		self.currentBehavior = Base.doNothing
 		self.vulnerable = false
-		Timer:new{ timelimit = 1, running = true, onceOnly = true, funcToCall = function()
+		Timer:new{ timeLimit = 1, running = true, onceOnly = true, callback = function()
 				Base.clearTable(bossThree.food.bodies)
 				local t = self.yellowguytimer
 				t.increasing = true
@@ -210,7 +210,7 @@ function bossThree.behaviors.third( self )
 						self.speed:set(self.speedbak)
 						self.speedbak = nil
 						self.health = bossThree.yellowguyhealth*.5
-						self.spawnfood.time = self.spawnfood.timelimit
+						self.spawnfood.time = self.spawnfood.timeLimit
 					end
 				end
 			end
@@ -233,7 +233,7 @@ function bossThree.behaviors.fourth( self )
 		self.speed:reset()
 		self.currentBehavior = Base.doNothing
 		self.vulnerable = false
-		Timer:new{ timelimit = 1, running = true, onceOnly = true, funcToCall = function()
+		Timer:new{ timeLimit = 1, running = true, onceOnly = true, callback = function()
 				Base.clearTable(bossThree.food.bodies)
 				local t = self.yellowguytimer
 				t.increasing = true
@@ -252,8 +252,8 @@ function bossThree.behaviors.fourth( self )
 					Timer:new{
 						running = true,
 						onceOnly = true,
-						timelimit = 2,
-						funcToCall = function()
+						timeLimit = 2,
+						callback = function()
 							local change = VarTimer:new{var = 0}
 							local c = ColorManager.getColorEffect({var = 122}, {var = 122}, {var = 122}, change)
 							change:setAndGo(0, 255, 80)
@@ -489,7 +489,7 @@ function bossThree:defaultHealthLoss()
 		self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
-		Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+		Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 			self.colors[1]:setAndGo(nil , (1-d)*255, 300)
 			self.colors[2]:setAndGo(nil, d*255, 300)
 		end
@@ -505,7 +505,7 @@ function bossThree:yellowguyHealthLoss()
 		--self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		--self.colors[3] is already correct
-		Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+		Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 			self.colors[2]:setAndGo(nil, d*255, 300)
 		end
 		}	
@@ -514,7 +514,7 @@ function bossThree:yellowguyHealthLoss()
 		self.colors[1]:setAndGo(nil, 255, 1200)
 		self.colors[2]:setAndGo(nil, 0, 1200)
 		self.colors[3]:setAndGo(nil, 0, 1200)
-		Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+		Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 			self.colors[1]:setAndGo(nil, .94*255 + (1-d)*.06*255, 300)
 			self.colors[2]:setAndGo(nil, d*.86*255, 300)
 			self.colors[3]:setAndGo(nil, d*.51*255, 300)
@@ -554,9 +554,9 @@ function bossThree:__init()
 		self.segments[i] = s
 	end
 	self.fixtimer = Timer:new{ --gambiarra (arruma os segmentos da snake se necessário)
-		timelimit = .1,
+		timeLimit = .1,
 		running = true,
-		funcToCall = function()
+		callback = function()
 			local prev = nil
 			for i = self.first, self.last, 1 do
 				local s = self.segments[i]
@@ -568,15 +568,15 @@ function bossThree:__init()
 		end
 	}
 	self.shoottimer = Timer:new{
-		timelimit = .8,
+		timeLimit = .8,
 		running = true,
 		time = -3
 	}
 
-	function self.shoottimer.funcToCall()
+	function self.shoottimer.callback()
 		if not psycho.canBeHit then return end
-		local e = Enemies.grayball:new{}
-		e.position = self.position:clone()
+		local e = Enemies.grayball.bodies:getFirstAvailable():revive()
+		e.position:set(self.position)
 		local pos = psycho.position:clone()
 		if not psycho.speed:equals(0, 0) then pos:add(psycho.speed:normalized():mult(v / 2, v / 2)) end
 		e.speed = (pos:sub(self.position)):normalize():add(random()/10, random()/10):normalize():mult(2 * v, 2 * v)
@@ -658,10 +658,10 @@ function bossThree.food:update( dt )
 			local t = 100/bossThree.basespeed
 			self.creationsize:setAndGo(0, b3.size, b3.size/t)
 			Timer:new{
-				timelimit = t,
+				timeLimit = t,
 				onceOnly = true,
 				running = true,
-				funcToCall = function()
+				callback = function()
 					self.sizeGrowth = -70
 					self.creationsize.var = 0
 					if b3.guy then return end
@@ -698,10 +698,10 @@ function bossThree.food:update( dt )
 				b3.colors[3]:setAndGo(nil, 122, 100)
 				b3.colors[4]:setAndGo(nil, 0, 100)
 				Timer:new{
-					timelimit = 2,
+					timeLimit = 2,
 					onceOnly = true,
 					running = true,
-					funcToCall = function ()
+					callback = function ()
 						local d = b3.health/bossThree.yellowguyhealth
 						d = d*2
 						b3.colors[1]:setAndGo(nil, .94*255 + (1-d)*.06*255, 300)
@@ -750,12 +750,12 @@ function bossThree.ghost:__init()
 		sizeGrowth = 0,
 		variance = self.variance,
 		position = self.position,
-		linewidth = 7
+		lineWidth = 7
 	}
 	self.shoottimer = Timer:new {
-		timelimit = 2
+		timeLimit = 2
 	}
-	function self.shoottimer.funcToCall()
+	function self.shoottimer.callback()
 		local e = Enemies.glitchball:new{}
 		e.position = self.position:clone()
 		local pos = psycho.position:clone()
@@ -802,6 +802,6 @@ function bossThree.ghost:handleDelete()
 	self.ring.delete = true
 	self.shoottimer:remove()
 	for _, g in pairs(bossThree.bodies) do
-		g.shoottimer.timelimit = g.shoottimer.timelimit/1.9
+		g.shoottimer.timeLimit = g.shoottimer.timeLimit/1.9
 	end
 end

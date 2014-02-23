@@ -15,13 +15,10 @@ function Text:revive()
 
 	self.variance = math.random() * ColorManager.colorCycleTime
 	self.font = Text.font
-	self.size = Text.size
 	self.printFunction = Text.printFunction
 	self.limit = Text.limit
 	self.align = Text.align
-	self.coloreffect = nil
-	self.alpha = 255
-	self.alphaFollows = nil
+	self.alpha = nil
 	self.speed:set(0, 0)
 
 	return self

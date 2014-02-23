@@ -119,9 +119,9 @@ function bossLast:__init()
 	f:applyOn(components[4])
 
 	self.shoottimer = Timer:new {
-		timelimit = .5,
-		works_on_gameLost = false,
-		funcToCall = function()
+		timeLimit = .5,
+		worksOnGameLost = false,
+		callback = function()
 			local e = self.getShot()
 			e.position:set(self.position)
 			local pos = psycho.position:clone()
@@ -132,9 +132,9 @@ function bossLast:__init()
 	}
 
 	Timer:new{
-		timelimit = .2,
+		timeLimit = .2,
 		running = true,
-		funcToCall = function(timer)
+		callback = function(timer)
 			if components[1][40].inBox then
 				timer:remove()
 				self.visible = true
@@ -147,7 +147,7 @@ function bossLast:__init()
 							b.delete = true
 						end
 					end
-					timer:new{timelimit = 1.2, onceOnly = true, running = true, funcToCall = function() 
+					timer:new{timeLimit = 1.2, onceOnly = true, running = true, callback = function() 
 						self.speed:set(v/7, 3*v)
 						self.shoottimer:start()
 						self.currentBehavior = bossLast.behaviors.first

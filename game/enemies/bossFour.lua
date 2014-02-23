@@ -10,7 +10,7 @@ bossFour = Body:new{
 	maxhealth = 60,
 	vulnerable = false,
 	shader = Base.circleShader,
-	linewidth = 1,
+	lineWidth = 1,
 	ord = 6,
 	__type = 'bossFour'
 }
@@ -57,10 +57,10 @@ function bossFour.behaviors.arriving( self )
 		self.form = f
 
 		Timer:new{
-			timelimit = 5,
+			timeLimit = 5,
 			onceOnly = true,
 			running = true,
-			funcToCall = function()
+			callback = function()
 				self.replacetimer:start()
 				self.shoottimer:start()
 				self.colors[1]:setAndGo(nil, 0, 100)
@@ -114,10 +114,10 @@ function bossFour.behaviors.tocenter( self )
 		
 		self.dontattack = true
 		Timer:new{
-			timelimit = 1.1,
+			timeLimit = 1.1,
 			onceOnly = true,
 			running = true,
-			funcToCall = function()
+			callback = function()
 				self.cage = {}
 				local angchange = Base.toRadians(360/30)
 				local pos = Vector:new{0, 200}
@@ -161,10 +161,10 @@ function bossFour.behaviors.tocenter( self )
 			end
 		}
 		Timer:new{
-			timelimit = 2.1,
+			timeLimit = 2.1,
 			onceOnly = true,
 			running = true,
-			funcToCall = function()
+			callback = function()
 				self.colors[1]:setAndGo(nil, 0, 100)
 				self.colors[2]:setAndGo(nil, 122, 100)
 				self.colors[3]:setAndGo(nil, 122, 100)
@@ -256,9 +256,9 @@ function bossFour.behaviors.gathering ( self )
 			self.vulnerable = true
 		end
 		self.shoottimer = Timer:new {
-			timelimit = 1,
+			timeLimit = 1,
 			running = true,
-			funcToCall = function ()
+			callback = function ()
 				self.form.angle = random()*math.pi
 				local n = random(14, 22)
 				self.form.angleDelta = Base.toRadians(360/n)
@@ -323,7 +323,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					--self.colors[2] is already correct
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						if self.currentBehavior == bossFour.behaviors.first then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[3]:setAndGo(nil, d*255, 400)
@@ -335,7 +335,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						if self.currentBehavior == bossFour.behaviors.second then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*50, 400)
@@ -348,7 +348,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						if self.currentBehavior == bossFour.behaviors.third then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*122, 400)
@@ -361,7 +361,7 @@ function bossFour:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						self.colors[1]:setAndGo(nil, .59*225 + (1-d)*.41*255, 400)
 						self.colors[2]:setAndGo(nil, .44*255*d, 400)
 						self.colors[3]:setAndGo(nil, .9*255*d, 400)
@@ -401,10 +401,10 @@ function bossFour:grow( n )
 		es[#es + 1] = e
 	end
 	Timer:new{ 
-		timelimit = 1,
+		timeLimit = 1,
 		running = true,
 		onceOnly = true,
-		funcToCall = function()
+		callback = function()
 			for _, e in ipairs(es) do
 				e.speed:set(self.position):sub(e.position):normalize():mult(self.basespeed)
 				self:prepare(e)
@@ -442,8 +442,8 @@ function bossFour:__init()
 	self.colors = {VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 122}, VarTimer:new{var = 10}}
 	self.coloreffect = ColorManager.getColorEffect(unpack(self.colors))
 	self.shoottimer = Timer:new{
-		timelimit = .1,
-		funcToCall = function()
+		timeLimit = .1,
+		callback = function()
 			if not self.recharging and random() < .1 then self:grow(1) end
 			if not self.recharging and not self.dontattack and random() < .4 then
 				local n = #self.pool
@@ -457,8 +457,8 @@ function bossFour:__init()
 		end
 	}
 	self.replacetimer = Timer:new{
-		timelimit = .1,
-		funcToCall = function()
+		timeLimit = .1,
+		callback = function()
  			if not self.recharging and #self.pool/self.poolN < .4 then
 				local es = {{},{},{},{},{},{}}
 				for i = 1, 72 do
@@ -484,10 +484,10 @@ function bossFour:__init()
 					end
 				end
 				Timer:new {
-					timelimit = 1.5,
+					timeLimit = 1.5,
 					onceOnly = true,
 					running = true,
-					funcToCall = function()
+					callback = function()
 					self.recharging = false
 						for _, e1 in ipairs(es) do
 							for _, e in ipairs(e1) do

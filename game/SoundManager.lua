@@ -24,14 +24,14 @@ function init()
 	music['Flying Carrots 2']:play()
 
 	fadeOutTimer = Timer:new{
-		timelimit	 = .01,
+		timeLimit	 = .01,
 		running		 = false,
 		pausable		 = false,
 		timeAffected = false,
 		persistent	 = true
 	}
 
-	function fadeOutTimer:funcToCall() -- song fades out
+	function fadeOutTimer:callback() -- song fades out
 		if muted then self:remove() return end
 		if currentSong:getVolume() <= (.02 * volume / 100) then 
 			currentSong:setVolume(0) 
@@ -45,14 +45,14 @@ function init()
 	end
 
 	fadeInTimer = Timer:new{
-		timelimit	 = .03,
+		timeLimit	 = .03,
 		running		 = false,
 		pausable		 = false,
 		timeAffected = false,
 		persistent	 = true
 	}
 
-	function fadeInTimer:funcToCall() -- song fades in
+	function fadeInTimer:callback() -- song fades in
 		if muted or DeathManager.gameLost then self:remove() return end
 		if currentSong:getVolume() >= (.98 * volume / 100) then 
 			currentSong:setVolume(volume / 100)

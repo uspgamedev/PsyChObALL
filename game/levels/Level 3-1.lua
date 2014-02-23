@@ -116,7 +116,7 @@ function run()
 	
 	enemy(super, 1, { position = Vector:new{width/2, height + 30}, speed = Vector:new{0.2 * v, 0.25 * v}, life = 150, size = 90}, divide1, {width/2, height + 30}, 18)
 	enemy(super, 1, { position = Vector:new{width/2, -30}, speed = Vector:new{0.2 * v, 0.25 * v}, life = 150, size = 90}, divide1, {width/2, height + 30}, 18)
-	enemy(snake, 1, {size = 5}, 200, 600, 0.5, {30, -30}, unpack(t))
+	enemy(snake, 1, { size = 5 }, 200, 600, 0.5, {30, -30}, unpack(t))
 	
 	wait(30)
 	changeToLevel('Level 3-2')

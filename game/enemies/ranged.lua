@@ -36,22 +36,22 @@ function ranged:revive( num, target, pos, exitpos, shot, initialcolor, angle, ti
 	self.shootCircle.position = self.position -- YES HTE EXACT SAME
 	self.shootCircle.sizeGrowth = 0
 	self.shootCircle.alpha = 255
-	self.shootCircle.linewidth = 5
+	self.shootCircle.lineWidth = 5
 
 	self.timeOutTimer = Timer:new {
-		timelimit = self.timeOut,
+		timeLimit = self.timeOut,
 		running = false,
 		onceOnly = true,
-		funcToCall = function()
+		callback = function()
 			self.shootTimer:stop()
 			self.speed:set(self.exitPosition):sub(self.position):normalize():mult(1.3 * v, 1.3 * v)
 		end
 	}
 
 	self.shootTimer = Timer:new {
-		timelimit  = ranged.timeToShoot,
+		timeLimit  = ranged.timeToShoot,
 		running = false,
-		funcToCall = function() self:shoot() end
+		callback = function() self:shoot() end
 	}
 
 	return self

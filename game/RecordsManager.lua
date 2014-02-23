@@ -7,21 +7,21 @@ local beatBestTime, beatBestScore, beatBestMultiplier
 
 function init()
 	resetMultiplierTimer = Timer:new {
-		timelimit  = 2.2,
+		timeLimit  = 2.2,
 		persistent = true,
-		works_on_gameLost = false
+		worksOnGameLost = false
 	}
 
-	function resetMultiplierTimer:funcToCall() -- resets multiplier
+	function resetMultiplierTimer:callback() -- resets multiplier
 		if multiplier >= 10 and ColorManager.currentEffect ~= ColorManager.noLSDEffect then 
-			global.timefactor = 1.0
+			global.timeFactor = 1.0
 			ColorManager.currentEffect = nil
 		end
 		multiplier = 1
 		self:stop()
 	end
 
-	resetMultiplierTimer.handleReset = resetMultiplierTimer.funcToCall
+	resetMultiplierTimer.handleReset = resetMultiplierTimer.callback
 end
 
 function reset()
@@ -96,7 +96,7 @@ function addMultiplier( mult )
 	resetMultiplierTimer:start(0)
 
 	if not DeathManager.gameLost and multiplier >= 10 and (multiplier - mult) < 10 and ColorManager.currentEffect ~= ColorManager.noLSDEffect then
-		global.timefactor = 1.1
+		global.timeFactor = 1.1
 		ColorManager.currentEffect = ColorManager.invertEffect
 	end
 end

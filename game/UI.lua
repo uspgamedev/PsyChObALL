@@ -83,7 +83,7 @@ function keypressed( key )
 		resetted = false
 
 		SoundManager.reset()
-		timefactor = 1.0
+		timeFactor = 1.0
 		ColorManager.currentEffect = nil
 	end
 

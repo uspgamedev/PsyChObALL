@@ -6,7 +6,7 @@ local maincolor = {0,0,0,0}
 
 function init()
 	timer = Timer:new{
-		timelimit  = 300,
+		timeLimit  = 300,
 		pausable   = false,
 		persistent = true,
 		running = true

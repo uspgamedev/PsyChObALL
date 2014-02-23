@@ -59,9 +59,9 @@ function run()
 	
 	wait(7)
 	enemy(super, 1, { position = Vector:new{width/2, -30}, speed = Vector:new{0.4 * v, 0.4 * v}, life = 40, size = 30}, grey, {width/2, -30}, 13)
-	enemy(super, 1, { position = Vector:new{width/2, height + 30}, speed = Vector:new{0.4 * v, 0.4 * v}, life = 40, size = 30}, grey, {width/2, height + 30}, 13)
+	enemy(super, 1, { position = Vector:new{width/2, height + 30}, speed = Vector:new{-0.4 * v, -0.4 * v}, life = 40, size = 30}, grey, {width/2, height + 30}, 13)
 	enemy(super, 1, { position = Vector:new{-30, height/2}, speed = Vector:new{0.4 * v, 0.4 * v}, life = 40, size = 30}, grey, {-30, height/2}, 16)
-	enemy(super, 1, { position = Vector:new{width + 30, height/2}, speed = Vector:new{0.4 * v, 0.4 * v}, life = 40, size = 30}, grey, {width + 30, height/2}, 16)
+	enemy(super, 1, { position = Vector:new{width + 30, height/2}, speed = Vector:new{-0.4 * v, 0.4 * v}, life = 40, size = 30}, grey, {width + 30, height/2}, 16)
 	
 	wait(2)
 	enemy(grey, 5, horizontalr)

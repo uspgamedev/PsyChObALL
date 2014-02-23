@@ -5,7 +5,7 @@ Timer = lux.object.new {
 	running		 = false,
 	timeAffected = true,
 	persistent	 = false, -- continues on death
-	works_on_gameLost = true,
+	worksOnGameLost = true,
 	registerSelf = true,
 	timers = {}
 }
@@ -14,20 +14,20 @@ function Timer:__init()
 	if self.registerSelf then Timer.register(self) end
 end
 
-function Timer:update(dt, timefactor, paused)
-	if not self.running or (paused and self.pausable) or (DeathManager.gameLost and not self.works_on_gameLost) then return end
-	if self.timeAffected then dt = dt * timefactor end
+function Timer:update(dt, timeFactor, paused)
+	if not self.running or (paused and self.pausable) or (DeathManager.gameLost and not self.worksOnGameLost) then return end
+	if self.timeAffected then dt = dt * timeFactor end
 	self.time = self.time + dt
 
-	if not self.timelimit and self.funcToCall then 
-		self:funcToCall(dt)
+	if not self.timeLimit and self.callback then 
+		self:callback(dt)
 		return
 	end 
 
-	if self.time >= self.timelimit then
-		self.time = self.time - self.timelimit
+	if self.time >= self.timeLimit then
+		self.time = self.time - self.timeLimit
 
-		if self.funcToCall then	self:funcToCall()	end
+		if self.callback then	self:callback()	end
 		if self.onceOnly then self:remove() end
 	end
 end
@@ -43,9 +43,9 @@ function Timer:stop()
 end
 
 local pairs = pairs
-function Timer.updateTimers(dt, timefactor, paused)
+function Timer.updateTimers(dt, timeFactor, paused)
 	for timer in pairs(Timer.timers) do
-		timer:update(dt, timefactor, paused)
+		timer:update(dt, timeFactor, paused)
 	end
 end
 

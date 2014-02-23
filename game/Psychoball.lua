@@ -24,12 +24,12 @@ Body.makeClass(Psychoball)
 
 function Psychoball.init()
 	ultraTimer = Timer:new {
-		timelimit  = .02,
+		timeLimit  = .02,
 		persistent = true
 	}
 
 	local maxShots = 42 -- maximum number of shots on ultrablast
-	function ultraTimer:funcToCall() -- adds more shots to ultrablast
+	function ultraTimer:callback() -- adds more shots to ultrablast
 		if ultraShots < maxShots then
 			ultraShots = ultraShots + 1
 		end
@@ -59,7 +59,7 @@ function Psychoball:update(dt)
 
 	if usingjoystick then
 		self.speed:set(joystick.getAxis(1, 1), joystick.getAxis(1, 2)):mult(v*1.3, v*1.3)
-		if not Shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then Shot.timer:start(Shot.timer.timelimit) end
+		if not Shot.timer.running and (joystick.getAxis(1, 3) ~= 0 or joystick.getAxis(1, 4) ~= 0) then Shot.timer:start(Shot.timer.timeLimit) end
 		if Shot.timer.running and joystick.getAxis(1, 3) == 0 and joystick.getAxis(1, 4) == 0 then Shot.timer:stop() end
 	end
 
@@ -79,7 +79,7 @@ function Psychoball:update(dt)
 	end
 
 	if self.sizeGrowth < 0 and self.size + psychoSizeDiff < 23 then
-		self.linewidth = 6
+		self.lineWidth = 6
 		self.size = 23 - psychoSizeDiff
 		self.sizeGrowth = 0
 	end
@@ -93,7 +93,7 @@ function Psychoball:startBlast()
 	self.chargingUltrablast = true
 	ultraShots = 10
 	self.sizeGrowth = 17
-	self.linewidth = 6
+	self.lineWidth = 6
 	ultraTimer:register()
 	ultraTimer:start(0)
 end
@@ -130,21 +130,21 @@ function Psychoball:handleDelete()
 end
 
 function Psychoball:recreate()
-	timefactor = 1
+	timeFactor = 1
 	self.pseudoDied = false
 	self.visible = true
 
 	if mouse.isDown('l') then Shot.timer:start() end
 	local blink = Timer:new {
-		timelimit = .4,
+		timeLimit = .4,
 		time = .37,
 		running = true,
-		funcToCall = function ( timer )
-			if timer.timelimit == .4 then
-				timer.timelimit = .07
+		callback = function ( timer )
+			if timer.timeLimit == .4 then
+				timer.timeLimit = .07
 				self.alpha = 0
 			else
-				timer.timelimit = .4
+				timer.timeLimit = .4
 				self.alpha = 255
 			end
 		end
@@ -152,10 +152,10 @@ function Psychoball:recreate()
 
 	-- stop blinking
 	Timer:new {
-		timelimit = 1,
+		timeLimit = 1,
 		running = true,
 		onceOnly = true,
-		funcToCall = function()
+		callback = function()
 			blink:remove()
 			self.canBeHit = true
 			self.alpha = 255

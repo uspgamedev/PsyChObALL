@@ -49,21 +49,21 @@ function bossOne.behaviors.arriving( self )
 		self.position:set(self.size + 10, self.size + 10)
 		self.speed:set(bossOne.basespeed, 0)
 		self.speedchange = Timer:new {
-			timelimit = 5 + random()*10,
+			timeLimit = 5 + random()*10,
 			running = true,
-			funcToCall = function(timer )
-				timer.timelimit = 5 + random()*10
+			callback = function(timer )
+				timer.timeLimit = 5 + random()*10
 				self.speed:negate()
 			end
 		}
 		self.shoottimer = Timer:new {
-			timelimit = .5,
-			works_on_gameLost = false,
+			timeLimit = .5,
+			worksOnGameLost = false,
 			time = random(),
 			running = true
 		}
 
-		function self.shoottimer.funcToCall()
+		function self.shoottimer.callback()
 			local e = self:getShot()
 			e.position = self.position:clone()
 			local pos = psycho.position:clone()
@@ -73,9 +73,7 @@ function bossOne.behaviors.arriving( self )
 		end
 
 		function self:getShot()
-			local e = (random() > .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstAvailable():revive()
-			e.score = false
-			return e
+			return Body.reviveAndCopy((random() > .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstAvailable(), { score = false })
 		end
 
 		self.currentBehavior = bossOne.behaviors.first
@@ -95,11 +93,8 @@ function bossOne.behaviors.first( self )
 		self.speedchange:remove()
 		self.speedchange = nil
 		self.health = bossOne.maxhealth * .75
-		function self:getShot()
-			local e = Enemies.multiball.bodies:getFirstAvailable():revive()
-			e.score = false
-			return e
-		end
+		function self:getShot() return Body.reviveAndCopy(Enemies.multiball.bodies:getFirstAvailable(), { score = false }) end
+		
 		self.colors[1]:setAndGo(nil, 0, 122)
 		self.colors[2]:setAndGo(nil, 255, 122)
 		self.colors[3]:setAndGo(nil, 0, 122)
@@ -126,25 +121,25 @@ function bossOne.behaviors.toTheMiddle( self )
 		self.position:set(width/2, height/2)
 		self.speed:set(0,0)
 		self.currentBehavior = bossOne.behaviors.third
-		self.shoottimer.timelimit = 8
+		self.shoottimer.timeLimit = 8
 		self.shoottimer.time = 5
 		bossOne.shot = Enemies.simpleball
-		function self.shoottimer.funcToCall()
+		function self.shoottimer.callback()
 			local side = random() < .5 and -1 or 1
 			self.circleshoot.angle = arctan(psycho.x - self.x, psycho.y - self.y)  + side*Base.toRadians(30)
 			self.circleshoot.angleDelta = -abs(self.circleshoot.angleDelta)*side
 			self.circleshoot.timescount = 0
-			self.circleshoot:start(self.circleshoot.timelimit)
+			self.circleshoot:start(self.circleshoot.timeLimit)
 		end
 		self.circleshoot = Timer:new {
-			timelimit = .07,
+			timeLimit = .07,
 			angleDelta = Base.toRadians(6),
 			times = 100,
 			angle = 0,
-			works_on_gameLost = false,
+			worksOnGameLost = false,
 			time = random()*2
 		}
-		function self.circleshoot.funcToCall(timer)
+		function self.circleshoot.callback(timer)
 			local e = self:getShot()
 			e.position = self.position + {sin(timer.angle)*(bossOne.size-e.size), cos(timer.angle)*(bossOne.size-e.size)}
 			e.speed:set(
@@ -169,7 +164,7 @@ function bossOne.behaviors.third( self )
 		RecordsManager.addScore(500)
 		self.health = bossOne.maxhealth * .075
 		self.shoottimer:remove()
-		self.shoottimer:funcToCall()
+		self.shoottimer:callback()
 		self.circleshoot:remove()
 		self.circleshoot.angleDelta = Base.toRadians(15)
 		self.circleshoot.times = 360/15
@@ -179,8 +174,8 @@ function bossOne.behaviors.third( self )
 		Timer:new {
 			running = true,
 			onceOnly = true,
-			timelimit = 1,
-			funcToCall = function() self.sizeGrowth = 230 end
+			timeLimit = 1,
+			callback = function() self.sizeGrowth = 230 end
 		}
 		self.currentBehavior = bossOne.behaviors.toExplode
 	end
@@ -194,25 +189,27 @@ function bossOne.behaviors.toExplode( self )
 	end
 end
 
-function bossOne:restrictToScreen()
-	local th = self.restrictToScreenThreshold
-	local sp = self.restrictToScreenSpeed or bossOne.basespeed
-	if self.x > width - th - self.size then
-		self.x = width - th - self.size
-		self.speed:set(0, self.y > height/2 and -sp or sp)
-		return -1, Base.sign(self.Vy)
-	elseif self.x < self.size + th then
-		self.x = self.size + th
-		self.speed:set(0, self.y > height/2 and -sp or sp)
-		return 1, Base.sign(self.Vy)
-	elseif self.y > height - th - self.size then
-		self.y = height - th - self.size
-		self.speed:set(self.x > width/2 and -sp or sp, 0)
-		return Base.sign(self.Vx), -1
-	elseif self.y < self.size + th then
-		self.y = self.size + th
-		self.speed:set(self.x > width/2 and -sp or sp, 0)
-		return Base.sign(self.Vx), 1
+function bossOne.restrictToScreen( obj )
+	-- keep on screen
+	local th = obj.restrictToScreenThreshold
+	local sp = obj.restrictToScreenSpeed or bossOne.basespeed
+
+	if obj.x > width - th - obj.size then
+		obj.x = width - th - obj.size
+		obj.speed:set(0, obj.y > height/2 and -sp or sp)
+		return -1, Base.sign(obj.Vy)
+	elseif obj.x < obj.size + th then
+		obj.x = obj.size + th
+		obj.speed:set(0, obj.y > height/2 and -sp or sp)
+		return 1, Base.sign(obj.Vy)
+	elseif obj.y > height - th - obj.size then
+		obj.y = height - th - obj.size
+		obj.speed:set(obj.x > width/2 and -sp or sp, 0)
+		return Base.sign(obj.Vx), -1
+	elseif obj.y < obj.size + th then
+		obj.y = obj.size + th
+		obj.speed:set(obj.x > width/2 and -sp or sp, 0)
+		return Base.sign(obj.Vx), 1
 	end
 end
 
@@ -235,7 +232,7 @@ function bossOne:update( dt )
 					--self.colors[1] is already correct
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						if self.currentBehavior == bossOne.behaviors.first or self.currentBehavior == bossOne.behaviors.arriving then
 							self.colors[2]:setAndGo(nil, d*255, 400)
 						end
@@ -246,7 +243,7 @@ function bossOne:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					--self.colors[3] is already correct
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						if self.currentBehavior == bossOne.behaviors.second then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*255, 400)
@@ -258,7 +255,7 @@ function bossOne:update( dt )
 					self.colors[1]:setAndGo(nil, 255, 1200)
 					self.colors[2]:setAndGo(nil, 0, 1200)
 					self.colors[3]:setAndGo(nil, 0, 1200)
-					Timer:new{timelimit = .05, onceOnly = true, running = true, funcToCall = function()
+					Timer:new{timeLimit = .05, onceOnly = true, running = true, callback = function()
 						if self.currentBehavior == bossOne.behaviors.third or self.currentBehavior == bossOne.behaviors.toTheMiddle then
 							self.colors[1]:setAndGo(nil, (1-d)*255, 400)
 							self.colors[2]:setAndGo(nil, d*255, 400)

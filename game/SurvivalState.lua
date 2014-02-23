@@ -35,29 +35,29 @@ function createSuperballTimers()
 	local superballList = List:new{}
 
 	superballAddTimer = Timer:new {
-		timelimit = 30,
-		works_on_gameLost = false
+		timeLimit = 30,
+		worksOnGameLost = false
 	}
 
 	local possiblePositions = {Vector:new{30, 30}, Vector:new{width - 30, 30}, Vector:new{width - 30, height - 30}, Vector:new{30, height - 30}}
-	function superballAddTimer:funcToCall()
-		if superball.bodies:countAlive() > RecordsManager.getGameTime()/90 then self.timelimit = 2 return end
+	function superballAddTimer:callback()
+		if superball.bodies:countAlive() > RecordsManager.getGameTime()/90 then self.timeLimit = 2 return end
 		local s = superball.bodies:getFirstAvailable()
 		s.position:set(possiblePositions[math.random(4)])
 		s:revive()
 		s:deactivate()
 		superballList:push(s)
-		self.timelimit = 30
+		self.timeLimit = 30
 		superballReleaseTimer:start(0)
 	end
 
 	superballReleaseTimer = Timer:new {
-		timelimit = 5,
-		works_on_gameLost = false,
+		timeLimit = 5,
+		worksOnGameLost = false,
 		running = false
 	}
 
-	function superballReleaseTimer:funcToCall()
+	function superballReleaseTimer:callback()
 		local s = superballList:pop()
 		s:activate()
 		s:register()
@@ -74,24 +74,24 @@ function createEnemyTimers()
 	local enemyList = List:new{}
 
 	enemyAddTimer = Timer:new {
-		timelimit = 2,
+		timeLimit = 2,
 		persistent = true
 	}
 
-	function enemyAddTimer:funcToCall() -- adds the enemies to a list
-		self.timelimit = .8 + (self.timelimit - .8) / 1.09
+	function enemyAddTimer:callback() -- adds the enemies to a list
+		self.timeLimit = .8 + (self.timeLimit - .8) / 1.09
 		local e = Enemy.bodies:getFirstAvailable():revive(true)
 		e:deactivate()
 		enemyList:push(e)
 	end
 
 	enemyReleaseTimer = Timer:new {
-		timelimit = 2,
+		timeLimit = 2,
 		persistent = true
 	}
 
-	function enemyReleaseTimer:funcToCall() -- actually releases the enemies on screen
-		self.timelimit = .8 + (self.timelimit - .8) / 1.09
+	function enemyReleaseTimer:callback() -- actually releases the enemies on screen
+		self.timeLimit = .8 + (self.timeLimit - .8) / 1.09
 		local e = enemyList:pop()
 		e:activate()
 		e:register()

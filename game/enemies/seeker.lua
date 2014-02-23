@@ -30,10 +30,10 @@ function seeker:start()
 	Body.start(self)
 
 	self.timeOutTimer = Timer:new{
-		timelimit = self.timeOut,
+		timeLimit = self.timeOut,
 		onceOnly = true,
 		running = true,
-		funcToCall = function()
+		callback = function()
 			self.seek = false
 			self.speed:set(self.exitPosition):sub(self.position):normalize():mult(self.speedN)
 			self.acceleration:set(0,0)

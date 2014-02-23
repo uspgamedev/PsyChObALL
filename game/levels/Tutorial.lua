@@ -92,8 +92,8 @@ function run()
 		welcome.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 1.5,
-		funcToCall = function()
+		timeLimit = 1.5,
+		callback = function()
 			welcome.alphaFollows:setAndGo(254, 1, 100)
 			welcome.alphaFollows.alsoCall = function() welcome.delete = true end
 		end
@@ -104,8 +104,8 @@ function run()
 		wasd.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 3.5,
-		funcToCall = function()
+		timeLimit = 3.5,
+		callback = function()
 			wasd.alphaFollows:setAndGo(254, 1, 100)
 			wasd.alphaFollows.alsoCall = function() wasd.delete = true end
 		end
@@ -118,8 +118,8 @@ function run()
 		aim.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 3.0,
-		funcToCall = function()
+		timeLimit = 3.0,
+		callback = function()
 			aim.alphaFollows:setAndGo(254, 1, 100)
 			aim.alphaFollows.alsoCall = function() aim.delete = true end
 		end
@@ -133,8 +133,8 @@ function run()
 		hit.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 3.0,
-		funcToCall = function()
+		timeLimit = 3.0,
+		callback = function()
 			hit.alphaFollows:setAndGo(254, 1, 100)
 			hit.alphaFollows.alsoCall = function() hit.delete = true end
 		end
@@ -152,8 +152,8 @@ function run()
 		space.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 4,
-		funcToCall = function()
+		timeLimit = 4,
+		callback = function()
 			space.alphaFollows:setAndGo(254, 1, 100)
 			space.alphaFollows.alsoCall = function() space.delete = true end
 		end
@@ -170,8 +170,8 @@ function run()
 		pause.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 2.5,
-		funcToCall = function()
+		timeLimit = 2.5,
+		callback = function()
 			pause.alphaFollows:setAndGo(254, 1, 100)
 			pause.alphaFollows.alsoCall = function() pause.delete = true end
 		end
@@ -182,8 +182,8 @@ function run()
 		music.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 3.5,
-		funcToCall = function()
+		timeLimit = 3.5,
+		callback = function()
 			music.alphaFollows:setAndGo(254, 1, 100)
 			music.alphaFollows.alsoCall = function() music.delete = true end
 		end
@@ -194,8 +194,8 @@ function run()
 		remember.alphaFollows:setAndGo(1, 254, 100)
 	end)
 	registerTimer {
-		timelimit = 4.5,
-		funcToCall = function()
+		timeLimit = 4.5,
+		callback = function()
 			remember.alphaFollows:setAndGo(254, 1, 100)
 			remember.alphaFollows.alsoCall = function() remember.delete = true end
 		end
