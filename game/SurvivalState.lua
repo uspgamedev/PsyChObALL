@@ -42,7 +42,7 @@ function createSuperballTimers()
 	local possiblePositions = {Vector:new{30, 30}, Vector:new{width - 30, 30}, Vector:new{width - 30, height - 30}, Vector:new{30, height - 30}}
 	function superballAddTimer:callback()
 		if superball.bodies:countAlive() > RecordsManager.getGameTime()/90 then self.timeLimit = 2 return end
-		local s = superball.bodies:getFirstAvailable()
+		local s = superball.bodies:getFirstDead()
 		s.position:set(possiblePositions[math.random(4)])
 		s:revive()
 		s:deactivate()
@@ -80,7 +80,7 @@ function createEnemyTimers()
 
 	function enemyAddTimer:callback() -- adds the enemies to a list
 		self.timeLimit = .8 + (self.timeLimit - .8) / 1.09
-		local e = Enemy.bodies:getFirstAvailable():revive(true)
+		local e = Enemy.bodies:getFirstDead():revive(true)
 		e:deactivate()
 		enemyList:push(e)
 	end

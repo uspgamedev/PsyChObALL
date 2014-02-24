@@ -41,12 +41,12 @@ function CircleEffect.init()
 
 	function CircleEffect.timer:callback() -- releases cirleEffects
 		if onGame() and not DeathManager.gameLost then
-			CircleEffect.bodies:getFirstAvailable():revive(psycho)
+			CircleEffect.bodies:getFirstDead():revive(psycho)
 		end
 		if state == survival then
 			Enemy.bodies:forEachAlive(function(enemy)
 				if enemy.size >= 15 and math.random() < .5 --[[reducing chance]] then
-					CircleEffect.bodies:getFirstAvailable():revive(enemy)
+					CircleEffect.bodies:getFirstDead():revive(enemy)
 				end
 			end)
 		end

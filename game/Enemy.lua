@@ -56,7 +56,7 @@ function Enemy:kill()
 		RecordsManager.addMultiplier(self.size / 30)
 
 		if self.size >= 15 then
-			local c = CircleEffect.bodies:getFirstAvailable():revive(self)
+			local c = CircleEffect.bodies:getFirstDead():revive(self)
 			c.lineWidth = 7
 			c.alpha = 80
 			c.sizeGrowth = 600

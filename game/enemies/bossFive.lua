@@ -33,17 +33,11 @@ function bossFive:revive()
 end
 
 function bossFive:bounceInScreen()
-	if self.x + self.size >= width then
-		self.Vx = -abs(self.Vx)
-	elseif self.x - self.size <= 0 then
-		self.Vx = abs(self.Vx)
-	end
+	if self.x  + self.size > width then self.speed:set(-abs(self.Vx))
+	elseif self.x - self.size < 0  then self.speed:set( abs(self.Vx)) end
 
-	if self.y + self.size >= height then
-		self.Vy = -abs(self.Vy)
-	elseif self.y - self.size <= 0 then
-		self.Vy = abs(self.Vy)
-	end
+	if self.y + self.size > height then self.speed:set(nil, -abs(self.Vy))
+	elseif self.y - self.size < 0  then self.speed:set(nil,  abs(self.Vy)) end
 end
 
 local auxVec = Vector:new{0, 0}

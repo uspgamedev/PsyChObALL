@@ -246,7 +246,7 @@ end
 local sin, cos, pi = math.sin, math.cos, math.pi
 function doUltrablast()
 	for i = 1, ultraShots do
-		local s = Shot.bodies:getFirstAvailable():revive()
+		local s = Shot.bodies:getFirstDead():revive()
 		s.position:set(psycho.position)
 		s.speed:set(cos(pi * 2 * i / ultraShots), sin(pi * 2 * i / ultraShots)):normalize():mult(3 * v, 3 * v)
 		s.isUltraShot = true

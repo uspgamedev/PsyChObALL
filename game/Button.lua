@@ -23,7 +23,7 @@ function Button:__init()
 		Effect.createEffects(self, 1)
 	end
 
-	self.hoverring = Body.reviveAndCopy(CircleEffect.bodies:getFirstAvailable(), {
+	self.hoverring = Body.reviveAndCopy(CircleEffect.bodies:getFirstDead(), {
 		size = .1,
 		sizeGrowth = 0,
 		alpha = 255,

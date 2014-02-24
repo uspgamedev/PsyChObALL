@@ -30,7 +30,7 @@ function ranged:revive( num, target, pos, exitpos, shot, initialcolor, angle, ti
 	self.exitPosition = Base.clone(exitpos) or self.position:clone()
 	self.target = Base.clone(target) or Vector:new{.1 * width + random() * .8 * width, .1 * height + random() * .8 * height}
 
-	self.shootCircle = CircleEffect.bodies:getFirstAvailable():revive()
+	self.shootCircle = CircleEffect.bodies:getFirstDead():revive()
 	self.shootCircle.coloreffect = self.shot.coloreffect
 	self.shootCircle.size = self.size + 4
 	self.shootCircle.position = self.position -- YES HTE EXACT SAME
@@ -128,7 +128,7 @@ function ranged:shoot()
 	local ang = self.angle + Base.toRadians(180)
 	local speed = self.setspeed or 1.5 * v
 	for i = 1, self.divideN do
-		local e = self.shot.bodies:getFirstAvailable():revive()
+		local e = self.shot.bodies:getFirstDead():revive()
 		e.position:set(self.position)
 		e.speed:set(sin(ang) * speed, cos(ang) * speed)
 		e:register()

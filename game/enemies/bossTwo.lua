@@ -53,7 +53,7 @@ function bossTwo:revive()
 	self.prevdist = self.position:distsqr(width/2, height/2)
 
 	function bossTwo:getTurretShot()
-		return Body.reviveAndCopy(Enemies.simpleball.bodies:getFirstAvailable(), { score = false })
+		return Body.reviveAndCopy(Enemies.simpleball.bodies:getFirstDead(), { score = false })
 	end
 
 	return self
@@ -135,7 +135,7 @@ function bossTwo.behaviors.first( self )
 		self.currentBehavior = bossTwo.behaviors.second -- change behavior
 
 		--change shot to multiball
-		self.getShot = function () return Body.reviveAndCopy(Enemies.multiball.bodies:getFirstAvailable(), { score = false }) end
+		self.getShot = function () return Body.reviveAndCopy(Enemies.multiball.bodies:getFirstDead(), { score = false }) end
 		
 		bossTwo.getTurretShot = self.getShot
 		
@@ -182,7 +182,7 @@ function bossTwo.behaviors.second( self )
 		self.vulnerable = false
 		
 		-- now shots glitchballs
-		self.getShot = function() return Enemies.glitchball.bodies:getFirstAvailable():revive() end
+		self.getShot = function() return Enemies.glitchball.bodies:getFirstDead():revive() end
 		bossTwo.getTurretShot = self.getShot
 
 		self.currentBehavior = bossTwo.behaviors.gathering -- change behavior
@@ -478,7 +478,7 @@ function bossTwo.behaviors.imploding( self )
 
 	for i = 1, 4 do
 		local t = bossTwo.turrets[i]
-		t.lifecircle = Body.reviveAndCopy(CircleEffect.bodies:getFirstAvailable(), 
+		t.lifecircle = Body.reviveAndCopy(CircleEffect.bodies:getFirstDead(), 
 			{ alpha = 255, size = t.size, sizeGrowth = 35, position = t.position + self.position, lineWidth = 5 })
 
 		function t.lifecircle.update( circle, dt )
@@ -529,7 +529,7 @@ function bossTwo.behaviors.turretprotection( self )
 	local a = VarTimer:new{}
 	a:setAndGo(0, 255, 100)
 
-	self.plead = Body.reviveAndCopy(Text.bodies:getFirstAvailable(), {
+	self.plead = Body.reviveAndCopy(Text.bodies:getFirstDead(), {
 		text = "Please don't kill me!",
 		font = Base.getCoolFont(30),
 		position = Vector:new{width/2 - 146, height/2 - 110},
@@ -592,7 +592,7 @@ function bossTwo:collides( v, n )
 end
 
 function bossTwo:getShot()
-	return Body.reviveAndCopy((random() < .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstAvailable(), { score = false })
+	return Body.reviveAndCopy((random() < .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstDead(), { score = false })
 end
 
 function bossTwo:update( dt )

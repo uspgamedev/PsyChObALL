@@ -73,7 +73,7 @@ function bossOne.behaviors.arriving( self )
 		end
 
 		function self:getShot()
-			return Body.reviveAndCopy((random() > .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstAvailable(), { score = false })
+			return Body.reviveAndCopy((random() > .5 and Enemies.simpleball or Enemies.multiball).bodies:getFirstDead(), { score = false })
 		end
 
 		self.currentBehavior = bossOne.behaviors.first
@@ -93,7 +93,7 @@ function bossOne.behaviors.first( self )
 		self.speedchange:remove()
 		self.speedchange = nil
 		self.health = bossOne.maxhealth * .75
-		function self:getShot() return Body.reviveAndCopy(Enemies.multiball.bodies:getFirstAvailable(), { score = false }) end
+		function self:getShot() return Body.reviveAndCopy(Enemies.multiball.bodies:getFirstDead(), { score = false }) end
 		
 		self.colors[1]:setAndGo(nil, 0, 122)
 		self.colors[2]:setAndGo(nil, 255, 122)

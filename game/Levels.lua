@@ -38,7 +38,7 @@ function levelEnv.enemy( name, n, format, ... )
 		enemyList = {}
 		local k, s = 1, #name
 		for i = 1, n do
-			enemyList[i] = Enemies[name[k]].bodies:getFirstAvailable()
+			enemyList[i] = Enemies[name[k]].bodies:getFirstDead()
 			k = k + 1
 			if k > s then k = 1 end
 		end
@@ -130,7 +130,7 @@ function levelEnv.changeToLevel( levelName )
 		if not Levels.currentLevel.wasSelected then
 			if not DeathManager.gameLost then AdventureState:runLevel(levelName) end
 		else
-			local t = Text.bodies:getFirstAvailable():revive() 
+			local t = Text.bodies:getFirstDead():revive() 
 			t.text = currentLevel.name_ .. " Completed. Press ESC or P and return to the menu."
 			t.font = Base.getCoolFont(50)
 			t.printFunction = graphics.printf
@@ -159,7 +159,7 @@ function runLevel( name )
 	end
 
 	if changetitle then
-		local title = Text.bodies:getFirstAvailable():revive()
+		local title = Text.bodies:getFirstDead():revive()
 		title.text = currentLevel.title
 		title.alphaFollows = VarTimer:new{ var = 1 }
 		title.alpha = nil

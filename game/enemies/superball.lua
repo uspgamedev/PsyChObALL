@@ -31,7 +31,7 @@ function superball:revive(shot, exitpos, timeout)
 
 	function self.shotTimer.callback( timer )
 		timer.timeLimit = 1 + random()
-		local e = self.shot.bodies:getFirstAvailable():revive()
+		local e = self.shot.bodies:getFirstDead():revive()
 		e.position:set(self.position)
 		-- 15 degrees random 'error', should I keep this?
 		e.speed:set(psycho.position):sub(self.position):normalize():mult(1.5 * v, 1.5 * v):rotate((random() - .5) * Base.toRadians(30))
@@ -107,11 +107,7 @@ function superball:update(dt)
 	Body.update(self, dt)
 
 	if self.bouncesOnScreen then
-		if self.x  + self.size > width then self.speed:set(-abs(self.Vx))
-		elseif self.x - self.size < 0  then self.speed:set( abs(self.Vx)) end
-
-		if self.y + self.size > height then self.speed:set(nil, -abs(self.Vy))
-		elseif self.y - self.size < 0  then self.speed:set(nil,  abs(self.Vy)) end
+		bossFive.bounceInScreen(self)
 	end
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then

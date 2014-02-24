@@ -74,7 +74,7 @@ function Group:forEachDead( func ) -- doesn't matter if it is active
 	end
 end
 
-function Group:getFirstAvailable()
+function Group:getFirstDead()
 	for i = 1, self.length, 1 do
 		if not self[i].alive then
 			self[i].alive = true
@@ -84,6 +84,15 @@ function Group:getFirstAvailable()
 	local obj = self.class:new{}
 	self:add(obj)
 	return obj
+end
+
+function Group:getFirstAlive()
+	-- returns nil if there are no alive
+	for i = 1, self.length, 1 do
+		if self[i].alive then
+			return self[i]
+		end
+	end
 end
 
 function Group:getObjects( n )

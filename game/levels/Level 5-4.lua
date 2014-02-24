@@ -23,7 +23,7 @@ function run()
 			t:register()
 		end
 
-		local t = Text.bodies:getFirstAvailable():revive()
+		local t = Text.bodies:getFirstDead():revive()
 		t.text = "TODO: Make better Boss introduction...."
 		t.font = Base.getCoolFont(50)
 		t.position:set(-100, -30)
@@ -40,7 +40,7 @@ function run()
 		timeLimit = 1,
 		callback = function ( timer )
 			if Enemies.bossFive.bodies:countAlive() == 0 then
-				local t = Text.bodies:getFirstAvailable():revive()
+				local t = Text.bodies:getFirstDead():revive()
 				t.text = 'Eye Have You\n  TODO: Create EndLevel screen with scores and stuff'
 				t.speed:set(v, v)
 				t.position:set(0, 0)
@@ -53,7 +53,7 @@ function run()
 						psycho:addLife()
 						--AdventureState:runLevel('Level 6-1') SOON
 					else
-						local te = Text.bodies:getFirstAvailable():revive()
+						local te = Text.bodies:getFirstDead():revive()
 						te.text = "Level 5 boss killed. Press ESC or P and return to the menu."
 						te.font = Base.getCoolFont(50)
 						te.printFunction = graphics.printf

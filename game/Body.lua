@@ -103,7 +103,7 @@ Body.collidesWith = Base.collides
 
 function Body:getWarning()
 	if self.warning then self:freeWarning() end
-	self.warning = Warning.bodies:getFirstAvailable():revive(self)
+	self.warning = Warning.bodies:getFirstDead():revive(self)
 	return self.warning
 end
 
