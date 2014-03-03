@@ -96,6 +96,8 @@ function Group:getFirstAlive()
 end
 
 function Group:getObjects( n )
+	if n == 0 then return {} end
+	
 	local basics = {}
 	local count = 0
 

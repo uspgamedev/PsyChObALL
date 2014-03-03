@@ -12,7 +12,7 @@ Body.makeClass(multiball)
 function multiball:revive()
 	Body.revive(self)
 
-	self.divideN = multiball.divideN
+	self.divideN = nil
 	self.divideType = Enemies.simpleball
 
 	return self
@@ -36,7 +36,7 @@ function multiball:kill()
 
 	local speed = self.speed:length()
 	local objs = self.divideType.bodies:getObjects(self.divideN)
-	for i = 1, self.divideN do
+	for i = 1, self.divideN, 1 do
 		local e = objs[i]:revive()
 		if not self.score then e.score = false end
 		e.size = self.size - 6

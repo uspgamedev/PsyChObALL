@@ -10,7 +10,10 @@ monoguiaball = Body:new {
 Body.makeClass(monoguiaball)
 
 function monoguiaball:revive()
-	return Enemies.multiball.revive(self)
+	Enemies.multiball.revive(self)
+	self.divideType = Enemies.multiball
+
+	return self
 end
 
 function monoguiaball:update( dt )

@@ -7,14 +7,10 @@ bossFive = Body:new {
 	variance = 4,
 	maxHealth = 100,
 	bodies= Group:new{},
-	--shader = Base.circleShader,
 	__type = 'bossFive'
 }
-Body.makeClass(bossFive)
 
-function bossFive.bodies:update( dt )
-	Group.update(self, dt)
-end
+Body.makeClass(bossFive)
 
 function bossFive:revive()
 	Body.revive(self)
@@ -23,11 +19,12 @@ function bossFive:revive()
 	self.speed:set(v, v)
 	self.irisPosition = Vector:new{0, 0}
 	self.pupilSize = VarTimer:new{}
+	self.health = bossFive.maxHealth
+
 	local funcShrink
 	local funcGrow = function(timer) timer:setAndGo(27, 32, 1 + random()) timer.alsoCall = funcShrink end
 	funcShrink = function(timer) timer:setAndGo(32, 27, 1 + random()) timer.alsoCall = funcGrow end
 	funcGrow(self.pupilSize)
-	self.health = bossFive.maxHealth
 
 	return self
 end
@@ -44,21 +41,24 @@ local auxVec = Vector:new{0, 0}
 function bossFive:update( dt )
 	self.position:add(auxVec:set(self.speed):mult(dt))
 	self:bounceInScreen()
-	self.irisPosition:set(psycho.position):sub(self.position):div(5)
-	local l = self.irisPosition:length()
-	if l > 35 then self.irisPosition:mult(35/l) end
 
-	for _, v in pairs(Shot.bodies) do
-		if self:collidesWith(v) then
-			v.collides = true
-			v.explosionEffects = true
+	-- iris following player
+	self.irisPosition:set(psycho.position):sub(self.position):div(10)
+	local l = self.irisPosition:length()
+	if l > 35 then self.irisPosition:mult(35 / l) end
+
+	Shot.bodies:forEachAlive(function(shot)
+		if self.alive and self:collidesWith(shot) then
+			shot.explosionEffects = true
+			shot:kill()
+
 			if self.health > 0 then 
 				self.health = self.health - 1
 			else
-				self.delete = true
+				self:kill()
 			end
 		end
-	end
+	end)
 
 	if psycho.canBeHit and not DeathManager.gameLost and self:collidesWith(psycho) then
 		psycho.causeOfDeath = "shot"
@@ -80,6 +80,9 @@ function bossFive:draw()
 	graphics.setPixelEffect()
 end
 
-function bossFive:handleDelete()
+function bossFive:kill()
+	Body.kill(self)
+
 	Effect.createEffects(self, 300)
+	self.pupilSize:remove()
 end
