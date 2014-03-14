@@ -12,8 +12,8 @@ Menu.__init = {
 
 function Menu:add( component )
 	component.alphaFollows = self.alphaFollows
-	component:start()
 	component.menu = self.index
+	component:start()
 	Group.add(self, component)
 end
 

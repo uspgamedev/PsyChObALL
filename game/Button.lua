@@ -9,7 +9,7 @@ Button = Body:new {
 Body.makeClass(Button)
 
 function Button:__init()
-	self.variance = math.random(ColorManager.colorCycleTime * 1000)/1000
+	self.variance = math.random() * ColorManager.colorCycleTime
 	self.menu = self.menu or mainmenu
 	self:setText(self.text)
 	self.effectsBurst = Timer:new {
@@ -24,17 +24,16 @@ function Button:__init()
 	end
 
 	self.hoverring = Body.reviveAndCopy(CircleEffect.bodies:getFirstDead(), {
-		size = .1,
+		size = 0,
 		sizeGrowth = 0,
 		alpha = 255,
-		lineWidth = 3,
-		alphaFollows = self.alphaFollows
+		lineWidth = 3
 	})
 
 	self.hoverring.position:set(self.position)
 
-	self.hoverring.update = function(self, dt)
-		self.size = self.size + self.sizeGrowth * dt
+	self.hoverring.update = function(c, dt)
+		c.size = c.size + c.sizeGrowth * dt
 	end
 end
 
@@ -50,10 +49,11 @@ function Button:update( dt )
 	if self.hoverring.size > self.size then
 		self.hoverring.size = self.size
 		self.hoverring.sizeGrowth = 0
-	elseif self.hoverring.size <= 0 then
+	elseif self.hoverring.size < 0 then
 		self.hoverring.size = 0
 		self.hoverring.sizeGrowth = 0
 	end
+
 
 	if self.menu ~= state or MenuManager.currentTransition then
 		if self.onHover then 
@@ -84,6 +84,7 @@ end
 
 function Button:start()
 	self.visible = nil
+	self.hoverring.alphaFollows = self.alphaFollows
 	self.effectsBurst:register()
 end
 
@@ -123,8 +124,6 @@ end
 function Button:kill()
 	Body.kill(self)
 
-	self.hoverring.update = nil --restoring everything
-	self.hoverring.alphaFollows = nil
 	self.hoverring:kill()
 	self.hoverring = nil
 	self.alphaFollows = nil
