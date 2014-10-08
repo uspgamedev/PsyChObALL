@@ -68,9 +68,9 @@ function writeconfig()
 end
 
 function openFile( name, method )
-	local file = filesystem.newFile(name)
-	if not pcall(file.open, file, method) then
-		print "some error ocurred"
+	local file, errostr = filesystem.newFile(name, method)
+	if errostr then
+		print(errostr)
 		return nil
 	end
 	return file
