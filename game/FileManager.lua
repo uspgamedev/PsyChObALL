@@ -78,9 +78,9 @@ function writeConfig()
 end
 
 function openFile( name, method )
-	local file = filesystem.newFile(name)
-	if not pcall(file.open, file, method) then
-		io.write('Could not open file \"', name, "\"(", method, ')\n') 
+	local file, errorstr = filesystem.newFile(name, method)
+	if errorstr then
+		print(errorstr) 
 		return nil
 	end
 	return file
