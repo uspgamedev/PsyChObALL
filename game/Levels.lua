@@ -227,7 +227,7 @@ function loadAll()
 	if loaded then return end
 	loaded = true
 	Base.clearTable(levels)
-	local files = filesystem.enumerate 'levels'
+	local files = filesystem.getDirectoryItems 'levels'
 	for _, file in ipairs(files) do
 		local lev = assert(filesystem.load('levels/' .. file))
 		local level = {}

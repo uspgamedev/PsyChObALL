@@ -30,7 +30,7 @@ function Warning:recalc_angle()
 end
 
 function Warning:draw()
-	graphics.setLine(self.lineWidth)
+	graphics.setLineWidth(self.lineWidth)
 	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alpha or self.alphaFollows and self.alphaFollows.var, self.coloreffect))
 	graphics.arc(self.mode, self.position[1], self.position[2], self.size, self.angle - self.piece, self.angle + self.piece)
 end

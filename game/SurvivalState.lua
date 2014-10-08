@@ -25,7 +25,7 @@ function SurvivalState:create()
 		self:add(added.bodies)
 	end
 
-	mouse.setGrab(true)
+	mouse.setGrabbed(true)
 end
 
 local superballAddTimer

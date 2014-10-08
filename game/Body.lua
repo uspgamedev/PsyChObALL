@@ -40,9 +40,9 @@ function Body.makeClass( subclass )
 		subclass.bodies.class = subclass
 		if subclass.shader then
 			subclass.bodies.draw = function(self)
-				graphics.setPixelEffect(subclass.shader)
+				graphics.setShader(subclass.shader)
 				Group.draw(self)
-				graphics.setPixelEffect()
+				graphics.setShader()
 			end
 		end
 	end

@@ -23,15 +23,15 @@ local function drawShootingDirection()
 		-- Lazyness Warning: drawing a huge line to avoid having to think about the exact calculations!
 		graphics.line(psycho.x, psycho.y, a2 * 1200 + psycho.x, a1 * 1200 + psycho.y) 
 	else
-		if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
+		if not Cheats.image.enabled then graphics.setShader(Base.circleShader) end
 		graphics.circle("line", mouseX, mouseY, 5)
 		color[4] = 60 -- alpha
 		graphics.setColor(color)
 		local x = mouseX > psycho.x and width or 0
-		graphics.setPixelEffect()
+		graphics.setShader()
 		graphics.line(psycho.x, psycho.y, x, psycho.y + (x - psycho.x) * ((mouseY - psycho.y)/(mouseX - psycho.x)))
 	end
-	graphics.setPixelEffect()
+	graphics.setShader()
 end
 
 function GameState:draw()

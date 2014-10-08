@@ -22,14 +22,14 @@ end
 
 function bossLast:draw()
 	if not self.visible then return end
-	graphics.setPixelEffect()
+	graphics.setShader()
 	graphics.push()
 	graphics.setColor(ColorManager.getComposedColor(self.variance, self.alphaFollows.var, self.coloreffect))
 	graphics.translate(self.x, self.y)
 	graphics.rotate(self.angle.var)
 	graphics.rectangle(self.mode, -self.width/2, -self.height/2, self.width, self.height)
 	graphics.pop()
-	graphics.setPixelEffect(Base.circleShader)
+	graphics.setShader(Base.circleShader)
 end
 
 function bossLast:update( dt )

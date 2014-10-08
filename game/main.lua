@@ -31,7 +31,7 @@ function love.load()
 	initGameVars()
 	UI.init()
 
-	mouse.setGrab(false)
+	mouse.setGrabbed(false)
 	Game.switchState(SplashState)
 end
 
@@ -54,7 +54,7 @@ function initBase()
 	resetted = false
 	godmode = false
 	paused = false
-	usingjoystick = joystick.isOpen(1)
+	usingjoystick = false --joystick.isOpen(1)
 
 	-- [[End of Initing Variables]]
 	
@@ -67,7 +67,7 @@ function initBase()
 	-- [[Loading Resources]]
 	logo = graphics.newImage 'resources/LogoBeta.png'
 
-	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
+	window.setIcon(graphics.newImage('resources/IconBeta.png'):getData())
 	version = '1.0.1 indev'
 	latest = Base.getLatestVersion() or version
 	oldVersion = version < latest
@@ -168,7 +168,7 @@ function drawBackground()
 		graphics.setColor(100, 100, 100)
 	end
 
-	graphics.setPixelEffect()
+	graphics.setShader()
 	graphics.draw(Base.pixel, 0, 0, 0, width, height) -- background color
 end
 
@@ -211,7 +211,8 @@ function love.joystickreleased( joynum, btn )
 	psycho:joystickReleased(joynum, btn)
 end
 
-function love.keypressed(key)
+function love.keypressed(key, isRepeat)
+	if isRepeat then return end
 	Game.keyPressed(key)
 
 	if Game.keyboard.isPressed['lalt'] and Game.keyboard.isPressed['f4'] then event.push('quit') end
@@ -225,7 +226,8 @@ function love.keypressed(key)
 	SoundManager.keypressed(key)
 end
 
-function love.keyreleased(key)
+function love.keyreleased(key, isRepeat)
+	if isRepeat then return end
 	if not Game.keyboard.isPressed[key] then return end
 	Game.keyReleased(key)
 

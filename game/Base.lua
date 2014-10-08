@@ -26,7 +26,7 @@ end
 pixel = love.graphics.newImage 'resources/pixel.png'
 pixel:setFilter('linear','linear', 0)
 
-turnLightsOffShader = love.graphics.newPixelEffect [[
+turnLightsOffShader = love.graphics.newShader [[
 	extern vec2 psychoRelativePos;
 	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
 		number dist = (tc[0] - psychoRelativePos[0])*(tc[0] - psychoRelativePos[0]) + (tc[1] - psychoRelativePos[1])*(tc[1] - psychoRelativePos[1]);
@@ -35,7 +35,7 @@ turnLightsOffShader = love.graphics.newPixelEffect [[
 	}
 ]]
 
-circleShader = love.graphics.newPixelEffect [[
+circleShader = love.graphics.newShader [[
 	extern number min;
 	vec4 effect(vec4 color, Image texture, vec2 tc, vec2 ppos) {
 		number dist = (tc[0] - .5)*(tc[0] - .5) + (tc[1] - .5)*(tc[1] - .5);
@@ -63,7 +63,7 @@ _G.graphics = {
 			if mode == 'line' then
 				local min = lineWidth*ratio + 1
 				min = (((rFixed - min)/(rFixed))*((rFixed - min)/(rFixed)))/4
-				if love.graphics.getLineWidth() > 1 then print 'asd' end
+				if love.graphics.getLineWidth() > 1 then end--print 'asd' end
 				circleShader:send('min', min)
 				love.graphics.draw(pixel, xFixed - rFixed, yFixed - rFixed, 0, 2*rFixed)
 				circleShader:send('min', 0) 
@@ -73,7 +73,7 @@ _G.graphics = {
 		end
 	end,
 	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or sx or 1)*ratio, ...) end,
-	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.drawq(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or sx or 1)*ratio, ...) end,
+	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.draw(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or sx or 1)*ratio, ...) end,
 	point = fixPosIgnoreNone(love.graphics.point),
 	print = fixPosIgnoreOne(love.graphics.print),
 	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,

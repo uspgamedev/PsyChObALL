@@ -54,7 +54,7 @@ function CircleEffect.init()
 end
 
 function CircleEffect:draw()
-	graphics.setLine(self.lineWidth)
+	graphics.setLineWidth(self.lineWidth)
 	Base.defaultDraw(self)
 end
 

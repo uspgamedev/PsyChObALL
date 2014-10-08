@@ -42,7 +42,7 @@ function AdventureState:create()
 
 	table.sort(self, function(a, b) return (a.ord or a.class.ord) < (b.ord or b.class.ord) end) --sort by painting order
 
-	mouse.setGrab(true)
+	mouse.setGrabbed(true)
 
 	Effect:clear()
 	Timer.closeOldTimers()

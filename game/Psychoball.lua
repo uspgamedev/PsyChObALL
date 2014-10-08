@@ -117,7 +117,7 @@ end
 
 function Psychoball:draw()
 	if self.pseudoDied or not self.visible or Cheats.invisible then return end
-	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
+	if not Cheats.image.enabled then graphics.setShader(Base.circleShader) end
 	self.size = self.size + psychoSizeDiff
 	Base.defaultDraw(self)
 	self.size = self.size - psychoSizeDiff
@@ -236,10 +236,10 @@ end
 function Psychoball.additionalDrawing()
 	if Psychoball.turnLightsOff then
 		Base.turnLightsOffShader:send('psychoRelativePos', {psycho.x/width, psycho.y/width})
-		graphics.setPixelEffect(Base.turnLightsOffShader)
+		graphics.setShader(Base.turnLightsOffShader)
 		graphics.setColor(0, 0, 0, 255)
 		graphics.draw(Base.pixel, 0, 0, 0, width, width)
-		graphics.setPixelEffect(Base.circleShader)
+		graphics.setShader(Base.circleShader)
 	end
 end
 

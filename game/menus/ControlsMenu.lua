@@ -51,7 +51,7 @@ function ControlsMenu.drawControls()
 	graphics.setColor(ColorManager.getComposedColor(-ColorManager.timer.time * 0.144))
 	graphics.print("ulTrAbLaST", 290, 242)
 
-	graphics.setPixelEffect(Base.circleShader)
+	graphics.setShader(Base.circleShader)
 	graphics.setColor(ColorManager.getComposedColor(6))
 	graphics.circle("fill", 130, 180, 10)
 	graphics.circle("fill", 520, 450, 10)
@@ -61,7 +61,7 @@ function ControlsMenu.drawControls()
 	graphics.circle("fill", 520, 180, 10)
 	graphics.circle("fill", 130, 450, 10)
 	graphics.circle("fill", 50, 263, 10)
-	graphics.setPixelEffect()
+	graphics.setShader()
 end
 
 ControlsMenu:addDrawablePart(ControlsMenu.drawTitle)

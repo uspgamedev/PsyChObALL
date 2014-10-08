@@ -484,13 +484,13 @@ function bossThree:draw()
 	bossThree.ghost.bodies:draw()
 	bossThree.food.bodies:draw()
 	if self.hide then return end
-	if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
+	if not Cheats.image.enabled then graphics.setShader(Base.circleShader) end
 
 	if self.first <= self.last then
 		local s = self.segments[self.first]
 		graphics.setColor(ColorManager.getComposedColor(self.variance, nil, self.coloreffect))
 		if self.yellowGuy then
-			graphics.setPixelEffect()
+			graphics.setShader()
 			graphics.setInvertedStencil(self.invertedStencil)
 			love.graphics.circle(self.mode, s.position[1] * ratio, s.position[2] * ratio, self.size * ratio)
 		else
@@ -510,7 +510,7 @@ function bossThree:draw()
 		
 		if self.yellowGuy then 
 			graphics.setInvertedStencil()
-			if not Cheats.image.enabled then graphics.setPixelEffect(Base.circleShader) end
+			if not Cheats.image.enabled then graphics.setShader(Base.circleShader) end
 		end
 	end
 

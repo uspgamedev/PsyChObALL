@@ -15,7 +15,7 @@ function manageDeath()
 	if gameLost or godmode then return end
 	local autorestart = state == story and psycho.lives > 0
 	if not autorestart then
-		mouse.setGrab(false)
+		mouse.setGrabbed(false)
 		RecordsManager.manageHighScore()
 		FileManager.writeStats()
 		SoundManager.fadeOut()

@@ -72,12 +72,12 @@ function bossFive:draw()
 	graphics.draw(eyeballImage, self.position[1] - self.size, self.position[2] - self.size)
 
 	--drawing pupil
-	graphics.setPixelEffect(Base.circleShader)
+	graphics.setShader(Base.circleShader)
 	graphics.setColor(ColorManager.getComposedColor(self.variance, 255, self.coloreffect))
 	graphics.circle('fill', self.position[1] + self.irisPosition[1], self.position[2] + self.irisPosition[2], self.irisSize)
 	graphics.setColor(0, 0, 0)
 	graphics.circle('fill', self.position[1] + self.irisPosition[1], self.position[2] + self.irisPosition[2], self.pupilSize.var)
-	graphics.setPixelEffect()
+	graphics.setShader()
 end
 
 function bossFive:kill()

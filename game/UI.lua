@@ -38,7 +38,7 @@ function keypressed( key )
 	if (key == 'escape' or key == 'p') and onGame() and not DeathManager.gameLost then
 		resetPauseText()
 		paused = not paused --pauses or unpauses
-		mouse.setGrab(not paused) --releases the mouse if paused
+		mouse.setGrabbed(not paused) --releases the mouse if paused
 	end
 
 	if key == 'r' and paused then
@@ -95,7 +95,7 @@ end
 
 local format = string.format
 function draw()
-	graphics.setPixelEffect()
+	graphics.setShader()
 	--[[Drawing On-Game Info]]
 	if onGame() then
 		graphics.setColor(ColorManager.getComposedColor())
