@@ -81,7 +81,7 @@ function selectLevel()
 	end
 	global.levelselected = true
 
-	mouse.setGrab(false)
+	mouse.setGrabbed(false)
 end
 
 function toTutorialMenu()

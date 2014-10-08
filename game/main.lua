@@ -25,7 +25,7 @@ function love.load()
 	initGameVars()
 	UI.init()
 
-	mouse.setGrab(false)
+	mouse.setGrabbed(false)
 end
 
 function initBase()
@@ -44,7 +44,7 @@ function initBase()
 	coolfonts = {}
 	resetted = false
 	godmode = false
-	usingjoystick = joystick.isOpen(1)
+	usingjoystick = false --joystick.isOpen(1)
 
 	gamelostinfo =  {
 		timetorestart = .5,
@@ -88,7 +88,7 @@ function initBase()
 	splash = graphics.newImage 'resources/Marvellous Soft.png'
 	splashtimer = timer:new{timelimit = 1.75, running = true, persistent = true, pausable = false, funcToCall = function(t) t:remove() end}
 
-	graphics.setIcon(graphics.newImage('resources/IconBeta.png'))
+	window.setIcon(graphics.newImage('resources/IconBeta.png'):getData())
 	version = '1.0.0'
 	latest = base.getLatestVersion() or version
 	soundmanager.init()
@@ -234,7 +234,7 @@ function reloadSurvival()
 	enemy.addtimer:start(2)
 	enemy.releasetimer:start(1.5)
 
-	mouse.setGrab(true)
+	mouse.setGrabbed(true)
 end
 
 function reloadStory( name )
@@ -260,7 +260,7 @@ function reloadStory( name )
 		soundmanager.restart()
 		enemies.restartStory()
 
-		mouse.setGrab(true)
+		mouse.setGrabbed(true)
 	end
 	levels.runLevel(name)
 end
@@ -301,7 +301,7 @@ function lostgame()
 	if gamelost or godmode then return end
 	local autorestart = state == story and lives > 0
 	if not autorestart then
-		mouse.setGrab(false)
+		mouse.setGrabbed(false)
 		filemanager.writestats()
 		soundmanager.fadeout()
 
@@ -338,7 +338,7 @@ function love.draw()
 	graphics.translate(width/2, height/2)
 	graphics.rotate(angle.var)
 	graphics.translate(-width/2, -height/2)
-	graphics.setLine(3)
+	graphics.setLineWidth(3)
 	graphics.setFont(getFont(12))
 
 	colorwheel(colortimer.time*.654)
@@ -368,7 +368,7 @@ function love.draw()
 	--[[Drawing Game Objects]]
 	if onGame() then
 		graphics.setColor(color(colortimer.time * 1.4))
-		graphics.setLine(1)
+		graphics.setLineWidth(1)
 		--drawing mouse line
 		line()
 		--drawing psychoball
@@ -603,7 +603,8 @@ function love.joystickreleased( joynum, button )
 	psycho:joystickreleased(joynum, button)
 end
 
-function love.keypressed(key)
+function love.keypressed(key, isRepeat)
+	if isRepeat then return end
 	keyspressed[key] = true
 
 	if keyspressed['lalt'] and keyspressed['f4'] then event.push('quit') end
@@ -611,7 +612,7 @@ function love.keypressed(key)
 	if (key == 'escape' or key == 'p') and onGame() and not gamelost then
 		pausemessage = nil --resets pauseText()
 		paused = not paused --pauses or unpauses
-		mouse.setGrab(not paused) --releases the mouse if paused
+		mouse.setGrabbed(not paused) --releases the mouse if paused
 	end
 
 	if not gamelost and onGame() then 
@@ -624,7 +625,8 @@ function love.keypressed(key)
 
 end
 
-function love.keyreleased(key)
+function love.keyreleased(key, isRepeat)
+	if isRepeat then return end
 	if not keyspressed[key] then return
 	else keyspressed[key] = false end
 

@@ -46,7 +46,7 @@ function restartStory()
 end
 
 function paintOn( self, p )
-	for k, v in ipairs(filesystem.enumerate 'enemies') do
+	for k, v in ipairs(filesystem.getDirectoryItems 'enemies') do
 		local name = v:sub(0,v:len() - 4)
 		require('enemies.' .. name)
 		bodies[name] = {name = name}

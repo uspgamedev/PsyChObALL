@@ -29,7 +29,7 @@ function circleEffect:__init()
 	end
 	--[[self.stencil = graphics.newStencil( function() 
 		local n = (self.linewidth or 4) + 4
-		graphics.setLine(n)
+		graphics.setLineWidth(n)
 		graphics.circle(self.mode, self.x, self.y, self.size - n/2) 
 		end)]]
 end
@@ -58,9 +58,9 @@ function circleEffect.init()
 end
 
 function circleEffect:draw()
-	if self.linewidth then graphics.setLine(self.linewidth) end
+	if self.linewidth then graphics.setLineWidth(self.linewidth) end
 	body.draw(self)
-	if self.linewidth then graphics.setLine(4) end
+	if self.linewidth then graphics.setLineWidth(4) end
 end
 
 function circleEffect:update(dt)

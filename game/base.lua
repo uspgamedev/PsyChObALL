@@ -34,7 +34,7 @@ graphics = {
 		end
 	end,
 	draw = function(d, x, y, r, sx, sy, ...) love.graphics.draw(d, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
-	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.drawq(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
+	drawq = function(i ,q, x, y, r, sx, sy, ...) love.graphics.draw(i, q, x*ratio, y*ratio, r, (sx or 1)*ratio, (sy or 1)*ratio, ...) end,
 	point = fixPosIgnoreNone(love.graphics.point),
 	print = fixPosIgnoreOne(love.graphics.print),
 	printf = function(t, x, y, limit, a) love.graphics.printf(t, x*ratio, y*ratio, limit*ratio, a) end,

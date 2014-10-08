@@ -24,7 +24,7 @@ function warning:recalc_angle()
 end
 
 function warning:draw()
-	graphics.setLine(self.lineWidth)
+	graphics.setLineWidth(self.lineWidth)
 	graphics.setColor(color(colortimer.time + self.variance, self.alpha or self.alphafollows and self.alphafollows.var, self.coloreffect))
 	graphics.arc(self.mode, self.position[1], self.position[2], self.size, self.angle - self.piece, self.angle + self.piece)
 end
